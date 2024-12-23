@@ -6322,16 +6322,16 @@ svg.leaflet-image-layer.leaflet-interactive path {
   font-size: 15px;
 }
 
-.diectorist-show {
-  display: block;
+.directorist-show {
+  display: block !important;
 }
 
-.diectorist-hide {
-  display: none;
+.directorist-hide {
+  display: none !important;
 }
 
 .directorist-d-none {
-  display: none;
+  display: none !important;
 }
 
 .directorist-text-center {

@@ -445,6 +445,15 @@
           box-shadow: none;
   background: transparent;
 }
+.directorist-account-block-authentication-modal #directorist-account-block-login-modal .directorist-authentication .directorist-authentication__form .directorist-form-element {
+  border: none;
+  padding: 15px 0;
+  border-radius: 0;
+  border-bottom: 1px solid #ececec;
+}
+.directorist-account-block-authentication-modal #directorist-account-block-login-modal .directorist-authentication .directorist-authentication__form .directorist-form-element:focus {
+  border-color: var(--directorist-color-primary);
+}
 .directorist-account-block-authentication-modal #directorist-account-block-login-modal .directorist-authentication .directorist-authentication__form .directorist-authentication__form__btn:hover {
   color: var(--directorist-color-white);
   background-color: rgba(var(--directorist-color-primary-rgb), 0.8);

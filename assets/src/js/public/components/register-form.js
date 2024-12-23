@@ -1,4 +1,15 @@
 jQuery(($) => {
+
+    // Trigger reset on form change
+    $('.directorist-authentication__btn').on('click', function() {
+        // Reset the form values
+        $('.directorist__authentication__signup').each(function() {
+            this.reset(); // Reset the individual form
+        });
+
+        // Reset error and warning messages
+        $('.directorist-register-error').hide().empty();
+    });
     
 	$('.directorist__authentication__signup').on( 'submit', function( e ) {
 		e.preventDefault();

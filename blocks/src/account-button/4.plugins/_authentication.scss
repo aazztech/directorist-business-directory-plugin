@@ -424,6 +424,15 @@
                 padding: 50px 25px;
                 box-shadow: none;
                 background: transparent;
+                .directorist-form-element {
+                    border: none;
+                    padding: 15px 0;
+                    border-radius: 0;
+                    border-bottom: 1px solid #ececec;
+                    &:focus {
+                        border-color: var(--directorist-color-primary);
+                    }
+                }
                 .directorist-authentication__form__btn {
                     &:hover {
                         color: var(--directorist-color-white);
