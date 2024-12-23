@@ -415,4 +415,23 @@
         outline: 0;
         background-color: rgba(var(--directorist-color-dark-rgb), 0.40);
     }
+
+    #directorist-account-block-login-modal {
+        .directorist-authentication {
+            width: 100%;
+            margin-left: 0;
+            .directorist-authentication__form {
+                padding: 50px 25px;
+                box-shadow: none;
+                background: transparent;
+                .directorist-authentication__form__btn {
+                    &:hover {
+                        color: var(--directorist-color-white);
+                        background-color: rgba(var(--directorist-color-primary-rgb), 0.8); 
+                    }
+                }
+            }
+        }
+    }
 }
+

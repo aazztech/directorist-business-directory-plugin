@@ -435,6 +435,20 @@
   outline: 0;
   background-color: rgba(var(--directorist-color-dark-rgb), 0.4);
 }
+.directorist-account-block-authentication-modal #directorist-account-block-login-modal .directorist-authentication {
+  width: 100%;
+  margin-right: 0;
+}
+.directorist-account-block-authentication-modal #directorist-account-block-login-modal .directorist-authentication .directorist-authentication__form {
+  padding: 50px 25px;
+  -webkit-box-shadow: none;
+          box-shadow: none;
+  background: transparent;
+}
+.directorist-account-block-authentication-modal #directorist-account-block-login-modal .directorist-authentication .directorist-authentication__form .directorist-authentication__form__btn:hover {
+  color: var(--directorist-color-white);
+  background-color: rgba(var(--directorist-color-primary-rgb), 0.8);
+}
 
 .wp-block-button__link {
   cursor: pointer;
