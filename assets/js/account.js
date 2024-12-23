@@ -296,14 +296,23 @@ jQuery(function ($) {
     });
 
     // Reset error and warning messages
+    $('.directorist-alert ').hide().empty();
     $('.directorist-register-error').hide().empty();
   });
-  $('.directorist__authentication__signup').on('submit', function (e) {
+  $('.directorist__authentication__signup .directorist-authentication__form__btn').on('click', function (e) {
     e.preventDefault();
-    var $button = $(this).find('.directorist-authentication__form__btn');
-    $button.addClass('directorist-btn-loading'); // Added loading class
+    $this = $(this);
+    $this.addClass('directorist-btn-loading'); // Added loading class
+    var form = $this.closest('.directorist__authentication__signup')[0];
 
-    var formData = new FormData(this);
+    // Trigger native validation
+    if (!form.checkValidity()) {
+      form.reportValidity(); // Display browser-native warnings for invalid fields
+      $this.removeClass('directorist-btn-loading'); // Removed loading class
+      return; // Stop submission if validation fails
+    }
+
+    var formData = new FormData(form);
     formData.append('action', 'directorist_register_form');
     formData.append('params', JSON.stringify(directorist_signin_signup_params));
     $.ajax({
@@ -318,7 +327,7 @@ jQuery(function ($) {
         success = _ref.success;
       // Removed loading class
       setTimeout(function () {
-        return $button.removeClass('directorist-btn-loading');
+        return $this.removeClass('directorist-btn-loading');
       }, 1000);
       if (!success) {
         $('.directorist-register-error').empty().show().append(data.error);

@@ -354,9 +354,8 @@ if ( ! empty( $_GET['registration_status'] ) ) {
 							<input type="hidden" name='previous_page' value='<?php echo esc_url( wp_get_referer() ); ?>'>
 							<?php } ?>
 							<input type="hidden" value="<?php echo esc_attr( wp_create_nonce( directorist_get_nonce_key() ) ); ?>" name="directorist_nonce">
-							<button class="directorist-btn directorist-authentication__form__btn directorist-hide" type="submit" value="<?php echo esc_attr( $reg_signup ); ?>" name="submit" aria-label="SignUp Button"><?php echo esc_html( $reg_signup ); ?></button>
 
-							<button class="directorist-btn directorist-btn-block directorist-authentication__form__btn" type="submit" value="<?php echo esc_attr( $reg_signup ); ?>" name="submit" aria-label="SignUp Button"><?php echo esc_html( $reg_signup ); ?></button>
+							<a class="directorist-btn directorist-authentication__form__btn" href="#"><?php echo esc_html( $reg_signup ); ?></a>
 						</div>
 						<div class="directory_regi_btn directorist-authentication__form__toggle-area">
 							<p><?php echo esc_html( $login_text ); ?> <button class="directorist-authentication__btn directorist-authentication__btn--signin"><?php echo esc_html( $log_linkingmsg ); ?></button></p>
