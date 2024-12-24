@@ -459,6 +459,10 @@
   color: var(--directorist-color-white);
   background-color: rgba(var(--directorist-color-primary-rgb), 0.8);
 }
+.directorist-account-block-authentication-modal #directorist-account-block-login-modal .directorist-authentication p.status,
+.directorist-account-block-authentication-modal #directorist-account-block-login-modal .directorist-authentication .directorist-register-error {
+  margin-top: 0;
+}
 
 .wp-block-button__link {
   cursor: pointer;
