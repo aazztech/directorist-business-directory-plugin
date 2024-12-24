@@ -4748,7 +4748,7 @@ body.stop-scrolling {
   width: 270px;
   min-height: 36px;
   padding: 7px 16px;
-  border: none;
+  border: 1px solid transparent;
   outline: none;
   cursor: pointer;
   font-size: 14px;
