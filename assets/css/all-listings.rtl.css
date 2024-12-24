@@ -17988,6 +17988,7 @@ input.directorist-toggle-input:checked + .directorist-toggle-input-label span.di
   border-radius: 8px;
   -webkit-box-shadow: unset;
           box-shadow: unset;
+  max-height: none !important;
 }
 @media only screen and (max-width: 375px) {
   .atbdp-map .gm-style .gm-style-iw,
@@ -18001,6 +18002,7 @@ input.directorist-toggle-input:checked + .directorist-toggle-input-label span.di
 .atbd_google_map .gm-style .gm-style-iw .gm-style-iw-d,
 .directorist-details-info-wrap .gm-style .gm-style-iw .gm-style-iw-d {
   overflow: hidden !important;
+  max-height: 100% !important;
 }
 .atbdp-map .gm-style .gm-style-iw button.gm-ui-hover-effect,
 .atbd_google_map .gm-style .gm-style-iw button.gm-ui-hover-effect,
