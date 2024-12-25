@@ -866,6 +866,15 @@ body.logged-in.directorist-content-active .select2-container--open .select2-drop
     background-color: var(--directorist-color-bg-light);
   }
 }
+.directorist-content-active .select2-container--default.select2-container--open .select2-results__option .directorist-select2-contents.item-level-2 {
+  padding-right: 20px;
+}
+.directorist-content-active .select2-container--default.select2-container--open .select2-results__option .directorist-select2-contents.item-level-3 {
+  padding-right: 40px;
+}
+.directorist-content-active .select2-container--default.select2-container--open .select2-results__option .directorist-select2-contents.item-level-4 {
+  padding-right: 60px;
+}
 .directorist-content-active .select2-container--default .select2-selection--single .select2-selection__rendered {
   opacity: 1;
 }
