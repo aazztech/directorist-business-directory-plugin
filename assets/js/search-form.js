@@ -1806,6 +1806,7 @@ function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len 
         if (!slider || slider.directoristCustomRangeSlider) return;
         var sliderStep = parseInt(slider.getAttribute('step')) || 1;
         var sliderDefaultValue = parseInt(slider.getAttribute('value'));
+        var sliderMaxValue = parseInt(slider.getAttribute('max-value'));
         var minInput = sliderItem.querySelector('.directorist-custom-range-slider__value__min');
         var maxInput = sliderItem.querySelector('.directorist-custom-range-slider__value__max');
         var sliderRange = sliderItem.querySelector('.directorist-custom-range-slider__range');
@@ -1815,14 +1816,16 @@ function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len 
 
         // init rangeInitiLoad on initial Load
         var rangeInitLoad = true;
+        // Parse the URL parameters
+        var milesParams = new URLSearchParams(window.location.search).has('miles');
         (_directoristCustomRan = directoristCustomRangeSlider) === null || _directoristCustomRan === void 0 || _directoristCustomRan.create(slider, {
-          start: [0, sliderDefaultValue ? sliderDefaultValue : 100],
+          start: [minInput.value, sliderDefaultValue && !milesParams ? sliderDefaultValue : maxInput.value],
           connect: true,
           direction: isRTL ? 'rtl' : 'ltr',
           step: sliderStep ? sliderStep : 1,
           range: {
-            'min': Number(minInput.value ? minInput.value : 0),
-            'max': Number(maxInput.value ? maxInput.value : 100)
+            'min': Number(0),
+            'max': Number(sliderMaxValue)
           }
         });
         (_slider$directoristCu = slider.directoristCustomRangeSlider) === null || _slider$directoristCu === void 0 || _slider$directoristCu.on('update', function (values, handle) {
