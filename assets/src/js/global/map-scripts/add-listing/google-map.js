@@ -102,7 +102,7 @@ import {
                 $manual_lat.val(place.geometry.location.lat());
                 $manual_lng.val(place.geometry.location.lng());
                 map.setCenter(place.geometry.location);
-                const marker = new google.maps.Marker({
+                const marker = new google.maps.marker.AdvancedMarkerElement({
                     map,
                     position: place.geometry.location,
                     draggable: true,
@@ -128,7 +128,7 @@ import {
                     center: saved_lat_lng,
                 });
 
-                const marker = new google.maps.Marker({
+                const marker = new google.maps.marker.AdvancedMarkerElement({
                     map,
                     position: saved_lat_lng,
                     draggable: true,
@@ -183,7 +183,7 @@ import {
                         $manual_lat.val(results[0].geometry.location.lat());
                         $manual_lng.val(results[0].geometry.location.lng());
                         resultsMap.setCenter(results[0].geometry.location);
-                        const marker = new google.maps.Marker({
+                        const marker = new google.maps.marker.AdvancedMarkerElement({
                             map: resultsMap,
                             position: results[0].geometry.location,
                         });
@@ -212,7 +212,7 @@ import {
                 // Add the marker at the clicked location, and add the next-available label;
 
                 // from the array of alphabetical characters.
-                const marker = new google.maps.Marker({
+                const marker = new google.maps.marker.AdvancedMarkerElement({
                     map,
                     position: location,
                     /* label: labels[labelIndex++ % labels.length], */

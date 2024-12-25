@@ -140,7 +140,7 @@
           this.div.className = 'map-icon-label';
 
           // Trigger the marker click handler if clicking on the label
-          google.maps.event.addDomListener(this.div, 'click', function (e) {
+          google.maps.event.addListener(this.div, 'click', function (e) {
             e.stopPropagation && e.stopPropagation();
             google.maps.event.trigger(self.marker, 'click');
           });
@@ -241,7 +241,7 @@
             });
             google.maps.event.addListener(info_window, 'domready', function () {
               var closeBtn = $('.iw-close-btn').get();
-              google.maps.event.addDomListener(closeBtn[0], 'click', function () {
+              google.maps.event.addListener(closeBtn[0], 'click', function () {
                 info_window.close();
               });
             });

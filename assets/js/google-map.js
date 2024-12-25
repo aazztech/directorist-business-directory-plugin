@@ -192,7 +192,7 @@ __webpack_require__.r(__webpack_exports__);
         $manual_lat.val(place.geometry.location.lat());
         $manual_lng.val(place.geometry.location.lng());
         map.setCenter(place.geometry.location);
-        var marker = new google.maps.Marker({
+        var marker = new google.maps.marker.AdvancedMarkerElement({
           map: map,
           position: place.geometry.location,
           draggable: true,
@@ -216,7 +216,7 @@ __webpack_require__.r(__webpack_exports__);
           zoom: loc_map_zoom_level,
           center: saved_lat_lng
         });
-        var marker = new google.maps.Marker({
+        var marker = new google.maps.marker.AdvancedMarkerElement({
           map: map,
           position: saved_lat_lng,
           draggable: true,
@@ -269,7 +269,7 @@ __webpack_require__.r(__webpack_exports__);
             $manual_lat.val(results[0].geometry.location.lat());
             $manual_lng.val(results[0].geometry.location.lng());
             resultsMap.setCenter(results[0].geometry.location);
-            var marker = new google.maps.Marker({
+            var marker = new google.maps.marker.AdvancedMarkerElement({
               map: resultsMap,
               position: results[0].geometry.location
             });
@@ -297,7 +297,7 @@ __webpack_require__.r(__webpack_exports__);
         // Add the marker at the clicked location, and add the next-available label;
 
         // from the array of alphabetical characters.
-        var marker = new google.maps.Marker({
+        var marker = new google.maps.marker.AdvancedMarkerElement({
           map: map,
           position: location,
           /* label: labels[labelIndex++ % labels.length], */
@@ -409,7 +409,7 @@ __webpack_require__.r(__webpack_exports__);
       this.div.className = 'map-icon-label';
 
       // Trigger the marker click handler if clicking on the label
-      google.maps.event.addDomListener(this.div, 'click', function (e) {
+      google.maps.event.addListener(this.div, 'click', function (e) {
         e.stopPropagation && e.stopPropagation();
         google.maps.event.trigger(self.marker, 'click');
       });
@@ -563,7 +563,7 @@ __webpack_require__.r(__webpack_exports__);
           //map info window close button
           google.maps.event.addListener(infowindow, 'domready', function () {
             var closeBtn = $('.iw-close-btn').get();
-            google.maps.event.addDomListener(closeBtn[0], 'click', function () {
+            google.maps.event.addListener(closeBtn[0], 'click', function () {
               infowindow.close();
             });
           });
@@ -715,7 +715,7 @@ __webpack_require__.r(__webpack_exports__);
         this.div.className = 'map-icon-label';
 
         // Trigger the marker click handler if clicking on the label
-        google.maps.event.addDomListener(this.div, 'click', function (e) {
+        google.maps.event.addListener(this.div, 'click', function (e) {
           e.stopPropagation && e.stopPropagation();
           google.maps.event.trigger(self.marker, 'click');
         });
@@ -817,7 +817,7 @@ __webpack_require__.r(__webpack_exports__);
           });
           google.maps.event.addListener(info_window, 'domready', function () {
             var closeBtn = $('.iw-close-btn').get();
-            google.maps.event.addDomListener(closeBtn[0], 'click', function () {
+            google.maps.event.addListener(closeBtn[0], 'click', function () {
               info_window.close();
             });
           });
@@ -908,7 +908,7 @@ __webpack_require__.r(__webpack_exports__);
           this.div.className = 'map-icon-label';
 
           // Trigger the marker click handler if clicking on the label
-          google.maps.event.addDomListener(this.div, 'click', function (e) {
+          google.maps.event.addListener(this.div, 'click', function (e) {
             e.stopPropagation && e.stopPropagation();
             google.maps.event.trigger(self.marker, 'click');
           });
@@ -1009,7 +1009,7 @@ __webpack_require__.r(__webpack_exports__);
             });
             google.maps.event.addListener(info_window, 'domready', function () {
               var closeBtn = $('.iw-close-btn').get();
-              google.maps.event.addDomListener(closeBtn[0], 'click', function () {
+              google.maps.event.addListener(closeBtn[0], 'click', function () {
                 info_window.close();
               });
             });
