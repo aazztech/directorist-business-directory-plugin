@@ -1361,6 +1361,21 @@ Please remember that your order may be canceled if you do not make your payment 
                     'max'           => '100',
                     'step'          => '1',
                 ],
+                'feature_badge_type' => [
+                    'label'     => __('Badge Type', 'directorist'),
+                    'type'      => 'select',
+                    'value'     => 'icon_badge',
+                    'options'   => [
+                        [
+                            'value' => 'text_badge',
+                            'label' => __('Text Badge', 'directorist'),
+                        ],
+                        [
+                            'value' => 'icon_badge',
+                            'label' => __('Icon with Hover Text', 'directorist'),
+                        ],
+                    ],
+                ],
                 'feature_badge_text' => [
                     'type'          => 'text',
                     'label'         => __('Badge Text', 'directorist'),
@@ -3650,7 +3665,7 @@ Please remember that your order may be canceled if you do not make your payment 
                                     'title'       => __('Featured Badge', 'directorist'),
                                     'description' => '',
                                     'fields'      => [
-                                        'feature_badge_text', 'featured_back_color',
+                                        'feature_badge_type', 'feature_badge_text', 'featured_back_color',
                                     ],
                                 ],
                             ] ),
