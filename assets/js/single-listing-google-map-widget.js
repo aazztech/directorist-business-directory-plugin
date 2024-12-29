@@ -235,17 +235,15 @@
           },
           map_icon_label: '<div class="atbd_map_shape">' + cat_icon + '</div>'
         });
-        if (display_map_info) {
-          marker.addListener('click', function () {
+        marker.addListener('click', function () {
+          if (display_map_info) {
             info_window.open(map, marker);
-          });
-          google.maps.event.addListener(info_window, 'domready', function () {
-            var closeBtn = $('.iw-close-btn').get();
-            google.maps.event.addListener(closeBtn[0], 'click', function () {
-              info_window.close();
-            });
-          });
-        }
+            display_map_info = false;
+          } else {
+            info_window.close();
+            display_map_info = true;
+          }
+        });
       }
       $(document).ready(function () {
         initMap();

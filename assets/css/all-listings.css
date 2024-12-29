@@ -3970,6 +3970,8 @@ body.stop-scrolling {
   width: 16px;
   height: 16px;
   background-color: var(--directorist-color-marker-icon);
+  -webkit-mask: url(../images/ed83bad2b8ea2a7680575ff079fc63af.svg);
+          mask: url(../images/ed83bad2b8ea2a7680575ff079fc63af.svg);
 }
 .directorist-form-map-field .atbd_map_shape:hover:before {
   opacity: 1;
@@ -4415,17 +4417,17 @@ body.stop-scrolling {
   padding: 10px 0;
   background: transparent;
 }
-.directorist-add-listing-form .leaflet-pane .leaflet-marker-icon .atbd_map_shape {
+.directorist-add-listing-form .atbd_map_shape {
   width: 50px;
   height: 50px;
 }
-.directorist-add-listing-form .leaflet-pane .leaflet-marker-icon .atbd_map_shape:before {
+.directorist-add-listing-form .atbd_map_shape:before {
   left: -25px;
   top: -25px;
   border: 50px solid rgba(var(--directorist-color-marker-shape-rgb), 0.2);
 }
-.directorist-add-listing-form .leaflet-pane .leaflet-marker-icon .atbd_map_shape .directorist-icon-mask::after {
-  width: 12px;
+.directorist-add-listing-form .atbd_map_shape .directorist-icon-mask::after {
+  width: 11px;
   height: 20px;
 }
 

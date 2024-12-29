@@ -221,14 +221,6 @@ import {
                 map.markers.push(marker);
                 // if marker contains HTML, add it to an infoWindow
                 if ($marker.html()) {
-                    //map info window close button
-                    google.maps.event.addListener(infowindow, 'domready', function () {
-                        const closeBtn = $('.iw-close-btn').get();
-                        google.maps.event.addListener(closeBtn[0], 'click', function () {
-                            infowindow.close();
-                        });
-                    });
-
                     // show info window when marker is clicked
                     google.maps.event.addListener(marker, 'click', function () {
                         if (mapData.disable_info_window === 'no') {
