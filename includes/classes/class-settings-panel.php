@@ -727,9 +727,27 @@ Please remember that your order may be canceled if you do not make your payment 
 
                 // Badge Color
                 'featured_back_color' => [
-                    'type' => 'color',
-                    'label' => __('Background Color', 'directorist'),
-                    'value' => '#fa8b0c',
+                    'type'        => 'color',
+                    'label'       => __('Background Color', 'directorist'),
+                    'value'       => '#fa8b0c',
+                    'show-if'     => [
+                        'where' => 'feature_badge_type',
+                        'conditions' => [
+                            ['key' => 'value', 'compare' => '=', 'value' => 'text_badge'],
+                        ],
+                    ],
+                ],
+
+                'featured_hover_color' => [
+                    'type'        => 'color',
+                    'label'       => __('Hover Color', 'directorist'),
+                    'value'       => '#fa8b0c',
+                    'show-if'     => [
+                        'where' => 'feature_badge_type',
+                        'conditions' => [
+                            ['key' => 'value', 'compare' => '=', 'value' => 'icon_badge'],
+                        ],
+                    ],
                 ],
 
                 'popular_back_color' => [
@@ -1367,12 +1385,12 @@ Please remember that your order may be canceled if you do not make your payment 
                     'value'     => 'icon_badge',
                     'options'   => [
                         [
-                            'value' => 'text_badge',
-                            'label' => __('Text Badge', 'directorist'),
-                        ],
-                        [
                             'value' => 'icon_badge',
                             'label' => __('Icon with Hover Text', 'directorist'),
+                        ],
+                        [
+                            'value' => 'text_badge',
+                            'label' => __('Text Badge', 'directorist'),
                         ],
                     ],
                 ],
@@ -1381,6 +1399,24 @@ Please remember that your order may be canceled if you do not make your payment 
                     'label'         => __('Badge Text', 'directorist'),
                     'description'   => __('Text displayed on the badge when a listing is marked as featured.', 'directorist'),
                     'value'         => __('Featured', 'directorist'),
+                    'show-if'       => [
+                        'where' => 'feature_badge_type',
+                        'conditions' => [
+                            ['key' => 'value', 'compare' => '=', 'value' => 'text_badge'],
+                        ],
+                    ],
+                ],
+                'feature_badge_hover_text' => [
+                    'type'          => 'text',
+                    'label'         => __('Hover Text', 'directorist'),
+                    'description'   => __('Text displayed on the badge when hovered.', 'directorist'),
+                    'value'         => __('Featured', 'directorist'),
+                    'show-if'       => [
+                        'where' => 'feature_badge_type',
+                        'conditions' => [
+                            ['key' => 'value', 'compare' => '=', 'value' => 'icon_badge'],
+                        ],
+                    ],
                 ],
                 'popular_badge_text' => [
                     'type'          => 'text',
@@ -3665,7 +3701,11 @@ Please remember that your order may be canceled if you do not make your payment 
                                     'title'       => __('Featured Badge', 'directorist'),
                                     'description' => '',
                                     'fields'      => [
-                                        'feature_badge_type', 'feature_badge_text', 'featured_back_color',
+                                        'feature_badge_type', 
+                                        'feature_badge_text', 
+                                        'featured_back_color', 
+                                        'feature_badge_hover_text', 
+                                        'featured_hover_color',
                                     ],
                                 ],
                             ] ),
