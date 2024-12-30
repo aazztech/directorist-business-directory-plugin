@@ -167,7 +167,7 @@ if ( ! class_exists( 'ATBDP_Custom_Taxonomy' ) ) :
 			// Get the directory_type from the term meta
 			$directory_type         = get_term_meta( $tag->term_id, '_directory_type', true );
 			$enable_multi_directory = get_directorist_option( 'enable_multi_directory' );
-			$directory_type_slug    = ! empty( $directory_type ) && is_array( $directory_type ) && ! empty( $directory_type[0] ) ? $this->get_directory_type_slug( absint( $directory_type[0] ) ) : 0;
+			$directory_type_slug    = is_array( $directory_type ) && ! empty( $directory_type[0] ) ? $this->get_directory_type_slug( absint( $directory_type[0] ) ) : 0;
 
 			// change the view link of ATBDP_Category
 			if ( ATBDP_CATEGORY == $tag->taxonomy ) {
