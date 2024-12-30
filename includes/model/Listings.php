@@ -2083,8 +2083,11 @@ class Directorist_Listings {
 				break;
 
 				case 'featured_badge':
-				$field['class'] = 'featured';
-				$field['label'] = Helper::featured_badge_text();
+				$field['class']               = 'featured';
+				$field['label']               = Helper::featured_badge_text();
+				$field['featured_badge_type']  = get_directorist_option( 'feature_badge_type', 'icon_badge');
+				$field['featured_badge_class'] = ( 'text_badge' === $field['featured_badge_type'] ) ? 'directorist-badge-featured--only-text' : '';
+
 				if ( Helper::is_featured( $id ) ) {
 					Helper::get_template( 'archive/fields/badge', apply_filters( 'directorist_featured_badge_field_data', $field ) );
 				}
