@@ -428,7 +428,7 @@ Please remember that your order may be canceled if you do not make your payment 
 		$default_size = directorist_default_preview_size();
 		$default_preview_size_text = $default_size['width'].'x'.$default_size['height'].' px';
         $shared_background_color = '#000000';
-        $featured_badge_text='lol';
+        $featured_badge_text='featured';
 
 
             $this->fields = apply_filters('atbdp_listing_type_settings_field_list', [
