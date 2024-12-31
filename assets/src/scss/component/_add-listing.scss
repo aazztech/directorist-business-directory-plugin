@@ -771,6 +771,7 @@
         width: 16px;
         height: 16px;
         background-color: var(--directorist-color-marker-icon);
+        mask: url("../../../icons/font-awesome/svgs/solid/map-pin.svg");
       }
     }
     &:hover {
@@ -1179,7 +1180,7 @@
     background: transparent;
   }
 
-  .leaflet-pane .leaflet-marker-icon .atbd_map_shape {
+  .atbd_map_shape {
     width: 50px;
     height: 50px;
     &:before {
@@ -1188,7 +1189,7 @@
       border: 50px solid rgba(var(--directorist-color-marker-shape-rgb), 0.2);
     }
     .directorist-icon-mask::after {
-      width: 12px;
+      width: 11px;
       height: 20px;
     }
   }
