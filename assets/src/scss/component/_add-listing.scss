@@ -99,7 +99,7 @@
   .directorist-content-module {
     margin-bottom: 35px;
     border-radius: 12px;
-    @media (max-width: 480px) {
+    @media (max-width: 991px) {
       margin-bottom: 20px;
     }
     @include e(title) {
@@ -246,7 +246,7 @@
 
   .directorist-content-module__contents {
     padding: 30px 40px 40px;
-    @media (max-width: 480px) {
+    @media (max-width: 991px) {
       height: auto;
       opacity: 1;
       padding: 20px;
@@ -1519,7 +1519,7 @@
       }
     }
 
-    @media only screen and (max-width: 480px) {
+    @media only screen and (max-width: 991px) {
       display: none;
     }
   }
@@ -1536,7 +1536,7 @@
       color: var(--directorist-color-danger);
     }
 
-    @media only screen and (max-width: 480px) {
+    @media only screen and (max-width: 991px) {
       .directorist-content-module {
         @include e(title) {
           position: relative;
