@@ -109,6 +109,16 @@
                 wp_send_json( $data );
             }
 
+            /**
+			 * Fires before the listings import process starts.
+			 *
+			 * This action allows developers to execute custom tasks or add integrations
+			 * Before the listing import process begins.
+			 *
+			 * @since 8.0.11
+			 */
+			do_action( 'directorist_before_listings_import', $posts );
+
             // Counters
             $imported = 0;
             $failed   = 0;
@@ -254,6 +264,11 @@
                     }
 
                     /**
+                     * Add Listing Meta - to track which listings are imported by CSV
+                     */
+                    update_post_meta( $post_id, '_directorist_imported_by_csv', 'yes' );
+
+                    /**
                      * Fire this event once a listing is successfully imported from CSV.
                      *
                      * @since 7.2.0
@@ -272,6 +287,16 @@
             $data['total']         = $total_length;
             $data['imported']      = $imported;
             $data['failed']        = $failed;
+
+            /**
+			 * Fires after all listings have been successfully imported.
+			 *
+			 * This action allows developers to perform custom tasks or integrations
+			 * After the listing, the import process will be completed.
+			 *
+			 * @since 8.0.11
+			 */
+			do_action( 'directorist_after_listings_import', $data );
 
             wp_send_json( $data );
         }
