@@ -117,7 +117,7 @@
 			 *
 			 * @since 8.0.11
 			 */
-			do_action( 'directorist_before_listings_import' );
+			do_action( 'directorist_before_listings_import', $posts );
 
             // Counters
             $imported = 0;
@@ -292,11 +292,11 @@
 			 * Fires after all listings have been successfully imported.
 			 *
 			 * This action allows developers to perform custom tasks or integrations
-			 * After the listing import process has been completed.
+			 * After the listing, the import process will be completed.
 			 *
 			 * @since 8.0.11
 			 */
-			do_action( 'directorist_after_listings_import' );
+			do_action( 'directorist_after_listings_import', $data );
 
             wp_send_json( $data );
         }
