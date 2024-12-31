@@ -113,7 +113,9 @@
 			 * Fires before the listings import process starts.
 			 *
 			 * This action allows developers to execute custom tasks or add integrations
-			 * before the listing import process begins.
+			 * Before the listing import process begins.
+			 *
+			 * @since 8.0.11
 			 */
 			do_action( 'directorist_before_listings_import' );
 
@@ -290,7 +292,9 @@
 			 * Fires after all listings have been successfully imported.
 			 *
 			 * This action allows developers to perform custom tasks or integrations
-			 * after the listing import process has been completed.
+			 * After the listing import process has been completed.
+			 *
+			 * @since 8.0.11
 			 */
 			do_action( 'directorist_after_listings_import' );
 
