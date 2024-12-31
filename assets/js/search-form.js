@@ -974,10 +974,8 @@ function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len 
 (function ($) {
   window.addEventListener('load', function () {
     //Remove Preload after Window Load
-    $(window).on('load', function () {
-      $('body').removeClass("directorist-preload");
-      $('.button.wp-color-result').attr('style', ' ');
-    });
+    $('body').removeClass("directorist-preload");
+    $('.button.wp-color-result').attr('style', ' ');
 
     /* ----------------
     Search Form
@@ -1585,6 +1583,11 @@ function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len 
         directorist_custom_range_slider();
         defaultTags();
       }, 600);
+    });
+
+    // active class add on view as button
+    $('body').on('click', '.directorist-viewas .directorist-viewas__item', function (e) {
+      $(this).addClass('active').siblings().removeClass('active');
     });
 
     // Hide Country Result Click on Outside of Zipcode Field
