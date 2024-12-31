@@ -109,7 +109,13 @@
                 wp_send_json( $data );
             }
 
-            do_action( 'directorist_before_listings_import' );
+            /**
+			 * Fires before the listings import process starts.
+			 *
+			 * This action allows developers to execute custom tasks or add integrations
+			 * before the listing import process begins.
+			 */
+			do_action( 'directorist_before_listings_import' );
 
             // Counters
             $imported = 0;
@@ -280,7 +286,13 @@
             $data['imported']      = $imported;
             $data['failed']        = $failed;
 
-            do_action( 'directorist_after_listings_import' );
+            /**
+			 * Fires after all listings have been successfully imported.
+			 *
+			 * This action allows developers to perform custom tasks or integrations
+			 * after the listing import process has been completed.
+			 */
+			do_action( 'directorist_after_listings_import' );
 
             wp_send_json( $data );
         }
