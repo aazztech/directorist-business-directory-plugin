@@ -428,7 +428,6 @@ Please remember that your order may be canceled if you do not make your payment 
 		$default_size = directorist_default_preview_size();
 		$default_preview_size_text = $default_size['width'].'x'.$default_size['height'].' px';
         $shared_background_color = '#000000';
-        $featured_badge_text='featured';
 
 
             $this->fields = apply_filters('atbdp_listing_type_settings_field_list', [
@@ -1397,27 +1396,25 @@ Please remember that your order may be canceled if you do not make your payment 
                     ],
                 ],
                 'feature_badge_text' => [
-                    'type'          => 'text',
-                    'label'         => __('Badge Text', 'directorist'),
-                    'description'   => __('Text displayed on the badge when a listing is marked as featured.', 'directorist'),
-                    'value'         => __($featured_badge_text, 'directorist'),
-                    'show-if'       => [
+                    'type'         => 'text',
+                    'label'        => __('Badge Text', 'directorist'),
+                    'description'  => __('Text displayed on the badge when a listing is marked as featured.', 'directorist'),
+                    'value'        => __('Featured', 'directorist'),
+                    'change-if'    => [
                         'where' => 'feature_badge_type',
                         'conditions' => [
-                            ['key' => 'value', 'compare' => '=', 'value' => 'text_badge'],
+                            [
+                                'key' => 'value', 
+                                'compare' => '=', 
+                                'value' => 'icon_badge'
+                            ],
                         ],
-                    ],
-                ],
-                // Hover Text (only for icon badge)
-                'feature_badge_hover_text' => [
-                    'type'          => 'text',
-                    'label'         => __('Hover Text', 'directorist'),
-                    'description'   => __('Text displayed on the badge when hovered.', 'directorist'),
-                    'value'         => __($featured_badge_text, 'directorist'),
-                    'show-if'       => [
-                        'where' => 'feature_badge_type',
-                        'conditions' => [
-                            ['key' => 'value', 'compare' => '=', 'value' => 'icon_badge'],
+                        'effects' => [
+                            [ 
+                                'key' => 'label', 
+                                'value' => __('Badge Hover Text', 'directorist'),
+                                'default_value' => __('Badge Text', 'directorist')
+                            ],
                         ],
                     ],
                 ],
@@ -3704,7 +3701,7 @@ Please remember that your order may be canceled if you do not make your payment 
                                     'title'       => __('Featured Badge', 'directorist'),
                                     'description' => '',
                                     'fields'      => [
-                                        'feature_badge_type', 'feature_badge_text','feature_badge_hover_text', 'featured_back_color','featured_hover_color',
+                                        'feature_badge_type', 'feature_badge_text', 'featured_back_color','featured_hover_color',
                                     ],
                                 ],
                             ] ),
