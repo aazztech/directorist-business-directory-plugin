@@ -3195,7 +3195,6 @@ function _objectSpread(e) { for (var r = 1; r < arguments.length; r++) { var t =
       // Extract from payload   
       var condition = payload.condition,
         fieldKey = payload.fieldKey;
-      var effect = condition.effects[0];
       var currentField = root[fieldKey];
       var conditionField = root[condition.where];
 
@@ -3214,17 +3213,41 @@ function _objectSpread(e) { for (var r = 1; r < arguments.length; r++) { var t =
           }
         }
 
-        // If the isChangeable is true, change on the effect
+        // If the isChangeable is true, apply all effects
       } catch (err) {
         _iterator.e(err);
       } finally {
         _iterator.f();
       }
       if (isChangeable) {
-        currentField[effect.key] = effect.value;
+        var _iterator2 = _createForOfIteratorHelper(condition.effects),
+          _step2;
+        try {
+          for (_iterator2.s(); !(_step2 = _iterator2.n()).done;) {
+            var effect = _step2.value;
+            currentField[effect.key] = effect.value; // Apply the effect value
+          }
+        } catch (err) {
+          _iterator2.e(err);
+        } finally {
+          _iterator2.f();
+        }
       } else {
-        // set default on effect
-        currentField[effect.key] = effect.default_value;
+        // Reset to default values for all effects if not changeable
+        var _iterator3 = _createForOfIteratorHelper(condition.effects),
+          _step3;
+        try {
+          for (_iterator3.s(); !(_step3 = _iterator3.n()).done;) {
+            var _effect = _step3.value;
+            if (_effect.default_value !== undefined) {
+              currentField[_effect.key] = _effect.default_value;
+            }
+          }
+        } catch (err) {
+          _iterator3.e(err);
+        } finally {
+          _iterator3.f();
+        }
       }
       return isChangeable;
     },
@@ -3262,11 +3285,11 @@ function _objectSpread(e) { for (var r = 1; r < arguments.length; r++) { var t =
       if (typeof condition.compare === 'string' && accepted_comparison.indexOf(condition.compare)) {
         compare = condition.compare;
       }
-      var _iterator2 = _createForOfIteratorHelper(condition.conditions),
-        _step2;
+      var _iterator4 = _createForOfIteratorHelper(condition.conditions),
+        _step4;
       try {
-        for (_iterator2.s(); !(_step2 = _iterator2.n()).done;) {
-          var sub_condition = _step2.value;
+        for (_iterator4.s(); !(_step4 = _iterator4.n()).done;) {
+          var sub_condition = _step4.value;
           if (typeof sub_condition.key !== 'string') {
             continue;
           }
@@ -3361,9 +3384,9 @@ function _objectSpread(e) { for (var r = 1; r < arguments.length; r++) { var t =
 
         // Get Status
       } catch (err) {
-        _iterator2.e(err);
+        _iterator4.e(err);
       } finally {
-        _iterator2.f();
+        _iterator4.f();
       }
       var status = false;
       switch (compare) {
@@ -3465,11 +3488,11 @@ function _objectSpread(e) { for (var r = 1; r < arguments.length; r++) { var t =
       var terget_missmatched = false;
       if (terget_fields && _babel_runtime_helpers_typeof__WEBPACK_IMPORTED_MODULE_0___default()(terget_fields) === 'object') {
         terget_field = this.fields;
-        var _iterator3 = _createForOfIteratorHelper(terget_fields),
-          _step3;
+        var _iterator5 = _createForOfIteratorHelper(terget_fields),
+          _step5;
         try {
-          for (_iterator3.s(); !(_step3 = _iterator3.n()).done;) {
-            var key = _step3.value;
+          for (_iterator5.s(); !(_step5 = _iterator5.n()).done;) {
+            var key = _step5.value;
             if (!key.length) {
               continue;
             }
@@ -3488,9 +3511,9 @@ function _objectSpread(e) { for (var r = 1; r < arguments.length; r++) { var t =
             terget_field = terget_field !== null ? terget_field[key] : args.root[key];
           }
         } catch (err) {
-          _iterator3.e(err);
+          _iterator5.e(err);
         } finally {
-          _iterator3.f();
+          _iterator5.f();
         }
       }
       if (terget_missmatched) {

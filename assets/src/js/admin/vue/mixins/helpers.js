@@ -117,7 +117,6 @@ export default {
 
             // Extract from payload   
             const { condition, fieldKey } = payload;
-            let effect = condition.effects[0];
             
             let currentField = root[fieldKey];
             let conditionField = root[condition.where];
@@ -133,12 +132,18 @@ export default {
                 }
             }
 
-            // If the isChangeable is true, change on the effect
+            // If the isChangeable is true, apply all effects
             if (isChangeable) {
-                currentField[effect.key] = effect.value;
+                for (let effect of condition.effects) {
+                    currentField[effect.key] = effect.value; // Apply the effect value
+                }
             } else {
-                // set default on effect
-                currentField[effect.key] = effect.default_value;
+                // Reset to default values for all effects if not changeable
+                for (let effect of condition.effects) {
+                    if (effect.default_value !== undefined) {
+                        currentField[effect.key] = effect.default_value;
+                    }
+                }
             }
 
             return isChangeable;
