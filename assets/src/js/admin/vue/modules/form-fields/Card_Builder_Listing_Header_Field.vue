@@ -185,11 +185,16 @@
             v-for="(placeholder, placeholder_index) in allPlaceholderItems"
             :key="placeholder_index"
           >
-            <span class="cptm-elements-settings__group__title">{{ placeholder.label }}</span>
+            <span 
+              class="cptm-elements-settings__group__title"
+              v-if="placeholder.label"
+            >
+              {{ placeholder.label }}
+            </span>
 
             <Container
-              @drop="onElementsDrop($event, placeholder_index)" 
-              group-name="settings-widgets" 
+              @drop="onElementsDrop($event, placeholder_index)"
+              group-name="settings-widgets"
               drag-handle-selector=".drag-handle"
               :get-child-payload="(index) => getSettingsChildPayload(index, placeholder_index)"
             >
@@ -199,7 +204,10 @@
                 :data="{ widget_key }" 
               >
                 <div class="cptm-elements-settings__group__single">
-                  <span class="drag-handle drag-icon uil uil-draggabledots"></span>
+                  <span 
+                    class="drag-handle drag-icon uil uil-draggabledots"
+                    v-if="placeholder.acceptedWidgets.length > 1"
+                  ></span>
                   <span class="cptm-elements-settings__group__single__label">
                     <!-- Display icon only if it exists -->
                     <span v-if="available_widgets[widget_key].icon" :class="available_widgets[widget_key].icon"></span>
@@ -509,34 +517,7 @@ export default {
 
       placeholdersMap: {},
 
-      placeholders: [
-        {
-          type: "placeholder_group",
-          placeholders: [
-            {
-              label: "Quick Info",
-              selectedWidgets: [],
-            },
-            {
-              label: "Quick Action",
-              selectedWidgets: [],
-            },
-          ],
-        },
-        {
-          type: "placeholder_item",
-          label: "Listing Title",
-          acceptedWidgets: ["title"],
-          rejectedWidgets: ["slider"],
-          selectedWidgets: [],
-        },
-        {
-          type: "placeholder_item",
-          label: "More Widgets",
-          rejectedWidgets: ["slider"],
-          selectedWidgets: [],
-        },
-      ],
+      placeholders: [],
 
       elementsSettingsOpened: false,
     };
@@ -552,6 +533,7 @@ export default {
 
     onDrop(dropResult) {
       this.placeholders = applyDrag(this.placeholders, dropResult);
+      console.log("@onDrop", dropResult);
     },
 
     getSettingsChildPayload(draggedItemIndex, placeholderIndex) {
@@ -571,39 +553,49 @@ export default {
       const { removedIndex, addedIndex, payload } = dropResult;
       const { draggedItemIndex, placeholderIndex } = payload; 
 
-      // If no changes, return
-      if (removedIndex === null && addedIndex === null) return; 
+      console.log('@onElementsDrop', { removedIndex, addedIndex, payload, draggedItemIndex, placeholder_index,placeholderIndex }, removedIndex === null, addedIndex === null);
 
-      const destinationPlaceholderIndex = placeholder_index;
-      const sourcePlaceholderIndex = placeholderIndex;
+      if ( removedIndex !== null || addedIndex !== null) {
+        console.log('@@Not null', { removedIndex, addedIndex });
 
-      // Get the widget key from the source placeholder
-      const widgetKey = this.allPlaceholderItems[sourcePlaceholderIndex]?.acceptedWidgets[draggedItemIndex];
+        let destinationItemIndex;
+        let destinationPlaceholderIndex;
+        const sourceItemIndex = draggedItemIndex;  
+        const sourcePlaceholderIndex = placeholderIndex;  
 
-      if (widgetKey !== undefined) {
-        console.log('#chk', { 
-          draggedItemIndex, widgetKey, sourcePlaceholderIndex, destinationPlaceholderIndex, 
-          source: this.allPlaceholderItems[sourcePlaceholderIndex].acceptedWidgets,
-          destination: this.allPlaceholderItems[destinationPlaceholderIndex].acceptedWidgets
-        });
-
-        // Remove the widget from the source
-        if (removedIndex !== null) {
-          this.allPlaceholderItems[sourcePlaceholderIndex].acceptedWidgets.splice(removedIndex, 1);
-        }
-
-        // Add the widget to the destination at the correct position
         if (addedIndex !== null) {
-          this.allPlaceholderItems[destinationPlaceholderIndex].acceptedWidgets.splice(addedIndex, 0, widgetKey);
+          destinationItemIndex = addedIndex;
+          destinationPlaceholderIndex = placeholder_index;
+        } else {
+          destinationItemIndex = null;
+          destinationPlaceholderIndex = null;
         }
 
-        console.log('Source, Destination updated', {
-          source: this.allPlaceholderItems[sourcePlaceholderIndex].acceptedWidgets,
-          destination: this.allPlaceholderItems[destinationPlaceholderIndex].acceptedWidgets
-        });
+        // Get the widget key from the source placeholder
+        const widgetKey = this.allPlaceholderItems[sourcePlaceholderIndex]?.acceptedWidgets[draggedItemIndex];
+
+        if (widgetKey !== undefined) {
+          console.log('@widget Found', {widgetKey, sourcePlaceholderIndex, destinationPlaceholderIndex, sourceItemIndex, destinationItemIndex});
+
+          if (sourcePlaceholderIndex === destinationPlaceholderIndex) {
+            // Moving within the same placeholder
+            const widgets = this.allPlaceholderItems[sourcePlaceholderIndex].acceptedWidgets;
+            
+            // Remove the widget from the source position
+            const [movedWidget] = widgets.splice(sourceItemIndex, 1);
+            
+            // Insert the widget at the destination position
+            widgets.splice(destinationItemIndex, 0, movedWidget);
+          } else if (destinationPlaceholderIndex !== null) {
+            // Moving between different placeholders
+            // this.allPlaceholderItems[destinationPlaceholderIndex].selectedWidgets.splice(destinationItemIndex, 0, widgetKey);
+            // this.allPlaceholderItems[sourcePlaceholderIndex].selectedWidgets.splice(sourceItemIndex, 1);
+          }
+        }
       } else {
-        console.error('Widget key not found', { sourcePlaceholderIndex, draggedItemIndex });
+          return;
       }
+
     },
 
 
@@ -896,7 +888,7 @@ export default {
         placeholder.selectedWidgets = [];
 
         if (typeof placeholder.label === "undefined") {
-          placeholder.label = "Widgets";
+          placeholder.label = "";
         }
 
         return placeholder;
@@ -995,6 +987,7 @@ export default {
       this.placeholders = sanitizedPlaceholders;
 
       console.log({ placeholders: this.placeholders });
+      console.log({ available_widgets: this.available_widgets });
       console.log({ allPlaceholderItems: this.allPlaceholderItems });
     },
 

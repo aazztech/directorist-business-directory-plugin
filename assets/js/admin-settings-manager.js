@@ -12207,6 +12207,20 @@ module.exports = _arrayLikeToArray, module.exports.__esModule = true, module.exp
 
 /***/ }),
 
+/***/ "./node_modules/@babel/runtime/helpers/arrayWithHoles.js":
+/*!***************************************************************!*\
+  !*** ./node_modules/@babel/runtime/helpers/arrayWithHoles.js ***!
+  \***************************************************************/
+/*! no static exports found */
+/***/ (function(module, exports) {
+
+function _arrayWithHoles(arr) {
+  if (Array.isArray(arr)) return arr;
+}
+module.exports = _arrayWithHoles, module.exports.__esModule = true, module.exports["default"] = module.exports;
+
+/***/ }),
+
 /***/ "./node_modules/@babel/runtime/helpers/arrayWithoutHoles.js":
 /*!******************************************************************!*\
   !*** ./node_modules/@babel/runtime/helpers/arrayWithoutHoles.js ***!
@@ -12262,6 +12276,58 @@ module.exports = _iterableToArray, module.exports.__esModule = true, module.expo
 
 /***/ }),
 
+/***/ "./node_modules/@babel/runtime/helpers/iterableToArrayLimit.js":
+/*!*********************************************************************!*\
+  !*** ./node_modules/@babel/runtime/helpers/iterableToArrayLimit.js ***!
+  \*********************************************************************/
+/*! no static exports found */
+/***/ (function(module, exports) {
+
+function _iterableToArrayLimit(r, l) {
+  var t = null == r ? null : "undefined" != typeof Symbol && r[Symbol.iterator] || r["@@iterator"];
+  if (null != t) {
+    var e,
+      n,
+      i,
+      u,
+      a = [],
+      f = !0,
+      o = !1;
+    try {
+      if (i = (t = t.call(r)).next, 0 === l) {
+        if (Object(t) !== t) return;
+        f = !1;
+      } else for (; !(f = (e = i.call(t)).done) && (a.push(e.value), a.length !== l); f = !0);
+    } catch (r) {
+      o = !0, n = r;
+    } finally {
+      try {
+        if (!f && null != t["return"] && (u = t["return"](), Object(u) !== u)) return;
+      } finally {
+        if (o) throw n;
+      }
+    }
+    return a;
+  }
+}
+module.exports = _iterableToArrayLimit, module.exports.__esModule = true, module.exports["default"] = module.exports;
+
+/***/ }),
+
+/***/ "./node_modules/@babel/runtime/helpers/nonIterableRest.js":
+/*!****************************************************************!*\
+  !*** ./node_modules/@babel/runtime/helpers/nonIterableRest.js ***!
+  \****************************************************************/
+/*! no static exports found */
+/***/ (function(module, exports) {
+
+function _nonIterableRest() {
+  throw new TypeError("Invalid attempt to destructure non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method.");
+}
+module.exports = _nonIterableRest, module.exports.__esModule = true, module.exports["default"] = module.exports;
+
+/***/ }),
+
 /***/ "./node_modules/@babel/runtime/helpers/nonIterableSpread.js":
 /*!******************************************************************!*\
   !*** ./node_modules/@babel/runtime/helpers/nonIterableSpread.js ***!
@@ -12273,6 +12339,24 @@ function _nonIterableSpread() {
   throw new TypeError("Invalid attempt to spread non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method.");
 }
 module.exports = _nonIterableSpread, module.exports.__esModule = true, module.exports["default"] = module.exports;
+
+/***/ }),
+
+/***/ "./node_modules/@babel/runtime/helpers/slicedToArray.js":
+/*!**************************************************************!*\
+  !*** ./node_modules/@babel/runtime/helpers/slicedToArray.js ***!
+  \**************************************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+var arrayWithHoles = __webpack_require__(/*! ./arrayWithHoles.js */ "./node_modules/@babel/runtime/helpers/arrayWithHoles.js");
+var iterableToArrayLimit = __webpack_require__(/*! ./iterableToArrayLimit.js */ "./node_modules/@babel/runtime/helpers/iterableToArrayLimit.js");
+var unsupportedIterableToArray = __webpack_require__(/*! ./unsupportedIterableToArray.js */ "./node_modules/@babel/runtime/helpers/unsupportedIterableToArray.js");
+var nonIterableRest = __webpack_require__(/*! ./nonIterableRest.js */ "./node_modules/@babel/runtime/helpers/nonIterableRest.js");
+function _slicedToArray(arr, i) {
+  return arrayWithHoles(arr) || iterableToArrayLimit(arr, i) || unsupportedIterableToArray(arr, i) || nonIterableRest();
+}
+module.exports = _slicedToArray, module.exports.__esModule = true, module.exports["default"] = module.exports;
 
 /***/ }),
 
@@ -22928,13 +23012,16 @@ function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len 
 __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _babel_runtime_helpers_defineProperty__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @babel/runtime/helpers/defineProperty */ "./node_modules/@babel/runtime/helpers/defineProperty.js");
 /* harmony import */ var _babel_runtime_helpers_defineProperty__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_babel_runtime_helpers_defineProperty__WEBPACK_IMPORTED_MODULE_0__);
-/* harmony import */ var _babel_runtime_helpers_typeof__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! @babel/runtime/helpers/typeof */ "./node_modules/@babel/runtime/helpers/typeof.js");
-/* harmony import */ var _babel_runtime_helpers_typeof__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(_babel_runtime_helpers_typeof__WEBPACK_IMPORTED_MODULE_1__);
-/* harmony import */ var vue__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! vue */ "./node_modules/vue/dist/vue.esm.js");
-/* harmony import */ var vue_dndrop__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! vue-dndrop */ "./node_modules/vue-dndrop/dist/vue-dndrop.esm.js");
-/* harmony import */ var _helpers_vue_dndrop__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ../../helpers/vue-dndrop */ "./assets/src/js/admin/vue/helpers/vue-dndrop.js");
-/* harmony import */ var _mixins_helpers__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ../../mixins/helpers */ "./assets/src/js/admin/vue/mixins/helpers.js");
-/* harmony import */ var _mixins_form_fields_card_builder__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./../../mixins/form-fields/card-builder */ "./assets/src/js/admin/vue/mixins/form-fields/card-builder.js");
+/* harmony import */ var _babel_runtime_helpers_slicedToArray__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! @babel/runtime/helpers/slicedToArray */ "./node_modules/@babel/runtime/helpers/slicedToArray.js");
+/* harmony import */ var _babel_runtime_helpers_slicedToArray__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(_babel_runtime_helpers_slicedToArray__WEBPACK_IMPORTED_MODULE_1__);
+/* harmony import */ var _babel_runtime_helpers_typeof__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! @babel/runtime/helpers/typeof */ "./node_modules/@babel/runtime/helpers/typeof.js");
+/* harmony import */ var _babel_runtime_helpers_typeof__WEBPACK_IMPORTED_MODULE_2___default = /*#__PURE__*/__webpack_require__.n(_babel_runtime_helpers_typeof__WEBPACK_IMPORTED_MODULE_2__);
+/* harmony import */ var vue__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! vue */ "./node_modules/vue/dist/vue.esm.js");
+/* harmony import */ var vue_dndrop__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! vue-dndrop */ "./node_modules/vue-dndrop/dist/vue-dndrop.esm.js");
+/* harmony import */ var _helpers_vue_dndrop__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ../../helpers/vue-dndrop */ "./assets/src/js/admin/vue/helpers/vue-dndrop.js");
+/* harmony import */ var _mixins_helpers__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ../../mixins/helpers */ "./assets/src/js/admin/vue/mixins/helpers.js");
+/* harmony import */ var _mixins_form_fields_card_builder__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ./../../mixins/form-fields/card-builder */ "./assets/src/js/admin/vue/mixins/form-fields/card-builder.js");
+
 
 
 function ownKeys(e, r) { var t = Object.keys(e); if (Object.getOwnPropertySymbols) { var o = Object.getOwnPropertySymbols(e); r && (o = o.filter(function (r) { return Object.getOwnPropertyDescriptor(e, r).enumerable; })), t.push.apply(t, o); } return t; }
@@ -22950,10 +23037,10 @@ function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len 
 /* harmony default export */ __webpack_exports__["default"] = ({
   name: "card-builder-listing-header-field",
   components: {
-    Container: vue_dndrop__WEBPACK_IMPORTED_MODULE_3__["Container"],
-    Draggable: vue_dndrop__WEBPACK_IMPORTED_MODULE_3__["Draggable"]
+    Container: vue_dndrop__WEBPACK_IMPORTED_MODULE_4__["Container"],
+    Draggable: vue_dndrop__WEBPACK_IMPORTED_MODULE_4__["Draggable"]
   },
-  mixins: [_mixins_form_fields_card_builder__WEBPACK_IMPORTED_MODULE_6__["default"], _mixins_helpers__WEBPACK_IMPORTED_MODULE_5__["default"]],
+  mixins: [_mixins_form_fields_card_builder__WEBPACK_IMPORTED_MODULE_7__["default"], _mixins_helpers__WEBPACK_IMPORTED_MODULE_6__["default"]],
   props: {
     fieldId: {
       required: false,
@@ -22997,16 +23084,16 @@ function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len 
       var output = [];
       var placeholders = this.placeholders;
       var getWidgetData = function getWidgetData(placeholderData) {
-        if (_babel_runtime_helpers_typeof__WEBPACK_IMPORTED_MODULE_1___default()(placeholderData) !== "object") {
+        if (_babel_runtime_helpers_typeof__WEBPACK_IMPORTED_MODULE_2___default()(placeholderData) !== "object") {
           return null;
         }
-        if (_babel_runtime_helpers_typeof__WEBPACK_IMPORTED_MODULE_1___default()(placeholderData.selectedWidgets) !== "object") {
+        if (_babel_runtime_helpers_typeof__WEBPACK_IMPORTED_MODULE_2___default()(placeholderData.selectedWidgets) !== "object") {
           return null;
         }
         var data = [];
         for (var widgetIndex in placeholderData.selectedWidgets) {
           var widget_name = placeholderData.selectedWidgets[widgetIndex];
-          if (!_this.active_widgets[widget_name] && _babel_runtime_helpers_typeof__WEBPACK_IMPORTED_MODULE_1___default()(_this.active_widgets[widget_name]) !== "object") {
+          if (!_this.active_widgets[widget_name] && _babel_runtime_helpers_typeof__WEBPACK_IMPORTED_MODULE_2___default()(_this.active_widgets[widget_name]) !== "object") {
             continue;
           }
           var widget_data = {};
@@ -23025,11 +23112,11 @@ function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len 
             }
             widget_data[root_option] = _this.active_widgets[widget_name][root_option];
           }
-          if (_babel_runtime_helpers_typeof__WEBPACK_IMPORTED_MODULE_1___default()(_this.active_widgets[widget_name].options) !== "object") {
+          if (_babel_runtime_helpers_typeof__WEBPACK_IMPORTED_MODULE_2___default()(_this.active_widgets[widget_name].options) !== "object") {
             data.push(widget_data);
             continue;
           }
-          if (_babel_runtime_helpers_typeof__WEBPACK_IMPORTED_MODULE_1___default()(_this.active_widgets[widget_name].options.fields) !== "object") {
+          if (_babel_runtime_helpers_typeof__WEBPACK_IMPORTED_MODULE_2___default()(_this.active_widgets[widget_name].options.fields) !== "object") {
             data.push(widget_data);
             continue;
           }
@@ -23191,27 +23278,7 @@ function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len 
         content_settings: {}
       },
       placeholdersMap: {},
-      placeholders: [{
-        type: "placeholder_group",
-        placeholders: [{
-          label: "Quick Info",
-          selectedWidgets: []
-        }, {
-          label: "Quick Action",
-          selectedWidgets: []
-        }]
-      }, {
-        type: "placeholder_item",
-        label: "Listing Title",
-        acceptedWidgets: ["title"],
-        rejectedWidgets: ["slider"],
-        selectedWidgets: []
-      }, {
-        type: "placeholder_item",
-        label: "More Widgets",
-        rejectedWidgets: ["slider"],
-        selectedWidgets: []
-      }],
+      placeholders: [],
       elementsSettingsOpened: false
     };
   },
@@ -23223,7 +23290,8 @@ function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len 
       this.importOldData();
     },
     onDrop: function onDrop(dropResult) {
-      this.placeholders = Object(_helpers_vue_dndrop__WEBPACK_IMPORTED_MODULE_4__["applyDrag"])(this.placeholders, dropResult);
+      this.placeholders = Object(_helpers_vue_dndrop__WEBPACK_IMPORTED_MODULE_5__["applyDrag"])(this.placeholders, dropResult);
+      console.log("@onDrop", dropResult);
     },
     getSettingsChildPayload: function getSettingsChildPayload(draggedItemIndex, placeholderIndex) {
       // Log for debugging
@@ -23238,48 +23306,66 @@ function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len 
       };
     },
     onElementsDrop: function onElementsDrop(dropResult, placeholder_index) {
-      var _this$allPlaceholderI;
       var removedIndex = dropResult.removedIndex,
         addedIndex = dropResult.addedIndex,
         payload = dropResult.payload;
       var draggedItemIndex = payload.draggedItemIndex,
         placeholderIndex = payload.placeholderIndex;
-
-      // If no changes, return
-      if (removedIndex === null && addedIndex === null) return;
-      var destinationPlaceholderIndex = placeholder_index;
-      var sourcePlaceholderIndex = placeholderIndex;
-
-      // Get the widget key from the source placeholder
-      var widgetKey = (_this$allPlaceholderI = this.allPlaceholderItems[sourcePlaceholderIndex]) === null || _this$allPlaceholderI === void 0 ? void 0 : _this$allPlaceholderI.acceptedWidgets[draggedItemIndex];
-      if (widgetKey !== undefined) {
-        console.log('#chk', {
-          draggedItemIndex: draggedItemIndex,
-          widgetKey: widgetKey,
-          sourcePlaceholderIndex: sourcePlaceholderIndex,
-          destinationPlaceholderIndex: destinationPlaceholderIndex,
-          source: this.allPlaceholderItems[sourcePlaceholderIndex].acceptedWidgets,
-          destination: this.allPlaceholderItems[destinationPlaceholderIndex].acceptedWidgets
+      console.log('@onElementsDrop', {
+        removedIndex: removedIndex,
+        addedIndex: addedIndex,
+        payload: payload,
+        draggedItemIndex: draggedItemIndex,
+        placeholder_index: placeholder_index,
+        placeholderIndex: placeholderIndex
+      }, removedIndex === null, addedIndex === null);
+      if (removedIndex !== null || addedIndex !== null) {
+        var _this$allPlaceholderI;
+        console.log('@@Not null', {
+          removedIndex: removedIndex,
+          addedIndex: addedIndex
         });
-
-        // Remove the widget from the source
-        if (removedIndex !== null) {
-          this.allPlaceholderItems[sourcePlaceholderIndex].acceptedWidgets.splice(removedIndex, 1);
-        }
-
-        // Add the widget to the destination at the correct position
+        var destinationItemIndex;
+        var destinationPlaceholderIndex;
+        var sourceItemIndex = draggedItemIndex;
+        var sourcePlaceholderIndex = placeholderIndex;
         if (addedIndex !== null) {
-          this.allPlaceholderItems[destinationPlaceholderIndex].acceptedWidgets.splice(addedIndex, 0, widgetKey);
+          destinationItemIndex = addedIndex;
+          destinationPlaceholderIndex = placeholder_index;
+        } else {
+          destinationItemIndex = null;
+          destinationPlaceholderIndex = null;
         }
-        console.log('Source, Destination updated', {
-          source: this.allPlaceholderItems[sourcePlaceholderIndex].acceptedWidgets,
-          destination: this.allPlaceholderItems[destinationPlaceholderIndex].acceptedWidgets
-        });
+
+        // Get the widget key from the source placeholder
+        var widgetKey = (_this$allPlaceholderI = this.allPlaceholderItems[sourcePlaceholderIndex]) === null || _this$allPlaceholderI === void 0 ? void 0 : _this$allPlaceholderI.acceptedWidgets[draggedItemIndex];
+        if (widgetKey !== undefined) {
+          console.log('@widget Found', {
+            widgetKey: widgetKey,
+            sourcePlaceholderIndex: sourcePlaceholderIndex,
+            destinationPlaceholderIndex: destinationPlaceholderIndex,
+            sourceItemIndex: sourceItemIndex,
+            destinationItemIndex: destinationItemIndex
+          });
+          if (sourcePlaceholderIndex === destinationPlaceholderIndex) {
+            // Moving within the same placeholder
+            var widgets = this.allPlaceholderItems[sourcePlaceholderIndex].acceptedWidgets;
+
+            // Remove the widget from the source position
+            var _widgets$splice = widgets.splice(sourceItemIndex, 1),
+              _widgets$splice2 = _babel_runtime_helpers_slicedToArray__WEBPACK_IMPORTED_MODULE_1___default()(_widgets$splice, 1),
+              movedWidget = _widgets$splice2[0];
+
+            // Insert the widget at the destination position
+            widgets.splice(destinationItemIndex, 0, movedWidget);
+          } else if (destinationPlaceholderIndex !== null) {
+            // Moving between different placeholders
+            // this.allPlaceholderItems[destinationPlaceholderIndex].selectedWidgets.splice(destinationItemIndex, 0, widgetKey);
+            // this.allPlaceholderItems[sourcePlaceholderIndex].selectedWidgets.splice(sourceItemIndex, 1);
+          }
+        }
       } else {
-        console.error('Widget key not found', {
-          sourcePlaceholderIndex: sourcePlaceholderIndex,
-          draggedItemIndex: draggedItemIndex
-        });
+        return;
       }
     },
     getGhostParent: function getGhostParent() {
@@ -23337,7 +23423,7 @@ function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len 
             if (!this.isTruthyObject(this.theAvailableWidgets[widgetKey])) {
               continue;
             }
-            vue__WEBPACK_IMPORTED_MODULE_2__["default"].set(this.active_widgets, widgetKey, _objectSpread({}, this.theAvailableWidgets[widgetKey]));
+            vue__WEBPACK_IMPORTED_MODULE_3__["default"].set(this.active_widgets, widgetKey, _objectSpread({}, this.theAvailableWidgets[widgetKey]));
           }
         } catch (err) {
           _iterator5.e(err);
@@ -23359,7 +23445,7 @@ function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len 
       return placeholder.insertButton.label;
     },
     isTruthyObject: function isTruthyObject(obj) {
-      if (!obj && _babel_runtime_helpers_typeof__WEBPACK_IMPORTED_MODULE_1___default()(obj) !== "object" && !Array.isArray(obj)) {
+      if (!obj && _babel_runtime_helpers_typeof__WEBPACK_IMPORTED_MODULE_2___default()(obj) !== "object" && !Array.isArray(obj)) {
         return false;
       }
       return true;
@@ -23405,7 +23491,7 @@ function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len 
             widgets_template.options.fields[option_key].value = widget[option_key];
           }
         }
-        vue__WEBPACK_IMPORTED_MODULE_2__["default"].set(_this2.active_widgets, widget.widget_key, widgets_template);
+        vue__WEBPACK_IMPORTED_MODULE_3__["default"].set(_this2.active_widgets, widget.widget_key, widgets_template);
       };
       var importWidgets = function importWidgets(placeholder, destination) {
         if (!_this2.placeholdersMap.hasOwnProperty(placeholder.placeholderKey)) {
@@ -23487,7 +23573,7 @@ function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len 
         if (!this.isTruthyObject(this.cardOptions[section])) {
           return;
         }
-        vue__WEBPACK_IMPORTED_MODULE_2__["default"].set(this.card_options, section, JSON.parse(JSON.stringify(this.cardOptions[section])));
+        vue__WEBPACK_IMPORTED_MODULE_3__["default"].set(this.card_options, section, JSON.parse(JSON.stringify(this.cardOptions[section])));
       }
     },
     importPlaceholders: function importPlaceholders() {
@@ -23508,7 +23594,7 @@ function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len 
         }
         placeholder.selectedWidgets = [];
         if (typeof placeholder.label === "undefined") {
-          placeholder.label = "Widgets";
+          placeholder.label = "";
         }
         return placeholder;
       };
@@ -23531,7 +23617,7 @@ function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len 
             if (_this3.placeholdersMap.hasOwnProperty(placeholderItem.placeholderKey)) {
               return 0; // continue
             }
-            vue__WEBPACK_IMPORTED_MODULE_2__["default"].set(_this3.placeholdersMap, placeholderItem.placeholderKey, placeholderItem);
+            vue__WEBPACK_IMPORTED_MODULE_3__["default"].set(_this3.placeholdersMap, placeholderItem.placeholderKey, placeholderItem);
             if (placeholderItem.type === "placeholder_item") {
               var placeholderItemData = sanitizePlaceholderData(placeholderItem);
               if (placeholderItemData) {
@@ -23555,7 +23641,7 @@ function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len 
                   placeholderItem.placeholders.splice(subPlaceholderIndex, 1);
                   return;
                 }
-                vue__WEBPACK_IMPORTED_MODULE_2__["default"].set(_this3.placeholdersMap, placeholderSubItem.placeholderKey, placeholderSubItem);
+                vue__WEBPACK_IMPORTED_MODULE_3__["default"].set(_this3.placeholdersMap, placeholderSubItem.placeholderKey, placeholderSubItem);
                 var placeholderItemData = sanitizePlaceholderData(placeholderSubItem);
                 if (placeholderItemData) {
                   placeholderItem.placeholders.splice(subPlaceholderIndex, 1, placeholderItemData);
@@ -23580,6 +23666,9 @@ function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len 
       this.placeholders = sanitizedPlaceholders;
       console.log({
         placeholders: this.placeholders
+      });
+      console.log({
+        available_widgets: this.available_widgets
       });
       console.log({
         allPlaceholderItems: this.allPlaceholderItems
@@ -23655,7 +23744,7 @@ function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len 
       if (dest_path.selectedWidgets.includes(key) && 0 === origin_index) {
         dest_index--;
       }
-      vue__WEBPACK_IMPORTED_MODULE_2__["default"].delete(from, from.indexOf(key));
+      vue__WEBPACK_IMPORTED_MODULE_3__["default"].delete(from, from.indexOf(key));
       dest_path.selectedWidgets.splice(dest_index, 0, this.currentDraggingWidget.key);
       this.onDragEndWidget();
     },
@@ -23677,8 +23766,8 @@ function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len 
         return;
       }
       if (!to.includes(key)) {
-        vue__WEBPACK_IMPORTED_MODULE_2__["default"].delete(from, from.indexOf(key));
-        vue__WEBPACK_IMPORTED_MODULE_2__["default"].set(to, to.length, key);
+        vue__WEBPACK_IMPORTED_MODULE_3__["default"].delete(from, from.indexOf(key));
+        vue__WEBPACK_IMPORTED_MODULE_3__["default"].set(to, to.length, key);
       }
       this.onDragEndWidget();
     },
@@ -23695,7 +23784,7 @@ function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len 
       if (typeof this.active_widgets[key] === "undefined") {
         return;
       }
-      if (!this.active_widgets[key].options && _babel_runtime_helpers_typeof__WEBPACK_IMPORTED_MODULE_1___default()(this.active_widgets[key].options) !== "object") {
+      if (!this.active_widgets[key].options && _babel_runtime_helpers_typeof__WEBPACK_IMPORTED_MODULE_2___default()(this.active_widgets[key].options) !== "object") {
         return;
       }
       this.widgetOptionsWindow = _objectSpread(_objectSpread({}, this.widgetOptionsWindowDefault), this.active_widgets[key].options);
@@ -23723,7 +23812,7 @@ function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len 
       if (typeof this.card_option_widgets[options_window.widget].options === "undefined") {
         return;
       }
-      vue__WEBPACK_IMPORTED_MODULE_2__["default"].set(this.card_option_widgets[options_window.widget].options, "fields", data);
+      vue__WEBPACK_IMPORTED_MODULE_3__["default"].set(this.card_option_widgets[options_window.widget].options, "fields", data);
     },
     updateWidgetOptionsData: function updateWidgetOptionsData(data, options_window) {
       return;
@@ -23733,7 +23822,7 @@ function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len 
       if (typeof this.active_widgets[widget.widget].options === "undefined") {
         return;
       }
-      vue__WEBPACK_IMPORTED_MODULE_2__["default"].set(this.active_widgets[widget.widget].options, "fields", data);
+      vue__WEBPACK_IMPORTED_MODULE_3__["default"].set(this.active_widgets[widget.widget].options, "fields", data);
     },
     closeCardWidgetOptionsWindow: function closeCardWidgetOptionsWindow() {
       this.widgetCardOptionsWindow = this.widgetOptionsWindowDefault;
@@ -23746,11 +23835,11 @@ function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len 
         return;
       }
       var widgetIndex = where.selectedWidgets.indexOf(key);
-      vue__WEBPACK_IMPORTED_MODULE_2__["default"].delete(where.selectedWidgets, widgetIndex);
+      vue__WEBPACK_IMPORTED_MODULE_3__["default"].delete(where.selectedWidgets, widgetIndex);
       if (typeof this.active_widgets[key] === "undefined") {
         return;
       }
-      vue__WEBPACK_IMPORTED_MODULE_2__["default"].delete(this.active_widgets, key);
+      vue__WEBPACK_IMPORTED_MODULE_3__["default"].delete(this.active_widgets, key);
       if (key === this.widgetOptionsWindow.widget) {
         this.closeWidgetOptionsWindow();
       }
@@ -23763,7 +23852,7 @@ function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len 
       if (typeof this.placeholders[placeholderIndex] === "undefined") {
         return;
       }
-      vue__WEBPACK_IMPORTED_MODULE_2__["default"].delete(this.placeholders, placeholderIndex);
+      vue__WEBPACK_IMPORTED_MODULE_3__["default"].delete(this.placeholders, placeholderIndex);
     },
     activeInsertWindow: function activeInsertWindow(current_item_key) {
       var self = this;
@@ -23779,8 +23868,8 @@ function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len 
       if (!this.isTruthyObject(this.theAvailableWidgets[payload.key])) {
         return;
       }
-      vue__WEBPACK_IMPORTED_MODULE_2__["default"].set(this.active_widgets, payload.key, _objectSpread({}, this.theAvailableWidgets[payload.key]));
-      vue__WEBPACK_IMPORTED_MODULE_2__["default"].set(where, "selectedWidgets", payload.selected_widgets);
+      vue__WEBPACK_IMPORTED_MODULE_3__["default"].set(this.active_widgets, payload.key, _objectSpread({}, this.theAvailableWidgets[payload.key]));
+      vue__WEBPACK_IMPORTED_MODULE_3__["default"].set(where, "selectedWidgets", payload.selected_widgets);
       this.editWidget(payload.key);
     },
     closeInsertWindow: function closeInsertWindow(widget_insert_window) {
@@ -32926,9 +33015,9 @@ var render = function render() {
     return _c("div", {
       key: placeholder_index,
       staticClass: "cptm-elements-settings__group"
-    }, [_c("span", {
+    }, [placeholder.label ? _c("span", {
       staticClass: "cptm-elements-settings__group__title"
-    }, [_vm._v(_vm._s(placeholder.label))]), _vm._v(" "), _c("Container", {
+    }, [_vm._v("\n            " + _vm._s(placeholder.label) + "\n          ")]) : _vm._e(), _vm._v(" "), _c("Container", {
       attrs: {
         "group-name": "settings-widgets",
         "drag-handle-selector": ".drag-handle",
@@ -32951,9 +33040,9 @@ var render = function render() {
         }
       }, [_c("div", {
         staticClass: "cptm-elements-settings__group__single"
-      }, [_c("span", {
+      }, [placeholder.acceptedWidgets.length > 1 ? _c("span", {
         staticClass: "drag-handle drag-icon uil uil-draggabledots"
-      }), _vm._v(" "), _c("span", {
+      }) : _vm._e(), _vm._v(" "), _c("span", {
         staticClass: "cptm-elements-settings__group__single__label"
       }, [_vm.available_widgets[widget_key].icon ? _c("span", {
         class: _vm.available_widgets[widget_key].icon
