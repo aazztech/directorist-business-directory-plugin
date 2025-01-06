@@ -26460,7 +26460,13 @@ __webpack_require__.r(__webpack_exports__);
 
 /* harmony default export */ __webpack_exports__["default"] = ({
   name: 'color-field-theme-butterfly',
-  mixins: [_mixins_form_fields_color_field__WEBPACK_IMPORTED_MODULE_0__["default"]]
+  mixins: [_mixins_form_fields_color_field__WEBPACK_IMPORTED_MODULE_0__["default"]],
+  mounted: function mounted() {
+    // If have condition to check if this.canChange is a function.
+    if (this.canChange) {
+      this.canChange();
+    }
+  }
 });
 
 /***/ }),
@@ -33377,6 +33383,9 @@ var render = function render() {
     _c = _vm._self._c;
   return _vm.canShow ? _c(_vm.getTheTheme("color-field"), _vm._b({
     tag: "component",
+    attrs: {
+      canChange: _vm.canChange
+    },
     on: {
       "do-action": function doAction($event) {
         return _vm.$emit("do-action", $event);

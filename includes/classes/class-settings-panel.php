@@ -427,7 +427,6 @@ Please remember that your order may be canceled if you do not make your payment 
 
 		$default_size = directorist_default_preview_size();
 		$default_preview_size_text = $default_size['width'].'x'.$default_size['height'].' px';
-        $shared_background_color = '#000000';
 
 
             $this->fields = apply_filters('atbdp_listing_type_settings_field_list', [
@@ -731,25 +730,25 @@ Please remember that your order may be canceled if you do not make your payment 
                 'featured_back_color' => [
                     'type'        => 'color',
                     'label'       => __('Background Color', 'directorist'),
-                    'value'       => $shared_background_color,
-                    'show-if'     => [
+                    'value'       => '#fa8b0c',
+                    'change-if'    => [
                         'where' => 'feature_badge_type',
                         'conditions' => [
-                            ['key' => 'value', 'compare' => '=', 'value' => 'text_badge'],
+                            [
+                                'key' => 'value', 
+                                'compare' => '=', 
+                                'value' => 'icon_badge'
+                            ],
+                        ],
+                        'effects' => [
+                            [ 
+                                'key' => 'label', 
+                                'value' => __('Hover Background Color', 'directorist'),
+                                'default_value' => __('Background Color', 'directorist')
+                            ],
                         ],
                     ],
                 ],
-                'featured_hover_color' => [
-                'type'        => 'color',
-                'label'       => __('Hover Background Color', 'directorist'),
-                'value'       => $shared_background_color,
-                'show-if'     => [
-                    'where' => 'feature_badge_type',
-                    'conditions' => [
-                        ['key' => 'value', 'compare' => '=', 'value' => 'icon_badge'],
-                    ],
-                ],
-            ],
 
                 'popular_back_color' => [
                     'type' => 'color',
@@ -3701,7 +3700,7 @@ Please remember that your order may be canceled if you do not make your payment 
                                     'title'       => __('Featured Badge', 'directorist'),
                                     'description' => '',
                                     'fields'      => [
-                                        'feature_badge_type', 'feature_badge_text', 'featured_back_color','featured_hover_color',
+                                        'feature_badge_type', 'feature_badge_text', 'featured_back_color',
                                     ],
                                 ],
                             ] ),
