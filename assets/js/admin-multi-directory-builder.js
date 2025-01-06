@@ -423,25 +423,24 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _babel_runtime_helpers_toConsumableArray__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_babel_runtime_helpers_toConsumableArray__WEBPACK_IMPORTED_MODULE_0__);
 
 function applyDrag(arr, dragResult) {
-  console.log('1', {
+  var removedIndex = dragResult.removedIndex,
+    addedIndex = dragResult.addedIndex;
+  console.log('applyDrag', {
     arr: arr,
     dragResult: dragResult
   });
-  var removedIndex = dragResult.removedIndex,
-    addedIndex = dragResult.addedIndex,
-    payload = dragResult.payload;
-  if (removedIndex === null && addedIndex === null) return arr;
+
+  // If neither removedIndex nor addedIndex are valid, return the array as-is
+  if (removedIndex === null || addedIndex === null) return arr;
   var result = _babel_runtime_helpers_toConsumableArray__WEBPACK_IMPORTED_MODULE_0___default()(arr);
-  var itemToAdd = payload;
-  if (removedIndex !== null) {
-    itemToAdd = result.splice(removedIndex, 1)[0];
-  }
-  if (addedIndex !== null) {
-    result.splice(addedIndex, 0, itemToAdd);
-  }
+
+  // Perform the swap
+  var temp = result[removedIndex];
+  result[removedIndex] = result[addedIndex];
+  result[addedIndex] = temp;
+  console.log('Swapped Result:', result);
   return result;
 }
-;
 
 /***/ }),
 
@@ -23763,8 +23762,23 @@ function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len 
       this.importOldData();
     },
     onDrop: function onDrop(dropResult) {
-      this.placeholders = Object(_helpers_vue_dndrop__WEBPACK_IMPORTED_MODULE_5__["applyDrag"])(this.placeholders, dropResult);
-      console.log("@onDrop", dropResult);
+      var draggablePlaceholders = this.placeholders.filter(function (placeholder) {
+        return placeholder.type === "placeholder_item";
+      });
+
+      // Update only the filtered placeholders
+      var updatedPlaceholders = Object(_helpers_vue_dndrop__WEBPACK_IMPORTED_MODULE_5__["applyDrag"])(draggablePlaceholders, dropResult);
+
+      // Map the updated placeholders back to their original positions in the full array
+      this.placeholders = this.placeholders.map(function (placeholder) {
+        if (placeholder.type === "placeholder_item") {
+          return updatedPlaceholders.shift(); // Replace with the updated item
+        }
+
+        return placeholder; // Keep other placeholders unchanged
+      });
+
+      console.log("@onDrop", dropResult, this.placeholders);
     },
     getSettingsChildPayload: function getSettingsChildPayload(draggedItemIndex, placeholderIndex) {
       // Log for debugging
@@ -23845,7 +23859,7 @@ function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len 
       return document.body;
     },
     getChildPayload: function getChildPayload(index) {
-      return this.items[index];
+      return this.placeholders[index];
     },
     canShowAddPlaceholderButton: function canShowAddPlaceholderButton(placeholderKey) {
       var placeholder = this.placeholdersMap[placeholderKey];
@@ -33324,7 +33338,10 @@ var render = function render() {
   }), _vm._v(" "), _c("Container", {
     staticClass: "cptm-preview-placeholder__card__item cptm-preview-placeholder__card__item--bottom",
     attrs: {
-      "drag-handle-selector": ".cptm-drag-element"
+      "drag-handle-selector": ".cptm-drag-element",
+      "get-child-payload": function getChildPayload(index) {
+        return _vm.getChildPayload(index);
+      }
     },
     on: {
       drop: _vm.onDrop

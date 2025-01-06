@@ -1,20 +1,17 @@
 export function applyDrag(arr, dragResult) {
+  const { removedIndex, addedIndex } = dragResult;
+  console.log('applyDrag', { arr, dragResult });
 
-    console.log( '1', { arr, dragResult } );
+  // If neither removedIndex nor addedIndex are valid, return the array as-is
+  if (removedIndex === null || addedIndex === null) return arr;
 
-    const { removedIndex, addedIndex, payload } = dragResult;
-    if (removedIndex === null && addedIndex === null) return arr;
-  
-    const result = [...arr];
-    let itemToAdd = payload;
-  
-    if (removedIndex !== null) {
-      itemToAdd = result.splice(removedIndex, 1)[0];
-    }
-  
-    if (addedIndex !== null) {
-      result.splice(addedIndex, 0, itemToAdd);
-    }
-  
-    return result;
-};
+  const result = [...arr];
+
+  // Perform the swap
+  const temp = result[removedIndex];
+  result[removedIndex] = result[addedIndex];
+  result[addedIndex] = temp;
+
+  console.log('Swapped Result:', result);
+  return result;
+}

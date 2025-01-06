@@ -74,9 +74,10 @@
           </div>
         </div>
         <Container 
-          @drop="onDrop" 
+          @drop="onDrop"
           drag-handle-selector=".cptm-drag-element"
           class="cptm-preview-placeholder__card__item cptm-preview-placeholder__card__item--bottom"
+          :get-child-payload="(index) => getChildPayload(index)"
         >
           <Draggable
             v-for="(placeholderItem, index) in placeholders"
@@ -532,8 +533,22 @@ export default {
     },
 
     onDrop(dropResult) {
-      this.placeholders = applyDrag(this.placeholders, dropResult);
-      console.log("@onDrop", dropResult);
+      const draggablePlaceholders = this.placeholders.filter(
+        (placeholder) => placeholder.type === "placeholder_item"
+      );
+
+      // Update only the filtered placeholders
+      const updatedPlaceholders = applyDrag(draggablePlaceholders, dropResult);
+
+      // Map the updated placeholders back to their original positions in the full array
+      this.placeholders = this.placeholders.map((placeholder) => {
+        if (placeholder.type === "placeholder_item") {
+          return updatedPlaceholders.shift(); // Replace with the updated item
+        }
+        return placeholder; // Keep other placeholders unchanged
+      });
+
+      console.log("@onDrop", dropResult, this.placeholders);
     },
 
     getSettingsChildPayload(draggedItemIndex, placeholderIndex) {
@@ -603,7 +618,7 @@ export default {
       return document.body;
     },
     getChildPayload(index) {
-      return this.items[index];
+      return this.placeholders[index];
     },
 
     canShowAddPlaceholderButton(placeholderKey) {
