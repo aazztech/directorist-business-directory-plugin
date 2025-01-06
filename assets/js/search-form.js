@@ -974,10 +974,8 @@ function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len 
 (function ($) {
   window.addEventListener('load', function () {
     //Remove Preload after Window Load
-    $(window).on('load', function () {
-      $('body').removeClass("directorist-preload");
-      $('.button.wp-color-result').attr('style', ' ');
-    });
+    $('body').removeClass("directorist-preload");
+    $('.button.wp-color-result').attr('style', ' ');
 
     /* ----------------
     Search Form
@@ -1578,11 +1576,18 @@ function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len 
       handleRadiusVisibility();
     });
 
-    // handleRadiusVisibility Trigger on directory type change
-    $('body').on('click', '.directorist-instant-search .directorist-type-nav__link', function (e) {
+    // rangeSlider, defaultTags Trigger on directory type | page change
+    $('body').on('click', '.directorist-type-nav__link, .directorist-pagination .page-numbers, .directorist-viewas .directorist-viewas__item', function (e) {
       setTimeout(function () {
         handleRadiusVisibility();
+        directorist_custom_range_slider();
+        defaultTags();
       }, 600);
+    });
+
+    // active class add on view as button
+    $('body').on('click', '.directorist-viewas .directorist-viewas__item', function (e) {
+      $(this).addClass('active').siblings().removeClass('active');
     });
 
     // Hide Country Result Click on Outside of Zipcode Field
@@ -1794,50 +1799,69 @@ function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len 
     function directorist_custom_range_slider() {
       var sliders = document.querySelectorAll('.directorist-custom-range-slider');
       sliders.forEach(function (sliderItem) {
+        var _directoristCustomRan, _slider$directoristCu;
         var slider = sliderItem.querySelector('.directorist-custom-range-slider__slide');
-        if (slider) {
-          var _directoristCustomRan, _slider$directoristCu;
-          var sliderStep = parseInt(slider.getAttribute('step')) || 1;
-          var sliderDefaultValue = parseInt(slider.getAttribute('value'));
-          var minInput = sliderItem.querySelector('.directorist-custom-range-slider__value__min');
-          var maxInput = sliderItem.querySelector('.directorist-custom-range-slider__value__max');
-          var sliderRange = sliderItem.querySelector('.directorist-custom-range-slider__range');
-          var sliderRangeShow = sliderItem.querySelector('.directorist-custom-range-slider__range__show');
-          (_directoristCustomRan = directoristCustomRangeSlider) === null || _directoristCustomRan === void 0 || _directoristCustomRan.create(slider, {
-            start: [0, sliderDefaultValue ? sliderDefaultValue : 100],
-            connect: true,
-            step: sliderStep ? sliderStep : 1,
-            range: {
-              'min': Number(minInput.value ? minInput.value : 0),
-              'max': Number(maxInput.value ? maxInput.value : 100)
+
+        // Check if the slider is already initialized
+        if (!slider || slider.directoristCustomRangeSlider) return;
+        var sliderStep = parseInt(slider.getAttribute('step')) || 1;
+        var sliderDefaultValue = parseInt(slider.getAttribute('value'));
+        var sliderMaxValue = parseInt(slider.getAttribute('max-value'));
+        var minInput = sliderItem.querySelector('.directorist-custom-range-slider__value__min');
+        var maxInput = sliderItem.querySelector('.directorist-custom-range-slider__value__max');
+        var sliderRange = sliderItem.querySelector('.directorist-custom-range-slider__range');
+        var sliderRangeShow = sliderItem.querySelector('.directorist-custom-range-slider__range__show');
+        var sliderRangeValue = sliderItem.querySelector('.directorist-custom-range-slider__wrap .directorist-custom-range-slider__range');
+        var isRTL = document.dir === 'rtl';
+
+        // init rangeInitiLoad on initial Load
+        var rangeInitLoad = true;
+        // Parse the URL parameters
+        var milesParams = new URLSearchParams(window.location.search).has('miles');
+        (_directoristCustomRan = directoristCustomRangeSlider) === null || _directoristCustomRan === void 0 || _directoristCustomRan.create(slider, {
+          start: [minInput.value, sliderDefaultValue && !milesParams ? sliderDefaultValue : maxInput.value],
+          connect: true,
+          direction: isRTL ? 'rtl' : 'ltr',
+          step: sliderStep ? sliderStep : 1,
+          range: {
+            'min': Number(0),
+            'max': Number(sliderMaxValue)
+          }
+        });
+        (_slider$directoristCu = slider.directoristCustomRangeSlider) === null || _slider$directoristCu === void 0 || _slider$directoristCu.on('update', function (values, handle) {
+          var value = values[handle];
+          handle === 0 ? minInput.value = Math.round(value) : maxInput.value = Math.round(value);
+          var rangeValue = minInput.value + '-' + maxInput.value;
+          sliderRange.value = rangeValue;
+          sliderRangeShow && (sliderRangeShow.innerHTML = rangeValue);
+          if (sliderRangeValue) {
+            sliderRangeValue.setAttribute('value', rangeValue);
+            if (!rangeInitLoad) {
+              $(sliderRangeValue).trigger('change'); // Trigger change event
             }
-          });
-          (_slider$directoristCu = slider.directoristCustomRangeSlider) === null || _slider$directoristCu === void 0 || _slider$directoristCu.on('update', function (values, handle) {
-            var value = values[handle];
-            handle === 0 ? minInput.value = Math.round(value) : maxInput.value = Math.round(value);
-            var rangeValue = minInput.value + '-' + maxInput.value;
-            sliderRange.value = rangeValue;
-            sliderRangeShow && (sliderRangeShow.innerHTML = rangeValue);
-          });
-          minInput.addEventListener('change', function () {
-            var minValue = Math.round(parseInt(this.value, 10) / sliderStep) * sliderStep;
-            var maxValue = Math.round(parseInt(maxInput.value, 10) / sliderStep) * sliderStep;
-            if (minValue > maxValue) {
-              this.value = maxValue;
-              minValue = maxValue;
-            }
-            slider.directoristCustomRangeSlider.set([minValue, null]);
-          });
-          maxInput.addEventListener('change', function () {
-            var minValue = Math.round(parseInt(minInput.value, 10) / sliderStep) * sliderStep;
-            var maxValue = Math.round(parseInt(this.value, 10) / sliderStep) * sliderStep;
-            if (maxValue < minValue) {
-              this.value = minValue;
-              maxValue = minValue;
-            }
-            slider.directoristCustomRangeSlider.set([null, maxValue]);
-          });
-        }
+          }
+        });
+
+        // false rangeInitLoad after call
+        rangeInitLoad = false;
+        minInput.addEventListener('change', function () {
+          var minValue = Math.round(parseInt(this.value, 10) / sliderStep) * sliderStep;
+          var maxValue = Math.round(parseInt(maxInput.value, 10) / sliderStep) * sliderStep;
+          if (minValue > maxValue) {
+            this.value = maxValue;
+            minValue = maxValue;
+          }
+          slider.directoristCustomRangeSlider.set([minValue, null]);
+        });
+        maxInput.addEventListener('change', function () {
+          var minValue = Math.round(parseInt(minInput.value, 10) / sliderStep) * sliderStep;
+          var maxValue = Math.round(parseInt(this.value, 10) / sliderStep) * sliderStep;
+          if (maxValue < minValue) {
+            this.value = minValue;
+            maxValue = minValue;
+          }
+          slider.directoristCustomRangeSlider.set([null, maxValue]);
+        });
       });
     }
     directorist_custom_range_slider();

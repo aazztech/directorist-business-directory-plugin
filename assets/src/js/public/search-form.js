@@ -9,10 +9,8 @@ import './components/directoristSelect';
 (function ($) {
     window.addEventListener('load', () => {
         //Remove Preload after Window Load
-        $(window).on('load', function () {
-            $('body').removeClass("directorist-preload");
-            $('.button.wp-color-result').attr('style', ' ');
-        });
+        $('body').removeClass("directorist-preload");
+        $('.button.wp-color-result').attr('style', ' ');
 
         /* ----------------
         Search Form
@@ -708,11 +706,18 @@ import './components/directoristSelect';
             handleRadiusVisibility();
         });
 
-        // handleRadiusVisibility Trigger on directory type change
-        $('body').on('click', '.directorist-instant-search .directorist-type-nav__link', function(e) {
+        // rangeSlider, defaultTags Trigger on directory type | page change
+        $('body').on('click', '.directorist-type-nav__link, .directorist-pagination .page-numbers, .directorist-viewas .directorist-viewas__item', function(e) {
             setTimeout(() => {
                 handleRadiusVisibility();
+                directorist_custom_range_slider();
+                defaultTags();
             }, 600)
+        });
+
+        // active class add on view as button
+        $('body').on('click', '.directorist-viewas .directorist-viewas__item', function(e) {
+            $(this).addClass('active').siblings().removeClass('active');
         });
 
         // Hide Country Result Click on Outside of Zipcode Field
@@ -982,57 +987,77 @@ import './components/directoristSelect';
             sliders.forEach(function (sliderItem) {
                 let slider = sliderItem.querySelector('.directorist-custom-range-slider__slide');
 
-                if (slider) {
-                    let sliderStep = parseInt(slider.getAttribute('step')) || 1;
-                    let sliderDefaultValue = parseInt(slider.getAttribute('value'));
-                    let minInput = sliderItem.querySelector('.directorist-custom-range-slider__value__min');
-                    let maxInput = sliderItem.querySelector('.directorist-custom-range-slider__value__max');
-                    let sliderRange = sliderItem.querySelector('.directorist-custom-range-slider__range');
-                    let sliderRangeShow = sliderItem.querySelector('.directorist-custom-range-slider__range__show');
+                // Check if the slider is already initialized
+                if (!slider || slider.directoristCustomRangeSlider) return;
+                
+                let sliderStep = parseInt(slider.getAttribute('step')) || 1;
+                let sliderDefaultValue = parseInt(slider.getAttribute('value'));
+                let sliderMaxValue = parseInt(slider.getAttribute('max-value'));
+                let minInput = sliderItem.querySelector('.directorist-custom-range-slider__value__min');
+                let maxInput = sliderItem.querySelector('.directorist-custom-range-slider__value__max');
+                let sliderRange = sliderItem.querySelector('.directorist-custom-range-slider__range');
+                let sliderRangeShow = sliderItem.querySelector('.directorist-custom-range-slider__range__show');
+                let sliderRangeValue = sliderItem.querySelector('.directorist-custom-range-slider__wrap .directorist-custom-range-slider__range');
+                let isRTL = document.dir === 'rtl';
 
-                    directoristCustomRangeSlider?.create(slider, {
-                        start: [0, sliderDefaultValue ? sliderDefaultValue : 100],
-                        connect: true,
-                        step: sliderStep ? sliderStep : 1,
-                        range: {
-                            'min': Number(minInput.value ? minInput.value : 0),
-                            'max': Number(maxInput.value ? maxInput.value : 100)
+                // init rangeInitiLoad on initial Load
+                let rangeInitLoad = true;
+                // Parse the URL parameters
+                const milesParams = new URLSearchParams(window.location.search).has('miles');
+    
+                directoristCustomRangeSlider?.create(slider, {
+                    start: [minInput.value, sliderDefaultValue && !milesParams ? sliderDefaultValue : maxInput.value],
+                    connect: true,
+                    direction: isRTL ? 'rtl' : 'ltr',
+                    step: sliderStep ? sliderStep : 1,
+                    range: {
+                        'min': Number(0),
+                        'max': Number(sliderMaxValue)
+                    }
+                });
+
+                slider.directoristCustomRangeSlider?.on('update', function (values, handle) {
+                    let value = values[handle];
+                    handle === 0 ? minInput.value = Math.round(value) : maxInput.value = Math.round(value);
+                    let rangeValue = minInput.value + '-' + maxInput.value;
+                    sliderRange.value = rangeValue;
+                    sliderRangeShow && (sliderRangeShow.innerHTML = rangeValue);
+                    if (sliderRangeValue) {
+                        sliderRangeValue.setAttribute('value', rangeValue);
+                        if (!rangeInitLoad) {
+                            $(sliderRangeValue).trigger('change'); // Trigger change event
                         }
-                    });
+                    }
+                });
 
-                    slider.directoristCustomRangeSlider?.on('update', function (values, handle) {
-                        let value = values[handle];
-                        handle === 0 ? minInput.value = Math.round(value) : maxInput.value = Math.round(value);
-                        let rangeValue = minInput.value + '-' + maxInput.value;
-                        sliderRange.value = rangeValue;
-                        sliderRangeShow && (sliderRangeShow.innerHTML = rangeValue);
-                    });
+                // false rangeInitLoad after call
+                rangeInitLoad = false;
 
-                    minInput.addEventListener('change', function () {
-                        let minValue = Math.round(parseInt(this.value, 10) / sliderStep) * sliderStep;
-                        let maxValue = Math.round(parseInt(maxInput.value, 10) / sliderStep) * sliderStep;
+                minInput.addEventListener('change', function () {
+                    let minValue = Math.round(parseInt(this.value, 10) / sliderStep) * sliderStep;
+                    let maxValue = Math.round(parseInt(maxInput.value, 10) / sliderStep) * sliderStep;
 
-                        if (minValue > maxValue) {
-                            this.value = maxValue;
-                            minValue = maxValue;
-                        }
+                    if (minValue > maxValue) {
+                        this.value = maxValue;
+                        minValue = maxValue;
+                    }
 
-                        slider.directoristCustomRangeSlider.set([minValue, null]);
-                    });
+                    slider.directoristCustomRangeSlider.set([minValue, null]);
+                });
 
-                    maxInput.addEventListener('change', function () {
-                        let minValue = Math.round(parseInt(minInput.value, 10) / sliderStep) * sliderStep;
-                        let maxValue = Math.round(parseInt(this.value, 10) / sliderStep) * sliderStep;
+                maxInput.addEventListener('change', function () {
+                    let minValue = Math.round(parseInt(minInput.value, 10) / sliderStep) * sliderStep;
+                    let maxValue = Math.round(parseInt(this.value, 10) / sliderStep) * sliderStep;
 
-                        if (maxValue < minValue) {
-                            this.value = minValue;
-                            maxValue = minValue;
-                        }
+                    if (maxValue < minValue) {
+                        this.value = minValue;
+                        maxValue = minValue;
+                    }
 
-                        slider.directoristCustomRangeSlider.set([null, maxValue]);
-                    });
-                }
+                    slider.directoristCustomRangeSlider.set([null, maxValue]);
+                });
             });
+
         }
 
         directorist_custom_range_slider();

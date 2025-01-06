@@ -82,7 +82,7 @@
                 padding: 18px;
                 margin: 0;
                 padding-right: 75px;
-                border-radius: 12px;
+                border-radius: 10px;
                 background-color: var(--directorist-color-bg-gray);
                 i {
                     display: flex;
@@ -91,7 +91,7 @@
                     width: 44px;
                     height: 44px;
                     background-color: var(--directorist-color-primary);
-                    border-radius: 12px;
+                    border-radius: 10px;
                     &:after {
                         width: 18px;
                         height: 18px;
@@ -409,7 +409,7 @@
                 position: relative;
                 top: -10px;
                 gap: 10px;
-                background: transparent;
+                background: transparent !important;
                 border: none;
                 padding: 0;
                 min-height: 30px;

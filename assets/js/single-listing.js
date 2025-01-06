@@ -596,12 +596,26 @@ window.addEventListener('load', function () {
   } else {
     return;
   }
+
+  // Trigger reset on form change
+  $('.directorist-authentication__btn').on('click', function () {
+    // Reset all forms with the specified class
+    $('.directorist__authentication__signin').each(function () {
+      this.reset(); // Reset the individual form
+    });
+
+    // Reset error and warning messages
+    $('#directorist__authentication__login p.status').hide().empty();
+  });
   window.addEventListener('load', function () {
     // Perform AJAX login on form submit
-    $('form#login').on('submit', function (e) {
+    $('form#directorist__authentication__login').on('submit', function (e) {
       e.preventDefault();
       var $this = $(this);
-      $('p.status').show().html('<div class="directorist-alert directorist-alert-info"><span>' + directorist.loading_message + '</span></div>');
+      var $button = $(this).find('.directorist-authentication__form__btn');
+      $button.addClass('directorist-btn-loading'); // Added loading class
+
+      $('#directorist__authentication__login p.status').show().html('<div class="directorist-alert directorist-alert-info"><span>' + directorist.loading_message + '</span></div>');
       var form_data = {
         'action': 'ajaxlogin',
         'username': $this.find('#username').val(),
@@ -615,6 +629,10 @@ window.addEventListener('load', function () {
         url: directorist.ajax_url,
         data: form_data,
         success: function success(data) {
+          // Removed loading class
+          setTimeout(function () {
+            return $button.removeClass('directorist-btn-loading');
+          }, 1000);
           if ('nonce_faild' in data && data.nonce_faild) {
             $('p.status').html('<div class="directorist-alert directorist-alert-success"><span>' + data.message + '</span></div>');
           }
@@ -634,7 +652,7 @@ window.addEventListener('load', function () {
       });
       e.preventDefault();
     });
-    $('form#login .status').on('click', 'a', function (e) {
+    $('form#directorist__authentication__login .status').on('click', 'a', function (e) {
       e.preventDefault();
       if ($(this).attr('href') === '#atbdp_recovery_pass') {
         $("#recover-pass-modal").slideDown().show();

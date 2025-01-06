@@ -430,8 +430,8 @@ class Directorist_Listings {
 			'cats'                 => get_the_terms( $id, ATBDP_CATEGORY ),
 			'locs'                 => get_the_terms( $id, ATBDP_LOCATION ),
 			'featured'             => get_post_meta( $id, '_featured', true ),
-			'listing_img'          => get_post_meta( $id, '_listing_img', true ),
-			'listing_prv_img'      => get_post_meta( $id, '_listing_prv_img', true ),
+			'listing_img'          => directorist_get_listing_gallery_images( $id ),
+			'listing_prv_img'      => directorist_get_listing_preview_image( $id ),
 			'tagline'              => get_post_meta( $id, '_tagline', true ),
 			'category'             => get_post_meta( $id, '_admin_category_select', true ),
 			'post_view'            => directorist_get_listing_views_count( $id ),
@@ -930,7 +930,7 @@ class Directorist_Listings {
 					$field_type = str_replace( 'custom-', '', $key );
 					$field_type = preg_replace( '/([!^0-9])|(-)/', '', $field_type ); //replaces any additional numbering to just keep the field name, for example if previous line gives us "text-2", this line makes it "text"
 					// Check if $values contains a hyphen
-					if ( strpos( $values, '-' ) !== false ) {
+					if ( 'number' === $field_type && strpos( $values, '-' ) !== false ) {
 						// If $values is in the format "40-50", create a range query
 						list( $min_value, $max_value ) = array_map( 'intval', explode( '-', $values ) );
 
@@ -953,7 +953,7 @@ class Directorist_Listings {
 				/**
 				 * Filters the custom field meta query used in Directorist search functionality.
 				 *
-				 * This filter allows customization of the meta query for specific search criteria 
+				 * This filter allows customization of the meta query for specific search criteria
 				 * by modifying the meta query parameters, key, and values.
 				 *
 				 * @since 8.0
@@ -1052,12 +1052,14 @@ class Directorist_Listings {
 		}
 
 		if ( 'address' == $this->radius_search_based_on && ! empty( $_REQUEST['miles'] ) && ! empty( $_REQUEST['address'] ) && ! empty( $_REQUEST['cityLat'] ) && ! empty( $_REQUEST['cityLng'] ) ) {
-			$args['atbdp_geo_query'] = array(
+			$distance =	directorist_get_distance_range( $_REQUEST['miles'] );
+;			$args['atbdp_geo_query'] = array(
 				'lat_field' => '_manual_lat',
 				'lng_field' => '_manual_lng',
 				'latitude'  => sanitize_text_field( wp_unslash( $_REQUEST['cityLat'] ) ),
 				'longitude' => sanitize_text_field( wp_unslash( $_REQUEST['cityLng'] ) ),
-				'distance'  => sanitize_text_field( wp_unslash( $_REQUEST['miles'] ) ),
+				'min_distance' => $distance['min'],  // Minimum distance extracted from URL
+    			'max_distance' => $distance['max'],  // Maximum distance extracted from URL
 				'units'     => $this->radius_search_unit
 			);
 		} elseif ( ! empty($_REQUEST['address']) ) {
@@ -1486,8 +1488,8 @@ class Directorist_Listings {
 
 				$ls_data['manual_lat']      = get_post_meta($listings_id, '_manual_lat', true);
 				$ls_data['manual_lng']      = get_post_meta($listings_id, '_manual_lng', true);
-				$ls_data['listing_img']     = get_post_meta($listings_id, '_listing_img', true);
-				$ls_data['listing_prv_img'] = get_post_meta($listings_id, '_listing_prv_img', true);
+				$ls_data['listing_img']     = directorist_get_listing_gallery_images( $listings_id );
+				$ls_data['listing_prv_img'] = directorist_get_listing_preview_image( $listings_id );
 				$ls_data['address']         = get_post_meta($listings_id, '_address', true);
 				$ls_data['phone'] 			= get_post_meta($listings_id, '_phone', true);
 				$ls_data['font_type']       = $this->options['font_type'];
@@ -1504,7 +1506,7 @@ class Directorist_Listings {
 					$ls_data['prv_image'] = atbdp_get_image_source( $ls_data['listing_prv_img'], 'large' );
 				}
 
-				$listing_type  				= get_post_meta( $listings_id, '_directory_type', true );
+				$listing_type  				= directorist_get_listing_directory( $listings_id );
 				$ls_data['default_image'] 	= Helper::default_preview_image_src( $listing_type );
 
 				if ( ! empty( $ls_data['listing_img'][0] ) ) {
@@ -1576,8 +1578,8 @@ class Directorist_Listings {
 					$ls_data['post_id']         = $listings_id;
 					$ls_data['manual_lat']      = get_post_meta($listings_id, '_manual_lat', true);
 					$ls_data['manual_lng']      = get_post_meta($listings_id, '_manual_lng', true);
-					$ls_data['listing_img']     = get_post_meta($listings_id, '_listing_img', true);
-					$ls_data['listing_prv_img'] = get_post_meta($listings_id, '_listing_prv_img', true);
+					$ls_data['listing_img']     = directorist_get_listing_gallery_images( $listings_id );
+					$ls_data['listing_prv_img'] = directorist_get_listing_preview_image( $listings_id );
 					$ls_data['phone'] 			= get_post_meta($listings_id, '_phone', true);
 					$ls_data['crop_width']      = $this->options['crop_width'];
 					$ls_data['crop_height']     = $this->options['crop_height'];
@@ -1590,7 +1592,7 @@ class Directorist_Listings {
 					$cat_icon = directorist_icon( $this->loop_map_cat_icon(), false );
 					$ls_data['cat_icon'] = json_encode( $cat_icon );
 
-					$listing_type  			= get_post_meta( $listings_id, '_directory_type', true );
+					$listing_type  			= directorist_get_listing_directory( $listings_id );
 					$ls_data['default_img'] = Helper::default_preview_image_src( $listing_type );
 
 					if (!empty($ls_data['listing_prv_img'])) {
@@ -1655,8 +1657,8 @@ class Directorist_Listings {
 
 			$id = get_the_ID();
 			$image_quality     = get_directorist_option('preview_image_quality', 'directorist_preview');
-			$listing_prv_img   = get_post_meta($id, '_listing_prv_img', true);
-			$listing_img       = get_post_meta($id, '_listing_img', true);
+			$listing_prv_img   = directorist_get_listing_preview_image( $id );
+			$listing_img       = directorist_get_listing_gallery_images( $id );
 
 
 
@@ -1673,11 +1675,11 @@ class Directorist_Listings {
 				}
 				return $image;
 			}
-			
+
 			$thumbnail_img_id = array_filter($thumbnail_img_id, function($value) {
 				return is_numeric($value);
 			});
-			
+
 			$image_count = count( $thumbnail_img_id );
 
 			if ( 1 === (int) $image_count ) {

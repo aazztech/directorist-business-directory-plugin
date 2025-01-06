@@ -148,10 +148,11 @@ window.addEventListener('load', function () {
     // Check if '.copy-notify' already exists next to the clicked element
     if (!$this.siblings('.copy-notify').length) {
       $this.after("<p class='copy-notify' style='color: #32cc6f; margin-top: 5px;'>Copied to clipboard!</p>");
-      setTimeout(function () {
+      var timeout = setTimeout(function () {
         $this.siblings('.copy-notify').fadeOut(300, function () {
           $(this).remove();
         });
+        clearTimeout(timeout);
       }, 3000);
     }
   });
@@ -18210,7 +18211,7 @@ __webpack_require__.r(__webpack_exports__);
       // Add class to parent with class 'atbdp-cpt-manager'
       var parentElement = this.$el.closest('.atbdp-cpt-manager');
       if (parentElement) {
-        parentElement.classList.add('trash-overlay-visible');
+        parentElement.classList.add('directorist-overlay-visible');
       }
     },
     closeConfirmationModal: function closeConfirmationModal() {
@@ -18222,7 +18223,7 @@ __webpack_require__.r(__webpack_exports__);
         parentElement: parentElement
       });
       if (parentElement) {
-        parentElement.classList.remove('trash-overlay-visible');
+        parentElement.classList.remove('directorist-overlay-visible');
       }
     },
     trashWidget: function trashWidget() {
@@ -18690,7 +18691,7 @@ function _objectSpread(e) { for (var r = 1; r < arguments.length; r++) { var t =
       // Add class to parent with class 'atbdp-cpt-manager'
       var parentElement = this.$el.closest('.atbdp-cpt-manager');
       if (parentElement) {
-        parentElement.classList.add('trash-overlay-visible');
+        parentElement.classList.add('directorist-overlay-visible');
       }
     },
     closeConfirmationModal: function closeConfirmationModal() {
@@ -18702,7 +18703,7 @@ function _objectSpread(e) { for (var r = 1; r < arguments.length; r++) { var t =
         parentElement: parentElement
       });
       if (parentElement) {
-        parentElement.classList.remove('trash-overlay-visible');
+        parentElement.classList.remove('directorist-overlay-visible');
       }
     },
     trashGroup: function trashGroup() {
@@ -23561,9 +23562,6 @@ function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len 
         return;
       }
       this.available_widgets = this.widgets;
-      console.log({
-        available_widgets: this.available_widgets
-      });
     },
     importCardOptions: function importCardOptions() {
       if (!this.isTruthyObject(this.cardOptions)) {
@@ -23578,7 +23576,6 @@ function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len 
     },
     importPlaceholders: function importPlaceholders() {
       var _this3 = this;
-      this.allPlaceholderItems = [];
       if (!Array.isArray(this.layout)) {
         return;
       }
@@ -23622,7 +23619,6 @@ function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len 
               var placeholderItemData = sanitizePlaceholderData(placeholderItem);
               if (placeholderItemData) {
                 sanitizedPlaceholders.push(placeholderItemData);
-                _this3.allPlaceholderItems.push(placeholderItemData);
               }
               return 0; // continue
             }
@@ -23645,7 +23641,6 @@ function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len 
                 var placeholderItemData = sanitizePlaceholderData(placeholderSubItem);
                 if (placeholderItemData) {
                   placeholderItem.placeholders.splice(subPlaceholderIndex, 1, placeholderItemData);
-                  _this3.allPlaceholderItems.push(placeholderItemData);
                 }
               });
               if (placeholderItem.placeholders.length) {
@@ -23890,12 +23885,6 @@ function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len 
         return true;
       }
       return false;
-    },
-    closeElementsSettings: function closeElementsSettings() {
-      this.elementsSettingsOpened = false;
-    },
-    toggleElementsSettings: function toggleElementsSettings() {
-      this.elementsSettingsOpened = !this.elementsSettingsOpened;
     }
   }
 });
@@ -24357,9 +24346,20 @@ function _objectSpread(e) { for (var r = 1; r < arguments.length; r++) { var t =
       this.$emit("updated-state");
       this.$emit("group-field-updated");
     },
-    updateWidgetField: function updateWidgetField(payload) {
+    updateWidgetField: function updateWidgetField(props) {
       this.isDataChanged = true;
-      vue__WEBPACK_IMPORTED_MODULE_2__["default"].set(this.active_widget_fields[payload.widget_key], payload.payload.key, payload.payload.value);
+      var activeWidget = this.active_widget_fields[props.widget_key];
+      var updatedValue = props.payload.value;
+      if (props.payload.key === "placeholder" && !props.payload.value) {
+        if (!activeWidget.label) {
+          updatedValue = directorist_admin.search_form_default_placeholder;
+        }
+      } else if (props.payload.key === "label" && !props.payload.value) {
+        if (!activeWidget.placeholder) {
+          updatedValue = directorist_admin.search_form_default_label;
+        }
+      }
+      vue__WEBPACK_IMPORTED_MODULE_2__["default"].set(this.active_widget_fields[props.widget_key], props.payload.key, updatedValue);
       this.$emit("update", this.finalValue);
       this.$emit("updated-state");
       this.$emit("widget-field-updated");
@@ -26020,7 +26020,12 @@ __webpack_require__.r(__webpack_exports__);
 
 /* harmony default export */ __webpack_exports__["default"] = ({
   name: 'button-field-theme-butterfly',
-  mixins: [_mixins_form_fields_button_field__WEBPACK_IMPORTED_MODULE_0__["default"]]
+  mixins: [_mixins_form_fields_button_field__WEBPACK_IMPORTED_MODULE_0__["default"]],
+  computed: {
+    formattedUrl: function formattedUrl() {
+      return this.url.replace(/&amp;/g, '&');
+    }
+  }
 });
 
 /***/ }),
@@ -32809,16 +32814,23 @@ var render = function render() {
       }
     }
   }, "options-window", _vm.widgetOptionsWindow, false))], 1) : _vm._e(), _vm._v(" "), _c("div", {
-    staticClass: "cptm-preview-placeholder",
-    class: !_vm.elementsSettingsOpened ? "cptm-preview-placeholder--settings-closed" : ""
+    staticClass: "cptm-preview-placeholder"
   }, [_c("div", {
     staticClass: "cptm-preview-placeholder__card"
-  }, [_vm._l(_vm.placeholders, function (placeholderItem, index) {
-    return placeholderItem.type == "placeholder_group" ? _c("div", {
-      key: index,
-      staticClass: "cptm-preview-placeholder__card__item cptm-preview-placeholder__card__item--top"
+  }, [_c("Container", {
+    attrs: {
+      "drag-handle-selector": ".cptm-drag-element"
+    },
+    on: {
+      drop: _vm.onDrop
+    }
+  }, _vm._l(_vm.placeholders, function (placeholderItem, index) {
+    return _c("Draggable", {
+      key: index
+    }, [placeholderItem.type == "placeholder_group" ? _c("div", {
+      staticClass: "draggable-item"
     }, [_c("div", {
-      staticClass: "cptm-preview-placeholder__card__content"
+      staticClass: "cptm-preview-placeholder__card__item cptm-preview-placeholder__card__item--top"
     }, _vm._l(placeholderItem.placeholders, function (placeholderSubItem, subIndex) {
       return _c("card-widget-placeholder", {
         key: "".concat(index, "_").concat(subIndex),
@@ -32866,22 +32878,12 @@ var render = function render() {
           }
         }
       });
-    }), 1)]) : _vm._e();
-  }), _vm._v(" "), _c("Container", {
-    staticClass: "cptm-preview-placeholder__card__item cptm-preview-placeholder__card__item--bottom",
-    attrs: {
-      "drag-handle-selector": ".cptm-drag-element"
-    },
-    on: {
-      drop: _vm.onDrop
-    }
-  }, _vm._l(_vm.placeholders, function (placeholderItem, index) {
-    return placeholderItem.type == "placeholder_item" ? _c("Draggable", {
-      key: index
-    }, [_c("div", {
+    }), 1), _vm._v(" "), _c("div", {
+      staticClass: "cptm-drag-element las la-arrows-alt"
+    })]) : _vm._e(), _vm._v(" "), placeholderItem.type == "placeholder_item" ? _c("div", {
       staticClass: "draggable-item"
     }, [_c("div", {
-      staticClass: "cptm-preview-placeholder__card__content"
+      staticClass: "cptm-preview-placeholder__card__item cptm-preview-placeholder__card__item--bottom"
     }, [_c("card-widget-placeholder", {
       attrs: {
         placeholderKey: placeholderItem.placeholderKey,
@@ -32928,8 +32930,8 @@ var render = function render() {
       }
     })], 1), _vm._v(" "), _c("div", {
       staticClass: "cptm-drag-element las la-arrows-alt"
-    })])]) : _vm._e();
-  }), 1)], 2), _vm._v(" "), _c("div", {
+    })]) : _vm._e()]);
+  }), 1), _vm._v(" "), _c("div", {
     staticClass: "cptm-placeholder-buttons"
   }, [_vm._l(Object.keys(_vm.placeholdersMap), function (placeholderKey) {
     return [_vm.canShowAddPlaceholderButton(placeholderKey) ? _c("div", {
@@ -32948,68 +32950,7 @@ var render = function render() {
     }, [_c("span", {
       staticClass: "icon fa fa-plus"
     }), _vm._v("\n              " + _vm._s(_vm.getAddPlaceholderButtonLabel(placeholderKey)) + "\n            ")])]) : _vm._e()];
-  })], 2)]), _vm._v(" "), !_vm.elementsSettingsOpened ? _c("button", {
-    staticClass: "cptm-elements-settings__toggle",
-    attrs: {
-      type: "button"
-    },
-    on: {
-      click: function click($event) {
-        $event.preventDefault();
-        return _vm.toggleElementsSettings.apply(null, arguments);
-      }
-    }
-  }, [_c("svg", {
-    attrs: {
-      width: "18",
-      height: "20",
-      viewBox: "0 0 18 20",
-      fill: "none",
-      xmlns: "http://www.w3.org/2000/svg"
-    }
-  }, [_c("path", {
-    attrs: {
-      d: "M16.0834 10.6668C15.9167 10.5001 15.8334 10.2501 15.8334 10.0001C15.8334 9.75012 15.8334 9.50012 16.0834 9.33346L16.75 8.33346C17.0834 7.91679 17.25 7.41679 17.25 6.91679C17.25 6.41679 17.1667 5.91679 16.9167 5.41679C16.6667 5.00012 16.25 4.58346 15.8334 4.33346C15.3334 4.08346 14.8334 4.00012 14.3334 4.08346L13.1667 4.25012C12.9167 4.25012 12.6667 4.25012 12.4167 4.08346C12.1667 3.91679 12 3.75012 11.9167 3.50012L11.4167 2.41679C11.1667 1.91679 10.8334 1.58346 10.4167 1.25012C9.58336 0.666789 8.33336 0.666789 7.50003 1.25012C7.08336 1.50012 6.75003 1.91679 6.50003 2.41679L6.00003 3.50012C5.9167 3.75012 5.75003 3.91679 5.50003 4.08346C5.25003 4.25012 5.00003 4.25012 4.75003 4.25012L3.58336 4.08346C3.08336 4.08346 2.58336 4.08346 2.08336 4.33346C1.58336 4.58346 1.25003 4.91679 1.00003 5.41679C0.75003 5.83346 0.583364 6.41679 0.666697 6.91679C0.666697 7.41679 0.833364 7.91679 1.1667 8.33346L1.83336 9.33346C2.00003 9.50012 2.08336 9.75012 2.08336 10.0001C2.08336 10.2501 2.08336 10.5001 1.83336 10.6668L1.1667 11.6668C0.833364 12.0835 0.666697 12.5835 0.666697 13.0835C0.666697 13.5835 0.75003 14.0835 1.00003 14.5835C1.25003 15.0001 1.6667 15.4168 2.08336 15.6668C2.58336 15.9168 3.08336 16.0001 3.58336 15.9168L4.75003 15.7501C5.00003 15.7501 5.25003 15.7501 5.50003 15.9168C5.75003 16.0001 5.9167 16.2501 6.00003 16.5001L6.50003 17.5835C6.75003 18.0835 7.08336 18.4168 7.50003 18.7501C7.9167 19.0835 8.4167 19.1668 9.00003 19.1668C9.58337 19.1668 10 19.0001 10.5 18.7501C11 18.5001 11.25 18.0835 11.5 17.5835L12 16.5001C12.0834 16.2501 12.25 16.0835 12.5 15.9168C12.75 15.7501 13 15.7501 13.25 15.7501L14.4167 15.9168C14.9167 15.9168 15.4167 15.9168 15.9167 15.6668C16.4167 15.4168 16.75 15.0835 17 14.5835C17.25 14.1668 17.4167 13.5835 17.3334 13.0835C17.3334 12.5835 17.1667 12.0835 16.8334 11.6668L16.1667 10.6668H16.0834ZM14.75 11.6668L15.4167 12.6668C15.5 12.8335 15.5834 13.0001 15.5834 13.1668C15.5834 13.3335 15.5834 13.5835 15.4167 13.7501C15.3334 13.9168 15.1667 14.0835 15 14.1668C14.8334 14.2501 14.6667 14.2501 14.4167 14.2501L13.25 14.0835C12.6667 14.0835 12.0834 14.0835 11.5 14.4168C11 14.7501 10.5834 15.1668 10.3334 15.7501L9.83337 16.8335C9.83337 17.0001 9.6667 17.1668 9.50003 17.2501C9.1667 17.5001 8.75003 17.5001 8.4167 17.2501C8.25003 17.1668 8.08336 17.0001 8.08336 16.8335L7.58336 15.7501C7.33336 15.1668 6.9167 14.7501 6.4167 14.4168C5.9167 14.0835 5.25003 14.0001 4.6667 14.0835L3.50003 14.2501C3.33336 14.2501 3.08336 14.2501 2.9167 14.1668C2.75003 14.0835 2.58336 13.9168 2.50003 13.7501C2.4167 13.5835 2.33336 13.4168 2.33336 13.1668C2.33336 13.0001 2.33336 12.7501 2.50003 12.6668L3.1667 11.6668C3.50003 11.1668 3.75003 10.5835 3.75003 10.0001C3.75003 9.41679 3.58336 8.83346 3.1667 8.33346L2.50003 7.33346C2.4167 7.16679 2.33336 7.00012 2.33336 6.75012C2.33336 6.58346 2.33336 6.33346 2.50003 6.16679C2.58336 6.00012 2.75003 5.83346 2.9167 5.75012C3.08336 5.66679 3.25003 5.58346 3.50003 5.66679L4.6667 5.83346C5.25003 5.83346 5.83336 5.83346 6.4167 5.50012C6.9167 5.16679 7.33336 4.75012 7.58336 4.16679L8.08336 3.08346C8.08336 2.91679 8.33336 2.75012 8.4167 2.66679C8.75003 2.41679 9.1667 2.41679 9.50003 2.66679C9.6667 2.75012 9.83337 2.91679 9.83337 3.08346L10.3334 4.16679C10.5834 4.75012 11 5.16679 11.5 5.50012C12 5.83346 12.5834 5.91679 13.25 5.83346L14.4167 5.66679C14.5834 5.66679 14.8334 5.66679 15 5.75012C15.1667 5.83346 15.3334 6.00012 15.4167 6.16679C15.5 6.33346 15.5834 6.50012 15.5834 6.75012C15.5834 6.91679 15.5834 7.16679 15.4167 7.33346L14.75 8.33346C14.4167 8.83346 14.1667 9.41679 14.1667 10.0001C14.1667 10.5835 14.3334 11.1668 14.75 11.6668Z",
-      fill: "#3E62F5"
-    }
-  }), _vm._v(" "), _c("path", {
-    attrs: {
-      d: "M9.00008 6.66675C7.16675 6.66675 5.66675 8.16675 5.66675 10.0001C5.66675 11.8334 7.16675 13.3334 9.00008 13.3334C10.8334 13.3334 12.3334 11.8334 12.3334 10.0001C12.3334 8.16675 10.8334 6.66675 9.00008 6.66675ZM9.00008 11.6667C8.08341 11.6667 7.33341 10.9167 7.33341 10.0001C7.33341 9.08341 8.08341 8.33341 9.00008 8.33341C9.91675 8.33341 10.6667 9.08341 10.6667 10.0001C10.6667 10.9167 9.91675 11.6667 9.00008 11.6667Z",
-      fill: "#3E62F5"
-    }
-  })])]) : _vm._e(), _vm._v(" "), _vm.elementsSettingsOpened ? _c("div", {
-    staticClass: "cptm-elements-settings"
-  }, [_c("div", {
-    staticClass: "cptm-elements-settings__header"
-  }, [_c("h4", {
-    staticClass: "cptm-elements-settings__header__title"
-  }, [_vm._v("Header elements settings")]), _vm._v(" "), _c("button", {
-    staticClass: "cptm-elements-settings__header__close",
-    attrs: {
-      type: "button"
-    },
-    on: {
-      click: function click($event) {
-        $event.preventDefault();
-        return _vm.closeElementsSettings.apply(null, arguments);
-      }
-    }
-  }, [_c("svg", {
-    attrs: {
-      width: "20",
-      height: "20",
-      viewBox: "0 0 20 20",
-      fill: "none",
-      xmlns: "http://www.w3.org/2000/svg"
-    }
-  }, [_c("path", {
-    attrs: {
-      "fill-rule": "evenodd",
-      "clip-rule": "evenodd",
-      d: "M5.24408 5.24408C5.56951 4.91864 6.09715 4.91864 6.42259 5.24408L10 8.82149L13.5774 5.24408C13.9028 4.91864 14.4305 4.91864 14.7559 5.24408C15.0814 5.56951 15.0814 6.09715 14.7559 6.42259L11.1785 10L14.7559 13.5774C15.0814 13.9028 15.0814 14.4305 14.7559 14.7559C14.4305 15.0814 13.9028 15.0814 13.5774 14.7559L10 11.1785L6.42259 14.7559C6.09715 15.0814 5.56951 15.0814 5.24408 14.7559C4.91864 14.4305 4.91864 13.9028 5.24408 13.5774L8.82149 10L5.24408 6.42259C4.91864 6.09715 4.91864 5.56951 5.24408 5.24408Z",
-      fill: "#4D5761"
-    }
-  })])])]), _vm._v(" "), [_c("div", {
+  })], 2)], 1), _vm._v(" "), [_c("div", {
     staticClass: "cptm-elements-settings__content"
   }, _vm._l(_vm.allPlaceholderItems, function (placeholder, placeholder_index) {
     return _c("div", {
@@ -33059,7 +33000,7 @@ var render = function render() {
         }
       })])])]);
     }), 1)], 1);
-  }), 0)]], 2) : _vm._e()]);
+  }), 0)]], 2)]);
 };
 var staticRenderFns = [];
 render._withStripped = true;
@@ -34259,7 +34200,7 @@ var render = function render() {
   }, [_c("a", {
     staticClass: "settings-save-btn",
     attrs: {
-      href: _vm.url,
+      href: _vm.formattedUrl,
       target: _vm.openInNewTab ? "_blank" : "_self"
     },
     domProps: {
@@ -34553,7 +34494,7 @@ var render = function render() {
       }
     }
   }, [_c("span", {
-    staticClass: "fa fa-upload"
+    staticClass: "fas fa-download"
   }), _vm._v("\n                " + _vm._s(_vm.buttonLabel) + "\n            ")])]), _vm._v(" "), _vm.validation_message ? _c("div", {
     staticClass: "cptm-form-group-feedback"
   }, [_c("div", {
@@ -34612,7 +34553,7 @@ var render = function render() {
       for: _vm.fieldId
     }
   }, [_c("span", {
-    staticClass: "fa fa-download"
+    staticClass: "fas fa-upload"
   }), _vm._v("\n                " + _vm._s(_vm.buttonLabel) + "\n            ")]), _vm._v(" "), _vm.validation_message ? _c("div", {
     staticClass: "cptm-form-group-feedback"
   }, [_c("div", {
@@ -34900,7 +34841,7 @@ var render = function render() {
       }
     }
   }, [_c("span", {
-    staticClass: "fa fa-download"
+    staticClass: "fas fa-sync-alt"
   }), _vm._v("\n                " + _vm._s(_vm.buttonLabel) + "\n            ")]), _vm._v(" "), _vm.validation_message ? _c("div", {
     staticClass: "cptm-form-group-feedback"
   }, [_c("div", {
@@ -35897,7 +35838,7 @@ var render = function render() {
       }
     }
   }, [_c("span", {
-    staticClass: "fa fa-upload"
+    staticClass: "fas fa-download"
   }), _vm._v("\n        " + _vm._s(_vm.buttonLabel) + "\n    ")]), _vm._v(" "), _vm.validation_message ? _c("div", {
     staticClass: "cptm-form-group-feedback"
   }, [_c("div", {
@@ -35950,7 +35891,7 @@ var render = function render() {
       for: _vm.fieldId
     }
   }, [_c("span", {
-    staticClass: "fa fa-download"
+    staticClass: "fas fa-upload"
   }), _vm._v("\n        " + _vm._s(_vm.buttonLabel) + "\n    ")]), _vm._v(" "), _vm.validation_message ? _c("div", {
     staticClass: "cptm-form-group-feedback"
   }, [_c("div", {
@@ -36220,7 +36161,7 @@ var render = function render() {
       }
     }
   }, [_c("span", {
-    staticClass: "fa fa-download"
+    staticClass: "fas fa-sync-alt"
   }), _vm._v("\n        " + _vm._s(_vm.buttonLabel) + "\n    ")]), _vm._v(" "), _vm.validation_message ? _c("div", {
     staticClass: "cptm-form-group-feedback"
   }, [_c("div", {

@@ -1105,13 +1105,13 @@ import debounce from '../../global/components/debounce';
         if (fields.address && fields.address.length) {
             fields.cityLat = searchElm.find('#cityLat').val();
             fields.cityLng = searchElm.find('#cityLng').val();
-            fields.miles = searchElm.find('.directorist-custom-range-slider__value input').val();
+            fields.miles = searchElm.find('input[name="miles"]').val();
         }
 
         if (fields.zip && fields.zip.length) {
             fields.zip_cityLat = searchElm.find('.zip-cityLat').val();
             fields.zip_cityLng = searchElm.find('.zip-cityLng').val();
-            fields.miles = searchElm.find('.directorist-custom-range-slider__value input').val();
+            fields.miles = searchElm.find('input[name="miles"]').val();
         }
 
         var form_data = {
@@ -1234,7 +1234,7 @@ import debounce from '../../global/components/debounce';
     }, 250));
 
     // sidebar on change searching
-    $('body').on("change", ".directorist-instant-search .listing-with-sidebar input[type='checkbox'],.directorist-instant-search .listing-with-sidebar input[type='radio'] ", debounce( function(e) {
+    $('body').on("change", ".directorist-instant-search .listing-with-sidebar input[type='checkbox'],.directorist-instant-search .listing-with-sidebar input[type='radio'], .directorist-custom-range-slider__wrap .directorist-custom-range-slider__range, .directorist-search-location .location-name", debounce( function(e) {
         e.preventDefault();
         var searchElm = $(this).closest('.listing-with-sidebar');
         filterListing(searchElm);
@@ -1259,11 +1259,13 @@ import debounce from '../../global/components/debounce';
 
     // Clear Input Value
     $('body').on("click", ".directorist-instant-search .directorist-search-field__btn--clear", function(e) {
-        let inputValue = $(this).closest('.directorist-search-field').find('input, select').val('');
+        let inputValue = $(this).closest('.directorist-search-field').find('input:not([type="checkbox"]):not([type="radio"]), select').val('');
 
         if (inputValue) {
-            let searchElm = $(document.querySelector('.directorist-instant-search form'));
-            filterListing(searchElm);
+            let searchElm = $(document.querySelector('.directorist-instant-search .listing-with-sidebar form'));
+            if (searchElm) {
+                filterListing(searchElm);
+            }
         }
     })
 

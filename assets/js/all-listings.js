@@ -2310,12 +2310,12 @@ function _objectSpread(e) { for (var r = 1; r < arguments.length; r++) { var t =
     if (fields.address && fields.address.length) {
       fields.cityLat = searchElm.find('#cityLat').val();
       fields.cityLng = searchElm.find('#cityLng').val();
-      fields.miles = searchElm.find('.directorist-custom-range-slider__value input').val();
+      fields.miles = searchElm.find('input[name="miles"]').val();
     }
     if (fields.zip && fields.zip.length) {
       fields.zip_cityLat = searchElm.find('.zip-cityLat').val();
       fields.zip_cityLng = searchElm.find('.zip-cityLng').val();
-      fields.miles = searchElm.find('.directorist-custom-range-slider__value input').val();
+      fields.miles = searchElm.find('input[name="miles"]').val();
     }
     var form_data = _objectSpread(_objectSpread({}, data), fields);
     if (view && view.length) {
@@ -2436,7 +2436,7 @@ function _objectSpread(e) { for (var r = 1; r < arguments.length; r++) { var t =
   }, 250));
 
   // sidebar on change searching
-  $('body').on("change", ".directorist-instant-search .listing-with-sidebar input[type='checkbox'],.directorist-instant-search .listing-with-sidebar input[type='radio'] ", Object(_global_components_debounce__WEBPACK_IMPORTED_MODULE_1__["default"])(function (e) {
+  $('body').on("change", ".directorist-instant-search .listing-with-sidebar input[type='checkbox'],.directorist-instant-search .listing-with-sidebar input[type='radio'], .directorist-custom-range-slider__wrap .directorist-custom-range-slider__range, .directorist-search-location .location-name", Object(_global_components_debounce__WEBPACK_IMPORTED_MODULE_1__["default"])(function (e) {
     e.preventDefault();
     var searchElm = $(this).closest('.listing-with-sidebar');
     filterListing(searchElm);
@@ -2458,10 +2458,12 @@ function _objectSpread(e) { for (var r = 1; r < arguments.length; r++) { var t =
 
   // Clear Input Value
   $('body').on("click", ".directorist-instant-search .directorist-search-field__btn--clear", function (e) {
-    var inputValue = $(this).closest('.directorist-search-field').find('input, select').val('');
+    var inputValue = $(this).closest('.directorist-search-field').find('input:not([type="checkbox"]):not([type="radio"]), select').val('');
     if (inputValue) {
-      var searchElm = $(document.querySelector('.directorist-instant-search form'));
-      filterListing(searchElm);
+      var searchElm = $(document.querySelector('.directorist-instant-search .listing-with-sidebar form'));
+      if (searchElm) {
+        filterListing(searchElm);
+      }
     }
   });
   if ($('.directorist-instant-search').length === 0) {

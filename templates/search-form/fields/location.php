@@ -2,7 +2,7 @@
 /**
  * @author  wpWax
  * @since   6.6
- * @version 8.0
+ * @version 8.0.9
  */
 
 if ( ! defined( 'ABSPATH' ) ) exit;
@@ -13,7 +13,7 @@ if ( $location_source == 'listing' ) {
 	$selected_item = $searchform::get_selected_location_option_data();
 	?>
 
-	<div class="directorist-search-field">
+	<div class="directorist-search-field <?php echo esc_attr( $empty_label ); ?>">
 		<div class="directorist-select directorist-search-location directorist-search-field__input">
 
 			<?php if ( ! empty( $data['label'] ) ) : ?>
@@ -46,9 +46,11 @@ elseif ( $location_source == 'map' ) {
 	?>
 
 	<div class="directorist-search-field directorist-form-group directorist-search-location directorist-icon-right">
-		<label class="directorist-search-field__label" for="addressId"><?php echo esc_attr( $data['placeholder'] ); ?></label>
+		<?php if ( ! empty( $data['label'] ) ) : ?>
+			<label class="directorist-search-field__label" for="addressId"><?php echo esc_attr( $data['label'] ); ?></label>
+		<?php endif; ?>
 		<span class="directorist-input-icon directorist-filter-location-icon"><?php directorist_icon( 'fas fa-crosshairs' ); ?></span>
-		<input type="text" name="address" id="addressId" value="<?php echo esc_attr( $value ); ?>" placeholder="" autocomplete="off" class="directorist-form-element directorist-location-js location-name directorist-search-field__input" <?php echo ! empty( $data['required'] ) ? 'required="required"' : ''; ?>>
+		<input type="text" name="address" id="addressId" value="<?php echo esc_attr( $value ); ?>" placeholder="<?php echo esc_attr( $data['placeholder'] ); ?>" autocomplete="off" class="directorist-form-element directorist-location-js location-name directorist-search-field__input" <?php echo ! empty( $data['required'] ) ? 'required="required"' : ''; ?>>
 
 		<div class="address_result location-names" style="display: none"></div>
 		<input type="hidden" id="cityLat" name="cityLat" value="<?php echo esc_attr($cityLat); ?>" />

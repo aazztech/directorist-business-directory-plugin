@@ -48,14 +48,30 @@ if (!class_exists('ATBDP_Listing')):
 
             add_filter('post_thumbnail_html', array($this, 'post_thumbnail_html'), 10, 3);
             add_action('wp_head', array($this, 'og_metatags'));
-            add_action('template_redirect', array($this, 'atbdp_listing_status_controller'));
+
+			// add_action('template_redirect', array($this, 'atbdp_listing_status_controller')); // This method has been renamed to update_listing_status_after_review
+            add_action('template_redirect', array( $this, 'update_listing_status_after_review' ) );
+
             // listing filter
             add_action('restrict_manage_posts', array($this, 'atbdp_listings_filter'));
             add_filter('parse_query', array($this, 'listing_type_search_query'));
 
             add_action('wp_ajax_directorist_track_listing_views', array( $this, 'directorist_track_listing_views' ) );
             add_action('wp_ajax_nopriv_directorist_track_listing_views', array( $this, 'directorist_track_listing_views' ) );
+
+			add_filter( 'the_title', array( $this, 'add_preview_prefix_in_title' ), 10, 2 );
         }
+
+		public function add_preview_prefix_in_title( $title, $listing_id ) {
+			if ( is_admin() || ! directorist_is_listing_post_type( $listing_id ) || ! isset( $_GET['preview'] ) ) {
+				return $title;
+			}
+
+			return sprintf(
+				__( 'Preview: %s', 'directorist' ),
+				( 'private' === get_post_status( $listing_id ) ? str_replace( 'Private:', '', $title ) : $title )
+			);
+		}
 
         public function listing_type_search_query( $query )
         {
@@ -105,59 +121,109 @@ if (!class_exists('ATBDP_Listing')):
         /**
          * @since 6.3.5
          */
-        public function atbdp_listing_status_controller() {
-			if ( empty( $_GET['listing_status'] ) && empty( $_GET['preview'] ) && empty( $_GET['reviewed'] ) ) {
+		public function update_listing_status_after_review() {
+			// Exit early if listing status or review status isn't set, or if preview mode is enabled
+			if ( ( empty( $_GET['listing_status'] ) && empty( $_GET['reviewed'] ) ) || isset( $_GET['preview'] ) ) {
 				return;
 			}
 
-			if ( ! empty( $_GET['listing_id'] ) ) {
-				$listing_id = (int) directorist_clean( wp_unslash( $_GET['listing_id'] ) );
-			} elseif ( ! empty( $_GET['post_id'] ) ) {
-				$listing_id = (int) directorist_clean( wp_unslash( $_GET['post_id'] ) );
-			} elseif ( ! empty( $_GET['atbdp_listing_id'] ) ) {
-				$listing_id = (int) directorist_clean( wp_unslash( $_GET['atbdp_listing_id'] ) );
-			} else {
-				$listing_id = get_the_ID();
-			}
-
+			// Retrieve listing ID from multiple possible query parameters
+			$listing_id = $this->get_listing_id_from_request();
 			if ( ! $listing_id || ! directorist_is_listing_post_type( $listing_id ) ) {
 				return;
 			}
 
-			$directory_id = get_post_meta( $listing_id, '_directory_type', true );
+			if ( ! $this->validate_nonce( $listing_id ) ) {
+				return;
+			}
 
-			if ( ! is_numeric( $directory_id ) ){
+			// Retrieve directory ID and validate or set it if not numeric
+			$directory_id = $this->get_or_set_directory_id( $listing_id );
+			if ( ! $directory_id ) {
+				return;
+			}
+
+			// Prepare status for post update
+			$args = $this->prepare_post_update_args( $listing_id, $directory_id );
+
+			// Update post status
+			wp_update_post( $args );
+
+			// Trigger custom action after updating listing status
+			do_action( 'directorist_listing_status_updated', $listing_id, $args );
+
+			wp_safe_redirect( remove_query_arg( [ '_token', 'edited', 'post_id', 'reviewed' ] ) );
+		}
+
+		protected function validate_nonce( $listing_id ) {
+			if ( ! isset( $_GET['_token'] ) ) {
+				return false;
+			}
+
+			$nonce = wp_unslash( $_GET['_token'] );
+
+			if ( ! wp_verify_nonce( $nonce, 'directorist_listing_form_redirect_url_' . $listing_id ) ) {
+				return false;
+			}
+
+			return true;
+		}
+
+		protected function get_listing_id_from_request() {
+			if ( ! empty( $_GET['listing_id'] ) ) {
+				return absint( $_GET['listing_id'] );
+			}
+
+			if ( ! empty( $_GET['post_id'] ) ) {
+				return absint( $_GET['post_id'] );
+			}
+
+			if ( ! empty( $_GET['atbdp_listing_id'] ) ) {
+				return absint( $_GET['atbdp_listing_id'] );
+			}
+
+			return get_the_ID();
+		}
+
+		protected function get_or_set_directory_id( $listing_id ) {
+			$directory_id = directorist_get_listing_directory( $listing_id );
+
+			// Check if directory_id is numeric, if not try to retrieve and set it
+			if ( ! is_numeric( $directory_id ) ) {
 				$directory_term = get_term_by( 'slug', $directory_id, ATBDP_TYPE );
 
 				if ( ! $directory_term ) {
-					return;
+					return null;
 				}
 
 				$directory_id = (int) $directory_term->term_id;
-
 				directorist_set_listing_directory( $listing_id, $directory_id );
 			}
 
-			$directory_id  = absint( $directory_id );
+			return absint( $directory_id );
+		}
+
+		protected function prepare_post_update_args( $listing_id, $directory_id ) {
 			$create_status = directorist_get_listing_create_status( $directory_id );
 			$edit_status   = directorist_get_listing_edit_status( $directory_id, $listing_id );
+			$edited        = isset( $_GET['edited'] ) ? sanitize_text_field( $_GET['edited'] ) : 'no';
 
-			$args = array(
+			$args = [
 				'id'            => $listing_id,
-				'edited'        => isset( $_GET['edited'] ) ? directorist_clean( wp_unslash( $_GET['edited'] ) ) : '',
+				'edited'        => filter_var( $edited, FILTER_VALIDATE_BOOLEAN ),
 				'new_l_status'  => $create_status,
 				'edit_l_status' => $edit_status,
 				'create_status' => $create_status,
 				'edit_status'   => $edit_status,
-			);
+			];
 
-			$args = apply_filters( 'atbdp_reviewed_listing_status_controller_argument', array(
+			// Filter for custom argument modifications
+			return apply_filters( 'atbdp_reviewed_listing_status_controller_argument', [
 				'ID'          => $listing_id,
 				'post_status' => atbdp_get_listing_status_after_submission( $args ),
-			) );
-
-			wp_update_post( $args );
-        }
+				'edited'      => $args['edited'],
+			] );
+		}
 
         // manage_listings_status
         public function manage_listings_status() {
@@ -176,7 +242,7 @@ if (!class_exists('ATBDP_Listing')):
 				return;
 			};
 
-            $directory_type = get_post_meta( $listing_id, '_directory_type', true );
+            $directory_type = directorist_get_listing_directory( $listing_id );
             $post_status = get_term_meta( $directory_type, 'new_listing_status', true );
 
             $order_meta = get_post_meta( $order_id );
@@ -230,7 +296,7 @@ if (!class_exists('ATBDP_Listing')):
                     <meta property="og:description" content="<?php echo esc_attr( wp_trim_words($post->post_content, 150) ); ?>" />
                 <?php }
 
-                $images = get_post_meta($post->ID, '_listing_prv_img', true);
+                $images = directorist_get_listing_preview_image( $post->ID );
                 if (!empty($images)) {
                     $thumbnail = atbdp_get_image_source($images, 'full');
 
@@ -328,12 +394,3 @@ if (!class_exists('ATBDP_Listing')):
     }
 
 endif;
-
-
-
-
-
-
-
-
-

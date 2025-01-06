@@ -54,7 +54,7 @@ import {
             this.div.className = 'map-icon-label';
 
             // Trigger the marker click handler if clicking on the label
-            google.maps.event.addDomListener(this.div, 'click', function (e) {
+            google.maps.event.addListener(this.div, 'click', function (e) {
                 e.stopPropagation && e.stopPropagation();
                 google.maps.event.trigger(self.marker, 'click');
             });
@@ -221,14 +221,6 @@ import {
                 map.markers.push(marker);
                 // if marker contains HTML, add it to an infoWindow
                 if ($marker.html()) {
-                    // map info window close button
-                    google.maps.event.addListener(infowindow, 'domready', function () {
-                        const closeBtn = $('.iw-close-btn').get();
-                        google.maps.event.addDomListener(closeBtn[0], 'click', function () {
-                            infowindow.close();
-                        });
-                    });
-
                     // show info window when marker is clicked
                     google.maps.event.addListener(marker, 'click', function () {
                         if (mapData.disable_info_window === 'no') {
@@ -236,7 +228,7 @@ import {
 
                             if (marker_childrens.length) {
                                 let marker_content = marker_childrens[0];
-                                $(marker_content).addClass('map-info-wrapper--show');
+                                $(marker_content).toggleClass('map-info-wrapper--show');
                             }
 
                             infowindow.setContent($marker.html());

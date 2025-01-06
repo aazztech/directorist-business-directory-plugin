@@ -418,10 +418,12 @@ class Directorist_Listing_Search_Form {
 			$value = $key && isset( $_REQUEST[$key] ) ? sanitize_text_field( wp_unslash( $_REQUEST[$key] ) ): '';
 		}
 
+
 		$args = array(
 			'searchform' 		=> $this,
 			'data'       		=> $field_data,
 			'value'      		=> $value,
+			'empty_label'  => empty( $field_data['label'] ) ? 'input-has-noLabel' : '',
 		);
 
 		// if ( $this->is_custom_field( $field_data ) && ( ! in_array( $field_data['field_key'], $this->assign_to_category()['custom_field_key'] ) ) ) {
@@ -614,9 +616,8 @@ class Directorist_Listing_Search_Form {
 	}
 
 	public function background_img_style() {
-		$bgimg = get_directorist_option('search_home_bg');
-		$style = !empty( $bgimg ) ? sprintf( "background-image: url(%s)", esc_url( $bgimg ) ) : '';
-		return $style;
+		_deprecated_function( __METHOD__, '8.0.1' );
+		return true;
 	}
 
 	public function border_class() {

@@ -23,9 +23,10 @@
       line-height: 20px;
       text-align: center;
       padding: 40px 25px;
-      border-radius: 16px;
+      border-radius: 12px;
       text-decoration: none !important;
       box-shadow: var(--directorist-box-shadow);
+      border: 1px solid var(--directorist-color-border-light);
       transition: background 0.2s ease;
       .directorist-icon-mask {
         display: flex;
@@ -70,6 +71,7 @@
 .directorist-add-listing-form {
   .directorist-content-module {
     box-shadow: var(--directorist-box-shadow);
+    border: 1px solid var(--directorist-color-border-light);
     @include e(title) {
       i {
         background-color: var(--directorist-color-primary);
@@ -95,10 +97,9 @@
 .directorist-add-listing-form,
 #directiost-listing-fields_wrapper {
   .directorist-content-module {
-    border: none;
     margin-bottom: 35px;
-    border-radius: 16px;
-    @media (max-width: 480px) {
+    border-radius: 12px;
+    @media (max-width: 991px) {
       margin-bottom: 20px;
     }
     @include e(title) {
@@ -213,7 +214,7 @@
     padding: 20px 30px;
     border-bottom: 1px solid #e3e6ef;
     i {
-      background-color: var(--directorist-color-dark);
+      background-color: var(--directorist-color-primary);
       &:after {
         background-color: var(--directorist-color-white);
       }
@@ -245,7 +246,7 @@
 
   .directorist-content-module__contents {
     padding: 30px 40px 40px;
-    @media (max-width: 480px) {
+    @media (max-width: 991px) {
       height: auto;
       opacity: 1;
       padding: 20px;
@@ -341,7 +342,7 @@
     width: 6px;
     height: 6px;
     border-radius: 50%;
-    background-color: #202428;
+    background-color: var(--directorist-color-primary);
     border: 0 none;
     mask-image: none;
     z-index: 2;
@@ -478,7 +479,7 @@
       font-size: 14px;
       font-weight: 500;
       padding-left: 55px;
-      border-radius: 16px;
+      border-radius: 12px;
       color: var(--directorist-color-body);
       border: 3px solid var(--directorist-color-border-gray);
       cursor: pointer;
@@ -669,7 +670,7 @@
       position: relative;
       height: 400px;
       z-index: 1;
-      border-radius: 16px;
+      border-radius: 12px;
       #gmap_full_screen_button,
       .gm-fullscreen-control {
         display: none;
@@ -769,6 +770,8 @@
       &:after {
         width: 16px;
         height: 16px;
+        background-color: var(--directorist-color-marker-icon);
+        mask: url("../../../icons/font-awesome/svgs/solid/map-pin.svg");
       }
     }
     &:hover {
@@ -784,7 +787,7 @@
 .directorist-form-image-upload-field {
   .ez-media-uploader {
     text-align: center;
-    border-radius: 16px;
+    border-radius: 12px;
     padding: 35px 10px;
     margin: 0;
     background-color: var(--directorist-color-bg-gray) !important;
@@ -1040,8 +1043,9 @@
   @include e(action) {
     display: flex;
     flex-direction: column;
-    border-radius: 16px;
+    border-radius: 12px;
     box-shadow: var(--directorist-box-shadow);
+    border: 1px solid var(--directorist-color-border-light);
     .directorist-form-submit {
       margin-top: 15px;
 
@@ -1176,7 +1180,7 @@
     background: transparent;
   }
 
-  .leaflet-pane .leaflet-marker-icon .atbd_map_shape {
+  .atbd_map_shape {
     width: 50px;
     height: 50px;
     &:before {
@@ -1185,7 +1189,7 @@
       border: 50px solid rgba(var(--directorist-color-marker-shape-rgb), 0.2);
     }
     .directorist-icon-mask::after {
-      width: 12px;
+      width: 11px;
       height: 20px;
     }
   }
@@ -1260,7 +1264,7 @@
   max-width: 400px;
   margin: 0 auto;
   background-color: var(--directorist-color-white);
-  border-radius: 10px;
+  border-radius: 8px;
   overflow: hidden;
 }
 
@@ -1421,8 +1425,8 @@
     flex-direction: column;
     height: fit-content;
     max-height: 100vh;
-    min-width: 290px;
-    max-width: 290px;
+    min-width: 270px;
+    max-width: 270px;
     overflow-y: auto;
     padding: 10px;
     margin: -10px;
@@ -1443,7 +1447,8 @@
       cursor: pointer;
       font-size: 14px;
       font-weight: 400;
-      border-radius: 12px;
+      border-radius: 8px;
+      border: 1px solid transparent;
       text-decoration: none !important;
       color: var(--directorist-color-light-gray);
       background-color: transparent;
@@ -1453,6 +1458,7 @@
         width: 100%;
       }
       i {
+        min-width: 36px;
         width: 36px;
         height: 36px;
         display: flex;
@@ -1477,7 +1483,7 @@
         mask-repeat: no-repeat;
         width: 12px;
         height: 12px;
-        background-color: var(--directorist-color-dark);
+        background-color: var(--directorist-color-light-gray);
         display: block;
         opacity: 0;
         transition: opacity 0.2s ease;
@@ -1485,14 +1491,19 @@
       }
       &.active,
       &:hover {
-        font-weight: 600;
-        color: var(--directorist-color-primary);
-        box-shadow: var(--directorist-box-shadow-sm);
+        box-shadow: var(--directorist-box-shadow);
+        border-color: var(--directorist-color-border-light);
         background-color: var(--directorist-color-white);
-        border: 0 none;
         outline: none;
         &:before {
           opacity: 1;
+        }
+      }
+      &:focus {
+        outline: none;
+        font-weight: 600;
+        color: var(--directorist-color-primary);
+        &:before {
           background-color: var(--directorist-color-primary);
         }
         i::after {
@@ -1511,7 +1522,7 @@
       }
     }
 
-    @media only screen and (max-width: 480px) {
+    @media only screen and (max-width: 991px) {
       display: none;
     }
   }
@@ -1519,7 +1530,7 @@
     flex: 1;
   }
   @include e(single) {
-    border-radius: 16px;
+    border-radius: 12px;
     background-color: var(--directorist-color-white);
     label {
       display: block;
@@ -1528,7 +1539,7 @@
       color: var(--directorist-color-danger);
     }
 
-    @media only screen and (max-width: 480px) {
+    @media only screen and (max-width: 991px) {
       .directorist-content-module {
         @include e(title) {
           position: relative;
@@ -1575,7 +1586,7 @@
     display: flex;
     width: 100%;
     margin-top: 50px;
-    border-radius: 10px;
+    border-radius: 8px;
     &:before {
       content: "";
       position: absolute;
@@ -1584,7 +1595,7 @@
       width: 100%;
       height: 2px;
       background-color: var(--directorist-color-border);
-      border-radius: 10px;
+      border-radius: 8px;
       transition: width 0.3s ease-in-out;
     }
     @include e(width) {
@@ -1601,7 +1612,7 @@
         width: 100%;
         height: 2px;
         background-color: var(--directorist-color-primary);
-        border-radius: 10px;
+        border-radius: 8px;
         transition: width 0.3s ease-in-out;
       }
     }

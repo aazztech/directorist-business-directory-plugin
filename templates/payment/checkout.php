@@ -2,7 +2,7 @@
 /**
  * @author  wpWax
  * @since   7.0
- * @version8.0
+ * @version 8.0.11
  */
 
 extract( $checkout );
@@ -26,7 +26,7 @@ use \Directorist\Helper;
             ?>
             <div class="directorist-card directorist-checkout-card">
                 <div class="directorist-card__header">
-                    <h3 class="directorist-card__header__title">Order Summary</h3>
+                    <h3 class="directorist-card__header__title"><?php esc_html_e( 'Order Summary', 'directorist' ); ?></h3>
                 </div>
                 <div class="directorist-card__body">
                     <div class="directorist-table-responsive">
@@ -117,7 +117,7 @@ use \Directorist\Helper;
                     </div>
                 </div>
             </div>
-            
+
 
             <?php if ( $subtotal > 0 ) : ?>
             <div class="directorist-card directorist-mt-30 directorist-payment-gateways directorist-mb-15 directorist-checkout-card directorist-checkout-payment" id="directorist_payment_gateways">
@@ -140,7 +140,7 @@ use \Directorist\Helper;
             <p id="atbdp_checkout_errors" class="text-danger"></p>
 
             <?php wp_nonce_field('checkout_action', 'checkout_nonce');
-            $directory_type 	 = get_post_meta( $listing_id, '_directory_type', true );
+            $directory_type 	 = directorist_get_listing_directory( $listing_id );
 		    $new_l_status 	     = get_term_meta( $directory_type, 'new_listing_status', true );
             $monitization        = directorist_is_monetization_enabled();
             $featured_enabled    = directorist_is_featured_listing_enabled();

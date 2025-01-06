@@ -64,13 +64,13 @@ if ( ! class_exists('ATBDP_Settings_Panel') ) {
             $fields['import_settings'] = [
                 'type'         => 'import',
                 'label'        => 'Import',
-                'button-label' => 'Upload .json File',
+                'button-label' => 'Upload Settings File',
             ];
 
             $fields['export_settings'] = [
                 'type'             => 'export',
                 'label'            => 'Export',
-                'button-label'     => 'Download Export File',
+                'button-label'     => 'Download Settings File',
                 'export-file-name' => 'directory-settings',
             ];
 
@@ -1656,22 +1656,6 @@ Please remember that your order may be canceled if you do not make your payment 
                         ],
                     ],
                 ],
-                'announcement_tab' => [
-                    'type'  => 'toggle',
-                    'label' => __('Display Announcements Tab', 'directorist'),
-                    'value' => true,
-                ],
-                'announcement_tab_text'    => [
-                    'type'          => 'text',
-                    'label'         => __('"Announcement" Tab Label', 'directorist'),
-                    'value'         => __('Announcements', 'directorist'),
-                    'show-if' => [
-                        'where' => "announcement_tab",
-                        'conditions' => [
-                            ['key' => 'value', 'compare' => '=', 'value' => true],
-                        ],
-                    ],
-                ],
                 'submit_listing_button' => [
                     'type'  => 'toggle',
                     'label' => __('Display Submit Listing Button', 'directorist'),
@@ -2282,6 +2266,20 @@ Please remember that your order may be canceled if you do not make your payment 
                     'label' => __('Transaction Failure Page', 'directorist'),
                     'type'  => 'select',
                     'description' => sprintf(__('Following shortcode must be in the selected page %s', 'directorist'), '<div class="atbdp_shortcodes" style="color: #ff4500;">[directorist_transaction_failure]</div>'),
+                    'value' => '',
+                    'showDefaultOption' => true,
+                    'options' => $this->get_pages_vl_arrays(),
+                ],
+                'privacy_policy' => [
+                    'label' => __('Privacy Policy Page', 'directorist'),
+                    'type'  => 'select',
+                    'value' => '',
+                    'showDefaultOption' => true,
+                    'options' => $this->get_pages_vl_arrays(),
+                ],
+                'terms_conditions' => [
+                    'label' => __('Terms & Conditions Page', 'directorist'),
+                    'type'  => 'select',
                     'value' => '',
                     'showDefaultOption' => true,
                     'options' => $this->get_pages_vl_arrays(),
@@ -3690,7 +3688,7 @@ Please remember that your order may be canceled if you do not make your payment 
                             'title'       => __('Page, Links & View Settings', 'directorist'),
                             'description' => '',
                             'fields'      => apply_filters( 'atbdp_pages_settings_fields', [
-                                'add_listing_page', 'all_listing_page', 'user_dashboard', 'signin_signup_page', 'author_profile_page', 'all_categories_page', 'single_category_page', 'all_locations_page', 'single_location_page', 'single_tag_page', 'search_listing', 'search_result_page', 'checkout_page', 'payment_receipt_page', 'transaction_failure_page'
+                                'add_listing_page', 'all_listing_page', 'user_dashboard', 'signin_signup_page', 'author_profile_page', 'all_categories_page', 'single_category_page', 'all_locations_page', 'single_location_page', 'single_tag_page', 'search_listing', 'search_result_page', 'checkout_page', 'payment_receipt_page', 'transaction_failure_page', 'privacy_policy', 'terms_conditions'
                              ] ),
                         ],
                     ]),
@@ -3927,7 +3925,7 @@ Please remember that your order may be canceled if you do not make your payment 
                             'sections' => apply_filters( 'atbdp_listing_settings_user_dashboard_sections', [
                                 'general_dashboard' => [
                                     'fields'      => [
-                                         'my_profile_tab', 'my_profile_tab_text', 'fav_listings_tab', 'fav_listings_tab_text', 'announcement_tab', 'announcement_tab_text'
+                                         'my_profile_tab', 'my_profile_tab_text', 'fav_listings_tab', 'fav_listings_tab_text'
                                     ],
                                 ],
                                 'author_dashboard' => [

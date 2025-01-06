@@ -74,70 +74,72 @@ class Directorist_Single_Listing {
 		$single_fields          = get_term_meta( $this->type, 'single_listings_contents', true );
 		$submission_form_fields = get_term_meta( $this->type, 'submission_form_fields', true );
 
-		if( !empty( $single_fields['fields'] ) ) {
-
+		if ( ! empty( $single_fields['fields'] ) ) {
 			foreach ( $single_fields['fields'] as $key => $value ) {
-
-				if ( ! is_array( $value ) ) {
-					continue;
-				}
-
-				// If 'other_widgets', then no need to set values from submission form fields
-				if ( $value['widget_group'] === 'other_widgets' ) {
+				// If no array or 'other_widgets', then no need to set values from submission form fields
+				if ( ! is_array( $value ) || $value['widget_group'] === 'other_widgets' ) {
 					continue;
 				}
 
 				// Make sure form key name is valid
-				if ( !isset( $value['original_widget_key'] ) ) {
-					unset( $single_fields['fields'][$key] );
+				if ( ! isset( $value['original_widget_key'] ) ) {
+					unset( $single_fields['fields'][ $key ] );
 					continue;
 				}
 
 				$form_key = $value['original_widget_key'];
 
 				// Make sure the same form field exists
-				if ( empty( $submission_form_fields['fields'][$form_key] ) ) {
-					unset( $single_fields['fields'][$key] );
+				if ( empty( $submission_form_fields['fields'][ $form_key ] ) ) {
+					unset( $single_fields['fields'][ $key ] );
 					continue;
 				}
 
-				$single_fields['fields'][$key]['field_key'] = '';
-				$single_fields['fields'][$key]['options'] = [];
+				$single_fields['fields'][ $key ]['field_key'] = '';
+				$single_fields['fields'][ $key ]['options']   = [];
 
-				unset( $single_fields['fields'][$key]['widget_key'] );
-				unset( $single_fields['fields'][$key]['original_widget_key'] );
+				unset( $single_fields['fields'][ $key ]['widget_key'] );
+				unset( $single_fields['fields'][ $key ]['original_widget_key'] );
 
 				// Added form_field, field_key, label, widget_group from submission form
-				$form_data = $submission_form_fields['fields'][$form_key];
+				$form_data = $submission_form_fields['fields'][ $form_key ];
 
-				$single_fields['fields'][$key]['form_data'] = $form_data;
+				$single_fields['fields'][ $key ]['form_data'] = $form_data;
 
-				if ( !empty( $form_data['field_key'] ) ) {
-					$single_fields['fields'][$key]['field_key'] = $form_data['field_key'];
+				if ( ! empty( $form_data['field_key'] ) ) {
+					$single_fields['fields'][ $key ]['field_key'] = $form_data['field_key'];
 				}
 
-				if ( !empty( $form_data['options'] ) ) {
-					$single_fields['fields'][$key]['options'] = $form_data['options'];
+				if ( ! empty( $form_data['options'] ) ) {
+					$single_fields['fields'][ $key ]['options'] = $form_data['options'];
 				}
 
-				$single_fields['fields'][$key]['label'] = !empty( $form_data['label'] ) ? $form_data['label'] : '';
+				$single_fields['fields'][ $key ]['label'] = ! empty( $form_data['label'] ) ? $form_data['label'] : '';
 
-				if( !empty( $form_data['widget_group'] ) ) {
-					$single_fields['fields'][$key]['widget_group'] = $form_data['widget_group'];
+				if ( ! empty( $form_data['widget_group'] ) ) {
+					$single_fields['fields'][ $key ]['widget_group'] = $form_data['widget_group'];
 				}
 			}
 		}
 
-		if( !empty( $single_fields['groups'] ) ) {
+		if ( ! empty( $single_fields['groups'] ) ) {
 			foreach ( $single_fields['groups'] as $group ) {
 				$section           = $group;
 				$section['fields'] = array();
+
+				if ( empty( $group['fields'] ) ) {
+					$content_data[] = $section;
+					continue;
+				}
+
 				foreach ( $group['fields'] as $field ) {
 					if ( ! isset( $single_fields['fields'][ $field ] ) ) {
 						continue;
 					}
+
 					$section['fields'][ $field ] = $single_fields['fields'][ $field ];
 				}
+
 				$content_data[] = $section;
 			}
 		}
@@ -270,8 +272,8 @@ class Directorist_Single_Listing {
 				$value = true;
 			}
 		} elseif( 'image_upload' === $data['widget_name'] ) {
-			$listing_img 	=  get_post_meta( $this->id, '_listing_img', true );
-			$preview_img   	= get_post_meta( $this->id, '_listing_prv_img', true);
+			$listing_img 	=  directorist_get_listing_gallery_images( $this->id );
+			$preview_img   	= directorist_get_listing_preview_image( $this->id );
 			if( $listing_img || $preview_img ) {
 				$value = true;
 			}
@@ -525,19 +527,19 @@ class Directorist_Single_Listing {
 		$listing_id    = $this->id;
 		$listing_title = get_the_title( $listing_id );
 
-		$type          = (int) get_post_meta( $this->id, '_directory_type', true );
+		$type          = directorist_get_listing_directory( $this->id );
 		$default_image = Helper::default_preview_image_src( $type );
 
 		$image_size = apply_filters( 'directorist_single_listing_slider_image_size', 'large' );
 
 		// Get the preview images
-		$preview_img_id   = get_post_meta( $listing_id, '_listing_prv_img', true);
+		$preview_img_id   = directorist_get_listing_preview_image( $listing_id );
 		$preview_img_link = ! empty($preview_img_id) ? atbdp_get_image_source( $preview_img_id, $image_size ) : '';
 		$preview_img_alt  = get_post_meta($preview_img_id, '_wp_attachment_image_alt', true);
 		$preview_img_alt  = ( ! empty( $preview_img_alt )  ) ? $preview_img_alt : get_the_title( $preview_img_id );
 
 		// Get the gallery images
-		$listing_img  = get_post_meta( $listing_id, '_listing_img', true );
+		$listing_img  = directorist_get_listing_gallery_images( $listing_id );
 		$listing_imgs = ! empty( $listing_img ) ? ( ! is_array( $listing_img ) ? array( $listing_img ) : $listing_img ) : array();
 		$image_links  = array(); // define a link placeholder variable
 
@@ -935,12 +937,11 @@ class Directorist_Single_Listing {
 			return '';
 		}
 
-		$listing_id = isset( $_GET['post_id'] ) ? absint( $_GET['post_id'] ) : 0;
-		if ( $listing_id && ! directorist_is_listing_post_type( $listing_id ) ) {
+		if ( ! directorist_is_listing_post_type( get_the_ID() ) ) {
 			return;
 		}
 
-		if ( get_post_status( $listing_id ) === 'publish' ) {
+		if ( get_post_status( get_the_ID() ) === 'publish' ) {
 			$message = get_directorist_option(
 				'publish_confirmation_msg',
 				__( 'Congratulations! Your listing has been approved/published. Now it is publicly available.', 'directorist' )
@@ -1199,9 +1200,10 @@ class Directorist_Single_Listing {
 		$display_user_avatar_map    = get_directorist_option( 'display_user_avatar_map', 1 );
 		$display_review_map         = get_directorist_option( 'display_review_map', 1 );
 		$display_price_map          = get_directorist_option( 'display_price_map', 1 );
+		$display_phone_map          = get_directorist_option( 'display_phone_map', 1 );
 		$display_favorite_badge_map = get_directorist_option( 'display_favorite_badge_map', 1 );
 
-		$listing_prv_img = get_post_meta($id, '_listing_prv_img', true);
+		$listing_prv_img = directorist_get_listing_preview_image( $id );
 		$default_image = get_directorist_option('default_preview_image', DIRECTORIST_ASSETS . 'images/grid.jpg');
 		$listing_prv_imgurl = !empty($listing_prv_img) ? atbdp_get_image_source($listing_prv_img, 'small') : '';
 		$listing_prv_imgurl = atbdp_image_cropping($listing_prv_img, 150, 150, true, 100)['url'];
@@ -1224,29 +1226,47 @@ class Directorist_Single_Listing {
 		if( ! empty( $display_favorite_badge_map ) ) {
 			$info_content .= $this->favorite_badge_template_map();
 		}
-		if (!empty($display_image_map)) {
+
+		if ( ! empty( $display_image_map ) ) {
 			$info_content .= "<div class='map-listing-card-single__img'>$image</div>";
 		}
-		$info_content .= $this->user_avatar();
+
+		if ( ! empty( $display_user_avatar_map ) ) {
+			$info_content .= $this->user_avatar();
+		}
+
 		$info_content .= "<div class='map-listing-card-single__content'>";
-		if (!empty($display_title_map)) {
+
+		if ( ! empty( $display_title_map ) ) {
 			$info_content .= "<h3 class='map-listing-card-single__content__title'>$t</h3>";
 		}
-		$info_content .= "<div class='map-listing-card-single__content__meta'>";
-		$info_content .= $this->get_review_template();
-		$info_content .= $this->price_html();
-		$info_content .= "</div><div class='map-listing-card-single__content__info'>";
 
-		if( ! empty( $phone ) ) {
+		if ( ! empty( $display_review_map ) || ! empty( $display_price_map ) ) {
+			$info_content .= "<div class='map-listing-card-single__content__meta'>";
+
+			if ( ! empty( $display_review_map ) ) {
+				$info_content .= $this->get_review_template();
+			}
+
+			if ( ! empty( $display_price_map ) ) {
+				$info_content .= $this->price_html();
+			}
+
+			$info_content .= "</div>";
+		}
+
+		$info_content .= "<div class='map-listing-card-single__content__info'>";
+
+		if( ! empty( $phone ) && ! empty( $display_phone_map ) ) {
 			$info_content .= "<div class='directorist-info-item map-listing-card-single__content__phone'>" . directorist_icon( 'fas fa-phone-alt', false ) . "<div class='directorist-info-item'><a href='tel:{$phone}'>{$phone}</a></div></div>";
 		}
 
 		if (!empty($display_address_map) && !empty($ad)) {
 			$info_content .= "<div class='directorist-info-item map-listing-card-single__content__address'>" .directorist_icon('fas fa-map-marker-alt', false). "<div class='directorist-info-item'>";
-			$info_content .= apply_filters("atbdp_address_in_map_info_window", "<a href='http://www.google.com/maps?daddr={$manual_lat},{$manual_lng}' target='_blank'>{$ad}</a>");
+			$info_content .= apply_filters("atbdp_address_in_map_info_window", "<a href='http://www.google.com/maps?daddr={$manual_lat},{$manual_lng}' target='_blank'>{$ad}</a></div></div>");
 		}
 
-		$info_content .= "</div></div></div>";
+		$info_content .= "</div>";
 
 
 		$cats = get_the_terms($this->id, ATBDP_CATEGORY);

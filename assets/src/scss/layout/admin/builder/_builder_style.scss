@@ -216,7 +216,7 @@ $light-gray: #f4f5f7;
 
 /* Body Header */
 .directorist-form-doc {
-  border-radius: 10px;
+  border-radius: 8px;
   background: #f3f4f6;
   min-height: 52px;
   display: flex;
@@ -418,7 +418,7 @@ $light-gray: #f4f5f7;
   position: relative;
   display: block;
   color: $dark;
-  &.trash-overlay-visible {
+  &.directorist-overlay-visible {
     position: fixed;
     z-index: 9;
     width: calc(100% - 200px);
@@ -622,6 +622,11 @@ $light-gray: #f4f5f7;
     color: $primary;
     border-color: $primary;
     background-color: transparent;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-weight: 500;
+    font-size: 15px !important;
 
     &:hover {
       color: #fff;
@@ -750,7 +755,7 @@ $light-gray: #f4f5f7;
   border-radius: 4px;
   overflow: hidden;
   transition: all ease-in-out 200ms;
-  background: rgba(61, 98, 245, 0.45);
+  background: RGBA(61, 98, 245, 0.45);
 
   &.active {
     padding: 10px 15px;
@@ -1399,7 +1404,7 @@ div[draggable="true"].cptm-form-builder-group-title-area {
   width: 32px;
   height: 32px;
   background-color: transparent;
-  border-radius: 10px;
+  border-radius: 8px;
   transition: background ease 0.3s;
   &:hover,
   &:focus {
@@ -1434,7 +1439,7 @@ div[draggable="true"].cptm-form-builder-group-title-area {
       height: 50px;
       font-size: 14px;
       font-weight: 500;
-      border-radius: 10px;
+      border-radius: 8px;
       box-sizing: border-box;
       border: 1px solid #e5e7eb;
       box-shadow: 0 12px 16px rgba(16, 24, 40, 0.08);
@@ -1526,6 +1531,8 @@ div[draggable="true"].cptm-form-builder-group-title-area {
     input[type="text"].cptm-form-control {
       padding: 5px 20px;
       min-height: 20px;
+      background-color: transparent;
+      outline: none;
     }
     .directorist-selected-icon {
       position: unset;
@@ -1748,7 +1755,7 @@ div[draggable="true"].cptm-form-builder-group-title-area {
   padding: 10px 16px;
   margin: 0;
   display: flex;
-  align-items: flex-start;
+  align-items: center;
   flex-wrap: wrap;
   list-style: none;
   background-color: #ffffff;
@@ -2251,14 +2258,14 @@ input[type="radio"].cptm-radio {
 }
 
 .cptm-widget-card-drop-prepend {
-  border-radius: 10px;
+  border-radius: 8px;
 }
 
 .cptm-widget-card-drop-append {
   display: block;
   width: 100%;
   height: 0;
-  border-radius: 10px;
+  border-radius: 8px;
   transition: all ease-in-out 300ms;
   background-color: transparent;
   border: 1px dashed transparent;
@@ -2456,7 +2463,7 @@ input[type="radio"].cptm-radio {
 .cptm-card-preview-widget {
   max-width: 450px;
   margin: 0 auto;
-  border-radius: 10px;
+  border-radius: 8px;
   box-shadow: 0 0 20px rgba(0, 0, 0, 0.2);
   background-color: #fff;
 
@@ -2996,7 +3003,7 @@ input[type="radio"].cptm-radio {
   max-width: 100%;
   height: 224px;
   flex-shrink: 0;
-  border-radius: 12px;
+  border-radius: 10px;
   position: relative;
   overflow: hidden;
   &:not(.cptm-preview-image-upload--show) {
@@ -3262,7 +3269,7 @@ input[type="radio"].cptm-radio {
   display: flex;
   justify-content: center;
   align-items: center;
-  z-index: 102;
+  z-index: 9999;
 }
 
 .video-popup-content {
@@ -3595,12 +3602,13 @@ input[type="radio"] {
 
 // Single Listing Header Placeholder
 .cptm-preview-placeholder {
-  flex: 1;
-  margin-right: 24px;
+  width: 700px;
+  max-width: 100%;
+  margin: 0 auto;
   @include e(card) {
-    display: flex;
-    flex-direction: column;
-    gap: 20px;
+    padding: 30px;
+    border-radius: 6px;
+    box-shadow: 0 0 10px rgba(134, 142, 174, 0.2);
     .cptm-widget-insert-link {
       background-color: #272b41;
       box-shadow: none;
@@ -3610,9 +3618,6 @@ input[type="radio"] {
 
     @include e(item) {
       flex: 1;
-      padding: 30px;
-      border-radius: 10px;
-      box-shadow: 0 0 10px rgba(134, 142, 174, 0.2);
       @include m(top) {
         display: flex;
         gap: 30px;
@@ -3630,8 +3635,9 @@ input[type="radio"] {
 
     @include e(box) {
       flex: 1;
-      padding: 10px;
+      padding: 10px 10px 19px;
       border-radius: 8px;
+      min-height: 66px;
       min-width: 150px;
       z-index: unset;
       .cptm-placeholder-label {
@@ -3653,13 +3659,6 @@ input[type="radio"] {
           background-color: #e3e6ef;
         }
       }
-    }
-
-    @include e(content){
-      width: 100%;
-      display: flex;
-      gap: 20px;
-      justify-content: space-between;
     }
 
     @include e(btn) {
@@ -3716,149 +3715,8 @@ input[type="radio"] {
       }
     }
   }
-  @include m('settings-closed') {
-    max-width: 700px;
-    margin: 0 auto;
-  }
 }
 
-// Single Listing Elements Settings
-.cptm-elements-settings {
-  width: 292px;
-  height: calc( 100vh - 165px );
-  background: #F3F4F6;
-  border: 1px solid #E5E7EB;
-  border-radius: 12px;
-  overflow-y: auto;
-  scrollbar-width: 6px;
-  scrollbar-color: #d2d6db #f3f4f6;
-  @include e(toggle) {
-    position: absolute;
-    right: 0;
-    top: 0;
-    height: 44px;
-    width: 44px;
-    padding: 0;
-    border: none;
-    border-radius: 100%;
-    background-color: #ffffff;
-    box-shadow: 0 8px 16px rgba(16, 24, 40, 0.1);
-    cursor: pointer;
-  }
-  @include e(header) {
-    display: flex;
-    gap: 20px;
-    align-items: center;
-    background: #ffffff;
-    justify-content: space-between;
-    padding: 14px 20px;
-    border-radius: 12px 12px 0 0;
-    @include e(title) {
-      font-size: 15px;
-      font-weight: 500;
-      color: #383F47;
-      margin: 0;
-    }
-    @include e(close) {
-      padding: 0;
-      border: none;
-      background: transparent;
-      cursor: pointer;
-      svg path {
-        transition: fill ease 0.3s;
-      }
-      &:hover {
-        svg path {
-          fill: #3E62F5;
-        }
-      }
-    }
-  }
-  @include e(group) {
-    padding: 20px;
-    border-bottom: 1px solid #E5E7EB;
-    &:last-child {
-      border-bottom: none;
-    }
-    @include e(title) {
-      display: block;
-      font-size: 12px;
-      font-weight: 500;
-      letter-spacing: 0.48px;
-      text-transform: uppercase;
-      color: #747C89;
-      margin-bottom: 15px;
-    }
-    @include e(single) {
-      display: flex;
-      gap: 12px;
-      align-items: center;
-      .drag-icon {
-        color: #A1A9B2;
-      }
-      @include e(label) {
-        display: flex;
-        gap: 6px;
-        align-items: center;
-        font-size: 14px;
-        font-weight: 500;
-        color: #383F47;
-        .icon {
-          color: #4D5761;
-        }
-      }
-      @include e(switch) {
-        flex: 1;
-        display: inline-flex;
-        justify-content: flex-end;
-        label {
-          position: relative;
-          width: 32px;
-          height: 18px;
-          cursor: pointer;
-          &::before {
-            content: "";
-            position: absolute;
-            width: 100%;
-            height: 100%;
-            background-color: #D2D6DB;
-            border-radius: 30px;
-            transition: all 0.3s;
-          }
-          &::after {
-            content: "";
-            position: absolute;
-            top: 3px;
-            left: 3px;
-            width: 12px;
-            height: 12px;
-            background-color: #ffffff;
-            border-radius: 50%;
-            transition: all 0.3s;
-          }
-        }
-        input[type="checkbox"] {
-          display: none;
-          &:checked + label::before {
-            background-color: #3E62F5;
-          }
-          &:checked + label::after {
-            transform: translateX(14px);
-          }
-        }
-      }
-    }
-
-    .dndrop-container {
-      .dndrop-draggable-wrapper {
-        margin-bottom: 16px;
-        &:last-child {
-          margin-bottom: 0;
-        }
-      }
-    }
-  }
-}
 // Sidebar
 .atbdp-sidebar-nav-area {
   display: block;
@@ -4009,12 +3867,14 @@ input[type="radio"] {
     text-decoration: none;
     display: block;
     width: 100%;
+    max-height: 38px;
     font-size: 14px;
     font-weight: 500;
     background-color: transparent;
     color: #4d5761;
     padding: 12px 15px;
     line-height: 1;
+    box-sizing: border-box;
 
     &:focus {
       outline: 0 none;
@@ -4047,7 +3907,7 @@ input[type="radio"] {
     box-shadow: 0 12px 16px -4px rgba(16, 24, 40, 0.08),
       0px 4px 6px -2px rgba(16, 24, 40, 0.03);
     border: 1px solid #e5e7eb;
-    border-radius: 10px;
+    border-radius: 8px;
     z-index: 99999;
     overflow-y: auto;
 
@@ -4084,6 +3944,12 @@ input[type="radio"] {
         }
       }
     }
+  }
+}
+
+.cptm-form-group{
+  .directorist_dropdown-option{
+    max-height: 240px;
   }
 }
 

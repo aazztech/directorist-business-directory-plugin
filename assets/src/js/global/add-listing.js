@@ -413,7 +413,7 @@ $(function() {
     }
 
     // Create container div after category (in frontend)
-    $('.directorist-form-categories-field').after('<div class="atbdp_category_custom_fields"></div>');
+    $('.directorist-form-categories-field').after('<div class="directorist-form-group  atbdp_category_custom_fields"></div>');
 
     window.addEventListener( 'directorist-type-change', function() {
         renderCategoryCustomFields();
@@ -471,7 +471,7 @@ $(function() {
 
     let on_processing = false;
     let has_media = true;
-    let quick_login_modal__success_callback = null;
+    let quickLoginModalSuccessCallback = null;
     const $notification = $('#listing_notifier');
 
     // -----------------------------
@@ -522,7 +522,6 @@ $(function() {
                     break;
                 }
 
-                selectedImages = uploader.media_uploader.getTheFiles();
                 uploader.media_uploader.getTheFiles().forEach( function( file ) {
                     selectedImages.push( {
                         field: uploader.uploaders_data.meta_name,
@@ -734,14 +733,16 @@ $(function() {
                             // Show the modal
                             modal.addClass('show');
 
-                            quick_login_modal__success_callback = function (args) {
+                            quickLoginModalSuccessCallback = function($form, $submitButton) {
                                 $('#guest_user_email').prop('disabled', true);
+
                                 $notification.hide().html('');
 
-                                args.elements.submit_button.remove();
+                                $submitButton.remove();
 
-                                var form_actions = args.elements.form.find('.directorist-form-actions');
-                                form_actions.find('.directorist-toggle-modal').removeClass('directorist-d-none');
+                                $form.find('.directorist-form-actions')
+                                    .find('.directorist-toggle-modal')
+                                    .removeClass('directorist-d-none');
                             }
                         }
                     } else {
@@ -836,70 +837,62 @@ $(function() {
     $('#quick-login-from-submit-btn').on('click', function (e) {
         e.preventDefault();
 
-        var form_id = $(this).data('form');
-        var modal_id = $(this).data('form');
+        const $form              = $( $(this).data('form') );
+        let   $feedback          = $form.find('.directorist-modal-alerts-area');
+              $feedback          = $feedback.length ? $feedback : $form.find('.directorist-form-feedback');
+        const $email             = $form.find('input[name="email"]');
+        const $password          = $form.find('input[name="password"]');
+        const $token             = $form.find('input[name="directorist-quick-login-security"]');
+        const $submit_button     = $(this);
+        const submit_button_html = $submit_button.html();
 
-        var modal = $(modal_id);
-        var form = $(form_id);
-        var form_feedback = form.find('.directorist-form-feedback');
-
-        var email = $(form).find('input[name="email"]');
-        var password = $(form).find('input[name="password"]');
-        var security = $(form).find('input[name="directorist-quick-login-security"]');
-
-        var form_data = {
-            action: 'directorist_ajax_quick_login',
-            username: email.val(),
-            password: password.val(),
+        const form_data = {
+            action    : 'directorist_ajax_quick_login',
+            username  : $email.val(),
+            password  : $password.val(),
             rememberme: false,
-            ['directorist-quick-login-security']: security.val(),
+            token     : $token.val(),
         };
-
-        var submit_button = $(this);
-        var submit_button_default_html = submit_button.html();
 
         $.ajax({
             method: 'POST',
             url: directorist.ajaxurl,
             data: form_data,
             beforeSend: function () {
-                form_feedback.html('');
-                submit_button.prop('disabled', true);
-                submit_button.prepend('<i class="fas fa-circle-notch fa-spin"></i> ');
+                $feedback.html('');
+                $submit_button.prop('disabled', true);
+                $submit_button.prepend('<i class="fas fa-circle-notch fa-spin"></i> ');
             },
             success: function (response) {
-                submit_button.html(submit_button_default_html);
+                $submit_button.html(submit_button_html);
 
                 if (response.loggedin) {
-                    password.prop('disabled', true);
+                    $password.prop('disabled', true);
+
                     var message = 'Successfully logged in, please continue to the listing submission';
                     var msg = '<div class="directorist-alert directorist-alert-success directorist-text-center directorist-mb-20">' + message + '</div>';
-                    form_feedback.html(msg);
 
-                    if (quick_login_modal__success_callback) {
-                        var args = {
-                            elements: {
-                                modal_id,
-                                form,
-                                email,
-                                password,
-                                submit_button
-                            }
-                        };
-                        quick_login_modal__success_callback(args);
+                    $feedback.html(msg);
+
+                    if (quickLoginModalSuccessCallback) {
+                        quickLoginModalSuccessCallback($form, $submit_button);
                     }
+
+                    regenerate_and_update_nonce();
                 } else {
                     var msg = '<div class="directorist-alert directorist-alert-danger directorist-text-center directorist-mb-20">' + response.message + '</div>';
-                    form_feedback.html(msg);
-                    submit_button.prop('disabled', false);
+
+                    $feedback.html(msg);
+                    $submit_button.prop('disabled', false);
                 }
             },
             error: function (error) {
                 console.log({
                     error
                 });
-                submit_button.prop('disabled', false);
-                submit_button.html(submit_button_default_html);
+
+                $submit_button.prop('disabled', false);
+                $submit_button.html(submit_button_html);
             },
         });
     });
@@ -918,22 +911,22 @@ $(function() {
                 // Check if the user has scrolled down to the container position
                 if (scrollPos >= multiStepWizardOffset) {
                     $(".multistep-wizard__nav").addClass("sticky");
-                    $(".multistep-wizard__content").css("padding-left", sidebarWidth + 30 + 'px')
+                    $(".multistep-wizard__content").css("padding-inline-start", sidebarWidth + 30 + 'px')
                     // Check if the user has fully scrolled the container
                     if (scrollPos >= (multiStepWizardOffset + multiStepWizardHeight) - sidebarHeight) {
                         $(".multistep-wizard__nav").removeClass("sticky");
-                        $(".multistep-wizard__content").css("padding-left", '0px')
+                        $(".multistep-wizard__content").css("padding-inline-start", '0px')
                     } else {
                         $(".multistep-wizard__nav").addClass("sticky");
-                        $(".multistep-wizard__content").css("padding-left", sidebarWidth + 30 + 'px')
+                        $(".multistep-wizard__content").css("padding-inline-start", sidebarWidth + 30 + 'px')
                     }
                 } else {
                     $(".multistep-wizard__nav").removeClass("sticky");
-                    $(".multistep-wizard__content").css("padding-left", '0px')
+                    $(".multistep-wizard__content").css("padding-inline-start", '0px')
                 }
             } else {
                 $(".multistep-wizard__nav").removeClass("sticky");
-                $(".multistep-wizard__content").css("padding-left", '0px')
+                $(".multistep-wizard__content").css("padding-inline-start", '0px')
             }
         }, 100 ) );
     }
@@ -1081,6 +1074,13 @@ function multiStepWizard() {
 function defaultAddListing() {
     const navLinks = document.querySelectorAll(".default-add-listing .multistep-wizard__nav .multistep-wizard__nav__btn");
 
+    // Add 'active' class to the first navigation item on page load
+    window.addEventListener("load", () => {
+        if (navLinks.length > 0) {
+            navLinks[0].classList.add("active");
+        }
+    });
+
     // Function to determine which section is currently in view
     function getCurrentSectionInView() {
         let currentSection = null;
@@ -1101,32 +1101,46 @@ function defaultAddListing() {
     // Function to update active class on navigation items
     function updateActiveNav() {
         const currentSection = getCurrentSectionInView();
-        if ( currentSection == null) {
-            navLinks[0].classList.add("active");
-        } else {
-            if(navLinks[0].classList.contains("active")){
-                navLinks[0].classList.remove("active");
+
+        navLinks.forEach((link) => {
+            if (link.getAttribute("href") === `#${currentSection}`) {
+                link.classList.add("active");
+            } else {
+                link.classList.remove("active");
             }
-            navLinks.forEach((link) => {
-                if (link.getAttribute("href") === `#${currentSection}`) {
-                    link.classList.add("active");
-                } else {
-                    link.classList.remove("active");
-                }
-            });
-        }
+        });
     }
 
     // Function to scroll smoothly to the target section
-    function smoothScroll(targetSection) {
+    function smoothScroll(targetSection, scrollDuration = 1000) {
         const targetElement = document.getElementById(targetSection);
-        if (targetElement) {
-            targetElement.scrollIntoView({
-                behavior: 'smooth',
-                block: 'start'
-            });
+        if (!targetElement) return;
+    
+        const targetPosition = targetElement.getBoundingClientRect().top + window.scrollY;
+        const startPosition = window.scrollY;
+        const scrollDistance = targetPosition - startPosition;
+        let startTime = null;
+    
+        function scrollAnimation(currentTime) {
+            if (startTime === null) startTime = currentTime;
+            const timeElapsed = currentTime - startTime;
+            const run = easeInOutQuad(timeElapsed, startPosition, scrollDistance, scrollDuration);
+            window.scrollTo(0, run);
+    
+            if (timeElapsed < scrollDuration) {
+                requestAnimationFrame(scrollAnimation); // Continue the scrollAnimation
+            }
         }
-    }
+    
+        function easeInOutQuad(t, b, c, d) {
+            t /= d / 2;
+            if (t < 1) return (c / 2) * t * t + b;
+            t--;
+            return (-c / 2) * (t * (t - 2) - 1) + b;
+        }
+    
+        requestAnimationFrame(scrollAnimation); // Start the scrollAnimation
+    }    
 
     // Initial update and update on scroll
     if(navLinks.length > 0) {
@@ -1139,7 +1153,8 @@ function defaultAddListing() {
         link.addEventListener("click", function (e) {
             e.preventDefault();
             const targetSection = this.getAttribute("href").substring(1);
-            smoothScroll(targetSection);
+            // Scroll to an element with a custom scrollDuration of 1500ms
+            smoothScroll(targetSection, 1250);
         });
     });
 }
@@ -1151,7 +1166,7 @@ function addListingAccordion() {
 
         let windowScreen = window.innerWidth ;
 
-        if(windowScreen <= 480) {
+        if(windowScreen <= 991) {
             $(this).toggleClass('opened');
             $(this).next('.directorist-content-module__contents').toggleClass('active');
         }
@@ -1177,3 +1192,18 @@ $('body').on('click', function (e) {
         multiStepWizard();
     }
 });
+
+function regenerate_and_update_nonce() {
+    $.ajax({
+        type: 'POST',
+        url: localized_data.ajaxurl,
+        data: {
+            action: 'directorist_generate_nonce'
+        },
+        success: function (response) {
+            if (response.success) {
+                window.directorist.directorist_nonce = response.data.directorist_nonce
+            }
+        }
+    });
+}
