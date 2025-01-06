@@ -3602,13 +3602,12 @@ input[type="radio"] {
 
 // Single Listing Header Placeholder
 .cptm-preview-placeholder {
-  width: 700px;
-  max-width: 100%;
-  margin: 0 auto;
+  flex: 1;
+  margin-right: 24px;
   @include e(card) {
-    padding: 30px;
-    border-radius: 6px;
-    box-shadow: 0 0 10px rgba(134, 142, 174, 0.2);
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
     .cptm-widget-insert-link {
       background-color: #272b41;
       box-shadow: none;
@@ -3618,6 +3617,9 @@ input[type="radio"] {
 
     @include e(item) {
       flex: 1;
+      padding: 30px;
+      border-radius: 10px;
+      box-shadow: 0 0 10px rgba(134, 142, 174, 0.2);
       @include m(top) {
         display: flex;
         gap: 30px;
@@ -3635,9 +3637,8 @@ input[type="radio"] {
 
     @include e(box) {
       flex: 1;
-      padding: 10px 10px 19px;
+      padding: 10px;
       border-radius: 8px;
-      min-height: 66px;
       min-width: 150px;
       z-index: unset;
       .cptm-placeholder-label {
@@ -3659,6 +3660,13 @@ input[type="radio"] {
           background-color: #e3e6ef;
         }
       }
+    }
+
+    @include e(content){
+      width: 100%;
+      display: flex;
+      gap: 20px;
+      justify-content: space-between;
     }
 
     @include e(btn) {
@@ -3714,6 +3722,10 @@ input[type="radio"] {
         }
       }
     }
+  }
+  @include m('settings-closed') {
+    max-width: 700px;
+    margin: 0 auto;
   }
 }
 

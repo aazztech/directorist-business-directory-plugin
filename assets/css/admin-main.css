@@ -18279,15 +18279,23 @@ input[type=radio]:checked::before {
 }
 
 .cptm-preview-placeholder {
-  width: 700px;
-  max-width: 100%;
-  margin: 0 auto;
+  -webkit-box-flex: 1;
+  -webkit-flex: 1;
+      -ms-flex: 1;
+          flex: 1;
+  margin-right: 24px;
 }
 .cptm-preview-placeholder__card {
-  padding: 30px;
-  border-radius: 6px;
-  -webkit-box-shadow: 0 0 10px rgba(134, 142, 174, 0.2);
-          box-shadow: 0 0 10px rgba(134, 142, 174, 0.2);
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-orient: vertical;
+  -webkit-box-direction: normal;
+  -webkit-flex-direction: column;
+      -ms-flex-direction: column;
+          flex-direction: column;
+  gap: 20px;
 }
 .cptm-preview-placeholder__card .cptm-widget-insert-link {
   background-color: #272b41;
@@ -18301,6 +18309,10 @@ input[type=radio]:checked::before {
   -webkit-flex: 1;
       -ms-flex: 1;
           flex: 1;
+  padding: 30px;
+  border-radius: 10px;
+  -webkit-box-shadow: 0 0 10px rgba(134, 142, 174, 0.2);
+          box-shadow: 0 0 10px rgba(134, 142, 174, 0.2);
 }
 .cptm-preview-placeholder__card__item--top {
   display: -webkit-box;
@@ -18330,9 +18342,8 @@ input[type=radio]:checked::before {
   -webkit-flex: 1;
       -ms-flex: 1;
           flex: 1;
-  padding: 10px 10px 19px;
+  padding: 10px;
   border-radius: 8px;
-  min-height: 66px;
   min-width: 150px;
   z-index: unset;
 }
@@ -18359,6 +18370,18 @@ input[type=radio]:checked::before {
   font-weight: 500;
   color: #868eae;
   background-color: #e3e6ef;
+}
+.cptm-preview-placeholder__card__content {
+  width: 100%;
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: -ms-flexbox;
+  display: flex;
+  gap: 20px;
+  -webkit-box-pack: justify;
+  -webkit-justify-content: space-between;
+      -ms-flex-pack: justify;
+          justify-content: space-between;
 }
 .cptm-preview-placeholder__card__btn {
   width: 100%;
@@ -18425,6 +18448,10 @@ input[type=radio]:checked::before {
 }
 .cptm-preview-placeholder__card .draggable-item .cptm-drag-element:hover {
   color: #1e1e1e;
+}
+.cptm-preview-placeholder--settings-closed {
+  max-width: 700px;
+  margin: 0 auto;
 }
 
 .atbdp-sidebar-nav-area {
@@ -23491,15 +23518,23 @@ input[type=radio]:checked::before {
 }
 
 .cptm-preview-placeholder {
-  width: 700px;
-  max-width: 100%;
-  margin: 0 auto;
+  -webkit-box-flex: 1;
+  -webkit-flex: 1;
+      -ms-flex: 1;
+          flex: 1;
+  margin-right: 24px;
 }
 .cptm-preview-placeholder__card {
-  padding: 30px;
-  border-radius: 6px;
-  -webkit-box-shadow: 0 0 10px rgba(134, 142, 174, 0.2);
-          box-shadow: 0 0 10px rgba(134, 142, 174, 0.2);
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-orient: vertical;
+  -webkit-box-direction: normal;
+  -webkit-flex-direction: column;
+      -ms-flex-direction: column;
+          flex-direction: column;
+  gap: 20px;
 }
 .cptm-preview-placeholder__card .cptm-widget-insert-link {
   background-color: #272b41;
@@ -23513,6 +23548,10 @@ input[type=radio]:checked::before {
   -webkit-flex: 1;
       -ms-flex: 1;
           flex: 1;
+  padding: 30px;
+  border-radius: 10px;
+  -webkit-box-shadow: 0 0 10px rgba(134, 142, 174, 0.2);
+          box-shadow: 0 0 10px rgba(134, 142, 174, 0.2);
 }
 .cptm-preview-placeholder__card__item--top {
   display: -webkit-box;
@@ -23542,9 +23581,8 @@ input[type=radio]:checked::before {
   -webkit-flex: 1;
       -ms-flex: 1;
           flex: 1;
-  padding: 10px 10px 19px;
+  padding: 10px;
   border-radius: 8px;
-  min-height: 66px;
   min-width: 150px;
   z-index: unset;
 }
@@ -23571,6 +23609,18 @@ input[type=radio]:checked::before {
   font-weight: 500;
   color: #868eae;
   background-color: #e3e6ef;
+}
+.cptm-preview-placeholder__card__content {
+  width: 100%;
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: -ms-flexbox;
+  display: flex;
+  gap: 20px;
+  -webkit-box-pack: justify;
+  -webkit-justify-content: space-between;
+      -ms-flex-pack: justify;
+          justify-content: space-between;
 }
 .cptm-preview-placeholder__card__btn {
   width: 100%;
@@ -23637,6 +23687,10 @@ input[type=radio]:checked::before {
 }
 .cptm-preview-placeholder__card .draggable-item .cptm-drag-element:hover {
   color: #1e1e1e;
+}
+.cptm-preview-placeholder--settings-closed {
+  max-width: 700px;
+  margin: 0 auto;
 }
 
 .atbdp-sidebar-nav-area {
@@ -28991,15 +29045,23 @@ input[type=radio]:checked::before {
 }
 
 .cptm-preview-placeholder {
-  width: 700px;
-  max-width: 100%;
-  margin: 0 auto;
+  -webkit-box-flex: 1;
+  -webkit-flex: 1;
+      -ms-flex: 1;
+          flex: 1;
+  margin-right: 24px;
 }
 .cptm-preview-placeholder__card {
-  padding: 30px;
-  border-radius: 6px;
-  -webkit-box-shadow: 0 0 10px rgba(134, 142, 174, 0.2);
-          box-shadow: 0 0 10px rgba(134, 142, 174, 0.2);
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-orient: vertical;
+  -webkit-box-direction: normal;
+  -webkit-flex-direction: column;
+      -ms-flex-direction: column;
+          flex-direction: column;
+  gap: 20px;
 }
 .cptm-preview-placeholder__card .cptm-widget-insert-link {
   background-color: #272b41;
@@ -29013,6 +29075,10 @@ input[type=radio]:checked::before {
   -webkit-flex: 1;
       -ms-flex: 1;
           flex: 1;
+  padding: 30px;
+  border-radius: 10px;
+  -webkit-box-shadow: 0 0 10px rgba(134, 142, 174, 0.2);
+          box-shadow: 0 0 10px rgba(134, 142, 174, 0.2);
 }
 .cptm-preview-placeholder__card__item--top {
   display: -webkit-box;
@@ -29042,9 +29108,8 @@ input[type=radio]:checked::before {
   -webkit-flex: 1;
       -ms-flex: 1;
           flex: 1;
-  padding: 10px 10px 19px;
+  padding: 10px;
   border-radius: 8px;
-  min-height: 66px;
   min-width: 150px;
   z-index: unset;
 }
@@ -29071,6 +29136,18 @@ input[type=radio]:checked::before {
   font-weight: 500;
   color: #868eae;
   background-color: #e3e6ef;
+}
+.cptm-preview-placeholder__card__content {
+  width: 100%;
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: -ms-flexbox;
+  display: flex;
+  gap: 20px;
+  -webkit-box-pack: justify;
+  -webkit-justify-content: space-between;
+      -ms-flex-pack: justify;
+          justify-content: space-between;
 }
 .cptm-preview-placeholder__card__btn {
   width: 100%;
@@ -29137,6 +29214,10 @@ input[type=radio]:checked::before {
 }
 .cptm-preview-placeholder__card .draggable-item .cptm-drag-element:hover {
   color: #1e1e1e;
+}
+.cptm-preview-placeholder--settings-closed {
+  max-width: 700px;
+  margin: 0 auto;
 }
 
 .atbdp-sidebar-nav-area {
