@@ -2377,7 +2377,7 @@ input[type="radio"].cptm-radio {
   }
 }
 
-.cptm-placeholder-blcok {
+.cptm-placeholder-block {
   padding: 2px;
   position: relative;
   min-height: 54px;
@@ -2608,7 +2608,7 @@ input[type="radio"].cptm-radio {
   width: calc(100% - 40px);
   transform: translate(-50%, -50%);
 
-  .cptm-placeholder-blcok {
+  .cptm-placeholder-block {
     padding: 0;
     height: 51px;
     min-height: auto;
@@ -2852,7 +2852,7 @@ input[type="radio"].cptm-radio {
 }
 
 .cptm-card-light {
-  &.cptm-placeholder-blcok {
+  &.cptm-placeholder-block {
     border-color: #c6d0dc;
 
     &:hover,
@@ -3633,6 +3633,11 @@ input[type="radio"] {
           }
         }
       }
+      .cptm-widget-actions-tools-wrap {
+        &:before {
+          display: none;
+        }
+      }
     }
 
     @include e(box) {
@@ -3715,10 +3720,20 @@ input[type="radio"] {
       align-items: center;
       flex-direction: row;
       .cptm-drag-element {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 28px;
+        height: 28px;
         font-size: 15px;
         color: #868eae;
+        background: transparent;
+        border-radius: 6px;
+        transition: all ease 0.3s;
+        cursor: grab;
         &:hover {
           color: #1e1e1e;
+          background: #E5E7EB;
         }
       }
     }
@@ -4193,7 +4208,21 @@ input[type="radio"] {
       gap: 12px;
       align-items: center;
       .drag-icon {
-        color: #A1A9B2;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 28px;
+        height: 28px;
+        font-size: 15px;
+        color: #868eae;
+        background: transparent;
+        border-radius: 6px;
+        transition: all ease 0.3s;
+        cursor: grab;
+        &:hover {
+          color: #1e1e1e;
+          background: #E5E7EB;
+        }
       }
       @include e(label) {
         display: flex;

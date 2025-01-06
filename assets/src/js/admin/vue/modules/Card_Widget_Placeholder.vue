@@ -1,6 +1,6 @@
 <template>
   <div
-    class="cptm-placeholder-blcok"
+    class="cptm-placeholder-block"
     :class="getContainerClass"
     @drop.prevent="placeholderOnDrop()"
     @dragover.prevent="$emit('placeholder-dragover-on')"
@@ -11,37 +11,7 @@
       {{ label }}
     </p>
 
-    <div class="cptm-widget-insert-area">
-      <div class="cptm-widget-insert-wrap">
-        <div class="cptm-widget-insert-modal-container">
-          <widgets-window
-            :id="id"
-            :availableWidgets="availableWidgets"
-            :acceptedWidgets="acceptedWidgets"
-            :rejectedWidgets="rejectedWidgets"
-            :activeWidgets="activeWidgets"
-            :selectedWidgets="selectedWidgets"
-            :active="showWidgetsPickerWindow"
-            :maxWidget="maxWidget"
-            :maxWidgetInfoText="maxWidgetInfoText"
-            :bottomAchhor="true"
-            @widget-selection="$emit('insert-widget', $event)"
-            @close="$emit('close-widgets-picker-window')"
-          />
-        </div>
-
-        <a
-          v-if="canAddMore"
-          href="#"
-          class="cptm-widget-insert-link"
-          @click.prevent="$emit('open-widgets-picker-window')"
-        >
-          <span class="fa fa-plus"></span>
-        </a>
-      </div>
-    </div>
-
-    <div class="cptm-widget-preview-area" v-if="selectedWidgets && selectedWidgets.length">
+    <div class="cptm-widget-preview-area chk" v-if="selectedWidgets && selectedWidgets.length">
       <template v-for="(widget, widget_index) in selectedWidgets">
         <template v-if="hasValidWidget(widget)">
           <component
@@ -50,14 +20,7 @@
             :label="( typeof availableWidgets[widget] !== 'undefined' ) ? availableWidgets[widget].label : 'Not Available'"
             :icon="( typeof activeWidgets[widget].icon === 'string' ) ? activeWidgets[widget].icon : ''"
             :options="activeWidgets[widget].options"
-            :widgetDropable="widgetDropable"
-            :canMove="typeof activeWidgets[widget].can_move !== undefined ? activeWidgets[widget].can_move : true"
-            :canEdit="widgetHasOptions( activeWidgets[widget] )"
-            @drag="$emit('drag-widget', widget)"
-            @drop="$emit('drop-widget', widget)"
-            @dragend="$emit('dragend-widget', widget)"
-            @edit="$emit('edit-widget', widget)"
-            @trash="$emit('trash-widget', widget)"
+            :read-only="true"
           >
           </component>
         </template>

@@ -11,6 +11,7 @@
                 @dragend="dragEnd()" 
                 @edit="$emit( 'edit' )" 
                 @trash="$emit( 'trash' )"
+                v-if="!readOnly"
             />
         </div>
 
@@ -20,6 +21,7 @@
             @dragenter="handleDragEnter()"
             @dragleave="handleDragLeave()" 
             @drop="handleDrop()"
+            v-if="!readOnly"
         >
         </span>
     </div>
@@ -56,7 +58,24 @@ export default {
             type: Boolean,
             default: true,
         },
+
+        readOnly: {
+            type: Boolean,
+            default: false,
+        },
     },
+
+    mounted() {
+    console.log('Props received in badge-card-widget:', {
+        label: this.label,
+        options: this.options,
+        widgetDropable: this.widgetDropable,
+        canMove: this.canMove,
+        canEdit: this.canEdit,
+        canTrash: this.canTrash,
+        readOnly: this.readOnly,
+    });
+},
 
     computed: {
         dropAppendClass() {

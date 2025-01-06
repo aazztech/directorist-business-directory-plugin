@@ -122,7 +122,7 @@
                 />
               </div>
 
-              <div class="cptm-drag-element las la-arrows-alt"></div>
+              <div class="cptm-drag-element uil uil-draggabledots"></div>
             </div>
           </Draggable>
         </Container>

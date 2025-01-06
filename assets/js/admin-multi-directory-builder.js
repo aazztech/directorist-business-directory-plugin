@@ -16925,6 +16925,10 @@ __webpack_require__.r(__webpack_exports__);
     canTrash: {
       type: Boolean,
       default: true
+    },
+    readOnly: {
+      type: Boolean,
+      default: false
     }
   },
   computed: {
@@ -17003,7 +17007,22 @@ __webpack_require__.r(__webpack_exports__);
     canTrash: {
       type: Boolean,
       default: true
+    },
+    readOnly: {
+      type: Boolean,
+      default: false
     }
+  },
+  mounted: function mounted() {
+    console.log('Props received in badge-card-widget:', {
+      label: this.label,
+      options: this.options,
+      widgetDropable: this.widgetDropable,
+      canMove: this.canMove,
+      canEdit: this.canEdit,
+      canTrash: this.canTrash,
+      readOnly: this.readOnly
+    });
   },
   computed: {
     dropAppendClass: function dropAppendClass() {
@@ -17081,6 +17100,10 @@ __webpack_require__.r(__webpack_exports__);
     canTrash: {
       type: Boolean,
       default: true
+    },
+    readOnly: {
+      type: Boolean,
+      default: false
     }
   },
   computed: {
@@ -17575,6 +17598,10 @@ __webpack_require__.r(__webpack_exports__);
     canTrash: {
       type: Boolean,
       default: true
+    },
+    readOnly: {
+      type: Boolean,
+      default: false
     }
   },
   computed: {
@@ -17653,6 +17680,10 @@ __webpack_require__.r(__webpack_exports__);
     canTrash: {
       type: Boolean,
       default: true
+    },
+    readOnly: {
+      type: Boolean,
+      default: false
     }
   },
   computed: {
@@ -17887,6 +17918,10 @@ __webpack_require__.r(__webpack_exports__);
     canTrash: {
       type: Boolean,
       default: true
+    },
+    readOnly: {
+      type: Boolean,
+      default: false
     }
   },
   computed: {
@@ -17965,6 +18000,10 @@ __webpack_require__.r(__webpack_exports__);
     canTrash: {
       type: Boolean,
       default: true
+    },
+    readOnly: {
+      type: Boolean,
+      default: false
     }
   },
   computed: {
@@ -27391,14 +27430,11 @@ render._withStripped = true;
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "render", function() { return render; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "staticRenderFns", function() { return staticRenderFns; });
-/* harmony import */ var _babel_runtime_helpers_typeof__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @babel/runtime/helpers/typeof */ "./node_modules/@babel/runtime/helpers/typeof.js");
-/* harmony import */ var _babel_runtime_helpers_typeof__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_babel_runtime_helpers_typeof__WEBPACK_IMPORTED_MODULE_0__);
-
 var render = function render() {
   var _vm = this,
     _c = _vm._self._c;
   return _c("div", {
-    staticClass: "cptm-placeholder-blcok",
+    staticClass: "cptm-placeholder-block",
     class: _vm.getContainerClass,
     on: {
       drop: function drop($event) {
@@ -27421,48 +27457,8 @@ var render = function render() {
     class: {
       hide: _vm.selectedWidgets && _vm.selectedWidgets.length
     }
-  }, [_vm._v("\n    " + _vm._s(_vm.label) + "\n  ")]), _vm._v(" "), _c("div", {
-    staticClass: "cptm-widget-insert-area"
-  }, [_c("div", {
-    staticClass: "cptm-widget-insert-wrap"
-  }, [_c("div", {
-    staticClass: "cptm-widget-insert-modal-container"
-  }, [_c("widgets-window", {
-    attrs: {
-      id: _vm.id,
-      availableWidgets: _vm.availableWidgets,
-      acceptedWidgets: _vm.acceptedWidgets,
-      rejectedWidgets: _vm.rejectedWidgets,
-      activeWidgets: _vm.activeWidgets,
-      selectedWidgets: _vm.selectedWidgets,
-      active: _vm.showWidgetsPickerWindow,
-      maxWidget: _vm.maxWidget,
-      maxWidgetInfoText: _vm.maxWidgetInfoText,
-      bottomAchhor: true
-    },
-    on: {
-      "widget-selection": function widgetSelection($event) {
-        return _vm.$emit("insert-widget", $event);
-      },
-      close: function close($event) {
-        return _vm.$emit("close-widgets-picker-window");
-      }
-    }
-  })], 1), _vm._v(" "), _vm.canAddMore ? _c("a", {
-    staticClass: "cptm-widget-insert-link",
-    attrs: {
-      href: "#"
-    },
-    on: {
-      click: function click($event) {
-        $event.preventDefault();
-        return _vm.$emit("open-widgets-picker-window");
-      }
-    }
-  }, [_c("span", {
-    staticClass: "fa fa-plus"
-  })]) : _vm._e()])]), _vm._v(" "), _vm.selectedWidgets && _vm.selectedWidgets.length ? _c("div", {
-    staticClass: "cptm-widget-preview-area"
+  }, [_vm._v("\n    " + _vm._s(_vm.label) + "\n  ")]), _vm._v(" "), _vm.selectedWidgets && _vm.selectedWidgets.length ? _c("div", {
+    staticClass: "cptm-widget-preview-area chk"
   }, [_vm._l(_vm.selectedWidgets, function (widget, widget_index) {
     return [_vm.hasValidWidget(widget) ? [_c(_vm.activeWidgets[widget].type + "-card-widget", {
       key: widget_index,
@@ -27471,26 +27467,7 @@ var render = function render() {
         label: typeof _vm.availableWidgets[widget] !== "undefined" ? _vm.availableWidgets[widget].label : "Not Available",
         icon: typeof _vm.activeWidgets[widget].icon === "string" ? _vm.activeWidgets[widget].icon : "",
         options: _vm.activeWidgets[widget].options,
-        widgetDropable: _vm.widgetDropable,
-        canMove: _babel_runtime_helpers_typeof__WEBPACK_IMPORTED_MODULE_0___default()(_vm.activeWidgets[widget].can_move) !== undefined ? _vm.activeWidgets[widget].can_move : true,
-        canEdit: _vm.widgetHasOptions(_vm.activeWidgets[widget])
-      },
-      on: {
-        drag: function drag($event) {
-          return _vm.$emit("drag-widget", widget);
-        },
-        drop: function drop($event) {
-          return _vm.$emit("drop-widget", widget);
-        },
-        dragend: function dragend($event) {
-          return _vm.$emit("dragend-widget", widget);
-        },
-        edit: function edit($event) {
-          return _vm.$emit("edit-widget", widget);
-        },
-        trash: function trash($event) {
-          return _vm.$emit("trash-widget", widget);
-        }
+        "read-only": true
       }
     })] : _vm._e()];
   })], 2) : _vm._e()]);
@@ -28532,7 +28509,7 @@ var render = function render() {
     staticClass: "cptm-widget-card-wrap cptm-widget-card-inline-wrap cptm-widget-badge-card-wrap"
   }, [_c("div", {
     staticClass: "cptm-widget-card cptm-has-widget-control cptm-widget-actions-tools-wrap"
-  }, [_vm._m(0), _vm._v(" "), _c("widget-action-tools", {
+  }, [_vm._m(0), _vm._v(" "), !_vm.readOnly ? _c("widget-action-tools", {
     attrs: {
       canEdit: _vm.canEdit,
       canMove: _vm.canMove,
@@ -28552,7 +28529,7 @@ var render = function render() {
         return _vm.$emit("trash");
       }
     }
-  })], 1), _vm._v(" "), _c("span", {
+  }) : _vm._e()], 1), _vm._v(" "), !_vm.readOnly ? _c("span", {
     staticClass: "cptm-widget-card-drop-append",
     class: _vm.dropAppendClass,
     on: {
@@ -28569,7 +28546,7 @@ var render = function render() {
         return _vm.handleDrop();
       }
     }
-  })]);
+  }) : _vm._e()]);
 };
 var staticRenderFns = [function () {
   var _vm = this,
@@ -28606,7 +28583,7 @@ var render = function render() {
     staticClass: "cptm-widget-card-wrap cptm-widget-card-inline-wrap cptm-widget-badge-card-wrap"
   }, [_c("div", {
     staticClass: "cptm-widget-card cptm-widget-badge cptm-has-widget-control cptm-widget-actions-tools-wrap"
-  }, [_vm._v("\n        " + _vm._s(_vm.label) + "\n        \n        "), _c("widget-action-tools", {
+  }, [_vm._v("\n        " + _vm._s(_vm.label) + "\n        \n        "), !_vm.readOnly ? _c("widget-action-tools", {
     attrs: {
       canEdit: _vm.canEdit,
       canMove: _vm.canMove,
@@ -28626,7 +28603,7 @@ var render = function render() {
         return _vm.$emit("trash");
       }
     }
-  })], 1), _vm._v(" "), _c("span", {
+  }) : _vm._e()], 1), _vm._v(" "), !_vm.readOnly ? _c("span", {
     staticClass: "cptm-widget-card-drop-append",
     class: _vm.dropAppendClass,
     on: {
@@ -28643,7 +28620,7 @@ var render = function render() {
         return _vm.handleDrop();
       }
     }
-  })]);
+  }) : _vm._e()]);
 };
 var staticRenderFns = [];
 render._withStripped = true;
@@ -28669,7 +28646,7 @@ var render = function render() {
     staticClass: "cptm-widget-card-wrap cptm-widget-card-inline-wrap cptm-widget-badge-card-wrap"
   }, [_c("div", {
     staticClass: "cptm-widget-card cptm-widget-badge cptm-has-widget-control cptm-widget-actions-tools-wrap"
-  }, [_vm._v("\n        " + _vm._s(_vm.label) + "\n        \n        "), _c("widget-action-tools", {
+  }, [_vm._v("\n        " + _vm._s(_vm.label) + "\n        \n        "), !_vm.readOnly ? _c("widget-action-tools", {
     attrs: {
       canEdit: _vm.canEdit,
       canMove: _vm.canMove,
@@ -28689,7 +28666,7 @@ var render = function render() {
         return _vm.$emit("trash");
       }
     }
-  })], 1), _vm._v(" "), _c("span", {
+  }) : _vm._e()], 1), _vm._v(" "), !_vm.readOnly ? _c("span", {
     staticClass: "cptm-widget-card-drop-append",
     class: _vm.dropAppendClass,
     on: {
@@ -28706,7 +28683,7 @@ var render = function render() {
         return _vm.handleDrop();
       }
     }
-  })]);
+  }) : _vm._e()]);
 };
 var staticRenderFns = [];
 render._withStripped = true;
@@ -29055,7 +29032,7 @@ var render = function render() {
     staticClass: "cptm-widget-card-wrap cptm-widget-card-inline-wrap cptm-widget-badge-card-wrap"
   }, [_c("div", {
     staticClass: "cptm-widget-card cptm-widget-badge cptm-has-widget-control cptm-widget-actions-tools-wrap"
-  }, [_vm._v("\n        " + _vm._s(_vm.label) + "\n        \n        "), _c("widget-action-tools", {
+  }, [_vm._v("\n        " + _vm._s(_vm.label) + "\n        \n        "), !_vm.readOnly ? _c("widget-action-tools", {
     attrs: {
       canEdit: _vm.canEdit,
       canMove: _vm.canMove,
@@ -29075,7 +29052,7 @@ var render = function render() {
         return _vm.$emit("trash");
       }
     }
-  })], 1), _vm._v(" "), _c("span", {
+  }) : _vm._e()], 1), _vm._v(" "), !_vm.readOnly ? _c("span", {
     staticClass: "cptm-widget-card-drop-append",
     class: _vm.dropAppendClass,
     on: {
@@ -29092,7 +29069,7 @@ var render = function render() {
         return _vm.handleDrop();
       }
     }
-  })]);
+  }) : _vm._e()]);
 };
 var staticRenderFns = [];
 render._withStripped = true;
@@ -29118,7 +29095,7 @@ var render = function render() {
     staticClass: "cptm-widget-card-wrap cptm-widget-card-inline-wrap cptm-widget-badge-card-wrap"
   }, [_c("div", {
     staticClass: "cptm-widget-card cptm-widget-badge cptm-has-widget-control cptm-widget-actions-tools-wrap"
-  }, [_vm._v("\n        " + _vm._s(_vm.label) + "\n        \n        "), _c("widget-action-tools", {
+  }, [_vm._v("\n        " + _vm._s(_vm.label) + "\n        \n        "), !_vm.readOnly ? _c("widget-action-tools", {
     attrs: {
       canEdit: _vm.canEdit,
       canMove: _vm.canMove,
@@ -29138,7 +29115,7 @@ var render = function render() {
         return _vm.$emit("trash");
       }
     }
-  })], 1), _vm._v(" "), _c("span", {
+  }) : _vm._e()], 1), _vm._v(" "), !_vm.readOnly ? _c("span", {
     staticClass: "cptm-widget-card-drop-append",
     class: _vm.dropAppendClass,
     on: {
@@ -29155,7 +29132,7 @@ var render = function render() {
         return _vm.handleDrop();
       }
     }
-  })]);
+  }) : _vm._e()]);
 };
 var staticRenderFns = [];
 render._withStripped = true;
@@ -29311,7 +29288,7 @@ var render = function render() {
     staticClass: "cptm-widget-card cptm-widget-thumb cptm-has-widget-control cptm-widget-actions-tools-wrap"
   }, [_vm._m(0), _vm._v(" "), _c("div", {
     staticClass: "cptm-widget-label"
-  }, [_vm._v("\n            " + _vm._s(_vm.label) + "\n        ")]), _vm._v(" "), _c("widget-action-tools", {
+  }, [_vm._v("\n            " + _vm._s(_vm.label) + "\n        ")]), _vm._v(" "), !_vm.readOnly ? _c("widget-action-tools", {
     attrs: {
       canEdit: _vm.canEdit,
       canMove: _vm.canMove,
@@ -29331,7 +29308,7 @@ var render = function render() {
         return _vm.$emit("trash");
       }
     }
-  })], 1), _vm._v(" "), _c("span", {
+  }) : _vm._e()], 1), _vm._v(" "), !_vm.readOnly ? _c("span", {
     staticClass: "cptm-widget-card-drop-append",
     class: _vm.dropAppendClass,
     on: {
@@ -29348,7 +29325,7 @@ var render = function render() {
         return _vm.handleDrop();
       }
     }
-  })]);
+  }) : _vm._e()]);
 };
 var staticRenderFns = [function () {
   var _vm = this,
@@ -29384,7 +29361,7 @@ var render = function render() {
     staticClass: "cptm-widget-card cptm-widget-title-card cptm-has-widget-control cptm-widget-actions-tools-wrap"
   }, [_c("div", {
     staticClass: "cptm-widget-title-block"
-  }, [_vm._v("\n            " + _vm._s(_vm.label) + "\n        ")]), _vm._v(" "), _c("widget-action-tools", {
+  }, [_vm._v("\n            " + _vm._s(_vm.label) + "\n        ")]), _vm._v(" "), !_vm.readOnly ? _c("widget-action-tools", {
     attrs: {
       canEdit: _vm.canEdit,
       canMove: _vm.canMove,
@@ -29404,7 +29381,7 @@ var render = function render() {
         return _vm.$emit("trash");
       }
     }
-  })], 1), _vm._v(" "), _c("span", {
+  }) : _vm._e()], 1), _vm._v(" "), !_vm.readOnly ? _c("span", {
     staticClass: "cptm-widget-card-drop-append",
     class: _vm.dropAppendClass,
     on: {
@@ -29421,7 +29398,7 @@ var render = function render() {
         return _vm.handleDrop();
       }
     }
-  })]);
+  }) : _vm._e()]);
 };
 var staticRenderFns = [];
 render._withStripped = true;
@@ -33398,7 +33375,7 @@ var render = function render() {
         }
       }
     })], 1), _vm._v(" "), _c("div", {
-      staticClass: "cptm-drag-element las la-arrows-alt"
+      staticClass: "cptm-drag-element uil uil-draggabledots"
     })])]) : _vm._e();
   }), 1)], 2), _vm._v(" "), _c("div", {
     staticClass: "cptm-placeholder-buttons"
