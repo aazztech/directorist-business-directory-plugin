@@ -163,6 +163,7 @@ if ( ! class_exists('ATBDP_Settings_Panel') ) {
 
             $c = '<b><span style="color:#c71585;">'; //color start
             $e = '</span></b>'; // end color
+
             $description = <<<SWBD
                 You can use the following keywords/placeholder in any of your email bodies/templates or subjects to output dynamic value. **Usage: place the placeholder name between $c == $e and $c == $e . For Example: use {$c}==SITE_NAME=={$e} to output The Your Website Name etc. <br/><br/>
                 {$c}==NAME=={$e} : It outputs The listing owner's display name on the site<br/>
@@ -426,6 +427,7 @@ Please remember that your order may be canceled if you do not make your payment 
 
 		$default_size = directorist_default_preview_size();
 		$default_preview_size_text = $default_size['width'].'x'.$default_size['height'].' px';
+
 
             $this->fields = apply_filters('atbdp_listing_type_settings_field_list', [
 
@@ -724,28 +726,26 @@ Please remember that your order may be canceled if you do not make your payment 
                         ],
                     ],
                 ],
-
                 // Badge Color
                 'featured_back_color' => [
                     'type'        => 'color',
                     'label'       => __('Background Color', 'directorist'),
                     'value'       => '#fa8b0c',
-                    'show-if'     => [
+                    'change-if'    => [
                         'where' => 'feature_badge_type',
                         'conditions' => [
-                            ['key' => 'value', 'compare' => '=', 'value' => 'text_badge'],
+                            [
+                                'key' => 'value', 
+                                'compare' => '=', 
+                                'value' => 'icon_badge'
+                            ],
                         ],
-                    ],
-                ],
-
-                'featured_hover_color' => [
-                    'type'        => 'color',
-                    'label'       => __('Hover Color', 'directorist'),
-                    'value'       => '#fa8b0c',
-                    'show-if'     => [
-                        'where' => 'feature_badge_type',
-                        'conditions' => [
-                            ['key' => 'value', 'compare' => '=', 'value' => 'icon_badge'],
+                        'effects' => [
+                            [ 
+                                'key' => 'label', 
+                                'value' => __('Hover Background Color', 'directorist'),
+                                'default_value' => __('Background Color', 'directorist')
+                            ],
                         ],
                     ],
                 ],
@@ -1382,39 +1382,38 @@ Please remember that your order may be canceled if you do not make your payment 
                 'feature_badge_type' => [
                     'label'     => __('Badge Type', 'directorist'),
                     'type'      => 'select',
-                    'value'     => 'icon_badge',
+                    'value'     => 'text_badge',
                     'options'   => [
-                        [
-                            'value' => 'icon_badge',
-                            'label' => __('Icon with Hover Text', 'directorist'),
-                        ],
                         [
                             'value' => 'text_badge',
                             'label' => __('Text Badge', 'directorist'),
                         ],
-                    ],
-                ],
-                'feature_badge_text' => [
-                    'type'          => 'text',
-                    'label'         => __('Badge Text', 'directorist'),
-                    'description'   => __('Text displayed on the badge when a listing is marked as featured.', 'directorist'),
-                    'value'         => __('Featured', 'directorist'),
-                    'show-if'       => [
-                        'where' => 'feature_badge_type',
-                        'conditions' => [
-                            ['key' => 'value', 'compare' => '=', 'value' => 'text_badge'],
+                        [
+                            'value' => 'icon_badge',
+                            'label' => __('Icon with Hover Text', 'directorist'),
                         ],
                     ],
                 ],
-                'feature_badge_hover_text' => [
-                    'type'          => 'text',
-                    'label'         => __('Hover Text', 'directorist'),
-                    'description'   => __('Text displayed on the badge when hovered.', 'directorist'),
-                    'value'         => __('Featured', 'directorist'),
-                    'show-if'       => [
+                'feature_badge_text' => [
+                    'type'         => 'text',
+                    'label'        => __('Badge Text', 'directorist'),
+                    'description'  => __('Text displayed on the badge when a listing is marked as featured.', 'directorist'),
+                    'value'        => __('Featured', 'directorist'),
+                    'change-if'    => [
                         'where' => 'feature_badge_type',
                         'conditions' => [
-                            ['key' => 'value', 'compare' => '=', 'value' => 'icon_badge'],
+                            [
+                                'key' => 'value', 
+                                'compare' => '=', 
+                                'value' => 'icon_badge'
+                            ],
+                        ],
+                        'effects' => [
+                            [ 
+                                'key' => 'label', 
+                                'value' => __('Badge Hover Text', 'directorist'),
+                                'default_value' => __('Badge Text', 'directorist')
+                            ],
                         ],
                     ],
                 ],
@@ -3701,11 +3700,7 @@ Please remember that your order may be canceled if you do not make your payment 
                                     'title'       => __('Featured Badge', 'directorist'),
                                     'description' => '',
                                     'fields'      => [
-                                        'feature_badge_type', 
-                                        'feature_badge_text', 
-                                        'featured_back_color', 
-                                        'feature_badge_hover_text', 
-                                        'featured_hover_color',
+                                        'feature_badge_type', 'feature_badge_text', 'featured_back_color',
                                     ],
                                 ],
                             ] ),
