@@ -26,12 +26,12 @@ if ( ! defined( 'ABSPATH' ) ) exit;
     <?php elseif ( $class == 'new' ) : ?>
 
         <?php directorist_icon( 'fas fa-bolt' ); ?>
-        <span class="directorist-badge-tooltip directorist-badge-tooltip__new"><?php esc_html_e( 'New', 'directorist'); ?></span>
+        <span class="directorist-badge-tooltip directorist-badge-tooltip__new"><?php echo esc_html( ! empty( $label ) ? $label : 'New' ); ?></span>
 
     <?php elseif ( $class == 'popular' ) : ?>
 
         <?php directorist_icon( 'fas fa-fire' ); ?>
-        <span class="directorist-badge-tooltip directorist-badge-tooltip__popular"><?php esc_html_e( 'Popular', 'directorist'); ?></span>
+        <span class="directorist-badge-tooltip directorist-badge-tooltip__popular"><?php echo esc_html( ! empty( $label ) ? $label : 'Popular' ); ?></span>
 
     <?php endif;?>
 
