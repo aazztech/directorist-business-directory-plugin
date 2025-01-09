@@ -4114,8 +4114,8 @@ function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len 
         // Check if the slider is already initialized
         if (!slider || slider.directoristCustomRangeSlider) return;
         var sliderStep = parseInt(slider.getAttribute('step')) || 1;
-        var sliderDefaultValue = parseInt(slider.getAttribute('value'));
-        var sliderMaxValue = parseInt(slider.getAttribute('max-value'));
+        var sliderDefaultValue = parseInt(slider.getAttribute('value') || 0);
+        var sliderMaxValue = parseInt(slider.getAttribute('max-value') || 100);
         var minInput = sliderItem.querySelector('.directorist-custom-range-slider__value__min');
         var maxInput = sliderItem.querySelector('.directorist-custom-range-slider__value__max');
         var sliderRange = sliderItem.querySelector('.directorist-custom-range-slider__range');
