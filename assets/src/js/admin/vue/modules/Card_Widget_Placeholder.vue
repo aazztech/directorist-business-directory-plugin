@@ -81,7 +81,10 @@ export default {
     },
   },
   created() {
-
+    console.log("Selected Widgets (created):", this.selectedWidgets);
+  },
+  mounted() {
+    console.log("Selected Widgets (mounted):", this.selectedWidgets);
   },
   computed: {
     canAddMore() {

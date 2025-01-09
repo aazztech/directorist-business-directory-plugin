@@ -15418,7 +15418,12 @@ function _objectSpread(e) { for (var r = 1; r < arguments.length; r++) { var t =
       default: "Up to __DATA__ item{s} can be added"
     }
   },
-  created: function created() {},
+  created: function created() {
+    console.log("Selected Widgets (created):", this.selectedWidgets);
+  },
+  mounted: function mounted() {
+    console.log("Selected Widgets (mounted):", this.selectedWidgets);
+  },
   computed: {
     canAddMore: function canAddMore() {
       if (this.maxWidget < 1) {
@@ -17012,17 +17017,6 @@ __webpack_require__.r(__webpack_exports__);
       type: Boolean,
       default: false
     }
-  },
-  mounted: function mounted() {
-    console.log('Props received in badge-card-widget:', {
-      label: this.label,
-      options: this.options,
-      widgetDropable: this.widgetDropable,
-      canMove: this.canMove,
-      canEdit: this.canEdit,
-      canTrash: this.canTrash,
-      readOnly: this.readOnly
-    });
   },
   computed: {
     dropAppendClass: function dropAppendClass() {
@@ -23637,6 +23631,9 @@ function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len 
           }
           data.push(widget_data);
         }
+        console.log("@Widget Data", {
+          data: data
+        });
         return data;
       };
 
@@ -23647,14 +23644,16 @@ function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len 
         for (_iterator.s(); !(_step = _iterator.n()).done;) {
           var placeholder = _step.value;
           if ("placeholder_item" === placeholder.type) {
-            var data = getWidgetData(placeholder);
-            if (!data) {
-              continue;
-            }
+            // const data = getWidgetData(placeholder);
+
+            // if (!data) {
+            //   continue;
+            // }
+
             output.push({
               type: placeholder.type,
               placeholderKey: placeholder.placeholderKey,
-              selectedWidgets: data
+              selectedWidgets: placeholder.selectedWidgets
             });
             continue;
           }
@@ -23665,14 +23664,15 @@ function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len 
             try {
               for (_iterator2.s(); !(_step2 = _iterator2.n()).done;) {
                 var subPlaceholder = _step2.value;
-                var _data = getWidgetData(subPlaceholder);
-                if (!_data) {
-                  continue;
-                }
+                // const data = getWidgetData(subPlaceholder);
+                // if (!data) {
+                //   continue;
+                // }
+
                 subGroupsData.push({
                   type: placeholder.type ? placeholder.type : "placeholder_item",
                   placeholderKey: subPlaceholder.placeholderKey,
-                  selectedWidgets: _data
+                  selectedWidgets: placeholder.selectedWidgets
                 });
                 continue;
               }
@@ -23800,6 +23800,9 @@ function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len 
       this.importPlaceholders();
       this.importOldData();
     },
+    getChildPayload: function getChildPayload(index) {
+      return this.placeholders[index];
+    },
     onDrop: function onDrop(dropResult) {
       var draggablePlaceholders = this.placeholders.filter(function (placeholder) {
         return placeholder.type === "placeholder_item";
@@ -23894,11 +23897,29 @@ function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len 
         return;
       }
     },
+    handleWidgetSwitch: function handleWidgetSwitch(event, widget_key, placeholder_index) {
+      // Ensure placeholder and selectedWidgets are valid
+      if (this.allPlaceholderItems[placeholder_index] && Array.isArray(this.allPlaceholderItems[placeholder_index].selectedWidgets)) {
+        var isChecked = event.target.checked; // Get checkbox state
+
+        if (isChecked) {
+          // Add the widget_key if it's not already in selectedWidgets
+          if (!this.allPlaceholderItems[placeholder_index].selectedWidgets.includes(widget_key)) {
+            this.allPlaceholderItems[placeholder_index].selectedWidgets.push(widget_key);
+          }
+        } else {
+          // Remove the widget_key if unchecked
+          this.allPlaceholderItems[placeholder_index].selectedWidgets = this.allPlaceholderItems[placeholder_index].selectedWidgets.filter(function (item) {
+            return item !== widget_key;
+          });
+        }
+        console.log("Toggled widget: ".concat(widget_key, ", placeholderIndex: ").concat(placeholder_index, ", selectedWidgets: ").concat(this.allPlaceholderItems[placeholder_index].selectedWidgets));
+      } else {
+        console.error("Invalid placeholder index or selectedWidgets is not defined for index: ".concat(placeholder_index));
+      }
+    },
     getGhostParent: function getGhostParent() {
       return document.body;
-    },
-    getChildPayload: function getChildPayload(index) {
-      return this.placeholders[index];
     },
     canShowAddPlaceholderButton: function canShowAddPlaceholderButton(placeholderKey) {
       var placeholder = this.placeholdersMap[placeholderKey];
@@ -23939,6 +23960,7 @@ function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len 
       var placeholder = JSON.parse(JSON.stringify(this.placeholdersMap[placeholderKey]));
       if (!Array.isArray(placeholder.selectedWidgets)) {
         placeholder.selectedWidgets = [];
+        console.log('No Placeholder Selected Widgets');
       }
       if (placeholder.selectedWidgets.length) {
         var _iterator5 = _createForOfIteratorHelper(placeholder.selectedWidgets),
@@ -23946,6 +23968,7 @@ function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len 
         try {
           for (_iterator5.s(); !(_step5 = _iterator5.n()).done;) {
             var widgetKey = _step5.value;
+            console.log('selectedWidget Key:', widgetKey);
             if (!this.isTruthyObject(this.theAvailableWidgets[widgetKey])) {
               continue;
             }
@@ -24115,13 +24138,19 @@ function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len 
         if (!_this3.isTruthyObject(placeholder)) {
           placeholder = {};
         }
-        if (placeholder.insertByButton) {
-          return null;
-        }
-        placeholder.selectedWidgets = [];
+
+        // if (placeholder.insertByButton) {
+        //   return null;
+        // }
+
+        // placeholder.selectedWidgets = [];
+
         if (typeof placeholder.label === "undefined") {
           placeholder.label = "";
         }
+        console.log('@sanitizePlaceholderData', {
+          placeholder: placeholder
+        });
         return placeholder;
       };
       var sanitizedPlaceholders = [];
@@ -24150,6 +24179,9 @@ function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len 
                 sanitizedPlaceholders.push(placeholderItemData);
                 _this3.allPlaceholderItems.push(placeholderItemData);
               }
+              console.log('@placeholder_item', {
+                placeholderItemData: placeholderItemData
+              });
               return 0; // continue
             }
             if (placeholderItem.type === "placeholder_group") {
@@ -24192,6 +24224,9 @@ function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len 
       this.placeholders = sanitizedPlaceholders;
       console.log({
         placeholders: this.placeholders
+      });
+      console.log({
+        sanitizedPlaceholders: sanitizedPlaceholders
       });
       console.log({
         available_widgets: this.available_widgets
@@ -33277,38 +33312,7 @@ var render = function render() {
           acceptedWidgets: placeholderSubItem.acceptedWidgets,
           rejectedWidgets: placeholderSubItem.rejectedWidgets,
           selectedWidgets: placeholderSubItem.selectedWidgets,
-          maxWidget: placeholderSubItem.maxWidget,
-          showWidgetsPickerWindow: _vm.getActiveInsertWindowStatus("listings_header_".concat(index, "_").concat(subIndex)),
-          widgetDropable: _vm.widgetIsDropable(placeholderSubItem)
-        },
-        on: {
-          "insert-widget": function insertWidget($event) {
-            return _vm.insertWidget($event, placeholderSubItem);
-          },
-          "drag-widget": function dragWidget($event) {
-            return _vm.onDragStartWidget($event, placeholderSubItem);
-          },
-          "drop-widget": function dropWidget($event) {
-            return _vm.appendWidget($event, placeholderSubItem);
-          },
-          "dragend-widget": function dragendWidget($event) {
-            return _vm.onDragEndWidget();
-          },
-          "edit-widget": function editWidget($event) {
-            return _vm.editWidget($event);
-          },
-          "trash-widget": function trashWidget($event) {
-            return _vm.trashWidget($event, placeholderSubItem, index);
-          },
-          "placeholder-on-drop": function placeholderOnDrop($event) {
-            return _vm.handleDropOnPlaceholder(placeholderSubItem);
-          },
-          "open-widgets-picker-window": function openWidgetsPickerWindow($event) {
-            return _vm.activeInsertWindow("listings_header_".concat(index, "_").concat(subIndex));
-          },
-          "close-widgets-picker-window": function closeWidgetsPickerWindow($event) {
-            return _vm.closeInsertWindow();
-          }
+          maxWidget: placeholderSubItem.maxWidget
         }
       });
     }), 1)]) : _vm._e();
@@ -33330,7 +33334,7 @@ var render = function render() {
       staticClass: "draggable-item"
     }, [_c("div", {
       staticClass: "cptm-preview-placeholder__card__content"
-    }, [_c("card-widget-placeholder", {
+    }, [_c("p", [_vm._v("Selected Widgets: " + _vm._s(placeholderItem.selectedWidgets))]), _vm._v(" "), _c("card-widget-placeholder", {
       attrs: {
         placeholderKey: placeholderItem.placeholderKey,
         id: "listings_header_" + index,
@@ -33500,6 +33504,14 @@ var render = function render() {
         attrs: {
           type: "checkbox",
           id: "settings-".concat(widget_key, "-").concat(placeholder_index)
+        },
+        domProps: {
+          checked: placeholder.selectedWidgets.includes(widget_key)
+        },
+        on: {
+          click: function click($event) {
+            return _vm.handleWidgetSwitch($event, widget_key, placeholder_index);
+          }
         }
       }), _vm._v(" "), _c("label", {
         attrs: {

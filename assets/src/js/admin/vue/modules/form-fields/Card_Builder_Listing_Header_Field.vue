@@ -51,25 +51,6 @@
               :rejectedWidgets="placeholderSubItem.rejectedWidgets"
               :selectedWidgets="placeholderSubItem.selectedWidgets"
               :maxWidget="placeholderSubItem.maxWidget"
-              :showWidgetsPickerWindow="
-                getActiveInsertWindowStatus(
-                  `listings_header_${index}_${subIndex}`
-                )
-              "
-              :widgetDropable="widgetIsDropable(placeholderSubItem)"
-              @insert-widget="insertWidget($event, placeholderSubItem)"
-              @drag-widget="onDragStartWidget($event, placeholderSubItem)"
-              @drop-widget="appendWidget($event, placeholderSubItem)"
-              @dragend-widget="onDragEndWidget()"
-              @edit-widget="editWidget($event)"
-              @trash-widget="trashWidget($event, placeholderSubItem, index)"
-              @placeholder-on-drop="
-                handleDropOnPlaceholder(placeholderSubItem)
-              "
-              @open-widgets-picker-window="
-                activeInsertWindow(`listings_header_${index}_${subIndex}`)
-              "
-              @close-widgets-picker-window="closeInsertWindow()"
             />
           </div>
         </div>
@@ -91,6 +72,7 @@
               <div
                 class="cptm-preview-placeholder__card__content"
               >
+                <p>Selected Widgets: {{ placeholderItem.selectedWidgets }}</p>
                 <card-widget-placeholder
                   :placeholderKey="placeholderItem.placeholderKey"
                   :id="'listings_header_' + index"
@@ -218,7 +200,12 @@
 
                   <!-- Add toggle switch for widget -->
                   <span class="cptm-elements-settings__group__single__switch">
-                    <input type="checkbox" :id="`settings-${widget_key}-${placeholder_index}`" />
+                    <input 
+                      type="checkbox" 
+                      :id="`settings-${widget_key}-${placeholder_index}`" 
+                      :checked="placeholder.selectedWidgets.includes(widget_key)" 
+                      @click="handleWidgetSwitch($event, widget_key, placeholder_index)"
+                    />
                     <label :for="`settings-${widget_key}-${placeholder_index}`" />
                   </span>
                 </div>
@@ -354,22 +341,23 @@ export default {
           data.push(widget_data);
         }
 
+        console.log("@Widget Data", {data});
         return data;
       };
 
       // Parse Layout
       for (const placeholder of placeholders) {
         if ("placeholder_item" === placeholder.type) {
-          const data = getWidgetData(placeholder);
+          // const data = getWidgetData(placeholder);
 
-          if (!data) {
-            continue;
-          }
+          // if (!data) {
+          //   continue;
+          // }
 
           output.push({
             type: placeholder.type,
             placeholderKey: placeholder.placeholderKey,
-            selectedWidgets: data,
+            selectedWidgets: placeholder.selectedWidgets,
           });
           continue;
         }
@@ -378,15 +366,15 @@ export default {
           let subGroupsData = [];
 
           for (const subPlaceholder of placeholder.placeholders) {
-            const data = getWidgetData(subPlaceholder);
-            if (!data) {
-              continue;
-            }
+            // const data = getWidgetData(subPlaceholder);
+            // if (!data) {
+            //   continue;
+            // }
 
             subGroupsData.push({
               type: placeholder.type ? placeholder.type : "placeholder_item",
               placeholderKey: subPlaceholder.placeholderKey,
-              selectedWidgets: data,
+              selectedWidgets: placeholder.selectedWidgets,
             });
             continue;
           }
@@ -532,6 +520,10 @@ export default {
       this.importOldData();
     },
 
+    getChildPayload(index) {
+      return this.placeholders[index];
+    },
+
     onDrop(dropResult) {
       const draggablePlaceholders = this.placeholders.filter(
         (placeholder) => placeholder.type === "placeholder_item"
@@ -613,12 +605,43 @@ export default {
 
     },
 
+    handleWidgetSwitch(event, widget_key, placeholder_index) {
+      // Ensure placeholder and selectedWidgets are valid
+      if (
+        this.allPlaceholderItems[placeholder_index] &&
+        Array.isArray(this.allPlaceholderItems[placeholder_index].selectedWidgets)
+      ) {
+        const isChecked = event.target.checked; // Get checkbox state
+
+        if (isChecked) {
+          // Add the widget_key if it's not already in selectedWidgets
+          if (
+            !this.allPlaceholderItems[placeholder_index].selectedWidgets.includes(
+              widget_key
+            )
+          ) {
+            this.allPlaceholderItems[placeholder_index].selectedWidgets.push(widget_key);
+          }
+        } else {
+          // Remove the widget_key if unchecked
+          this.allPlaceholderItems[placeholder_index].selectedWidgets =
+            this.allPlaceholderItems[placeholder_index].selectedWidgets.filter(
+              (item) => item !== widget_key
+            );
+        }
+
+        console.log(
+          `Toggled widget: ${widget_key}, placeholderIndex: ${placeholder_index}, selectedWidgets: ${this.allPlaceholderItems[placeholder_index].selectedWidgets}`
+        );
+      } else {
+        console.error(
+          `Invalid placeholder index or selectedWidgets is not defined for index: ${placeholder_index}`
+        );
+      }
+    },
 
     getGhostParent() {
       return document.body;
-    },
-    getChildPayload(index) {
-      return this.placeholders[index];
     },
 
     canShowAddPlaceholderButton(placeholderKey) {
@@ -666,11 +689,12 @@ export default {
 
       if ( ! Array.isArray( placeholder.selectedWidgets ) ) {
         placeholder.selectedWidgets = [];
+        console.log('No Placeholder Selected Widgets');
       }
 
       if (placeholder.selectedWidgets.length) {
         for (const widgetKey of placeholder.selectedWidgets) {
-
+          console.log('selectedWidget Key:', widgetKey);
           if (!this.isTruthyObject(this.theAvailableWidgets[widgetKey])) {
             continue;
           }
@@ -896,15 +920,17 @@ export default {
           placeholder = {};
         }
 
-        if (placeholder.insertByButton) {
-          return null;
-        }
+        // if (placeholder.insertByButton) {
+        //   return null;
+        // }
 
-        placeholder.selectedWidgets = [];
+        // placeholder.selectedWidgets = [];
 
         if (typeof placeholder.label === "undefined") {
           placeholder.label = "";
         }
+
+        console.log('@sanitizePlaceholderData', { placeholder });
 
         return placeholder;
       };
@@ -945,6 +971,7 @@ export default {
             this.allPlaceholderItems.push(placeholderItemData);
           }
 
+          console.log('@placeholder_item', { placeholderItemData });
           continue;
         }
 
@@ -1002,6 +1029,7 @@ export default {
       this.placeholders = sanitizedPlaceholders;
 
       console.log({ placeholders: this.placeholders });
+      console.log({ sanitizedPlaceholders: sanitizedPlaceholders });
       console.log({ available_widgets: this.available_widgets });
       console.log({ allPlaceholderItems: this.allPlaceholderItems });
     },

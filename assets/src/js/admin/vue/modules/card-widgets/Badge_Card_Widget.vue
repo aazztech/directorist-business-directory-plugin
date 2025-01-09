@@ -65,18 +65,6 @@ export default {
         },
     },
 
-    mounted() {
-    console.log('Props received in badge-card-widget:', {
-        label: this.label,
-        options: this.options,
-        widgetDropable: this.widgetDropable,
-        canMove: this.canMove,
-        canEdit: this.canEdit,
-        canTrash: this.canTrash,
-        readOnly: this.readOnly,
-    });
-},
-
     computed: {
         dropAppendClass() {
             return {
