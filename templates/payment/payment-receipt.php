@@ -26,7 +26,7 @@ use \Directorist\Helper;
                         <table class="directorist-table">
                             <thead>
                                 <tr>
-                                    <th colspan="2"><?php esc_html_e( 'Order Summery', 'directorist' ); ?></th>
+                                    <th colspan="2"><?php esc_html_e( 'Order Summary', 'directorist' ); ?></th>
                                 </tr>
                             </thead>
                             <tbody>
