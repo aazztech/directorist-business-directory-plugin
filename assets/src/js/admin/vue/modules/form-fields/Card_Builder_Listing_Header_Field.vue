@@ -72,7 +72,6 @@
               <div
                 class="cptm-preview-placeholder__card__content"
               >
-                <p>Selected Widgets: {{ placeholderItem.selectedWidgets }}</p>
                 <card-widget-placeholder
                   :placeholderKey="placeholderItem.placeholderKey"
                   :id="'listings_header_' + index"
@@ -277,8 +276,13 @@ export default {
     output_data() {
       let output = [];
       let placeholders = this.placeholders;
+      let allPlaceholders = this.allPlaceholderItems;
 
-      const getWidgetData = (placeholderData) => {
+      const getWidgetData = (placeholderKey) => {
+        const placeholderData = allPlaceholders.find(
+          (placeholder) => placeholder.placeholderKey === placeholderKey
+        );
+        
         if (typeof placeholderData !== "object") {
           return null;
         }
@@ -291,73 +295,76 @@ export default {
 
         for (let widgetIndex in placeholderData.selectedWidgets) {
           const widget_name = placeholderData.selectedWidgets[widgetIndex];
+          console.log("@Widget Name", {widget_name});
 
-          if (
-            !this.active_widgets[widget_name] &&
-            typeof this.active_widgets[widget_name] !== "object"
-          ) {
-            continue;
-          }
+          data.push(widget_name);
 
-          let widget_data = {};
+          // if (
+          //   !this.active_widgets[widget_name] &&
+          //   typeof this.active_widgets[widget_name] !== "object"
+          // ) {
+          //   continue;
+          // }
 
-          for (let root_option in this.active_widgets[widget_name]) {
-            if ("options" === root_option) {
-              continue;
-            }
-            if ("icon" === root_option) {
-              continue;
-            }
-            if ("show_if" === root_option) {
-              continue;
-            }
-            if ("fields" === root_option) {
-              continue;
-            }
+          // let widget_data = {};
 
-            widget_data[root_option] = this.active_widgets[widget_name][
-              root_option
-            ];
-          }
+          // for (let root_option in this.active_widgets[widget_name]) {
+          //   if ("options" === root_option) {
+          //     continue;
+          //   }
+          //   if ("icon" === root_option) {
+          //     continue;
+          //   }
+          //   if ("show_if" === root_option) {
+          //     continue;
+          //   }
+          //   if ("fields" === root_option) {
+          //     continue;
+          //   }
 
-          if (typeof this.active_widgets[widget_name].options !== "object") {
-            data.push(widget_data);
-            continue;
-          }
+          //   widget_data[root_option] = this.active_widgets[widget_name][
+          //     root_option
+          //   ];
+          // }
 
-          if (
-            typeof this.active_widgets[widget_name].options.fields !== "object"
-          ) {
-            data.push(widget_data);
-            continue;
-          }
+          // if (typeof this.active_widgets[widget_name].options !== "object") {
+          //   data.push(widget_data);
+          //   continue;
+          // }
 
-          let widget_options = this.active_widgets[widget_name].options.fields;
+          // if (
+          //   typeof this.active_widgets[widget_name].options.fields !== "object"
+          // ) {
+          //   data.push(widget_data);
+          //   continue;
+          // }
 
-          for (let option in widget_options) {
-            widget_data[option] = widget_options[option].value;
-          }
+          // let widget_options = this.active_widgets[widget_name].options.fields;
 
-          data.push(widget_data);
+          // for (let option in widget_options) {
+          //   widget_data[option] = widget_options[option].value;
+          // }
+
+          // data.push(widget_data);
         }
 
-        console.log("@Widget Data", {data});
+        console.log("@Widget Output Data", {placeholderKey, data, active_widgets: this.active_widgets});
         return data;
       };
 
       // Parse Layout
       for (const placeholder of placeholders) {
         if ("placeholder_item" === placeholder.type) {
-          // const data = getWidgetData(placeholder);
+          const data = getWidgetData(placeholder.placeholderKey);
 
-          // if (!data) {
-          //   continue;
-          // }
+          if (!data) {
+            continue;
+          }
 
           output.push({
             type: placeholder.type,
             placeholderKey: placeholder.placeholderKey,
-            selectedWidgets: placeholder.selectedWidgets,
+            selectedWidgets: data,
           });
           continue;
         }
@@ -366,15 +373,15 @@ export default {
           let subGroupsData = [];
 
           for (const subPlaceholder of placeholder.placeholders) {
-            // const data = getWidgetData(subPlaceholder);
-            // if (!data) {
-            //   continue;
-            // }
+            const data = getWidgetData(subPlaceholder.placeholderKey);
+            if (!data) {
+              continue;
+            }
 
             subGroupsData.push({
               type: placeholder.type ? placeholder.type : "placeholder_item",
               placeholderKey: subPlaceholder.placeholderKey,
-              selectedWidgets: placeholder.selectedWidgets,
+              selectedWidgets: data,
             });
             continue;
           }
@@ -389,6 +396,7 @@ export default {
         }
       }
 
+      console.log('@Output Data', {output, placeholders});
       return output;
     },
 
@@ -685,6 +693,7 @@ export default {
     },
 
     addPlaceholder(placeholderKey) {
+      console.log('@Add Placeholder:', placeholderKey);
       let placeholder = JSON.parse( JSON.stringify( this.placeholdersMap[placeholderKey] ) );
 
       if ( ! Array.isArray( placeholder.selectedWidgets ) ) {
@@ -874,7 +883,8 @@ export default {
         }
       });
 
-      this.placeholders = newPlaceholders;
+      console.log('@importOldData', { newPlaceholders });
+      // this.placeholders = newPlaceholders;
     },
 
     importWidgets() {
@@ -1029,7 +1039,6 @@ export default {
       this.placeholders = sanitizedPlaceholders;
 
       console.log({ placeholders: this.placeholders });
-      console.log({ sanitizedPlaceholders: sanitizedPlaceholders });
       console.log({ available_widgets: this.available_widgets });
       console.log({ allPlaceholderItems: this.allPlaceholderItems });
     },

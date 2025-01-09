@@ -15,11 +15,11 @@
       <template v-for="(widget, widget_index) in selectedWidgets">
         <template v-if="hasValidWidget(widget)">
           <component
-            :is="activeWidgets[widget].type + '-card-widget'"
+            :is="availableWidgets[widget].type + '-card-widget'"
             :key="widget_index"
             :label="( typeof availableWidgets[widget] !== 'undefined' ) ? availableWidgets[widget].label : 'Not Available'"
-            :icon="( typeof activeWidgets[widget].icon === 'string' ) ? activeWidgets[widget].icon : ''"
-            :options="activeWidgets[widget].options"
+            :icon="( typeof availableWidgets[widget].icon === 'string' ) ? availableWidgets[widget].icon : ''"
+            :options="availableWidgets[widget].options"
             :read-only="true"
           >
           </component>
@@ -81,11 +81,12 @@ export default {
     },
   },
   created() {
-    console.log("Selected Widgets (created):", this.selectedWidgets);
+    console.log("@WidgetPlaceholders (created):", {Selected: this.selectedWidgets, Available: this.availableWidgets, Active: this.activeWidgets});
   },
-  mounted() {
-    console.log("Selected Widgets (mounted):", this.selectedWidgets);
-  },
+
+  // mounted() {
+  //   console.log("Selected Widgets (mounted):", this.selectedWidgets);
+  // },
   computed: {
     canAddMore() {
       if ( this.maxWidget < 1 ) {
@@ -150,10 +151,10 @@ export default {
       this.$emit('placeholder-on-dragleave');
     },
     hasValidWidget(widget_key) {
-      if ( !this.activeWidgets[widget_key] && typeof this.activeWidgets[widget_key] !== "object" ) {
+      if ( !this.availableWidgets[widget_key] && typeof this.availableWidgets[widget_key] !== "object" ) {
         return false;
       }
-      if (typeof this.activeWidgets[widget_key].type !== "string") {
+      if (typeof this.availableWidgets[widget_key].type !== "string") {
         return false;
       }
       return true;

@@ -14947,11 +14947,15 @@ function _objectSpread(e) { for (var r = 1; r < arguments.length; r++) { var t =
     }
   },
   created: function created() {
-    console.log("Selected Widgets (created):", this.selectedWidgets);
+    console.log("@WidgetPlaceholders (created):", {
+      Selected: this.selectedWidgets,
+      Available: this.availableWidgets,
+      Active: this.activeWidgets
+    });
   },
-  mounted: function mounted() {
-    console.log("Selected Widgets (mounted):", this.selectedWidgets);
-  },
+  // mounted() {
+  //   console.log("Selected Widgets (mounted):", this.selectedWidgets);
+  // },
   computed: {
     canAddMore: function canAddMore() {
       if (this.maxWidget < 1) {
@@ -15003,10 +15007,10 @@ function _objectSpread(e) { for (var r = 1; r < arguments.length; r++) { var t =
       this.$emit('placeholder-on-dragleave');
     },
     hasValidWidget: function hasValidWidget(widget_key) {
-      if (!this.activeWidgets[widget_key] && _babel_runtime_helpers_typeof__WEBPACK_IMPORTED_MODULE_1___default()(this.activeWidgets[widget_key]) !== "object") {
+      if (!this.availableWidgets[widget_key] && _babel_runtime_helpers_typeof__WEBPACK_IMPORTED_MODULE_1___default()(this.availableWidgets[widget_key]) !== "object") {
         return false;
       }
-      if (typeof this.activeWidgets[widget_key].type !== "string") {
+      if (typeof this.availableWidgets[widget_key].type !== "string") {
         return false;
       }
       return true;
@@ -23116,7 +23120,11 @@ function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len 
       var _this = this;
       var output = [];
       var placeholders = this.placeholders;
-      var getWidgetData = function getWidgetData(placeholderData) {
+      var allPlaceholders = this.allPlaceholderItems;
+      var getWidgetData = function getWidgetData(placeholderKey) {
+        var placeholderData = allPlaceholders.find(function (placeholder) {
+          return placeholder.placeholderKey === placeholderKey;
+        });
         if (_babel_runtime_helpers_typeof__WEBPACK_IMPORTED_MODULE_2___default()(placeholderData) !== "object") {
           return null;
         }
@@ -23126,41 +23134,64 @@ function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len 
         var data = [];
         for (var widgetIndex in placeholderData.selectedWidgets) {
           var widget_name = placeholderData.selectedWidgets[widgetIndex];
-          if (!_this.active_widgets[widget_name] && _babel_runtime_helpers_typeof__WEBPACK_IMPORTED_MODULE_2___default()(_this.active_widgets[widget_name]) !== "object") {
-            continue;
-          }
-          var widget_data = {};
-          for (var root_option in _this.active_widgets[widget_name]) {
-            if ("options" === root_option) {
-              continue;
-            }
-            if ("icon" === root_option) {
-              continue;
-            }
-            if ("show_if" === root_option) {
-              continue;
-            }
-            if ("fields" === root_option) {
-              continue;
-            }
-            widget_data[root_option] = _this.active_widgets[widget_name][root_option];
-          }
-          if (_babel_runtime_helpers_typeof__WEBPACK_IMPORTED_MODULE_2___default()(_this.active_widgets[widget_name].options) !== "object") {
-            data.push(widget_data);
-            continue;
-          }
-          if (_babel_runtime_helpers_typeof__WEBPACK_IMPORTED_MODULE_2___default()(_this.active_widgets[widget_name].options.fields) !== "object") {
-            data.push(widget_data);
-            continue;
-          }
-          var widget_options = _this.active_widgets[widget_name].options.fields;
-          for (var option in widget_options) {
-            widget_data[option] = widget_options[option].value;
-          }
-          data.push(widget_data);
+          console.log("@Widget Name", {
+            widget_name: widget_name
+          });
+          data.push(widget_name);
+
+          // if (
+          //   !this.active_widgets[widget_name] &&
+          //   typeof this.active_widgets[widget_name] !== "object"
+          // ) {
+          //   continue;
+          // }
+
+          // let widget_data = {};
+
+          // for (let root_option in this.active_widgets[widget_name]) {
+          //   if ("options" === root_option) {
+          //     continue;
+          //   }
+          //   if ("icon" === root_option) {
+          //     continue;
+          //   }
+          //   if ("show_if" === root_option) {
+          //     continue;
+          //   }
+          //   if ("fields" === root_option) {
+          //     continue;
+          //   }
+
+          //   widget_data[root_option] = this.active_widgets[widget_name][
+          //     root_option
+          //   ];
+          // }
+
+          // if (typeof this.active_widgets[widget_name].options !== "object") {
+          //   data.push(widget_data);
+          //   continue;
+          // }
+
+          // if (
+          //   typeof this.active_widgets[widget_name].options.fields !== "object"
+          // ) {
+          //   data.push(widget_data);
+          //   continue;
+          // }
+
+          // let widget_options = this.active_widgets[widget_name].options.fields;
+
+          // for (let option in widget_options) {
+          //   widget_data[option] = widget_options[option].value;
+          // }
+
+          // data.push(widget_data);
         }
-        console.log("@Widget Data", {
-          data: data
+
+        console.log("@Widget Output Data", {
+          placeholderKey: placeholderKey,
+          data: data,
+          active_widgets: _this.active_widgets
         });
         return data;
       };
@@ -23172,16 +23203,14 @@ function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len 
         for (_iterator.s(); !(_step = _iterator.n()).done;) {
           var placeholder = _step.value;
           if ("placeholder_item" === placeholder.type) {
-            // const data = getWidgetData(placeholder);
-
-            // if (!data) {
-            //   continue;
-            // }
-
+            var data = getWidgetData(placeholder.placeholderKey);
+            if (!data) {
+              continue;
+            }
             output.push({
               type: placeholder.type,
               placeholderKey: placeholder.placeholderKey,
-              selectedWidgets: placeholder.selectedWidgets
+              selectedWidgets: data
             });
             continue;
           }
@@ -23192,15 +23221,14 @@ function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len 
             try {
               for (_iterator2.s(); !(_step2 = _iterator2.n()).done;) {
                 var subPlaceholder = _step2.value;
-                // const data = getWidgetData(subPlaceholder);
-                // if (!data) {
-                //   continue;
-                // }
-
+                var _data = getWidgetData(subPlaceholder.placeholderKey);
+                if (!_data) {
+                  continue;
+                }
                 subGroupsData.push({
                   type: placeholder.type ? placeholder.type : "placeholder_item",
                   placeholderKey: subPlaceholder.placeholderKey,
-                  selectedWidgets: placeholder.selectedWidgets
+                  selectedWidgets: _data
                 });
                 continue;
               }
@@ -23222,6 +23250,10 @@ function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len 
       } finally {
         _iterator.f();
       }
+      console.log('@Output Data', {
+        output: output,
+        placeholders: placeholders
+      });
       return output;
     },
     theAvailableWidgets: function theAvailableWidgets() {
@@ -23485,6 +23517,7 @@ function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len 
       return targetPlaceholder ? false : true;
     },
     addPlaceholder: function addPlaceholder(placeholderKey) {
+      console.log('@Add Placeholder:', placeholderKey);
       var placeholder = JSON.parse(JSON.stringify(this.placeholdersMap[placeholderKey]));
       if (!Array.isArray(placeholder.selectedWidgets)) {
         placeholder.selectedWidgets = [];
@@ -23631,7 +23664,10 @@ function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len 
           });
         }
       });
-      this.placeholders = newPlaceholders;
+      console.log('@importOldData', {
+        newPlaceholders: newPlaceholders
+      });
+      // this.placeholders = newPlaceholders;
     },
     importWidgets: function importWidgets() {
       if (!this.isTruthyObject(this.widgets)) {
@@ -23752,9 +23788,6 @@ function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len 
       this.placeholders = sanitizedPlaceholders;
       console.log({
         placeholders: this.placeholders
-      });
-      console.log({
-        sanitizedPlaceholders: sanitizedPlaceholders
       });
       console.log({
         available_widgets: this.available_widgets
@@ -27058,13 +27091,13 @@ var render = function render() {
   }, [_vm._v("\n    " + _vm._s(_vm.label) + "\n  ")]), _vm._v(" "), _vm.selectedWidgets && _vm.selectedWidgets.length ? _c("div", {
     staticClass: "cptm-widget-preview-area chk"
   }, [_vm._l(_vm.selectedWidgets, function (widget, widget_index) {
-    return [_vm.hasValidWidget(widget) ? [_c(_vm.activeWidgets[widget].type + "-card-widget", {
+    return [_vm.hasValidWidget(widget) ? [_c(_vm.availableWidgets[widget].type + "-card-widget", {
       key: widget_index,
       tag: "component",
       attrs: {
         label: typeof _vm.availableWidgets[widget] !== "undefined" ? _vm.availableWidgets[widget].label : "Not Available",
-        icon: typeof _vm.activeWidgets[widget].icon === "string" ? _vm.activeWidgets[widget].icon : "",
-        options: _vm.activeWidgets[widget].options,
+        icon: typeof _vm.availableWidgets[widget].icon === "string" ? _vm.availableWidgets[widget].icon : "",
+        options: _vm.availableWidgets[widget].options,
         "read-only": true
       }
     })] : _vm._e()];
@@ -32897,7 +32930,7 @@ var render = function render() {
       staticClass: "draggable-item"
     }, [_c("div", {
       staticClass: "cptm-preview-placeholder__card__content"
-    }, [_c("p", [_vm._v("Selected Widgets: " + _vm._s(placeholderItem.selectedWidgets))]), _vm._v(" "), _c("card-widget-placeholder", {
+    }, [_c("card-widget-placeholder", {
       attrs: {
         placeholderKey: placeholderItem.placeholderKey,
         id: "listings_header_" + index,
