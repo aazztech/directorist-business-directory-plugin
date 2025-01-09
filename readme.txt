@@ -5,7 +5,7 @@ Tags: member directory, listing, classifieds, directory plugin, business directo
 Requires at least: 4.6
 Tested up to: 6.7
 Requires PHP: 7.0
-Stable tag: 8.0.10
+Stable tag: 8.0.11
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -296,6 +296,24 @@ Directorist is a complete directory solution and in combination with its advance
  * and many more
 
 == Changelog ==
+
+8.0.11 - Jan 02, 2025
+
+* Improve: Location Value Change on Filter | Radius Search Value on Search (#2178)
+* Improve: Smooth Scroll Transition on Add Listing Section (#2170)
+* Improve: The search field when the filter button is disabled in the popup layout. (#2181)
+* Improve: Developer flexibility adding listing import before after hooks (#2161)
+* Improve: Listing Category Word Break (#2171)
+* Fix: Field Specific Query Fix (#2184)
+* Fix: Inheritance and Initialization of AdvancedMarkerElement in Custom Marker Implementation (#2182)
+* Fix: Account Block Alert Issue (#2176)
+* Fix: Made the Add Listing sidebar fully responsive. (#2180)
+* Fix: All Listings Default Map View - Resolved the issue where the listing card was being cut off (#2177)
+* Fix: Translate issue (#2174)
+* Fix: Privacy policy & terms condition page linking issue (#2172)
+* Fix: Float value issue of number custom field (#2175)
+* Fix: Taxonomy linking issue (#2186)
+
 
 8.0.10 - Dec 17, 2024
 
