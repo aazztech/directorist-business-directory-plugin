@@ -868,6 +868,14 @@
   }
 }
 
+.on-scroll-loading{
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 6px;
+  padding: 30px;
+}
+
 // Directorist Listing Type Selection
 .directorist-listing-type-selection {
   display: flex;
