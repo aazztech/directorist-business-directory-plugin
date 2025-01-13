@@ -2348,7 +2348,7 @@ function _objectSpread(e) { for (var r = 1; r < arguments.length; r++) { var t =
       type: 'POST',
       data: formData,
       beforeSend: function beforeSend() {
-        showLoadingDivInsideContainer(18000);
+        showLoadingDivInsideContainer(8000);
       },
       success: function success(html) {
         if (loadingDiv) {

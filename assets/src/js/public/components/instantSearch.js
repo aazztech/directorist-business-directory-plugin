@@ -1137,7 +1137,7 @@ import debounce from '../../global/components/debounce';;
             type: 'POST',
             data: formData,
             beforeSend: () => {
-                showLoadingDivInsideContainer(18000);
+                showLoadingDivInsideContainer(8000);
             },
             success: (html) => {
                 if (loadingDiv) {
