@@ -1018,7 +1018,7 @@ import debounce from '../../global/components/debounce';
     });
 
     // Scrolling Pagination
-    const container = $('.directorist-container-fluid');
+    const container = $('.directorist-archive-items .directorist-container-fluid');
     var page = 1;
     let isLoading = false; // Prevent multiple simultaneous requests
     $(window).on('scroll', function () {

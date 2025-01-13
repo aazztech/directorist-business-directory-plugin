@@ -2231,7 +2231,7 @@ function _objectSpread(e) { for (var r = 1; r < arguments.length; r++) { var t =
   });
 
   // Scrolling Pagination
-  var container = $('.directorist-container-fluid');
+  var container = $('.directorist-archive-items .directorist-container-fluid');
   var page = 1;
   var isLoading = false; // Prevent multiple simultaneous requests
   $(window).on('scroll', function () {
