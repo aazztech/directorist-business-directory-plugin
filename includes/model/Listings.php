@@ -1147,6 +1147,18 @@ class Directorist_Listings {
 		return ob_get_clean();
 	}
 
+	public function render_list_view( $post_ids ) {
+
+		if ( ! is_array( $post_ids ) || empty( $post_ids ) ) {
+			// Exit early or log an error if the input is invalid
+			return;
+		}
+		
+		foreach ( $post_ids as $listing_id ) {
+            $this->loop_template( 'list', $listing_id );
+        }
+	}
+
 	public function have_posts() {
 		return !empty( $this->query_results->ids ) ? true : false;
 	}

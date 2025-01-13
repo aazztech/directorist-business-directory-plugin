@@ -2,7 +2,7 @@
 /**
  * @author  wpWax
  * @since   6.6
- * @version 6.7
+ * @version 8.0.13
  */
 
 use \Directorist\Helper;
@@ -17,21 +17,17 @@ if ( ! defined( 'ABSPATH' ) ) exit;
 
 			<?php if ( $listings->have_posts() ): ?>
 
-				<?php foreach ( $listings->post_ids() as $listing_id ): ?>
-
-					<?php $listings->loop_template( 'list', $listing_id ); ?>
-
-				<?php endforeach; ?>
+				<?php $listings->render_list_view( $listings->post_ids() ) ?>
 
 				<?php
-				if ( $listings->show_pagination ) {
+				// if ( $listings->show_pagination ) {
 
-					do_action( 'directorist_before_listings_pagination' );
+				// 	do_action( 'directorist_before_listings_pagination' );
 
-					$listings->pagination();
+				// 	$listings->pagination();
 
-					do_action( 'directorist_after_listings_pagination' );
-				}
+				// 	do_action( 'directorist_after_listings_pagination' );
+				// }
 				?>
 
 				<?php do_action('directorist_after_grid_listings_loop'); ?>

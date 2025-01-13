@@ -2230,6 +2230,145 @@ function _objectSpread(e) { for (var r = 1; r < arguments.length; r++) { var t =
     });
   });
 
+  // Scrolling Pagination
+  var container = $('.directorist-container-fluid');
+  var page = 1;
+  var isLoading = false; // Prevent multiple simultaneous requests
+  $(window).on('scroll', function () {
+    if (container.length && !isLoading) {
+      var containerBottom = container.offset().top + container.outerHeight();
+      var scrollBottom = $(window).scrollTop() + $(window).height();
+      // Check if the user has reached the bottom of the container
+      if (scrollBottom >= containerBottom) {
+        isLoading = true; // Set loading flag
+        page++;
+        var tag = [];
+        var price = [];
+        var custom_field = {};
+        var instant_search_element = $('.directorist-instant-search');
+        var sort_href = instant_search_element.find(".directorist-sortby-dropdown .directorist-dropdown__links__single.active").attr('data-link');
+        var sort_by = sort_href && sort_href.length ? sort_href.match(/sort=.+/) : '';
+        var sort = sort_by && sort_by.length ? sort_by[0].replace(/sort=/, '') : '';
+        var view_href = instant_search_element.find(".directorist-viewas .directorist-viewas__item.active").attr('href');
+        var view_as = view_href && view_href.length ? view_href.match(/view=.+/) : '';
+        var view = view_as && view_as.length ? view_as[0].replace(/view=/, '') : '';
+        var type_href = instant_search_element.find('.directorist-type-nav__list .directorist-type-nav__list__current a').attr('href');
+        var type = type_href && type_href.length ? type_href.match(/directory_type=.+/) : '';
+        var directory_type = getURLParameter(type_href, 'directory_type');
+        var data_atts = instant_search_element.attr('data-atts');
+        // Select Active Form Based on Screen Size
+        var advancedForm = instant_search_element.find('.directorist-advanced-filter__form');
+        var searchForm = instant_search_element.find('.directorist-search-form');
+        var sidebarListing = instant_search_element.find('.listing-with-sidebar');
+        var activeForm = sidebarListing.length ? instant_search_element : screen.width > 575 ? advancedForm : searchForm;
+
+        // Get Values from Active Form
+        activeForm.find('input[name^="in_tag["]:checked').each(function (index, el) {
+          tag.push($(el).val());
+        });
+        activeForm.find('input[name^="price["]').each(function (index, el) {
+          price.push($(el).val());
+        });
+        activeForm.find('[name^="custom_field"]').each(function (index, el) {
+          var test = $(el).attr('name');
+          var type = $(el).attr('type');
+          var post_id = test.replace(/(custom_field\[)/, '').replace(/\]/, '');
+          if ('radio' === type) {
+            $.each($("input[name='custom_field[" + post_id + "]']:checked"), function () {
+              value = $(this).val();
+              custom_field[post_id] = value;
+            });
+          } else if ('checkbox' === type) {
+            post_id = post_id.split('[]')[0];
+            if (!custom_field[post_id]) {
+              custom_field[post_id] = [];
+            }
+            $.each($("input[name='custom_field[" + post_id + "][]']:checked"), function () {
+              var value = $(this).val();
+              custom_field[post_id].push(value);
+            });
+          } else {
+            var value = $(el).val();
+            custom_field[post_id] = value;
+          }
+        });
+        var q = activeForm.find('input[name="q"]').val();
+        var in_cat = activeForm.find('.directorist-category-select').val();
+        var in_loc = activeForm.find('.directorist-location-select').val();
+        var price_range = activeForm.find("input[name='price_range']:checked").val();
+        var search_by_rating = activeForm.find('select[name=search_by_rating]').val();
+        var cityLat = activeForm.find('#cityLat').val();
+        var cityLng = activeForm.find('#cityLng').val();
+        var miles = activeForm.find('input[name="miles"]').val();
+        var address = activeForm.find('input[name="address"]').val();
+        var zip = activeForm.find('input[name="zip"]').val();
+        var fax = activeForm.find('input[name="fax"]').val();
+        var email = activeForm.find('input[name="email"]').val();
+        var website = activeForm.find('input[name="website"]').val();
+        var phone = activeForm.find('input[name="phone"]').val();
+        instant_search_element.find(".directorist-pagination .page-numbers").removeClass('current');
+        $(this).addClass("current");
+        console.log(page);
+        var form_data = _babel_runtime_helpers_defineProperty__WEBPACK_IMPORTED_MODULE_0___default()(_babel_runtime_helpers_defineProperty__WEBPACK_IMPORTED_MODULE_0___default()(_babel_runtime_helpers_defineProperty__WEBPACK_IMPORTED_MODULE_0___default()({
+          action: 'directorist_instant_search',
+          _nonce: directorist.ajax_nonce,
+          current_page_id: directorist.current_page_id,
+          view: view && view.length ? view[0].replace(/view=/, '') : '',
+          q: q || getURLParameter(full_url, 'q'),
+          in_cat: in_cat || getURLParameter(full_url, 'in_cat'),
+          in_loc: in_loc || getURLParameter(full_url, 'in_loc'),
+          in_tag: tag || getURLParameter(full_url, 'in_tag'),
+          price: price || getURLParameter(full_url, 'price'),
+          price_range: price_range || getURLParameter(full_url, 'price_range'),
+          search_by_rating: search_by_rating || getURLParameter(full_url, 'search_by_rating'),
+          cityLat: cityLat || getURLParameter(full_url, 'cityLat'),
+          cityLng: cityLng || getURLParameter(full_url, 'cityLng'),
+          miles: miles || getURLParameter(full_url, 'miles'),
+          address: address || getURLParameter(full_url, 'address'),
+          zip: zip || getURLParameter(full_url, 'zip'),
+          fax: fax || getURLParameter(full_url, 'fax'),
+          email: email || getURLParameter(full_url, 'email'),
+          website: website || getURLParameter(full_url, 'website'),
+          phone: phone || getURLParameter(full_url, 'phone'),
+          custom_field: custom_field || getURLParameter(full_url, 'custom_field')
+        }, "view", view), "paged", page), "data_atts", JSON.parse(data_atts));
+
+        //business hours
+        if ($('input[name="open_now"]').is(':checked')) {
+          form_data.open_now = activeForm.find('input[name="open_now"]').val();
+        }
+        update_instant_search_url(form_data);
+        if (directory_type && directory_type.length) {
+          form_data.directory_type = directory_type;
+        }
+        if (sort && sort.length) {
+          form_data.sort = sort;
+        }
+        $.ajax({
+          url: directorist.ajaxurl,
+          type: "POST",
+          data: form_data,
+          beforeSend: function beforeSend() {
+            // instant_search_element.find('.directorist-archive-items').addClass('atbdp-form-fade');
+          },
+          success: function success(html) {
+            console.log(html.views);
+            if (html.count && html.count > 0) {
+              // Append the listings
+              instant_search_element.find('.directorist-archive-items .directorist-container-fluid').append(html.render_listing_view);
+              isLoading = false;
+            } else {
+              console.log('No more listings to load.');
+              $(window).off('scroll');
+            }
+            window.dispatchEvent(new CustomEvent('directorist-instant-search-reloaded'));
+            window.dispatchEvent(new CustomEvent('directorist-reload-listings-map-archive'));
+          }
+        });
+      }
+    }
+  });
+
   // Filter on AJAX Search
   function filterListing(searchElm) {
     if (!searchElm) {
@@ -3132,9 +3271,9 @@ __webpack_require__.r(__webpack_exports__);
   !*** ./assets/src/scss/layout/public/main-style.scss ***!
   \*******************************************************/
 /*! no static exports found */
-/***/ (function(module, exports) {
+/***/ (function(module, exports, __webpack_require__) {
 
-throw new Error("Module build failed (from ./node_modules/mini-css-extract-plugin/dist/loader.js):\nModuleError: Module Error (from ./node_modules/resolve-url-loader/index.js):\nresolve-url-loader: loader misconfiguration\n  \"engine\" option is not valid\n    at Object.emitError (/Users/mac/Local Sites/directorist-v8/app/public/wp-content/plugins/directorist/node_modules/webpack/lib/NormalModule.js:173:6)\n    at handleAsError (/Users/mac/Local Sites/directorist-v8/app/public/wp-content/plugins/directorist/node_modules/resolve-url-loader/index.js:214:12)\n    at Object.resolveUrlLoader (/Users/mac/Local Sites/directorist-v8/app/public/wp-content/plugins/directorist/node_modules/resolve-url-loader/index.js:156:12)");
+// extracted by mini-css-extract-plugin
 
 /***/ }),
 
