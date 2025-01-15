@@ -2230,11 +2230,10 @@ function _objectSpread(e) { for (var r = 1; r < arguments.length; r++) { var t =
     });
   });
 
-  // Optimized Scrolling Pagination
+  // Scrolling Pagination
   var container = $('.directorist-archive-items .directorist-container-fluid');
   var page = 1;
-  var isLoading = false; // Prevent multiple simultaneous requests
-
+  var isLoading = false;
   $(window).on('scroll', function () {
     if (!container.length || isLoading) return;
     var containerBottom = container.offset().top + container.outerHeight();
