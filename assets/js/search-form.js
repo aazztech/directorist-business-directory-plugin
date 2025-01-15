@@ -627,6 +627,9 @@ function hideAllCustomFieldsExceptSelected(relations, category, $container) {
   fields.forEach(function (field) {
     var fieldCategory = relations[field];
     var $field = $container.find("[name=\"custom_field[".concat(field, "]\"]"));
+    if (!$field.length) {
+      $field = $container.find("[name=\"custom_field[".concat(field, "][]\"]"));
+    }
     if (category === fieldCategory) {
       $field.prop('disabled', false);
       wrappers.forEach(function (wrapper) {
@@ -4335,6 +4338,11 @@ function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len 
       });
     }
     rangeSliderObserver();
+  });
+  window.addEventListener('directorist-instant-search-reloaded', function () {
+    Object(_components_category_custom_fields__WEBPACK_IMPORTED_MODULE_3__["default"])($);
+  }, {
+    once: true
   });
 })(jQuery);
 

@@ -990,7 +990,7 @@ import './range-slider';
 
                 // Check if the slider is already initialized
                 if (!slider || slider.directoristCustomRangeSlider) return;
-                
+
                 let sliderStep = parseInt(slider.getAttribute('step')) || 1;
                 let sliderDefaultValue = parseInt(slider.getAttribute('value') || 0);
                 let sliderMaxValue = parseInt(slider.getAttribute('max-value') || 100);
@@ -1005,7 +1005,7 @@ import './range-slider';
                 let rangeInitLoad = true;
                 // Parse the URL parameters
                 const milesParams = new URLSearchParams(window.location.search).has('miles');
-    
+
                 directoristCustomRangeSlider?.create(slider, {
                     start: [minInput.value, sliderDefaultValue && !milesParams ? sliderDefaultValue : maxInput.value],
                     connect: true,
@@ -1228,4 +1228,8 @@ import './range-slider';
 
 
     });
+
+    window.addEventListener('directorist-instant-search-reloaded', function() {
+        initSearchCategoryCustomFields($);
+    }, {once: true} );
 })(jQuery);
