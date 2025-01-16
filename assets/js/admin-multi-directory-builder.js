@@ -15418,16 +15418,6 @@ function _objectSpread(e) { for (var r = 1; r < arguments.length; r++) { var t =
       default: "Up to __DATA__ item{s} can be added"
     }
   },
-  created: function created() {
-    console.log("@WidgetPlaceholders (created):", {
-      Selected: this.selectedWidgets,
-      Available: this.availableWidgets,
-      Active: this.activeWidgets
-    });
-  },
-  // mounted() {
-  //   console.log("Selected Widgets (mounted):", this.selectedWidgets);
-  // },
   computed: {
     canAddMore: function canAddMore() {
       if (this.maxWidget < 1) {
@@ -23589,7 +23579,6 @@ function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len 
   },
   computed: {
     output_data: function output_data() {
-      var _this = this;
       var output = [];
       var placeholders = this.placeholders;
       var allPlaceholders = this.allPlaceholderItems;
@@ -23606,9 +23595,6 @@ function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len 
         var data = [];
         for (var widgetIndex in placeholderData.selectedWidgets) {
           var widget_name = placeholderData.selectedWidgets[widgetIndex];
-          console.log("@Widget Name", {
-            widget_name: widget_name
-          });
           data.push(widget_name);
 
           // if (
@@ -23660,11 +23646,6 @@ function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len 
           // data.push(widget_data);
         }
 
-        console.log("@Widget Output Data", {
-          placeholderKey: placeholderKey,
-          data: data,
-          active_widgets: _this.active_widgets
-        });
         return data;
       };
 
@@ -23724,7 +23705,8 @@ function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len 
       }
       console.log('@Output Data', {
         output: output,
-        placeholders: placeholders
+        placeholders: placeholders,
+        allPlaceholders: allPlaceholders
       });
       return output;
     },
@@ -23901,13 +23883,6 @@ function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len 
         // Get the widget key from the source placeholder
         var widgetKey = (_this$allPlaceholderI = this.allPlaceholderItems[sourcePlaceholderIndex]) === null || _this$allPlaceholderI === void 0 ? void 0 : _this$allPlaceholderI.acceptedWidgets[draggedItemIndex];
         if (widgetKey !== undefined) {
-          console.log('@widget Found', {
-            widgetKey: widgetKey,
-            sourcePlaceholderIndex: sourcePlaceholderIndex,
-            destinationPlaceholderIndex: destinationPlaceholderIndex,
-            sourceItemIndex: sourceItemIndex,
-            destinationItemIndex: destinationItemIndex
-          });
           if (sourcePlaceholderIndex === destinationPlaceholderIndex) {
             // Moving within the same placeholder
             var widgets = this.allPlaceholderItems[sourcePlaceholderIndex].acceptedWidgets;
@@ -23929,26 +23904,82 @@ function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len 
         return;
       }
     },
+    // handleWidgetSwitch(event, widget_key, placeholder_index) {
+    //   // Ensure placeholder and selectedWidgets are valid
+    //   if (
+    //     this.allPlaceholderItems[placeholder_index] &&
+    //     Array.isArray(this.allPlaceholderItems[placeholder_index].selectedWidgets)
+    //   ) {
+    //     const isChecked = event.target.checked; // Get checkbox state
+    //     if (isChecked) {
+    //       // Add the widget_key if it's not already in selectedWidgets
+    //       if (
+    //         !this.allPlaceholderItems[placeholder_index].selectedWidgets.includes(
+    //           widget_key
+    //         )
+    //       ) {
+    //         this.allPlaceholderItems[placeholder_index].selectedWidgets.push(widget_key);
+    //       }
+    //     } else {
+    //       // Remove the widget_key if unchecked
+    //       this.allPlaceholderItems[placeholder_index].selectedWidgets =
+    //         this.allPlaceholderItems[placeholder_index].selectedWidgets.filter(
+    //           (item) => item !== widget_key
+    //         );
+    //     }
+    //     console.log(
+    //       `Toggled widget: ${widget_key}, placeholderIndex: ${placeholder_index}, selectedWidgets: ${this.allPlaceholderItems[placeholder_index].selectedWidgets}`
+    //     );
+    //   } else {
+    //     console.error(
+    //       `Invalid placeholder index or selectedWidgets is not defined for index: ${placeholder_index}`
+    //     );
+    //   }
+    // },
     handleWidgetSwitch: function handleWidgetSwitch(event, widget_key, placeholder_index) {
-      // Ensure placeholder and selectedWidgets are valid
-      if (this.allPlaceholderItems[placeholder_index] && Array.isArray(this.allPlaceholderItems[placeholder_index].selectedWidgets)) {
-        var isChecked = event.target.checked; // Get checkbox state
-
-        if (isChecked) {
-          // Add the widget_key if it's not already in selectedWidgets
-          if (!this.allPlaceholderItems[placeholder_index].selectedWidgets.includes(widget_key)) {
-            this.allPlaceholderItems[placeholder_index].selectedWidgets.push(widget_key);
-          }
-        } else {
-          // Remove the widget_key if unchecked
-          this.allPlaceholderItems[placeholder_index].selectedWidgets = this.allPlaceholderItems[placeholder_index].selectedWidgets.filter(function (item) {
-            return item !== widget_key;
-          });
-        }
-        console.log("Toggled widget: ".concat(widget_key, ", placeholderIndex: ").concat(placeholder_index, ", selectedWidgets: ").concat(this.allPlaceholderItems[placeholder_index].selectedWidgets));
-      } else {
-        console.error("Invalid placeholder index or selectedWidgets is not defined for index: ".concat(placeholder_index));
+      if (!this.allPlaceholderItems[placeholder_index]) {
+        console.error("Invalid placeholder index: ".concat(placeholder_index));
+        return;
       }
+      var isChecked = event.target.checked;
+
+      // Toggle widget in selectedWidgets
+      this.toggleWidgetInSelectedWidgets(widget_key, placeholder_index, isChecked);
+
+      // Sync selectedWidgets between allPlaceholderItems and placeholders
+      this.placeholders = this.syncSelectedWidgets(this.allPlaceholderItems, this.placeholders);
+      console.log("Toggled widget: ".concat(widget_key), {
+        placeholders: this.placeholders,
+        allPlaceholderItems: this.allPlaceholderItems
+      });
+    },
+    toggleWidgetInSelectedWidgets: function toggleWidgetInSelectedWidgets(widget_key, placeholder_index, isChecked) {
+      var selectedWidgets = this.allPlaceholderItems[placeholder_index].selectedWidgets || [];
+      if (isChecked && !selectedWidgets.includes(widget_key)) {
+        selectedWidgets.push(widget_key);
+      } else if (!isChecked) {
+        this.allPlaceholderItems[placeholder_index].selectedWidgets = selectedWidgets.filter(function (item) {
+          return item !== widget_key;
+        });
+      }
+    },
+    syncSelectedWidgets: function syncSelectedWidgets(allPlaceholderItems, placeholders) {
+      var allItemsMap = allPlaceholderItems.reduce(function (acc, item) {
+        acc[item.placeholderKey] = item;
+        return acc;
+      }, {});
+      var updatePlaceholders = function updatePlaceholders(placeholders, allItemsMap) {
+        return placeholders.map(function (placeholder) {
+          if (allItemsMap[placeholder.placeholderKey]) {
+            vue__WEBPACK_IMPORTED_MODULE_3__["default"].set(placeholder, 'selectedWidgets', allItemsMap[placeholder.placeholderKey].selectedWidgets || []);
+          }
+          if (placeholder.type === 'placeholder_group' && placeholder.placeholders) {
+            vue__WEBPACK_IMPORTED_MODULE_3__["default"].set(placeholder, 'placeholders', updatePlaceholders(placeholder.placeholders, allItemsMap));
+          }
+          return placeholder;
+        });
+      };
+      return updatePlaceholders(placeholders, allItemsMap);
     },
     getGhostParent: function getGhostParent() {
       return document.body;
@@ -24041,7 +24072,7 @@ function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len 
       return true;
     },
     importOldData: function importOldData() {
-      var _this2 = this;
+      var _this = this;
       var value = JSON.parse(JSON.stringify(this.value));
       if (!Array.isArray(value)) {
         return;
@@ -24051,7 +24082,7 @@ function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len 
       // Import Layout
       // -------------------------
       var addActiveWidget = function addActiveWidget(widget) {
-        var widgets_template = _objectSpread({}, _this2.theAvailableWidgets[widget.widget_key]);
+        var widgets_template = _objectSpread({}, _this.theAvailableWidgets[widget.widget_key]);
         var has_widget_options = false;
         if (widgets_template.options && widgets_template.options.fields) {
           has_widget_options = true;
@@ -24073,14 +24104,15 @@ function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len 
             widgets_template.options.fields[option_key].value = widget[option_key];
           }
         }
-        vue__WEBPACK_IMPORTED_MODULE_3__["default"].set(_this2.active_widgets, widget.widget_key, widgets_template);
+        vue__WEBPACK_IMPORTED_MODULE_3__["default"].set(_this.active_widgets, widget.widget_key, widgets_template);
       };
       var importWidgets = function importWidgets(placeholder, destination) {
-        if (!_this2.placeholdersMap.hasOwnProperty(placeholder.placeholderKey)) {
+        if (!_this.placeholdersMap.hasOwnProperty(placeholder.placeholderKey)) {
           return;
         }
-        var newPlaceholder = JSON.parse(JSON.stringify(_this2.placeholdersMap[placeholder.placeholderKey]));
-        newPlaceholder.selectedWidgets = [];
+        var newPlaceholder = JSON.parse(JSON.stringify(_this.placeholdersMap[placeholder.placeholderKey]));
+
+        // newPlaceholder.selectedWidgets = [];
         newPlaceholder.maxWidget = typeof newPlaceholder.maxWidget !== "undefined" ? parseInt(newPlaceholder.maxWidget) : 0;
         var targetPlaceholderIndex = destination.length;
         destination.splice(targetPlaceholderIndex, 0, newPlaceholder);
@@ -24096,7 +24128,7 @@ function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len 
             if (typeof _widget2.widget_name === "undefined") {
               continue;
             }
-            if (typeof _this2.available_widgets[_widget2.widget_name] === "undefined") {
+            if (typeof _this.available_widgets[_widget2.widget_name] === "undefined") {
               continue;
             }
             addActiveWidget(_widget2);
@@ -24110,7 +24142,7 @@ function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len 
         }
       };
       value.forEach(function (placeholder, index) {
-        if (!_this2.isTruthyObject(placeholder)) {
+        if (!_this.isTruthyObject(placeholder)) {
           return;
         }
         if ("placeholder_item" === placeholder.type) {
@@ -24121,12 +24153,12 @@ function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len 
           return;
         }
         if ("placeholder_group" === placeholder.type) {
-          if (!_this2.placeholdersMap.hasOwnProperty(placeholder.placeholderKey)) {
+          if (!_this.placeholdersMap.hasOwnProperty(placeholder.placeholderKey)) {
             return;
           }
-          var newPlaceholder = JSON.parse(JSON.stringify(_this2.placeholdersMap[placeholder.placeholderKey]));
+          var newPlaceholder = JSON.parse(JSON.stringify(_this.placeholdersMap[placeholder.placeholderKey]));
           newPlaceholder.placeholders = [];
-          var targetPlaceholderIndex = _this2.placeholders.length;
+          var targetPlaceholderIndex = _this.placeholders.length;
           newPlaceholders.splice(targetPlaceholderIndex, 0, newPlaceholder);
           placeholder.placeholders.forEach(function (subPlaceholder) {
             if (!Array.isArray(subPlaceholder.selectedWidgets)) {
@@ -24137,9 +24169,12 @@ function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len 
         }
       });
       console.log('@importOldData', {
-        newPlaceholders: newPlaceholders
+        newPlaceholders: newPlaceholders,
+        placeholders: this.placeholders,
+        valueCHK: this.value,
+        value: value
       });
-      // this.placeholders = newPlaceholders;
+      this.placeholders = newPlaceholders;
     },
     importWidgets: function importWidgets() {
       if (!this.isTruthyObject(this.widgets)) {
@@ -24162,7 +24197,7 @@ function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len 
       }
     },
     importPlaceholders: function importPlaceholders() {
-      var _this3 = this;
+      var _this2 = this;
       this.allPlaceholderItems = [];
       if (!Array.isArray(this.layout)) {
         return;
@@ -24171,7 +24206,7 @@ function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len 
         return;
       }
       var sanitizePlaceholderData = function sanitizePlaceholderData(placeholder) {
-        if (!_this3.isTruthyObject(placeholder)) {
+        if (!_this2.isTruthyObject(placeholder)) {
           placeholder = {};
         }
 
@@ -24184,9 +24219,6 @@ function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len 
         if (typeof placeholder.label === "undefined") {
           placeholder.label = "";
         }
-        console.log('@sanitizePlaceholderData', {
-          placeholder: placeholder
-        });
         return placeholder;
       };
       var sanitizedPlaceholders = [];
@@ -24195,7 +24227,7 @@ function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len 
       try {
         var _loop = function _loop() {
             var placeholder = _step7.value;
-            if (!_this3.isTruthyObject(placeholder)) {
+            if (!_this2.isTruthyObject(placeholder)) {
               return 0; // continue
             }
             var placeholderItem = placeholder;
@@ -24205,19 +24237,16 @@ function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len 
             if (typeof placeholderItem.placeholderKey === "undefined") {
               return 0; // continue
             }
-            if (_this3.placeholdersMap.hasOwnProperty(placeholderItem.placeholderKey)) {
+            if (_this2.placeholdersMap.hasOwnProperty(placeholderItem.placeholderKey)) {
               return 0; // continue
             }
-            vue__WEBPACK_IMPORTED_MODULE_3__["default"].set(_this3.placeholdersMap, placeholderItem.placeholderKey, placeholderItem);
+            vue__WEBPACK_IMPORTED_MODULE_3__["default"].set(_this2.placeholdersMap, placeholderItem.placeholderKey, placeholderItem);
             if (placeholderItem.type === "placeholder_item") {
               var placeholderItemData = sanitizePlaceholderData(placeholderItem);
               if (placeholderItemData) {
                 sanitizedPlaceholders.push(placeholderItemData);
-                _this3.allPlaceholderItems.push(placeholderItemData);
+                _this2.allPlaceholderItems.push(placeholderItemData);
               }
-              console.log('@placeholder_item', {
-                placeholderItemData: placeholderItemData
-              });
               return 0; // continue
             }
             if (placeholderItem.type === "placeholder_group") {
@@ -24231,15 +24260,15 @@ function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len 
                 return 0; // continue
               }
               placeholderItem.placeholders.forEach(function (placeholderSubItem, subPlaceholderIndex) {
-                if (_this3.placeholdersMap.hasOwnProperty(placeholderSubItem.placeholderKey)) {
+                if (_this2.placeholdersMap.hasOwnProperty(placeholderSubItem.placeholderKey)) {
                   placeholderItem.placeholders.splice(subPlaceholderIndex, 1);
                   return;
                 }
-                vue__WEBPACK_IMPORTED_MODULE_3__["default"].set(_this3.placeholdersMap, placeholderSubItem.placeholderKey, placeholderSubItem);
+                vue__WEBPACK_IMPORTED_MODULE_3__["default"].set(_this2.placeholdersMap, placeholderSubItem.placeholderKey, placeholderSubItem);
                 var placeholderItemData = sanitizePlaceholderData(placeholderSubItem);
                 if (placeholderItemData) {
                   placeholderItem.placeholders.splice(subPlaceholderIndex, 1, placeholderItemData);
-                  _this3.allPlaceholderItems.push(placeholderItemData);
+                  _this2.allPlaceholderItems.push(placeholderItemData);
                 }
               });
               if (placeholderItem.placeholders.length) {

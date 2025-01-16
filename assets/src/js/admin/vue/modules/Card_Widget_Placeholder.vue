@@ -80,13 +80,6 @@ export default {
       default: "Up to __DATA__ item{s} can be added",
     },
   },
-  created() {
-    console.log("@WidgetPlaceholders (created):", {Selected: this.selectedWidgets, Available: this.availableWidgets, Active: this.activeWidgets});
-  },
-
-  // mounted() {
-  //   console.log("Selected Widgets (mounted):", this.selectedWidgets);
-  // },
   computed: {
     canAddMore() {
       if ( this.maxWidget < 1 ) {
