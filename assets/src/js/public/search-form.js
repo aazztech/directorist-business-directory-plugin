@@ -5,6 +5,7 @@ import initSearchCategoryCustomFields from './components/category-custom-fields'
 import './components/colorPicker';
 import './components/directoristDropdown';
 import './components/directoristSelect';
+import './range-slider';
 
 (function ($) {
     window.addEventListener('load', () => {
@@ -989,7 +990,7 @@ import './components/directoristSelect';
 
                 // Check if the slider is already initialized
                 if (!slider || slider.directoristCustomRangeSlider) return;
-                
+
                 let sliderStep = parseInt(slider.getAttribute('step')) || 1;
                 let sliderDefaultValue = parseInt(slider.getAttribute('value') || 0);
                 let sliderMaxValue = parseInt(slider.getAttribute('max-value') || 100);
@@ -1004,7 +1005,7 @@ import './components/directoristSelect';
                 let rangeInitLoad = true;
                 // Parse the URL parameters
                 const milesParams = new URLSearchParams(window.location.search).has('miles');
-    
+
                 directoristCustomRangeSlider?.create(slider, {
                     start: [minInput.value, sliderDefaultValue && !milesParams ? sliderDefaultValue : maxInput.value],
                     connect: true,
@@ -1227,4 +1228,8 @@ import './components/directoristSelect';
 
 
     });
+
+    window.addEventListener('directorist-instant-search-reloaded', function() {
+        initSearchCategoryCustomFields($);
+    }, {once: true} );
 })(jQuery);
