@@ -23574,6 +23574,9 @@ function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len 
   },
   watch: {
     output_data: function output_data() {
+      console.log('@CHK-3', {
+        output_data: this.output_data
+      });
       this.$emit("update", this.output_data);
     }
   },
@@ -23585,6 +23588,9 @@ function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len 
       var getWidgetData = function getWidgetData(placeholderKey) {
         var placeholderData = allPlaceholders.find(function (placeholder) {
           return placeholder.placeholderKey === placeholderKey;
+        });
+        console.log('@CHK-1', {
+          placeholderData: placeholderData
         });
         if (_babel_runtime_helpers_typeof__WEBPACK_IMPORTED_MODULE_2___default()(placeholderData) !== "object") {
           return null;
@@ -23646,6 +23652,9 @@ function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len 
           // data.push(widget_data);
         }
 
+        console.log('@CHK-2', {
+          data: data
+        });
         return data;
       };
 
@@ -24168,12 +24177,13 @@ function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len 
           });
         }
       });
-      console.log('@importOldData', {
-        newPlaceholders: newPlaceholders,
-        placeholders: this.placeholders,
-        valueCHK: this.value,
-        value: value
+      console.log('@CHK: importOldData', {
+        v: JSON.parse(JSON.stringify(this.value)),
+        newPlaceholders: newPlaceholders
       });
+
+      // console.log('@importOldData', { newPlaceholders, placeholders: this.placeholders, valueCHK: this.value, value });
+
       this.placeholders = newPlaceholders;
     },
     importWidgets: function importWidgets() {

@@ -268,6 +268,9 @@ export default {
 
   watch: {
     output_data() {
+
+      console.log( '@CHK-3', { output_data: this.output_data } );
+
       this.$emit("update", this.output_data);
     },
   },
@@ -282,6 +285,8 @@ export default {
         const placeholderData = allPlaceholders.find(
           (placeholder) => placeholder.placeholderKey === placeholderKey
         );
+
+        console.log( '@CHK-1', { placeholderData } );
         
         if (typeof placeholderData !== "object") {
           return null;
@@ -346,6 +351,9 @@ export default {
 
           // data.push(widget_data);
         }
+
+        console.log( '@CHK-2', { data } );
+
         return data;
       };
 
@@ -942,7 +950,13 @@ export default {
         }
       });
 
-      console.log('@importOldData', { newPlaceholders, placeholders: this.placeholders, valueCHK: this.value, value });
+      console.log( '@CHK: importOldData', { 
+        v: JSON.parse(JSON.stringify(this.value)),
+        newPlaceholders,
+      } );
+
+      // console.log('@importOldData', { newPlaceholders, placeholders: this.placeholders, valueCHK: this.value, value });
+      
       this.placeholders = newPlaceholders;
     },
 
