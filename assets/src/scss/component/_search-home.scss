@@ -302,6 +302,7 @@
     }
 
     .directorist-search-form__single-category {
+      cursor: not-allowed;
       .directorist-category-select {
         opacity: 0.6;
         pointer-events: none;
@@ -310,9 +311,13 @@
           pointer-events: none;
         }
       }
+      ~ .directorist-search-field__btn {
+        cursor: not-allowed;
+      }
     }
     
     .directorist-search-form__single-location {
+      cursor: not-allowed;
       .directorist-location-select {
         opacity: 0.6;
         pointer-events: none;
@@ -320,6 +325,9 @@
           opacity: 0.6;
           pointer-events: none;
         }
+      }
+      ~ .directorist-search-field__btn {
+        cursor: not-allowed;
       }
     }
 
