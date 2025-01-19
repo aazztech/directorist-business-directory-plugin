@@ -11,10 +11,11 @@ $location_source = !empty($data['location_source']) && $data['location_source'] 
 
 if ( $location_source == 'listing' ) {
 	$selected_item = $searchform::get_selected_location_option_data();
+	$is_single_location = atbdp_is_page('single_location') ? 'directorist-search-form__single-location' : '';
 	?>
 
 	<div class="directorist-search-field <?php echo esc_attr( $empty_label ); ?>">
-		<div class="directorist-select directorist-search-location directorist-search-field__input">
+		<div class="directorist-select directorist-search-location directorist-search-field__input <?php echo esc_attr($is_single_location); ?>">
 
 			<?php if ( ! empty( $data['label'] ) ) : ?>
 				<label class="directorist-search-field__label"><?php echo esc_attr( $data['label'] ); ?></label>
