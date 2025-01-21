@@ -1492,9 +1492,9 @@ function atbdp_get_listings_current_order($default_order = '')
 
     $order = $default_order;
 
-    if (isset($_REQUEST['sort'])) {
+    if ( isset( $_REQUEST['sort'] ) && ! empty( $_REQUEST['sort'] ) ) {
         $order = directorist_clean( wp_unslash( $_REQUEST['sort'] ) );
-    } else if (isset($_REQUEST['order'])) {
+    } else if ( isset( $_REQUEST['order'] ) && ! empty( $_REQUEST['order'] ) ) {
         $order = directorist_clean( wp_unslash( $_REQUEST['order'] ) );
     }
 
