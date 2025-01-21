@@ -2231,7 +2231,7 @@ function _objectSpread(e) { for (var r = 1; r < arguments.length; r++) { var t =
   });
 
   // Scrolling Pagination
-  var container = $('.directorist-infinite-scroll .directorist-container-fluid');
+  var container = $('.directorist-infinite-scroll .directorist-container-fluid .directorist-row');
   var page = 1;
   var isLoading = false;
   $(window).on('scroll', function () {
@@ -2330,23 +2330,24 @@ function _objectSpread(e) { for (var r = 1; r < arguments.length; r++) { var t =
   // AJAX call to load more listings
   function loadMoreListings(formData, instantSearchElement) {
     var loadingDiv;
-    function showLoadingDivInsideContainer(duration) {
-      // Find the container element
-      var container = document.querySelector('.directorist-infinite-scroll .directorist-container-fluid');
-      if (container) {
-        // Create a new div element
-        loadingDiv = document.createElement('div');
-        loadingDiv.className = 'on-scroll-loading atbdp-form-fade';
-        loadingDiv.innerText = 'Loading...';
-        container.appendChild(loadingDiv);
-        loadingDiv.style.display = 'block';
-      }
-    }
     $.ajax({
       url: directorist.ajaxurl,
       type: 'POST',
       data: formData,
       beforeSend: function beforeSend() {
+        var showLoadingDivInsideContainer = function showLoadingDivInsideContainer(duration) {
+          var container = document.querySelector('.directorist-infinite-scroll .directorist-container-fluid .directorist-row');
+          if (container) {
+            loadingDiv = document.createElement('div');
+            loadingDiv.className = 'directorist-on-scroll-loading';
+            var spinner = document.createElement('div');
+            spinner.className = 'directorist-spinner';
+            loadingDiv.appendChild(spinner);
+            loadingDiv.appendChild(document.createTextNode('Loading more...'));
+            container.appendChild(loadingDiv);
+            loadingDiv.style.display = 'flex';
+          }
+        };
         showLoadingDivInsideContainer(8000);
       },
       success: function success(html) {
@@ -2362,16 +2363,26 @@ function _objectSpread(e) { for (var r = 1; r < arguments.length; r++) { var t =
         triggerCustomEvents();
       },
       complete: function complete() {
-        instantSearchElement.find('.directorist-archive-items').removeClass('atbdp-form-fade');
         isLoading = false;
+        if (loadingDiv && loadingDiv.parentNode) {
+          loadingDiv.parentNode.removeChild(loadingDiv);
+          loadingDiv = null;
+        }
       }
     });
   }
 
   // Helper function to trigger custom events
   function triggerCustomEvents() {
-    window.dispatchEvent(new CustomEvent('directorist-instant-search-reloaded'));
-    window.dispatchEvent(new CustomEvent('directorist-reload-listings-map-archive'));
+    window.addEventListener('directorist-instant-search-reloaded', function () {
+      console.log('Instant search reloaded event triggered');
+      // Perform necessary actions
+    });
+
+    window.addEventListener('directorist-reload-listings-map-archive', function () {
+      console.log('Reloading listings on map archive');
+      // Perform necessary actions
+    });
   }
 
   // Filter on AJAX Search

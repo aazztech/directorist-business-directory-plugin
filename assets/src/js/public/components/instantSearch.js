@@ -1018,7 +1018,7 @@ import debounce from '../../global/components/debounce';
     });
 
     // Scrolling Pagination
-    const container = $('.directorist-infinite-scroll .directorist-container-fluid');
+    const container = $('.directorist-infinite-scroll .directorist-container-fluid .directorist-row');
     let page        = 1;
     let isLoading   = false;
 
@@ -1120,24 +1120,24 @@ import debounce from '../../global/components/debounce';
     function loadMoreListings(formData, instantSearchElement) {
         let loadingDiv;
     
-        function showLoadingDivInsideContainer(duration) {
-            // Find the container element
-            const container = document.querySelector('.directorist-infinite-scroll .directorist-container-fluid');
-            if (container) {
-                // Create a new div element
-                loadingDiv = document.createElement('div');
-                loadingDiv.className = 'on-scroll-loading atbdp-form-fade';
-                loadingDiv.innerText = 'Loading...';
-                container.appendChild(loadingDiv);
-                loadingDiv.style.display = 'block';
-            }
-        }
-    
         $.ajax({
             url : directorist.ajaxurl,
             type: 'POST',
             data: formData,
             beforeSend: () => {
+                const showLoadingDivInsideContainer = (duration) => {
+                    const container = document.querySelector('.directorist-infinite-scroll .directorist-container-fluid .directorist-row');
+                    if (container) {
+                        loadingDiv = document.createElement('div');
+                        loadingDiv.className = 'directorist-on-scroll-loading';
+                        const spinner = document.createElement('div');
+                        spinner.className = 'directorist-spinner';
+                        loadingDiv.appendChild(spinner);
+                        loadingDiv.appendChild(document.createTextNode('Loading more...'));
+                        container.appendChild(loadingDiv);
+                        loadingDiv.style.display = 'flex';
+                    }
+                };
                 showLoadingDivInsideContainer(8000);
             },
             success: (html) => {
@@ -1153,16 +1153,26 @@ import debounce from '../../global/components/debounce';
                 triggerCustomEvents();
             },
             complete: () => {
-                instantSearchElement.find('.directorist-archive-items').removeClass('atbdp-form-fade');
                 isLoading = false;
+                if (loadingDiv && loadingDiv.parentNode) {
+                    loadingDiv.parentNode.removeChild(loadingDiv);
+                    loadingDiv = null;
+                }
             },
         });
     }
 
     // Helper function to trigger custom events
     function triggerCustomEvents() {
-        window.dispatchEvent(new CustomEvent('directorist-instant-search-reloaded'));
-        window.dispatchEvent(new CustomEvent('directorist-reload-listings-map-archive'));
+        window.addEventListener('directorist-instant-search-reloaded', function() {
+            console.log('Instant search reloaded event triggered');
+            // Perform necessary actions
+        });
+        
+        window.addEventListener('directorist-reload-listings-map-archive', function() {
+            console.log('Reloading listings on map archive');
+            // Perform necessary actions
+        });
     }
 
     // Filter on AJAX Search
