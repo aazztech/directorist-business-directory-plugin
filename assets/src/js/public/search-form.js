@@ -989,9 +989,10 @@ import './components/directoristSelect';
 
                 // Check if the slider is already initialized
                 if (!slider || slider.directoristCustomRangeSlider) return;
-                
+
                 let sliderStep = parseInt(slider.getAttribute('step')) || 1;
-                let sliderDefaultValue = parseInt(slider.getAttribute('value'));
+                let sliderDefaultValue = parseInt(slider.getAttribute('value') || 0);
+                let sliderMaxValue = parseInt(slider.getAttribute('max-value') || 100);
                 let minInput = sliderItem.querySelector('.directorist-custom-range-slider__value__min');
                 let maxInput = sliderItem.querySelector('.directorist-custom-range-slider__value__max');
                 let sliderRange = sliderItem.querySelector('.directorist-custom-range-slider__range');
@@ -1001,7 +1002,9 @@ import './components/directoristSelect';
 
                 // init rangeInitiLoad on initial Load
                 let rangeInitLoad = true;
-    
+                // Parse the URL parameters
+                const milesParams = new URLSearchParams(window.location.search).has('miles');
+
                 directoristCustomRangeSlider?.create(slider, {
                     start: [0, sliderDefaultValue ? sliderDefaultValue : 100],
                     connect: true,
@@ -1224,4 +1227,8 @@ import './components/directoristSelect';
 
 
     });
+
+    window.addEventListener('directorist-instant-search-reloaded', function() {
+        initSearchCategoryCustomFields($);
+    }, {once: true} );
 })(jQuery);

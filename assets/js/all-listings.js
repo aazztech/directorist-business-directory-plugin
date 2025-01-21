@@ -2430,6 +2430,10 @@ function _objectSpread(e) { for (var r = 1; r < arguments.length; r++) { var t =
 
   // sidebar on keyup searching
   $('body').on("keyup", ".directorist-instant-search .listing-with-sidebar form", Object(_global_components_debounce__WEBPACK_IMPORTED_MODULE_1__["default"])(function (e) {
+    if ($(e.target).closest('.directorist-custom-range-slider__value').length > 0) {
+      return; // Skip calling `filterListing` for this element
+    }
+
     e.preventDefault();
     var searchElm = $(this).closest('.listing-with-sidebar');
     filterListing(searchElm);

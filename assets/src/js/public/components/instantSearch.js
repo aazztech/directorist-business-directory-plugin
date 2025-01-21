@@ -1227,10 +1227,13 @@ import debounce from '../../global/components/debounce';
 
     // sidebar on keyup searching
     $('body').on("keyup", ".directorist-instant-search .listing-with-sidebar form", debounce( function(e) {
+        if ($(e.target).closest('.directorist-custom-range-slider__value').length > 0) {
+            return; // Skip calling `filterListing` for this element
+        } 
+
         e.preventDefault();
         var searchElm = $(this).closest('.listing-with-sidebar');
         filterListing(searchElm);
-
     }, 250));
 
     // sidebar on change searching
@@ -1238,7 +1241,6 @@ import debounce from '../../global/components/debounce';
         e.preventDefault();
         var searchElm = $(this).closest('.listing-with-sidebar');
         filterListing(searchElm);
-
     }, 250));
 
     // select on change with value - searching
