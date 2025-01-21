@@ -23574,7 +23574,7 @@ function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len 
   },
   watch: {
     output_data: function output_data() {
-      console.log('@CHK-3', {
+      console.log('@CHK', {
         output_data: this.output_data
       });
       this.$emit("update", this.output_data);
@@ -23588,9 +23588,6 @@ function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len 
       var getWidgetData = function getWidgetData(placeholderKey) {
         var placeholderData = allPlaceholders.find(function (placeholder) {
           return placeholder.placeholderKey === placeholderKey;
-        });
-        console.log('@CHK-1', {
-          placeholderData: placeholderData
         });
         if (_babel_runtime_helpers_typeof__WEBPACK_IMPORTED_MODULE_2___default()(placeholderData) !== "object") {
           return null;
@@ -23652,9 +23649,6 @@ function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len 
           // data.push(widget_data);
         }
 
-        console.log('@CHK-2', {
-          data: data
-        });
         return data;
       };
 
@@ -23673,9 +23667,6 @@ function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len 
               type: placeholder.type,
               placeholderKey: placeholder.placeholderKey,
               selectedWidgets: data
-            });
-            console.log('@CHK-22', {
-              data: data
             });
             continue;
           }
@@ -24094,10 +24085,14 @@ function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len 
         return;
       }
       var newPlaceholders = [];
+      var newAllPlaceholders = [];
 
       // Import Layout
       // -------------------------
       var addActiveWidget = function addActiveWidget(widget) {
+        console.log('@addActiveWidget', {
+          widget: widget
+        });
         var widgets_template = _objectSpread({}, _this.theAvailableWidgets[widget.widget_key]);
         var has_widget_options = false;
         if (widgets_template.options && widgets_template.options.fields) {
@@ -24123,17 +24118,13 @@ function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len 
         vue__WEBPACK_IMPORTED_MODULE_3__["default"].set(_this.active_widgets, widget.widget_key, widgets_template);
       };
       var importWidgets = function importWidgets(placeholder, destination) {
-        console.log('@importWidgets', {
-          placeholder: placeholder,
-          destination: destination
-        });
         if (!_this.placeholdersMap.hasOwnProperty(placeholder.placeholderKey)) {
           return;
         }
         var newPlaceholder = JSON.parse(JSON.stringify(_this.placeholdersMap[placeholder.placeholderKey]));
-
-        // newPlaceholder.selectedWidgets = [];
+        newPlaceholder.selectedWidgets = placeholder.selectedWidgets;
         newPlaceholder.maxWidget = typeof newPlaceholder.maxWidget !== "undefined" ? parseInt(newPlaceholder.maxWidget) : 0;
+        newAllPlaceholders.push(newPlaceholder);
         var targetPlaceholderIndex = destination.length;
         destination.splice(targetPlaceholderIndex, 0, newPlaceholder);
         var widgetIndex = 0;
@@ -24191,12 +24182,11 @@ function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len 
       console.log('@CHK: importOldData', {
         v: JSON.parse(JSON.stringify(this.value)),
         value: value,
-        newPlaceholders: newPlaceholders
+        newPlaceholders: newPlaceholders,
+        newAllPlaceholders: newAllPlaceholders
       });
-
-      // console.log('@importOldData', { newPlaceholders, placeholders: this.placeholders, valueCHK: this.value, value });
-
       this.placeholders = newPlaceholders;
+      this.allPlaceholderItems = newAllPlaceholders;
     },
     importWidgets: function importWidgets() {
       if (!this.isTruthyObject(this.widgets)) {
@@ -24265,6 +24255,12 @@ function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len 
             vue__WEBPACK_IMPORTED_MODULE_3__["default"].set(_this2.placeholdersMap, placeholderItem.placeholderKey, placeholderItem);
             if (placeholderItem.type === "placeholder_item") {
               var placeholderItemData = sanitizePlaceholderData(placeholderItem);
+              console.log('@placeholderItemData', {
+                placeholderItem: placeholderItem,
+                placeholderItemData: placeholderItemData,
+                layout: _this2.layout,
+                placeholders: _this2.placeholders
+              });
               if (placeholderItemData) {
                 sanitizedPlaceholders.push(placeholderItemData);
                 _this2.allPlaceholderItems.push(placeholderItemData);

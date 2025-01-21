@@ -269,7 +269,7 @@ export default {
   watch: {
     output_data() {
 
-      console.log( '@CHK-3', { output_data: this.output_data } );
+      console.log( '@CHK', { output_data: this.output_data } );
 
       this.$emit("update", this.output_data);
     },
@@ -285,8 +285,6 @@ export default {
         const placeholderData = allPlaceholders.find(
           (placeholder) => placeholder.placeholderKey === placeholderKey
         );
-
-        console.log( '@CHK-1', { placeholderData } );
         
         if (typeof placeholderData !== "object") {
           return null;
@@ -352,8 +350,6 @@ export default {
           // data.push(widget_data);
         }
 
-        console.log( '@CHK-2', { data } );
-
         return data;
       };
 
@@ -372,8 +368,6 @@ export default {
             selectedWidgets: data,
           });
 
-
-          console.log( '@CHK-22', { data } );
           continue;
         }
 
@@ -829,10 +823,12 @@ export default {
       }
 
       let newPlaceholders = [];
+      let newAllPlaceholders = [];
 
       // Import Layout
       // -------------------------
       const addActiveWidget = (widget) => {
+        console.log('@addActiveWidget', { widget });
         let widgets_template = {
           ...this.theAvailableWidgets[widget.widget_key],
         };
@@ -870,7 +866,6 @@ export default {
       };
 
       const importWidgets = (placeholder, destination) => {
-        console.log('@importWidgets', { placeholder, destination });
         if (!this.placeholdersMap.hasOwnProperty(placeholder.placeholderKey)) {
           return;
         }
@@ -879,12 +874,13 @@ export default {
           JSON.stringify(this.placeholdersMap[placeholder.placeholderKey])
         );
 
-        // newPlaceholder.selectedWidgets = [];
+        newPlaceholder.selectedWidgets = placeholder.selectedWidgets;
         newPlaceholder.maxWidget =
           typeof newPlaceholder.maxWidget !== "undefined"
             ? parseInt(newPlaceholder.maxWidget)
             : 0;
 
+        newAllPlaceholders.push(newPlaceholder);
         let targetPlaceholderIndex = destination.length;
 
         destination.splice(targetPlaceholderIndex, 0, newPlaceholder);
@@ -959,11 +955,11 @@ export default {
         v: JSON.parse(JSON.stringify(this.value)),
         value,
         newPlaceholders,
+        newAllPlaceholders,
       } );
-
-      // console.log('@importOldData', { newPlaceholders, placeholders: this.placeholders, valueCHK: this.value, value });
       
       this.placeholders = newPlaceholders;
+      this.allPlaceholderItems = newAllPlaceholders;
     },
 
     importWidgets() {
@@ -1053,6 +1049,13 @@ export default {
 
         if (placeholderItem.type === "placeholder_item") {
           const placeholderItemData = sanitizePlaceholderData(placeholderItem);
+
+          console.log('@placeholderItemData', { 
+            placeholderItem, 
+            placeholderItemData,
+            layout: this.layout,
+            placeholders: this.placeholders,
+          });
           if (placeholderItemData) {
             sanitizedPlaceholders.push(placeholderItemData);
             this.allPlaceholderItems.push(placeholderItemData);
