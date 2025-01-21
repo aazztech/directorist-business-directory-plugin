@@ -313,6 +313,7 @@
       }
       ~ .directorist-search-field__btn {
         cursor: not-allowed;
+        pointer-events: none;
       }
     }
     
@@ -328,6 +329,7 @@
       }
       ~ .directorist-search-field__btn {
         cursor: not-allowed;
+        pointer-events: none;
       }
     }
 

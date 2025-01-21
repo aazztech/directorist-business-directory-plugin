@@ -13134,6 +13134,7 @@ input.directorist-toggle-input:checked + .directorist-toggle-input-label span.di
 }
 .directorist-search-form__top .directorist-search-form__single-category ~ .directorist-search-field__btn {
   cursor: not-allowed;
+  pointer-events: none;
 }
 .directorist-search-form__top .directorist-search-form__single-location {
   cursor: not-allowed;
@@ -13148,6 +13149,7 @@ input.directorist-toggle-input:checked + .directorist-toggle-input-label span.di
 }
 .directorist-search-form__top .directorist-search-form__single-location ~ .directorist-search-field__btn {
   cursor: not-allowed;
+  pointer-events: none;
 }
 .directorist-search-form__top .directorist-search-field {
   -webkit-box-flex: 30%;
