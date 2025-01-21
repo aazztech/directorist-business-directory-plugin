@@ -16,9 +16,9 @@ if ( ! defined( 'ABSPATH' ) ) exit;
 		<?php do_action( 'directorist_before_list_listings_loop' ); ?>
 
 			<?php if ( $listings->have_posts() ): ?>
-
-				<?php $listings->render_list_view( $listings->post_ids() ) ?>
-
+				<div class="<?php Helper::directorist_row(); ?>">
+					<?php $listings->render_list_view( $listings->post_ids() ) ?>
+				<div/>
 				<?php
 				if ( $listings->show_pagination && 'numbered' === $listings->options['pagination_type'] ) {
 

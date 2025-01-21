@@ -1157,7 +1157,13 @@ class Directorist_Listings {
 		}
 		
 		foreach ( $post_ids as $listing_id ) {
+			?>
+			<div class="directorist-col-12 directorist-all-listing-col">
+			<?php
             $this->loop_template( 'list', $listing_id );
+			?>
+			</div>
+			<?php
         }
 	}
 
