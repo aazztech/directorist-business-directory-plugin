@@ -1,15 +1,15 @@
-﻿=== Directorist: AI-Powered WordPress Business Directory Plugin with Classified Ads Listings ===
+﻿=== Directorist: AI-Powered Business Directory Plugin with Classified Ads Listings ===
 Contributors: wpwax
 Donate link: https://directorist.com/extensions/
 Tags: member directory, listing, classifieds, directory plugin, business directory
 Requires at least: 4.6
 Tested up to: 6.7
 Requires PHP: 7.0
-Stable tag: 8.0.11
+Stable tag: 8.0.12
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
-The Best WordPress Directory Plugin to Create Business Directory, Job Listings, Classified Ads, Booking Directory, Local Directory, Service Directory
+An Excellent WP Directory Plugin to Create Business Directories, Job Listings, Classified Ads, Booking Directories, Local Directories, and Service Directories.
 
 == Description ==
 
@@ -296,6 +296,10 @@ Directorist is a complete directory solution and in combination with its advance
  * and many more
 
 == Changelog ==
+
+8.0.12 - Jan 10, 2025
+
+* Improve: Community guidelines
 
 8.0.11 - Jan 02, 2025
 
