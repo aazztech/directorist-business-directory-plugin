@@ -2231,7 +2231,7 @@ function _objectSpread(e) { for (var r = 1; r < arguments.length; r++) { var t =
   });
 
   // Scrolling Pagination
-  var container = $('.directorist-archive-items .directorist-container-fluid');
+  var container = $('.directorist-infinite-scroll .directorist-container-fluid');
   var page = 1;
   var isLoading = false;
   $(window).on('scroll', function () {
@@ -2332,7 +2332,7 @@ function _objectSpread(e) { for (var r = 1; r < arguments.length; r++) { var t =
     var loadingDiv;
     function showLoadingDivInsideContainer(duration) {
       // Find the container element
-      var container = document.querySelector('.directorist-archive-items.directorist-archive-list-view .directorist-container-fluid');
+      var container = document.querySelector('.directorist-infinite-scroll.directorist-archive-list-view .directorist-container-fluid');
       if (container) {
         // Create a new div element
         loadingDiv = document.createElement('div');

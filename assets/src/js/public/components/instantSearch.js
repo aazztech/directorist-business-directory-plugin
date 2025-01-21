@@ -1018,7 +1018,7 @@ import debounce from '../../global/components/debounce';
     });
 
     // Scrolling Pagination
-    const container = $('.directorist-archive-items .directorist-container-fluid');
+    const container = $('.directorist-infinite-scroll .directorist-container-fluid');
     let page        = 1;
     let isLoading   = false;
 
@@ -1122,7 +1122,7 @@ import debounce from '../../global/components/debounce';
     
         function showLoadingDivInsideContainer(duration) {
             // Find the container element
-            const container = document.querySelector('.directorist-archive-items.directorist-archive-list-view .directorist-container-fluid');
+            const container = document.querySelector('.directorist-infinite-scroll.directorist-archive-list-view .directorist-container-fluid');
             if (container) {
                 // Create a new div element
                 loadingDiv = document.createElement('div');

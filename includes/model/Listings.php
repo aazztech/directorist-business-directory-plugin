@@ -184,6 +184,7 @@ class Directorist_Listings {
 		$this->options['sort_listing_by']                 = get_directorist_option( 'sort_listing_by', 'asc' );
 		$this->options['listings_per_page']               = get_directorist_option( 'all_listing_page_items', 6 );
 		$this->options['paginate_listings']               = ! empty( get_directorist_option( 'paginate_all_listings', 1 ) ) ? 'yes' : '';
+		$this->options['pagination_type']                 = get_directorist_option( 'pagination_type', 'numbered' );
 		$this->options['display_listings_header']         = ! empty( get_directorist_option( 'display_listings_header', 1 ) ) ? 'yes' : '';
 		$this->options['listing_header_title']            = get_directorist_option( 'all_listing_title', __( 'Items Found', 'directorist' ) );
 		$this->options['listing_columns']                 = get_directorist_option( 'all_listing_columns', 2 );
@@ -294,6 +295,7 @@ class Directorist_Listings {
 			'order'                    => $this->options['sort_listing_by'],
 			'listings_per_page'        => $this->options['listings_per_page'],
 			'show_pagination'          => $this->options['paginate_listings'],
+			'pagination_type'          => $this->options['pagination_type'],
 			'header'                   => $this->options['display_listings_header'],
 			'header_title'             => $this->options['listing_header_title'],
 			'category'                 => '',
@@ -1836,6 +1838,9 @@ class Directorist_Listings {
 			return $this->view_as == 'masonry_grid' ? 'directorist-grid-masonary' : 'directorist-grid-normal';
 		}
 
+		public function pagination_infinite_scroll_class() {
+			return $this->options['pagination_type'] === 'infinite_scroll' ? 'directorist-infinite-scroll' : '';
+		}
 		public function get_the_location() {
 			return get_the_term_list( get_the_ID(), ATBDP_LOCATION, '', ', ', '' );
 		}
