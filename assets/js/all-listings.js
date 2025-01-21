@@ -2332,7 +2332,7 @@ function _objectSpread(e) { for (var r = 1; r < arguments.length; r++) { var t =
     var loadingDiv;
     function showLoadingDivInsideContainer(duration) {
       // Find the container element
-      var container = document.querySelector('.directorist-infinite-scroll.directorist-archive-list-view .directorist-container-fluid');
+      var container = document.querySelector('.directorist-infinite-scroll .directorist-container-fluid');
       if (container) {
         // Create a new div element
         loadingDiv = document.createElement('div');
@@ -2354,7 +2354,7 @@ function _objectSpread(e) { for (var r = 1; r < arguments.length; r++) { var t =
           loadingDiv.style.display = 'none';
         }
         if (html.count > 0) {
-          container.append(html.render_listing_view);
+          container.append(html.render_listings);
         } else {
           console.log('No more listings to load.');
           $(window).off('scroll');

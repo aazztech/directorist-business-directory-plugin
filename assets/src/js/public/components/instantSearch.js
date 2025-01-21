@@ -1122,7 +1122,7 @@ import debounce from '../../global/components/debounce';
     
         function showLoadingDivInsideContainer(duration) {
             // Find the container element
-            const container = document.querySelector('.directorist-infinite-scroll.directorist-archive-list-view .directorist-container-fluid');
+            const container = document.querySelector('.directorist-infinite-scroll .directorist-container-fluid');
             if (container) {
                 // Create a new div element
                 loadingDiv = document.createElement('div');
@@ -1145,7 +1145,7 @@ import debounce from '../../global/components/debounce';
                     loadingDiv.style.display = 'none';
                 }
                 if (html.count > 0) {
-                    container.append(html.render_listing_view);
+                    container.append(html.render_listings);
                 } else {
                     console.log('No more listings to load.');
                     $(window).off('scroll');

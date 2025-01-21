@@ -1161,6 +1161,23 @@ class Directorist_Listings {
         }
 	}
 
+	public function render_grid_view( $post_ids ) {
+		if ( ! is_array( $post_ids ) || empty( $post_ids ) ) {
+			// Exit early or log an error if the input is invalid
+			return;
+		}
+		
+		foreach ( $post_ids as $listing_id ) {
+			?>
+			<div class="<?php Helper::directorist_column( $this->columns ); ?> directorist-all-listing-col">
+			<?php
+            $this->loop_template( 'grid', $listing_id );
+			?>
+			</div>
+			<?php
+        }
+	}
+
 	public function have_posts() {
 		return !empty( $this->query_results->ids ) ? true : false;
 	}
@@ -1839,7 +1856,11 @@ class Directorist_Listings {
 		}
 
 		public function pagination_infinite_scroll_class() {
-			return $this->options['pagination_type'] === 'infinite_scroll' ? 'directorist-infinite-scroll' : '';
+			return ! empty( $this->show_pagination ) 
+			&& isset( $this->options['pagination_type'] ) 
+			&& $this->options['pagination_type'] === 'infinite_scroll' 
+			? 'directorist-infinite-scroll' 
+			: '';
 		}
 		public function get_the_location() {
 			return get_the_term_list( get_the_ID(), ATBDP_LOCATION, '', ', ', '' );
