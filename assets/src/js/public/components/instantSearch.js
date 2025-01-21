@@ -1122,7 +1122,7 @@ import debounce from '../../global/components/debounce';
     
         function showLoadingDivInsideContainer(duration) {
             // Find the container element
-            const container = document.querySelector('.directorist-infinite-scroll .directorist-container-fluid');
+            const container = document.querySelector('.directorist-infinite-scroll .directorist-container-fluid .directorist-row');
             if (container) {
                 // Create a new div element
                 loadingDiv = document.createElement('div');

@@ -1160,7 +1160,7 @@ class Directorist_Listings {
 			?>
 			<div class="directorist-col-12 directorist-all-listing-col">
 			<?php
-            $this->loop_template( 'list', $listing_id );
+            	$this->loop_template( 'list', $listing_id );
 			?>
 			</div>
 			<?php

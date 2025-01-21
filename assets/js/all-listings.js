@@ -2332,7 +2332,7 @@ function _objectSpread(e) { for (var r = 1; r < arguments.length; r++) { var t =
     var loadingDiv;
     function showLoadingDivInsideContainer(duration) {
       // Find the container element
-      var container = document.querySelector('.directorist-infinite-scroll .directorist-container-fluid');
+      var container = document.querySelector('.directorist-infinite-scroll .directorist-container-fluid .directorist-row');
       if (container) {
         // Create a new div element
         loadingDiv = document.createElement('div');
