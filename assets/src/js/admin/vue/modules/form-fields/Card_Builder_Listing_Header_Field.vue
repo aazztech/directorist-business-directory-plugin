@@ -371,6 +371,9 @@ export default {
             placeholderKey: placeholder.placeholderKey,
             selectedWidgets: data,
           });
+
+
+          console.log( '@CHK-22', { data } );
           continue;
         }
 
@@ -691,6 +694,7 @@ export default {
       }, {});
 
       const updatePlaceholders = (placeholders, allItemsMap) => {
+        console.log('Update Placeholders:', {placeholders, allItemsMap});
         return placeholders.map((placeholder) => {
           if (allItemsMap[placeholder.placeholderKey]) {
             Vue.set(
@@ -866,6 +870,7 @@ export default {
       };
 
       const importWidgets = (placeholder, destination) => {
+        console.log('@importWidgets', { placeholder, destination });
         if (!this.placeholdersMap.hasOwnProperty(placeholder.placeholderKey)) {
           return;
         }
@@ -952,6 +957,7 @@ export default {
 
       console.log( '@CHK: importOldData', { 
         v: JSON.parse(JSON.stringify(this.value)),
+        value,
         newPlaceholders,
       } );
 

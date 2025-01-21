@@ -23674,6 +23674,9 @@ function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len 
               placeholderKey: placeholder.placeholderKey,
               selectedWidgets: data
             });
+            console.log('@CHK-22', {
+              data: data
+            });
             continue;
           }
           if ("placeholder_group" === placeholder.type) {
@@ -23978,6 +23981,10 @@ function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len 
         return acc;
       }, {});
       var updatePlaceholders = function updatePlaceholders(placeholders, allItemsMap) {
+        console.log('Update Placeholders:', {
+          placeholders: placeholders,
+          allItemsMap: allItemsMap
+        });
         return placeholders.map(function (placeholder) {
           if (allItemsMap[placeholder.placeholderKey]) {
             vue__WEBPACK_IMPORTED_MODULE_3__["default"].set(placeholder, 'selectedWidgets', allItemsMap[placeholder.placeholderKey].selectedWidgets || []);
@@ -24116,6 +24123,10 @@ function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len 
         vue__WEBPACK_IMPORTED_MODULE_3__["default"].set(_this.active_widgets, widget.widget_key, widgets_template);
       };
       var importWidgets = function importWidgets(placeholder, destination) {
+        console.log('@importWidgets', {
+          placeholder: placeholder,
+          destination: destination
+        });
         if (!_this.placeholdersMap.hasOwnProperty(placeholder.placeholderKey)) {
           return;
         }
@@ -24179,6 +24190,7 @@ function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len 
       });
       console.log('@CHK: importOldData', {
         v: JSON.parse(JSON.stringify(this.value)),
+        value: value,
         newPlaceholders: newPlaceholders
       });
 
