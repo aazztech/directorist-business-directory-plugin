@@ -868,13 +868,27 @@
   }
 }
 
-.on-scroll-loading{
+.directorist-on-scroll-loading{
   display: flex;
   align-items: center;
   justify-content: center;
-  border-radius: 6px;
-  padding: 30px;
+  text-align: center;
+  font-size: 18px;
+  font-weight: 500;
+  color: var(--directorist-color-primary);
+  gap: 8px;
+  .directorist-spinner{
+    width: 25px;
+    height: 25px;
+    margin: 0;
+    background: transparent;
+    border-top: 3px solid var(--directorist-color-primary);
+    border-right: 3px solid transparent;
+    border-radius: 50%;
+    animation: 1s rotate360 linear infinite;
+  }
 }
+
 
 // Directorist Listing Type Selection
 .directorist-listing-type-selection {
