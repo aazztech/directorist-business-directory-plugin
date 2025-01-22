@@ -2234,10 +2234,10 @@ function _objectSpread(e) { for (var r = 1; r < arguments.length; r++) { var t =
   var container = $('.directorist-infinite-scroll .directorist-container-fluid .directorist-row');
   var page = 1;
   var isLoading = false;
-  $(window).on('scroll', function () {
+  function handleScroll() {
     if (!container.length || isLoading) return;
     var containerBottom = container.offset().top + container.outerHeight();
-    var scrollBottom = $(window).scrollTop() + $(window).height();
+    var scrollBottom = window.scrollY + window.innerHeight;
     if (scrollBottom >= containerBottom) {
       isLoading = true;
       page++;
@@ -2246,7 +2246,9 @@ function _objectSpread(e) { for (var r = 1; r < arguments.length; r++) { var t =
       var formData = buildFormData(activeForm, instantSearchElement);
       loadMoreListings(formData, instantSearchElement);
     }
-  });
+  }
+  ;
+  window.addEventListener('scroll', handleScroll);
 
   // Helper function to determine the active form
   function getActiveForm(instantSearchElement) {
@@ -2328,61 +2330,42 @@ function _objectSpread(e) { for (var r = 1; r < arguments.length; r++) { var t =
   }
 
   // AJAX call to load more listings
-  function loadMoreListings(formData, instantSearchElement) {
+  function loadMoreListings(formData) {
     var loadingDiv;
     $.ajax({
       url: directorist.ajaxurl,
       type: 'POST',
       data: formData,
       beforeSend: function beforeSend() {
-        var showLoadingDivInsideContainer = function showLoadingDivInsideContainer(duration) {
-          var container = document.querySelector('.directorist-infinite-scroll .directorist-container-fluid .directorist-row');
-          if (container) {
-            loadingDiv = document.createElement('div');
-            loadingDiv.className = 'directorist-on-scroll-loading';
-            var spinner = document.createElement('div');
-            spinner.className = 'directorist-spinner';
-            loadingDiv.appendChild(spinner);
-            loadingDiv.appendChild(document.createTextNode('Loading more...'));
-            container.appendChild(loadingDiv);
-            loadingDiv.style.display = 'flex';
-          }
-        };
-        showLoadingDivInsideContainer(8000);
+        loadingDiv = $('<div>', {
+          class: 'directorist-on-scroll-loading'
+        }).append($('<div>', {
+          class: 'directorist-spinner'
+        }), $('<span>').text('Loading more...'));
+        container.append(loadingDiv);
       },
       success: function success(html) {
-        if (loadingDiv) {
-          loadingDiv.style.display = 'none';
-        }
+        if (loadingDiv) loadingDiv.remove();
         if (html.count > 0) {
           container.append(html.render_listings);
         } else {
           console.log('No more listings to load.');
-          $(window).off('scroll');
+          window.removeEventListener('scroll', handleScroll);
         }
         triggerCustomEvents();
       },
       complete: function complete() {
         isLoading = false;
-        if (loadingDiv && loadingDiv.parentNode) {
-          loadingDiv.parentNode.removeChild(loadingDiv);
-          loadingDiv = null;
-        }
+        if (loadingDiv) loadingDiv.remove();
       }
     });
   }
 
   // Helper function to trigger custom events
   function triggerCustomEvents() {
-    window.addEventListener('directorist-instant-search-reloaded', function () {
-      console.log('Instant search reloaded event triggered');
-      // Perform necessary actions
-    });
-
-    window.addEventListener('directorist-reload-listings-map-archive', function () {
-      console.log('Reloading listings on map archive');
-      // Perform necessary actions
-    });
+    console.log('Events triggered, scrolling enabled again.');
+    window.dispatchEvent(new Event('directorist-instant-search-reloaded'));
+    window.dispatchEvent(new Event('directorist-reload-listings-map-archive'));
   }
 
   // Filter on AJAX Search
