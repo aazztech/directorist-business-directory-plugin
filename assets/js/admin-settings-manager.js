@@ -23435,87 +23435,6 @@ function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len 
         return;
       }
     },
-    // handleWidgetSwitch(event, widget_key, placeholder_index) {
-    //   // Ensure placeholder and selectedWidgets are valid
-    //   if (
-    //     this.allPlaceholderItems[placeholder_index] &&
-    //     Array.isArray(this.allPlaceholderItems[placeholder_index].selectedWidgets)
-    //   ) {
-    //     const isChecked = event.target.checked; // Get checkbox state
-    //     if (isChecked) {
-    //       // Add the widget_key if it's not already in selectedWidgets
-    //       if (
-    //         !this.allPlaceholderItems[placeholder_index].selectedWidgets.includes(
-    //           widget_key
-    //         )
-    //       ) {
-    //         this.allPlaceholderItems[placeholder_index].selectedWidgets.push(widget_key);
-    //       }
-    //     } else {
-    //       // Remove the widget_key if unchecked
-    //       this.allPlaceholderItems[placeholder_index].selectedWidgets =
-    //         this.allPlaceholderItems[placeholder_index].selectedWidgets.filter(
-    //           (item) => item !== widget_key
-    //         );
-    //     }
-    //     console.log(
-    //       `Toggled widget: ${widget_key}, placeholderIndex: ${placeholder_index}, selectedWidgets: ${this.allPlaceholderItems[placeholder_index].selectedWidgets}`
-    //     );
-    //   } else {
-    //     console.error(
-    //       `Invalid placeholder index or selectedWidgets is not defined for index: ${placeholder_index}`
-    //     );
-    //   }
-    // },
-    handleWidgetSwitch: function handleWidgetSwitch(event, widget_key, placeholder_index) {
-      if (!this.allPlaceholderItems[placeholder_index]) {
-        console.error("Invalid placeholder index: ".concat(placeholder_index));
-        return;
-      }
-      var isChecked = event.target.checked;
-
-      // Toggle widget in selectedWidgets
-      this.toggleWidgetInSelectedWidgets(widget_key, placeholder_index, isChecked);
-
-      // Sync selectedWidgets between allPlaceholderItems and placeholders
-      this.placeholders = this.syncSelectedWidgets(this.allPlaceholderItems, this.placeholders);
-      console.log("Toggled widget: ".concat(widget_key), {
-        placeholders: this.placeholders,
-        allPlaceholderItems: this.allPlaceholderItems
-      });
-    },
-    toggleWidgetInSelectedWidgets: function toggleWidgetInSelectedWidgets(widget_key, placeholder_index, isChecked) {
-      var selectedWidgets = this.allPlaceholderItems[placeholder_index].selectedWidgets || [];
-      if (isChecked && !selectedWidgets.includes(widget_key)) {
-        selectedWidgets.push(widget_key);
-      } else if (!isChecked) {
-        this.allPlaceholderItems[placeholder_index].selectedWidgets = selectedWidgets.filter(function (item) {
-          return item !== widget_key;
-        });
-      }
-    },
-    syncSelectedWidgets: function syncSelectedWidgets(allPlaceholderItems, placeholders) {
-      var allItemsMap = allPlaceholderItems.reduce(function (acc, item) {
-        acc[item.placeholderKey] = item;
-        return acc;
-      }, {});
-      var updatePlaceholders = function updatePlaceholders(placeholders, allItemsMap) {
-        console.log('Update Placeholders:', {
-          placeholders: placeholders,
-          allItemsMap: allItemsMap
-        });
-        return placeholders.map(function (placeholder) {
-          if (allItemsMap[placeholder.placeholderKey]) {
-            vue__WEBPACK_IMPORTED_MODULE_3__["default"].set(placeholder, 'selectedWidgets', allItemsMap[placeholder.placeholderKey].selectedWidgets || []);
-          }
-          if (placeholder.type === 'placeholder_group' && placeholder.placeholders) {
-            vue__WEBPACK_IMPORTED_MODULE_3__["default"].set(placeholder, 'placeholders', updatePlaceholders(placeholder.placeholders, allItemsMap));
-          }
-          return placeholder;
-        });
-      };
-      return updatePlaceholders(placeholders, allItemsMap);
-    },
     getGhostParent: function getGhostParent() {
       return document.body;
     },
@@ -23606,6 +23525,7 @@ function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len 
       }
       return true;
     },
+    // Import Old Data
     importOldData: function importOldData() {
       var _this = this;
       var value = JSON.parse(JSON.stringify(this.value));
@@ -23617,34 +23537,44 @@ function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len 
 
       // Import Layout
       // -------------------------
-      var addActiveWidget = function addActiveWidget(widget) {
-        console.log('@addActiveWidget', {
-          widget: widget
-        });
-        var widgets_template = _objectSpread({}, _this.theAvailableWidgets[widget.widget_key]);
-        var has_widget_options = false;
-        if (widgets_template.options && widgets_template.options.fields) {
-          has_widget_options = true;
-        }
-        for (var root_option in widgets_template) {
-          if ("options" === root_option) {
-            continue;
-          }
-          if (widget[root_option] === "undefined") {
-            continue;
-          }
-          widgets_template[root_option] = widget[root_option];
-        }
-        if (has_widget_options) {
-          for (var option_key in widgets_template.options.fields) {
-            if (typeof widget[option_key] === "undefined") {
-              continue;
-            }
-            widgets_template.options.fields[option_key].value = widget[option_key];
-          }
-        }
-        vue__WEBPACK_IMPORTED_MODULE_3__["default"].set(_this.active_widgets, widget.widget_key, widgets_template);
-      };
+      // const addActiveWidget = (widget) => {
+      //   console.log('@addActiveWidget', { widget, active_widgets: this.active_widgets });
+      //   let widgets_template = {
+      //     ...this.theAvailableWidgets[widget],
+      //   };
+
+      //   let has_widget_options = false;
+
+      //   if (widgets_template.options && widgets_template.options.fields) {
+      //     has_widget_options = true;
+      //   }
+
+      //   for (let root_option in widgets_template) {
+      //     if ("options" === root_option) {
+      //       continue;
+      //     }
+
+      //     if (widget[root_option] === "undefined") {
+      //       continue;
+      //     }
+
+      //     widgets_template[root_option] = widget[root_option];
+      //   }
+
+      //   if (has_widget_options) {
+      //     for (let option_key in widgets_template.options.fields) {
+      //       if (typeof widget[option_key] === "undefined") {
+      //         continue;
+      //       }
+
+      //       widgets_template.options.fields[option_key].value =
+      //         widget[option_key];
+      //     }
+      //   }
+
+      //   Vue.set(this.active_widgets, widget, widgets_template);
+      // };
+
       var importWidgets = function importWidgets(placeholder, destination) {
         if (!_this.placeholdersMap.hasOwnProperty(placeholder.placeholderKey)) {
           return;
@@ -23670,8 +23600,17 @@ function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len 
             if (typeof _this.available_widgets[_widget2.widget_name] === "undefined") {
               continue;
             }
-            addActiveWidget(_widget2);
-            destination[targetPlaceholderIndex].selectedWidgets.splice(widgetIndex, 0, _widget2.widget_key);
+            console.log('@importWidgets', {
+              widget: _widget2,
+              destination: destination,
+              newPlaceholder: newPlaceholder,
+              targetPlaceholderIndex: targetPlaceholderIndex,
+              widgetIndex: widgetIndex
+            });
+
+            // addActiveWidget(widget);
+
+            destination[targetPlaceholderIndex].selectedWidgets.splice(widgetIndex, 0, _widget2);
             widgetIndex++;
           }
         } catch (err) {
@@ -23711,7 +23650,8 @@ function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len 
         v: JSON.parse(JSON.stringify(this.value)),
         value: value,
         newPlaceholders: newPlaceholders,
-        newAllPlaceholders: newAllPlaceholders
+        newAllPlaceholders: newAllPlaceholders,
+        active_widgets: this.active_widgets
       });
       this.placeholders = newPlaceholders;
       this.allPlaceholderItems = newAllPlaceholders;
@@ -23721,9 +23661,6 @@ function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len 
         return;
       }
       this.available_widgets = this.widgets;
-      console.log({
-        available_widgets: this.available_widgets
-      });
     },
     importCardOptions: function importCardOptions() {
       if (!this.isTruthyObject(this.cardOptions)) {
@@ -23736,6 +23673,7 @@ function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len 
         vue__WEBPACK_IMPORTED_MODULE_3__["default"].set(this.card_options, section, JSON.parse(JSON.stringify(this.cardOptions[section])));
       }
     },
+    // Import Placeholders
     importPlaceholders: function importPlaceholders() {
       var _this2 = this;
       this.allPlaceholderItems = [];
@@ -23783,12 +23721,6 @@ function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len 
             vue__WEBPACK_IMPORTED_MODULE_3__["default"].set(_this2.placeholdersMap, placeholderItem.placeholderKey, placeholderItem);
             if (placeholderItem.type === "placeholder_item") {
               var placeholderItemData = sanitizePlaceholderData(placeholderItem);
-              console.log('@placeholderItemData', {
-                placeholderItem: placeholderItem,
-                placeholderItemData: placeholderItemData,
-                layout: _this2.layout,
-                placeholders: _this2.placeholders
-              });
               if (placeholderItemData) {
                 sanitizedPlaceholders.push(placeholderItemData);
                 _this2.allPlaceholderItems.push(placeholderItemData);
@@ -23842,6 +23774,60 @@ function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len 
       console.log({
         allPlaceholderItems: this.allPlaceholderItems
       });
+    },
+    // Handle widget switch
+    handleWidgetSwitch: function handleWidgetSwitch(event, widget_key, placeholder_index) {
+      if (!this.allPlaceholderItems[placeholder_index]) {
+        console.error("Invalid placeholder index: ".concat(placeholder_index));
+        return;
+      }
+      var isChecked = event.target.checked;
+
+      // Toggle widget in selectedWidgets
+      this.toggleWidgetInSelectedWidgets(widget_key, placeholder_index, isChecked);
+
+      // Sync selectedWidgets between allPlaceholderItems and placeholders
+      this.placeholders = this.syncSelectedWidgets(this.allPlaceholderItems, this.placeholders);
+      console.log("Toggled widget: ".concat(widget_key), {
+        placeholders: this.placeholders,
+        allPlaceholderItems: this.allPlaceholderItems
+      });
+    },
+    toggleWidgetInSelectedWidgets: function toggleWidgetInSelectedWidgets(widget_key, placeholder_index, isChecked) {
+      var selectedWidgets = this.allPlaceholderItems[placeholder_index].selectedWidgets || [];
+      if (isChecked && !selectedWidgets.includes(widget_key)) {
+        selectedWidgets.push(widget_key);
+      } else if (!isChecked) {
+        this.allPlaceholderItems[placeholder_index].selectedWidgets = selectedWidgets.filter(function (item) {
+          return item !== widget_key;
+        });
+      }
+    },
+    syncSelectedWidgets: function syncSelectedWidgets(allPlaceholderItems, placeholders) {
+      console.log('Sync Selected Widgets:', {
+        allPlaceholderItems: allPlaceholderItems,
+        placeholders: placeholders
+      });
+      var allItemsMap = allPlaceholderItems.reduce(function (acc, item) {
+        acc[item.placeholderKey] = item;
+        return acc;
+      }, {});
+      var updatePlaceholders = function updatePlaceholders(placeholders, allItemsMap) {
+        console.log('Update Placeholders:', {
+          placeholders: placeholders,
+          allItemsMap: allItemsMap
+        });
+        return placeholders.map(function (placeholder) {
+          if (allItemsMap[placeholder.placeholderKey]) {
+            vue__WEBPACK_IMPORTED_MODULE_3__["default"].set(placeholder, 'selectedWidgets', allItemsMap[placeholder.placeholderKey].selectedWidgets || []);
+          }
+          if (placeholder.type === 'placeholder_group' && placeholder.placeholders) {
+            vue__WEBPACK_IMPORTED_MODULE_3__["default"].set(placeholder, 'placeholders', updatePlaceholders(placeholder.placeholders, allItemsMap));
+          }
+          return placeholder;
+        });
+      };
+      return updatePlaceholders(placeholders, allItemsMap);
     },
     onDragStartWidget: function onDragStartWidget(key, origin) {
       this.currentDraggingWidget.key = key;

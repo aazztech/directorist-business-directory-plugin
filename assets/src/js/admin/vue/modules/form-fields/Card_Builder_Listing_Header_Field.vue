@@ -614,105 +614,6 @@ export default {
 
     },
 
-    // handleWidgetSwitch(event, widget_key, placeholder_index) {
-    //   // Ensure placeholder and selectedWidgets are valid
-    //   if (
-    //     this.allPlaceholderItems[placeholder_index] &&
-    //     Array.isArray(this.allPlaceholderItems[placeholder_index].selectedWidgets)
-    //   ) {
-    //     const isChecked = event.target.checked; // Get checkbox state
-
-    //     if (isChecked) {
-    //       // Add the widget_key if it's not already in selectedWidgets
-    //       if (
-    //         !this.allPlaceholderItems[placeholder_index].selectedWidgets.includes(
-    //           widget_key
-    //         )
-    //       ) {
-    //         this.allPlaceholderItems[placeholder_index].selectedWidgets.push(widget_key);
-    //       }
-    //     } else {
-    //       // Remove the widget_key if unchecked
-    //       this.allPlaceholderItems[placeholder_index].selectedWidgets =
-    //         this.allPlaceholderItems[placeholder_index].selectedWidgets.filter(
-    //           (item) => item !== widget_key
-    //         );
-    //     }
-
-    //     console.log(
-    //       `Toggled widget: ${widget_key}, placeholderIndex: ${placeholder_index}, selectedWidgets: ${this.allPlaceholderItems[placeholder_index].selectedWidgets}`
-    //     );
-    //   } else {
-    //     console.error(
-    //       `Invalid placeholder index or selectedWidgets is not defined for index: ${placeholder_index}`
-    //     );
-    //   }
-    // },
-
-    handleWidgetSwitch(event, widget_key, placeholder_index) {
-      if (!this.allPlaceholderItems[placeholder_index]) {
-        console.error(`Invalid placeholder index: ${placeholder_index}`);
-        return;
-      }
-
-      const isChecked = event.target.checked;
-
-      // Toggle widget in selectedWidgets
-      this.toggleWidgetInSelectedWidgets(widget_key, placeholder_index, isChecked);
-
-      // Sync selectedWidgets between allPlaceholderItems and placeholders
-      this.placeholders = this.syncSelectedWidgets(this.allPlaceholderItems, this.placeholders);
-
-      console.log(`Toggled widget: ${widget_key}`, {
-        placeholders: this.placeholders,
-        allPlaceholderItems: this.allPlaceholderItems,
-      });
-    },
-
-    toggleWidgetInSelectedWidgets(widget_key, placeholder_index, isChecked) {
-      const selectedWidgets = this.allPlaceholderItems[placeholder_index].selectedWidgets || [];
-
-      if (isChecked && !selectedWidgets.includes(widget_key)) {
-        selectedWidgets.push(widget_key);
-      } else if (!isChecked) {
-        this.allPlaceholderItems[placeholder_index].selectedWidgets = selectedWidgets.filter(
-          (item) => item !== widget_key
-        );
-      }
-    },
-
-    syncSelectedWidgets(allPlaceholderItems, placeholders) {
-      const allItemsMap = allPlaceholderItems.reduce((acc, item) => {
-        acc[item.placeholderKey] = item;
-        return acc;
-      }, {});
-
-      const updatePlaceholders = (placeholders, allItemsMap) => {
-        console.log('Update Placeholders:', {placeholders, allItemsMap});
-        return placeholders.map((placeholder) => {
-          if (allItemsMap[placeholder.placeholderKey]) {
-            Vue.set(
-              placeholder,
-              'selectedWidgets',
-              allItemsMap[placeholder.placeholderKey].selectedWidgets || []
-            );
-          }
-
-          if (placeholder.type === 'placeholder_group' && placeholder.placeholders) {
-            Vue.set(
-              placeholder,
-              'placeholders',
-              updatePlaceholders(placeholder.placeholders, allItemsMap)
-            );
-          }
-
-          return placeholder;
-        });
-      };
-
-      return updatePlaceholders(placeholders, allItemsMap);
-    },
-    
     getGhostParent() {
       return document.body;
     },
@@ -815,6 +716,7 @@ export default {
       return true;
     },
 
+    // Import Old Data
     importOldData() {
       let value = JSON.parse(JSON.stringify(this.value));
 
@@ -827,43 +729,43 @@ export default {
 
       // Import Layout
       // -------------------------
-      const addActiveWidget = (widget) => {
-        console.log('@addActiveWidget', { widget });
-        let widgets_template = {
-          ...this.theAvailableWidgets[widget.widget_key],
-        };
+      // const addActiveWidget = (widget) => {
+      //   console.log('@addActiveWidget', { widget, active_widgets: this.active_widgets });
+      //   let widgets_template = {
+      //     ...this.theAvailableWidgets[widget],
+      //   };
 
-        let has_widget_options = false;
+      //   let has_widget_options = false;
 
-        if (widgets_template.options && widgets_template.options.fields) {
-          has_widget_options = true;
-        }
+      //   if (widgets_template.options && widgets_template.options.fields) {
+      //     has_widget_options = true;
+      //   }
 
-        for (let root_option in widgets_template) {
-          if ("options" === root_option) {
-            continue;
-          }
+      //   for (let root_option in widgets_template) {
+      //     if ("options" === root_option) {
+      //       continue;
+      //     }
 
-          if (widget[root_option] === "undefined") {
-            continue;
-          }
+      //     if (widget[root_option] === "undefined") {
+      //       continue;
+      //     }
 
-          widgets_template[root_option] = widget[root_option];
-        }
+      //     widgets_template[root_option] = widget[root_option];
+      //   }
 
-        if (has_widget_options) {
-          for (let option_key in widgets_template.options.fields) {
-            if (typeof widget[option_key] === "undefined") {
-              continue;
-            }
+      //   if (has_widget_options) {
+      //     for (let option_key in widgets_template.options.fields) {
+      //       if (typeof widget[option_key] === "undefined") {
+      //         continue;
+      //       }
 
-            widgets_template.options.fields[option_key].value =
-              widget[option_key];
-          }
-        }
+      //       widgets_template.options.fields[option_key].value =
+      //         widget[option_key];
+      //     }
+      //   }
 
-        Vue.set(this.active_widgets, widget.widget_key, widgets_template);
-      };
+      //   Vue.set(this.active_widgets, widget, widgets_template);
+      // };
 
       const importWidgets = (placeholder, destination) => {
         if (!this.placeholdersMap.hasOwnProperty(placeholder.placeholderKey)) {
@@ -901,12 +803,14 @@ export default {
             continue;
           }
 
-          addActiveWidget(widget);
+          console.log('@importWidgets', { widget, destination, newPlaceholder, targetPlaceholderIndex, widgetIndex });
+
+          // addActiveWidget(widget);
 
           destination[targetPlaceholderIndex].selectedWidgets.splice(
             widgetIndex,
             0,
-            widget.widget_key
+            widget
           );
           widgetIndex++;
         }
@@ -956,6 +860,7 @@ export default {
         value,
         newPlaceholders,
         newAllPlaceholders,
+        active_widgets: this.active_widgets,
       } );
       
       this.placeholders = newPlaceholders;
@@ -968,8 +873,6 @@ export default {
       }
 
       this.available_widgets = this.widgets;
-
-      console.log({ available_widgets: this.available_widgets });
     },
 
     importCardOptions() {
@@ -989,6 +892,7 @@ export default {
       }
     },
 
+    // Import Placeholders
     importPlaceholders() {
       this.allPlaceholderItems = [];
 
@@ -1049,13 +953,7 @@ export default {
 
         if (placeholderItem.type === "placeholder_item") {
           const placeholderItemData = sanitizePlaceholderData(placeholderItem);
-
-          console.log('@placeholderItemData', { 
-            placeholderItem, 
-            placeholderItemData,
-            layout: this.layout,
-            placeholders: this.placeholders,
-          });
+          
           if (placeholderItemData) {
             sanitizedPlaceholders.push(placeholderItemData);
             this.allPlaceholderItems.push(placeholderItemData);
@@ -1121,6 +1019,73 @@ export default {
       console.log({ available_widgets: this.available_widgets });
       console.log({ allPlaceholderItems: this.allPlaceholderItems });
     },
+
+    // Handle widget switch
+    handleWidgetSwitch(event, widget_key, placeholder_index) {
+      if (!this.allPlaceholderItems[placeholder_index]) {
+        console.error(`Invalid placeholder index: ${placeholder_index}`);
+        return;
+      }
+
+      const isChecked = event.target.checked;
+
+      // Toggle widget in selectedWidgets
+      this.toggleWidgetInSelectedWidgets(widget_key, placeholder_index, isChecked);
+
+      // Sync selectedWidgets between allPlaceholderItems and placeholders
+      this.placeholders = this.syncSelectedWidgets(this.allPlaceholderItems, this.placeholders);
+
+      console.log(`Toggled widget: ${widget_key}`, {
+        placeholders: this.placeholders,
+        allPlaceholderItems: this.allPlaceholderItems,
+      });
+    },
+
+    toggleWidgetInSelectedWidgets(widget_key, placeholder_index, isChecked) {
+      const selectedWidgets = this.allPlaceholderItems[placeholder_index].selectedWidgets || [];
+
+      if (isChecked && !selectedWidgets.includes(widget_key)) {
+        selectedWidgets.push(widget_key);
+      } else if (!isChecked) {
+        this.allPlaceholderItems[placeholder_index].selectedWidgets = selectedWidgets.filter(
+          (item) => item !== widget_key
+        );
+      }
+    },
+
+    syncSelectedWidgets(allPlaceholderItems, placeholders) {
+      console.log('Sync Selected Widgets:', {allPlaceholderItems, placeholders});
+      const allItemsMap = allPlaceholderItems.reduce((acc, item) => {
+        acc[item.placeholderKey] = item;
+        return acc;
+      }, {});
+
+      const updatePlaceholders = (placeholders, allItemsMap) => {
+        console.log('Update Placeholders:', {placeholders, allItemsMap});
+        return placeholders.map((placeholder) => {
+          if (allItemsMap[placeholder.placeholderKey]) {
+            Vue.set(
+              placeholder,
+              'selectedWidgets',
+              allItemsMap[placeholder.placeholderKey].selectedWidgets || []
+            );
+          }
+
+          if (placeholder.type === 'placeholder_group' && placeholder.placeholders) {
+            Vue.set(
+              placeholder,
+              'placeholders',
+              updatePlaceholders(placeholder.placeholders, allItemsMap)
+            );
+          }
+
+          return placeholder;
+        });
+      };
+
+      return updatePlaceholders(placeholders, allItemsMap);
+    },
+    
 
     onDragStartWidget(key, origin) {
       this.currentDraggingWidget.key = key;
