@@ -268,9 +268,6 @@ export default {
 
   watch: {
     output_data() {
-
-      console.log( '@CHK', { output_data: this.output_data } );
-
       this.$emit("update", this.output_data);
     },
   },
@@ -366,6 +363,7 @@ export default {
             type: placeholder.type,
             placeholderKey: placeholder.placeholderKey,
             selectedWidgets: data,
+            acceptedWidgets: placeholder.acceptedWidgets,
           });
 
           continue;
@@ -384,6 +382,7 @@ export default {
               type: placeholder.type ? placeholder.type : "placeholder_item",
               placeholderKey: subPlaceholder.placeholderKey,
               selectedWidgets: data,
+              acceptedWidgets: subPlaceholder.acceptedWidgets,
             });
             continue;
           }
@@ -399,6 +398,7 @@ export default {
       }
 
       console.log('@Output Data', {output, placeholders, allPlaceholders});
+      
       return output;
     },
 
@@ -570,7 +570,7 @@ export default {
       const { removedIndex, addedIndex, payload } = dropResult;
       const { draggedItemIndex, placeholderIndex } = payload; 
 
-      console.log('@onElementsDrop', { removedIndex, addedIndex, payload, draggedItemIndex, placeholder_index,placeholderIndex }, removedIndex === null, addedIndex === null);
+      console.log('@onElementsDrop', { removedIndex, addedIndex, payload, draggedItemIndex, placeholder_index,placeholderIndex });
 
       if ( removedIndex !== null || addedIndex !== null) {
         console.log('@@Not null', { removedIndex, addedIndex });
@@ -596,12 +596,38 @@ export default {
           if (sourcePlaceholderIndex === destinationPlaceholderIndex) {
             // Moving within the same placeholder
             const widgets = this.allPlaceholderItems[sourcePlaceholderIndex].acceptedWidgets;
+            const selectedWidgets = this.allPlaceholderItems[sourcePlaceholderIndex].selectedWidgets;
             
             // Remove the widget from the source position
             const [movedWidget] = widgets.splice(sourceItemIndex, 1);
             
             // Insert the widget at the destination position
             widgets.splice(destinationItemIndex, 0, movedWidget);
+
+            // Update selectedWidgets position based on acceptedWidgets
+            const selectedWidgetIndex = selectedWidgets.indexOf(movedWidget);
+            if (selectedWidgetIndex !== -1) {
+              // Remove the widget from the selected position
+              selectedWidgets.splice(selectedWidgetIndex, 1);
+
+              // Insert the widget at the new position
+              const newSelectedIndex = widgets.indexOf(movedWidget);
+              selectedWidgets.splice(newSelectedIndex, 0, movedWidget);
+            }
+
+            // Update Placeholders
+            const updatedPlaceholders = this.syncPlaceholdersWithAllPlaceholderItems(
+              this.allPlaceholderItems,
+              this.placeholders
+            );
+
+            this.placeholders = updatedPlaceholders;
+
+            console.log('@CHK updatedPlaceholders onElementsDrop', { 
+              allPlaceholderItems: this.allPlaceholderItems,
+              placeholders: this.placeholders,
+              updatedPlaceholders 
+            });
           } else if (destinationPlaceholderIndex !== null) {
             // Moving between different placeholders
             // this.allPlaceholderItems[destinationPlaceholderIndex].selectedWidgets.splice(destinationItemIndex, 0, widgetKey);
@@ -609,9 +635,10 @@ export default {
           }
         }
       } else {
-          return;
+        return;
       }
 
+      console.log('@CHK after onElementsDrop', { placeholders: this.placeholders, allPlaceholderItems: this.allPlaceholderItems });
     },
 
     getGhostParent() {
@@ -768,6 +795,7 @@ export default {
       // };
 
       const importWidgets = (placeholder, destination) => {
+
         if (!this.placeholdersMap.hasOwnProperty(placeholder.placeholderKey)) {
           return;
         }
@@ -777,10 +805,14 @@ export default {
         );
 
         newPlaceholder.selectedWidgets = placeholder.selectedWidgets;
+        newPlaceholder.acceptedWidgets = placeholder.acceptedWidgets;
+
         newPlaceholder.maxWidget =
           typeof newPlaceholder.maxWidget !== "undefined"
             ? parseInt(newPlaceholder.maxWidget)
             : 0;
+
+        console.log('@importWidgets', { placeholder, newPlaceholder });
 
         newAllPlaceholders.push(newPlaceholder);
         let targetPlaceholderIndex = destination.length;
@@ -802,8 +834,6 @@ export default {
           ) {
             continue;
           }
-
-          console.log('@importWidgets', { widget, destination, newPlaceholder, targetPlaceholderIndex, widgetIndex });
 
           // addActiveWidget(widget);
 
@@ -953,7 +983,7 @@ export default {
 
         if (placeholderItem.type === "placeholder_item") {
           const placeholderItemData = sanitizePlaceholderData(placeholderItem);
-          
+
           if (placeholderItemData) {
             sanitizedPlaceholders.push(placeholderItemData);
             this.allPlaceholderItems.push(placeholderItemData);
@@ -1043,14 +1073,26 @@ export default {
 
     toggleWidgetInSelectedWidgets(widget_key, placeholder_index, isChecked) {
       const selectedWidgets = this.allPlaceholderItems[placeholder_index].selectedWidgets || [];
+      const acceptedWidgets = this.allPlaceholderItems[placeholder_index].acceptedWidgets;
 
       if (isChecked && !selectedWidgets.includes(widget_key)) {
-        selectedWidgets.push(widget_key);
+        // Add widget to selectedWidgets based on its position in acceptedWidgets
+        const widgetIndex = acceptedWidgets.indexOf(widget_key);
+        if (widgetIndex !== -1) {
+          selectedWidgets.splice(widgetIndex, 0, widget_key);
+        }
       } else if (!isChecked) {
         this.allPlaceholderItems[placeholder_index].selectedWidgets = selectedWidgets.filter(
           (item) => item !== widget_key
         );
       }
+
+      console.log('@toggleWidgetInSelectedWidgets:', {
+        widget_key,
+        Widget: this.allPlaceholderItems[placeholder_index],
+        selectedWidgets,
+        acceptedWidgets,
+      });
     },
 
     syncSelectedWidgets(allPlaceholderItems, placeholders) {
@@ -1085,8 +1127,39 @@ export default {
 
       return updatePlaceholders(placeholders, allItemsMap);
     },
-    
 
+    syncPlaceholdersWithAllPlaceholderItems(allPlaceholderItems, placeholders) {
+      // Helper function to update a placeholder item's widgets
+      const updatePlaceholderItem = (placeholder, allPlaceholderItem) => {
+        if (placeholder.placeholderKey === allPlaceholderItem.placeholderKey) {
+          placeholder.acceptedWidgets = [...allPlaceholderItem.acceptedWidgets];
+          placeholder.selectedWidgets = [...allPlaceholderItem.selectedWidgets];
+        }
+      };
+
+      // Iterate through placeholders and update them based on allPlaceholderItems
+      const updatePlaceholders = (placeholders) => {
+        placeholders.forEach((placeholder) => {
+          if (placeholder.type === "placeholder_group") {
+            // Recursively update placeholders within groups
+            updatePlaceholders(placeholder.placeholders);
+          } else if (placeholder.type === "placeholder_item") {
+            const matchingItem = allPlaceholderItems.find(
+              (item) => item.placeholderKey === placeholder.placeholderKey
+            );
+            if (matchingItem) {
+              updatePlaceholderItem(placeholder, matchingItem);
+            }
+          }
+        });
+      };
+
+      // Start updating placeholders
+      updatePlaceholders(placeholders);
+
+      return placeholders;
+    },
+    
     onDragStartWidget(key, origin) {
       this.currentDraggingWidget.key = key;
       this.currentDraggingWidget.origin = origin;
