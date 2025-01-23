@@ -250,8 +250,17 @@ if ( ! class_exists( 'ATBDP_Ajax_Handler' ) ) :
 			$listings = new Directorist\Directorist_Listings( $args, $type );
 
 			ob_start();
+			if( 'list' === $listings->view ) {
+				$listings->render_list_view( $listings->post_ids() );
+			} else {
+				$listings->render_grid_view( $listings->post_ids() );
+			}
+			$render_listings = ob_get_clean();
+
+			ob_start();
 			$listings->archive_view_template();
 			$archive_view 			= ob_get_clean();
+
 			$display_listings_count = get_directorist_option( 'display_listings_count', true );
 			$category_id 			= ! empty( $_POST['in_cat'] ) ? absint( $_POST['in_cat'] ) : 0;
 			$category 				= get_term_by( 'id', $category_id, ATBDP_CATEGORY );
@@ -267,6 +276,9 @@ if ( ! class_exists( 'ATBDP_Ajax_Handler' ) ) :
 					'header_title'   => $display_listings_count ? $listings->listings_header_title() : '',
 					'category_name'	 => $category ? $category->name : '',
 					'location_name'	 => $location ? $location->name : '',
+
+					'render_listings' => $render_listings,
+					'view' => $listings->view
 				)
 			);
 		}

@@ -759,7 +759,6 @@ window.addEventListener('load', function () {
       beforeSend: function beforeSend() {
         $(containerSelector).addClass('atbdp-form-fade');
       },
-
       success: function success(response) {
         var _tempContainer$queryS, _tempContainer$queryS2;
         if (!(response !== null && response !== void 0 && response.success)) {
@@ -1493,9 +1492,37 @@ function _objectSpread(e) { for (var r = 1; r < arguments.length; r++) { var t =
     });
   }
 
+  // Scrolling Pagination
+  var page = 1;
+  var infinitePaginationIsLoading = false;
+  var infinitePaginationCompleted = false;
+  function handleScroll() {
+    var container = $('.directorist-infinite-scroll .directorist-container-fluid .directorist-row');
+    if (!container.length || infinitePaginationIsLoading) return;
+    var containerBottom = container.offset().top + container.outerHeight();
+    var scrollBottom = window.scrollY + window.innerHeight;
+    if (scrollBottom >= containerBottom) {
+      infinitePaginationIsLoading = true;
+      page++;
+      var instantSearchElement = $('.directorist-instant-search');
+      var activeForm = getActiveForm(instantSearchElement);
+      var formData = buildFormData(activeForm, instantSearchElement);
+      loadMoreListings(formData);
+    }
+  }
+  ;
+  window.addEventListener('scroll', function () {
+    if (infinitePaginationCompleted) return;
+    handleScroll();
+  });
+
   /* Directorist instant search */
   $('body').on("submit", ".directorist-instant-search form", function (e) {
     e.preventDefault();
+    // infinite pagination loading reset
+    page = 1;
+    infinitePaginationIsLoading = false;
+    infinitePaginationCompleted = false;
     var instant_search_element = $(this).closest('.directorist-instant-search');
     var tag = [];
     var search_by_rating = [];
@@ -1883,6 +1910,10 @@ function _objectSpread(e) { for (var r = 1; r < arguments.length; r++) { var t =
   // Directorist type changes
   $('body').on("click", ".directorist-instant-search .directorist-type-nav__link", function (e) {
     e.preventDefault();
+    // infinite pagination loading reset
+    page = 1;
+    infinitePaginationIsLoading = false;
+    infinitePaginationCompleted = false;
     var _this = $(this);
     var type_href = $(this).attr('href');
     var type = type_href.match(/directory_type=.+/);
@@ -1926,6 +1957,10 @@ function _objectSpread(e) { for (var r = 1; r < arguments.length; r++) { var t =
   // Directorist view as changes
   $('body').on("click", ".directorist-instant-search .directorist-viewas .directorist-viewas__item", function (e) {
     e.preventDefault();
+    // infinite pagination loading reset
+    page = 1;
+    infinitePaginationIsLoading = false;
+    infinitePaginationCompleted = false;
     var instant_search_element = $(this).closest('.directorist-instant-search');
     var tag = [];
     var price = [];
@@ -2065,6 +2100,10 @@ function _objectSpread(e) { for (var r = 1; r < arguments.length; r++) { var t =
   // Directorist sort by changes
   $('body').on("click", ".directorist-instant-search .directorist-sortby-dropdown .directorist-dropdown__links__single-js", function (e) {
     e.preventDefault();
+    // infinite pagination loading reset
+    page = 1;
+    infinitePaginationIsLoading = false;
+    infinitePaginationCompleted = false;
     var instant_search_element = $(this).closest('.directorist-instant-search');
     var tag = [];
     var price = [];
@@ -2325,11 +2364,136 @@ function _objectSpread(e) { for (var r = 1; r < arguments.length; r++) { var t =
     });
   });
 
+  // Helper function to determine the active form
+  function getActiveForm(instantSearchElement) {
+    var sidebarListing = instantSearchElement.find('.listing-with-sidebar');
+    var advancedForm = instantSearchElement.find('.directorist-advanced-filter__form');
+    var searchForm = instantSearchElement.find('.directorist-search-form');
+    return sidebarListing.length ? instantSearchElement : screen.width > 575 ? advancedForm : searchForm;
+  }
+
+  // Helper function to build form data
+  function buildFormData(activeForm, instantSearchElement) {
+    var tag = [];
+    var price = [];
+    var customField = {};
+    var dataAtts = JSON.parse(instantSearchElement.attr('data-atts'));
+    activeForm.find('input[name^="in_tag["]:checked').each(function (_, el) {
+      return tag.push($(el).val());
+    });
+    activeForm.find('input[name^="price["]').each(function (_, el) {
+      return price.push($(el).val());
+    });
+    activeForm.find('[name^="custom_field"]').each(function (_, el) {
+      var name = $(el).attr('name');
+      var type = $(el).attr('type');
+      var postId = name.replace(/(custom_field\[)/, '').replace(/\]/, '').split('[]')[0];
+      if (type === 'radio') {
+        customField[postId] = activeForm.find("input[name='custom_field[".concat(postId, "]']:checked")).val();
+      } else if (type === 'checkbox') {
+        customField[postId] = activeForm.find("input[name='custom_field[".concat(postId, "][]']:checked")).map(function (_, e) {
+          return $(e).val();
+        }).get();
+      } else {
+        customField[postId] = $(el).val();
+      }
+    });
+    var view_href = $(".directorist-viewas .directorist-viewas__item.active").attr('href');
+    var view_as = view_href && view_href.length ? view_href.match(/view=.+/) : '';
+    var view = view_as && view_as.length ? view_as[0].replace(/view=/, '') : '';
+    var getValue = function getValue(selector, fallback) {
+      return activeForm.find(selector).val() || fallback;
+    };
+    return {
+      action: 'directorist_instant_search',
+      _nonce: directorist.ajax_nonce,
+      current_page_id: directorist.current_page_id,
+      q: getValue('input[name="q"]', getURLParameter(full_url, 'q')),
+      in_cat: getValue('.directorist-category-select', getURLParameter(full_url, 'in_cat')),
+      in_loc: getValue('.directorist-location-select', getURLParameter(full_url, 'in_loc')),
+      in_tag: tag || getURLParameter(full_url, 'in_tag'),
+      price: price || getURLParameter(full_url, 'price'),
+      price_range: getValue("input[name='price_range']:checked", getURLParameter(full_url, 'price_range')),
+      search_by_rating: getValue('select[name=search_by_rating]', getURLParameter(full_url, 'search_by_rating')),
+      cityLat: getValue('#cityLat', getURLParameter(full_url, 'cityLat')),
+      cityLng: getValue('#cityLng', getURLParameter(full_url, 'cityLng')),
+      miles: getValue('input[name="miles"]', getURLParameter(full_url, 'miles')),
+      address: getValue('input[name="address"]', getURLParameter(full_url, 'address')),
+      zip: getValue('input[name="zip"]', getURLParameter(full_url, 'zip')),
+      fax: getValue('input[name="fax"]', getURLParameter(full_url, 'fax')),
+      email: getValue('input[name="email"]', getURLParameter(full_url, 'email')),
+      website: getValue('input[name="website"]', getURLParameter(full_url, 'website')),
+      phone: getValue('input[name="phone"]', getURLParameter(full_url, 'phone')),
+      custom_field: customField,
+      view: view,
+      paged: page,
+      data_atts: dataAtts,
+      sort: getSortValue(instantSearchElement),
+      directory_type: getDirectoryType(instantSearchElement),
+      open_now: activeForm.find('input[name="open_now"]:checked').val()
+    };
+  }
+
+  // Helper function to get sort value
+  function getSortValue(instantSearchElement) {
+    var sortHref = instantSearchElement.find('.directorist-sortby-dropdown .directorist-dropdown__links__single.active').data('link');
+    return sortHref ? sortHref.split('sort=')[1] : '';
+  }
+
+  // Helper function to get directory type
+  function getDirectoryType(instantSearchElement) {
+    var typeHref = instantSearchElement.find('.directorist-type-nav__list .directorist-type-nav__list__current a').attr('href');
+    return typeHref ? getURLParameter(typeHref, 'directory_type') : '';
+  }
+
+  // AJAX call to load more listings
+  function loadMoreListings(formData) {
+    var loadingDiv;
+    var container = $('.directorist-infinite-scroll .directorist-container-fluid .directorist-row');
+    $.ajax({
+      url: directorist.ajaxurl,
+      type: 'POST',
+      data: formData,
+      beforeSend: function beforeSend() {
+        loadingDiv = $('<div>', {
+          class: 'directorist-on-scroll-loading'
+        }).append($('<div>', {
+          class: 'directorist-spinner'
+        }), $('<span>').text('Loading more...'));
+        container.append(loadingDiv);
+      },
+      success: function success(html) {
+        if (loadingDiv) loadingDiv.remove();
+        if (html.count > 0) {
+          container.append(html.render_listings);
+        } else {
+          infinitePaginationCompleted = true;
+        }
+        triggerCustomEvents();
+      },
+      complete: function complete() {
+        infinitePaginationIsLoading = false;
+        if (loadingDiv) loadingDiv.remove();
+      }
+    });
+  }
+
+  // Helper function to trigger custom events
+  function triggerCustomEvents() {
+    window.dispatchEvent(new Event('directorist-instant-search-reloaded'));
+    window.dispatchEvent(new Event('directorist-reload-listings-map-archive'));
+  }
+
   // Filter on AJAX Search
   function filterListing(searchElm) {
     if (!searchElm) {
       return;
     }
+
+    // infinite pagination loading reset
+    page = 1;
+    infinitePaginationIsLoading = false;
+    infinitePaginationCompleted = false;
     var _this = searchElm;
     var tag = [];
     var price = [];

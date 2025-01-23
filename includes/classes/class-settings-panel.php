@@ -1206,6 +1206,21 @@ Please remember that your order may be canceled if you do not make your payment 
                     'max' => '100',
                     'step' => '1',
                 ],
+                'pagination_type' => [
+                    'label' => __( 'Pagination Type', 'directorist' ),
+                    'type'  => 'select',
+                    'value' => 'numbered',
+                    'options' => [
+                        [
+                            'value' => 'numbered',
+                            'label' => __( 'Numbered', 'directorist' ),
+                        ],
+                        [
+                            'value' => 'infinite_scroll',
+                            'label' => __( 'Infinite Scroll', 'directorist' ),
+                        ],
+                    ],
+                ],
                 'display_listings_header' => [
                     'label' => __('Enable Header', 'directorist'),
                     'type'  => 'toggle',
@@ -3564,6 +3579,7 @@ Please remember that your order may be canceled if you do not make your payment 
                                         'all_listing_layout',
                                         'all_listing_columns',
                                         'all_listing_page_items',
+                                        'pagination_type',
                                         'listing_hide_top_search_bar',
                                         'listings_sidebar_filter_text',
                                         'listings_reset_text',
