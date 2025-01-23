@@ -567,6 +567,11 @@ import debounce from '../../global/components/debounce';
     // Directorist type changes
     $('body').on("click", ".directorist-instant-search .directorist-type-nav__link", function (e) {
         e.preventDefault();
+        // infinite pagination loading reset
+        page = 1;
+        infinitePaginationIsLoading = false;
+        infinitePaginationCompleted = false;
+        
         let _this     = $(this);
         let type_href = $(this).attr('href');
         let type      = type_href.match(/directory_type=.+/);
@@ -779,7 +784,7 @@ import debounce from '../../global/components/debounce';
         page = 1;
         infinitePaginationIsLoading = false;
         infinitePaginationCompleted = false;
-        
+
         let instant_search_element = $(this).closest('.directorist-instant-search');
         let tag                    = [];
         let price                  = [];
