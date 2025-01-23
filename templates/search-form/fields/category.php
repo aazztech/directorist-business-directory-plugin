@@ -8,8 +8,9 @@
 if ( ! defined( 'ABSPATH' ) ) exit;
 
 $selected_item         = $searchform::get_selected_category_option_data();
-$category_page_id      = get_directorist_option( 'single_category_page' );
-$is_single_category    = $category_page_id === get_the_ID() ? true : false;
+$category_page_id      =  (int) get_directorist_option( 'single_category_page' );
+$current_page_id       = ! empty($_REQUEST) && isset($_REQUEST['current_page_id']) ? (int) $_REQUEST['current_page_id'] : get_the_ID();
+$is_single_category    = $current_page_id === $category_page_id ? true : false;
 $single_category_class = $is_single_category ? 'directorist-search-form__single-category' : '';
 ?>
 
