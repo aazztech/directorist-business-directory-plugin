@@ -11,10 +11,7 @@ $location_source = !empty($data['location_source']) && $data['location_source'] 
 
 if ( $location_source == 'listing' ) {
 	$selected_item         = $searchform::get_selected_location_option_data();
-	$location_page_id      = (int) get_directorist_option( 'single_location_page' );
-	$current_page_id       = ! empty($_REQUEST) && isset($_REQUEST['current_page_id']) ? (int) $_REQUEST['current_page_id'] : get_the_ID();
-	$is_single_location    = $current_page_id === $location_page_id ? true : false;
-	$single_location_class = $is_single_location ? 'directorist-search-form__single-location' : '';
+	$single_location_class = $args['taxonomy-page']['is_single_location'] ? 'directorist-search-form__single-location' : '';
 	?>
 
 	<div class="directorist-search-field <?php echo esc_attr( $empty_label ); ?>">
