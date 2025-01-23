@@ -454,6 +454,43 @@ function maybeLazyLoadTaxonomyTermsSelect2(args) {
     width: '100%',
     escapeMarkup: function escapeMarkup(text) {
       return text;
+    },
+    templateResult: function templateResult(data) {
+      if (!data.id) {
+        return data.text;
+      }
+
+      // Fetch the data-icon attribute
+      var iconURI = $(data.element).attr('data-icon');
+
+      // Get the original text
+      var originalText = data.text;
+
+      // Match and count leading spaces
+      var leadingSpaces = originalText.match(/^\s+/);
+      var spaceCount = leadingSpaces ? leadingSpaces[0].length : 0;
+
+      // Trim leading spaces from the original text
+      originalText = originalText.trim();
+
+      // Construct the icon element
+      var iconElm = iconURI ? "<i class=\"directorist-icon-mask\" aria-hidden=\"true\" style=\"--directorist-icon: url('".concat(iconURI, "')\"></i>") : '';
+
+      // Prepare the combined text (icon + text)
+      var combinedText = iconElm + originalText;
+
+      // Create the state container
+      var $state = $('<div class="directorist-select2-contents"></div>');
+
+      // Determine the level based on space count
+      var level = Math.floor(spaceCount / 8) + 1; // 8 spaces = level 2, 16 spaces = level 3, etc.
+      if (level > 1) {
+        $state.addClass('item-level-' + level); // Add class for the level (e.g., level-1, level-2, etc.)
+      }
+
+      $state.html(combinedText); // Set the combined content (icon + text)
+
+      return $state;
     }
   };
   if (directorist.lazy_load_taxonomy_fields) {
@@ -663,6 +700,8 @@ window.addEventListener('load', function () {
 /***/ (function(module, exports) {
 
 window.addEventListener('load', function () {
+  var $ = jQuery;
+
   /* Make sure the codes in this file runs only once, even if enqueued twice */
   if (typeof window.directorist_catloc_executed === 'undefined') {
     window.directorist_catloc_executed = true;
@@ -694,6 +733,62 @@ window.addEventListener('load', function () {
   }
   categoryDropdown('.directorist-taxonomy-list-one .directorist-taxonomy-list__toggle', '.directorist-taxonomy-list-one .directorist-taxonomy-list');
   categoryDropdown('.directorist-taxonomy-list-one .directorist-taxonomy-list__sub-item-toggle', '.directorist-taxonomy-list-one .directorist-taxonomy-list');
+
+  // Taxonomy Ajax
+  $(document).on('click', '.directorist-categories .directorist-pagination a', function (e) {
+    taxonomyPagination(e, $(this), '.directorist-categories');
+  });
+  $(document).on('click', '.directorist-location .directorist-pagination a', function (e) {
+    taxonomyPagination(e, $(this), '.directorist-location');
+  });
+  function taxonomyPagination(event, clickedElement, containerSelector) {
+    event.preventDefault();
+    var pageNumber = (clickedElement === null || clickedElement === void 0 ? void 0 : clickedElement.attr('data-page')) || 1;
+    var container = clickedElement.closest(containerSelector);
+    var containerAttributes = container ? $(container).data('attrs') : {};
+    $.ajax({
+      url: directorist.ajax_url,
+      type: 'POST',
+      dataType: 'json',
+      data: {
+        action: 'directorist_taxonomy_pagination',
+        nonce: directorist.directorist_nonce,
+        page: parseInt(pageNumber),
+        attrs: containerAttributes
+      },
+      beforeSend: function beforeSend() {
+        $(containerSelector).addClass('atbdp-form-fade');
+      },
+
+      success: function success(response) {
+        var _tempContainer$queryS, _tempContainer$queryS2;
+        if (!(response !== null && response !== void 0 && response.success)) {
+          console.error('Failed to load taxonomy content');
+          return;
+        }
+        var tempContainer = document.createElement('div');
+        tempContainer.innerHTML = response.data.content;
+        // Handle both category and location wrappers
+        var taxonomyWrapper = document.querySelector('.taxonomy-category-wrapper');
+        var locationWrapper = document.querySelector('.taxonomy-location-wrapper');
+        var updatedCategoryContent = (_tempContainer$queryS = tempContainer.querySelector('.taxonomy-category-wrapper')) === null || _tempContainer$queryS === void 0 ? void 0 : _tempContainer$queryS.innerHTML;
+        var updatedLocationContent = (_tempContainer$queryS2 = tempContainer.querySelector('.taxonomy-location-wrapper')) === null || _tempContainer$queryS2 === void 0 ? void 0 : _tempContainer$queryS2.innerHTML;
+        if (taxonomyWrapper && updatedCategoryContent) {
+          taxonomyWrapper.innerHTML = updatedCategoryContent;
+        }
+        if (locationWrapper && updatedLocationContent) {
+          locationWrapper.innerHTML = updatedLocationContent;
+        }
+        if (!taxonomyWrapper && !locationWrapper) {
+          console.error('Required elements not found in response');
+          return;
+        }
+      },
+      complete: function complete() {
+        $(containerSelector).removeClass('atbdp-form-fade');
+      }
+    });
+  }
 });
 
 /***/ }),
@@ -2440,7 +2535,7 @@ function _objectSpread(e) { for (var r = 1; r < arguments.length; r++) { var t =
   }, 250));
 
   // sidebar on change searching
-  $('body').on("change", ".directorist-instant-search .listing-with-sidebar input[type='checkbox'],.directorist-instant-search .listing-with-sidebar input[type='radio'], .directorist-custom-range-slider__wrap .directorist-custom-range-slider__range, .directorist-search-location .location-name", Object(_global_components_debounce__WEBPACK_IMPORTED_MODULE_1__["default"])(function (e) {
+  $('body').on("change", ".directorist-instant-search .listing-with-sidebar input[type='checkbox'],.directorist-instant-search .listing-with-sidebar input[type='radio'], .directorist-custom-range-slider__wrap .directorist-custom-range-slider__range", Object(_global_components_debounce__WEBPACK_IMPORTED_MODULE_1__["default"])(function (e) {
     e.preventDefault();
     var searchElm = $(this).closest('.listing-with-sidebar');
     filterListing(searchElm);

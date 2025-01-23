@@ -930,7 +930,7 @@ class Directorist_Listings {
 					$field_type = str_replace( 'custom-', '', $key );
 					$field_type = preg_replace( '/([!^0-9])|(-)/', '', $field_type ); //replaces any additional numbering to just keep the field name, for example if previous line gives us "text-2", this line makes it "text"
 					// Check if $values contains a hyphen
-					if ( 'number' === $field_type && strpos( $values, '-' ) !== false ) {
+					if ( strpos( $values, '-' ) !== false ) {
 						// If $values is in the format "40-50", create a range query
 						list( $min_value, $max_value ) = array_map( 'intval', explode( '-', $values ) );
 
@@ -2083,8 +2083,11 @@ class Directorist_Listings {
 				break;
 
 				case 'featured_badge':
-				$field['class'] = 'featured';
-				$field['label'] = Helper::featured_badge_text();
+				$field['class']               = 'featured';
+				$field['label']               = Helper::featured_badge_text();
+				$field['featured_badge_type']  = get_directorist_option( 'feature_badge_type', 'icon_badge');
+				$field['featured_badge_class'] = ( 'text_badge' === $field['featured_badge_type'] ) ? 'directorist-badge-featured--only-text' : '';
+
 				if ( Helper::is_featured( $id ) ) {
 					Helper::get_template( 'archive/fields/badge', apply_filters( 'directorist_featured_badge_field_data', $field ) );
 				}
