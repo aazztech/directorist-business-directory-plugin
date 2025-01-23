@@ -7,12 +7,14 @@
 
 if ( ! defined( 'ABSPATH' ) ) exit;
 
-$selected_item = $searchform::get_selected_category_option_data();
-$is_single_category = atbdp_is_page('single_category') ? 'directorist-search-form__single-category' : '';
+$selected_item         = $searchform::get_selected_category_option_data();
+$category_page_id      = get_directorist_option( 'single_category_page' );
+$is_single_category    = $category_page_id === get_the_ID() ? true : false;
+$single_category_class = $is_single_category ? 'directorist-search-form__single-category' : '';
 ?>
 
 <div class="directorist-search-field directorist-form-group <?php echo esc_attr( $empty_label ); ?>">
-	<div class="directorist-select directorist-search-category directorist-search-field__input <?php echo esc_attr($is_single_category); ?>">
+	<div class="directorist-select directorist-search-category directorist-search-field__input <?php echo esc_attr($single_category_class); ?>">
 
 		<?php if ( ! empty( $data['label'] ) ) : ?>
 			<label class="directorist-search-field__label"><?php echo esc_attr( $data['label'] ); ?></label>

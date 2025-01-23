@@ -10,12 +10,14 @@ if ( ! defined( 'ABSPATH' ) ) exit;
 $location_source = !empty($data['location_source']) && $data['location_source'] == 'from_map_api' ? 'map' : 'listing';
 
 if ( $location_source == 'listing' ) {
-	$selected_item = $searchform::get_selected_location_option_data();
-	$is_single_location = atbdp_is_page('single_location') ? 'directorist-search-form__single-location' : '';
+	$selected_item         = $searchform::get_selected_location_option_data();
+	$location_page_id      = get_directorist_option( 'single_location_page' );
+	$is_single_location    = $location_page_id === get_the_ID() ? true : false;
+	$single_location_class = $is_single_location ? 'directorist-search-form__single-location' : '';
 	?>
 
 	<div class="directorist-search-field <?php echo esc_attr( $empty_label ); ?>">
-		<div class="directorist-select directorist-search-location directorist-search-field__input <?php echo esc_attr($is_single_location); ?>">
+		<div class="directorist-select directorist-search-location directorist-search-field__input <?php echo esc_attr($single_location_class); ?>">
 
 			<?php if ( ! empty( $data['label'] ) ) : ?>
 				<label class="directorist-search-field__label"><?php echo esc_attr( $data['label'] ); ?></label>
