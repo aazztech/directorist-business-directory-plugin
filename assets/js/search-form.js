@@ -627,6 +627,9 @@ function hideAllCustomFieldsExceptSelected(relations, category, $container) {
   fields.forEach(function (field) {
     var fieldCategory = relations[field];
     var $field = $container.find("[name=\"custom_field[".concat(field, "]\"]"));
+    if (!$field.length) {
+      $field = $container.find("[name=\"custom_field[".concat(field, "][]\"]"));
+    }
     if (category === fieldCategory) {
       $field.prop('disabled', false);
       wrappers.forEach(function (wrapper) {
@@ -1805,8 +1808,8 @@ function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len 
         // Check if the slider is already initialized
         if (!slider || slider.directoristCustomRangeSlider) return;
         var sliderStep = parseInt(slider.getAttribute('step')) || 1;
-        var sliderDefaultValue = parseInt(slider.getAttribute('value'));
-        var sliderMaxValue = parseInt(slider.getAttribute('max-value'));
+        var sliderDefaultValue = parseInt(slider.getAttribute('value') || 0);
+        var sliderMaxValue = parseInt(slider.getAttribute('max-value') || 100);
         var minInput = sliderItem.querySelector('.directorist-custom-range-slider__value__min');
         var maxInput = sliderItem.querySelector('.directorist-custom-range-slider__value__max');
         var sliderRange = sliderItem.querySelector('.directorist-custom-range-slider__range');
@@ -2026,6 +2029,11 @@ function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len 
       });
     }
     rangeSliderObserver();
+  });
+  window.addEventListener('directorist-instant-search-reloaded', function () {
+    Object(_components_category_custom_fields__WEBPACK_IMPORTED_MODULE_3__["default"])($);
+  }, {
+    once: true
   });
 })(jQuery);
 

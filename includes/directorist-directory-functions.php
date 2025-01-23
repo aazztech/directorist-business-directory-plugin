@@ -32,6 +32,10 @@ function directorist_get_listing_form_fields( $directory_id ) {
 		$fields[ $field_key ] = $_fields[ $field_key ];
 	}
 
+	if( isset( $fields['view_count'] ) ) {
+		unset( $fields['view_count'] );
+	}
+	
 	return $fields;
 }
 

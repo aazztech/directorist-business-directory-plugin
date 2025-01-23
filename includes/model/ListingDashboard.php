@@ -133,19 +133,21 @@ class Directorist_Listing_Dashboard {
 		// $exp_text  = !empty($never_exp) ? __('Never Expires', 'directorist') : date_i18n($date_format, strtotime($exp_date));
 		// $exp_html  = ( $status == 'expired' ) ? '<span style="color: red">' . __('Expired', 'directorist') . '</span>' : $exp_text;
 		// return $exp_html;
-
-		if ( get_post_status( get_the_ID() ) === 'expired' ) {
-			return '<span style="color: red">' . esc_html__( 'Expired', 'directorist' ) . '</span>';
-		}
-
-		$never_expire = (bool) get_post_meta( get_the_ID(), '_never_expire', true );
+		$listing_id   = get_the_ID();
+		$never_expire = (bool) get_post_meta( $listing_id, '_never_expire', true );
 		if ( $never_expire ) {
 			return '<span>' . esc_html__( 'Never Expires', 'directorist' ) . '</span>';
 		}
 
-		$expiry_date  = strtotime( get_post_meta( get_the_ID(), '_expiry_date', true ) );
+		$expiry_date    = strtotime( get_post_meta( $listing_id, '_expiry_date', true ) );
+		$formatted_date = date_i18n( get_option( 'date_format' ), $expiry_date );
+		$status         = get_post_status( $listing_id );
+
+		// Determine the color based on the status
+		$color = ( $status === 'expired' ) ? 'style="color: red"' : '';
+
 		if ( $expiry_date ) {
-			return '<span>' . date_i18n( get_option( 'date_format' ), $expiry_date ) . '</span>';
+			return '<span ' . $color . '>' . esc_html( $formatted_date ) . '</span>';
 		}
 
 		return '';
