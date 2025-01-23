@@ -177,6 +177,7 @@ class Plans_Controller extends Posts_Controller {
 		$args['order']          = $request['order'];
 		$args['orderby']        = $request['orderby'];
 		$args['paged']          = $request['page'];
+		$args['posts_per_page'] = $request['per_page'];
 
 		if ( directorist_is_multi_directory_enabled() && ! empty( $request['directory'] ) ) {
 			$args['meta_key'] = '_assign_to_directory';
@@ -534,7 +535,7 @@ class Plans_Controller extends Posts_Controller {
 	}
 
 	protected function get_fields_data( $plan ) {
-		$form_fields  = directorist_get_listing_form_fields_data( $this->get_directory_id( $plan ) );
+		$form_fields  = directorist_get_listing_form_fields( $this->get_directory_id( $plan ) );
 		$translations = array(
 			'location'     => _n_noop( '%s (maximum %d item)', '%s (maximum %d items)', 'directorist' ),
 			'category'     => _n_noop( '%s (maximum %d item)', '%s (maximum %d items)', 'directorist' ),
@@ -567,6 +568,10 @@ class Plans_Controller extends Posts_Controller {
 				continue;
 			}
 
+			if ( $this->is_ignorable_field( $field_key ) ) {
+				continue;
+			}
+
 			$data = array(
 				'key'            => $field_key,
 				'label'          => $form_field['label'],
@@ -593,6 +598,10 @@ class Plans_Controller extends Posts_Controller {
 		}
 
 		return $field_data;
+	}
+
+	protected function is_ignorable_field( $field_key ) {
+		return in_array( $field_key, array( 'listing_type', 'booking' ), true );
 	}
 
 	/**

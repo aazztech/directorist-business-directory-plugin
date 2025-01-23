@@ -18,6 +18,10 @@ function directorist_get_directory_meta( $directory_id, string $meta_key ) {
 
 function directorist_get_listing_form_fields( $directory_id ) {
 	$form_data = directorist_get_directory_meta( $directory_id, 'submission_form_fields' );
+	if ( empty( $form_data ) || empty( $form_data['fields'] ) ) {
+		return array();
+	}
+
 	$_fields   = directorist_get_var( $form_data['fields'], array() );
 	$_groups   = directorist_get_var( $form_data['groups'], array() );
 
