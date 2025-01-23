@@ -1,15 +1,15 @@
 import Vue from 'vue';
-import Vuex from 'vuex';
 import SlideUpDown from 'vue-slide-up-down';
+import Vuex from 'vuex';
 
 Vue.use(Vuex);
 Vue.component('slide-up-down', SlideUpDown);
 
-import './vue/global-component';
-import store from './vue/store/CPT_Manager_Store'
 import settings_manager_component from './vue/apps/settings-manager/Settings_Manager.vue';
+import './vue/global-component';
+import store from './vue/store/CPT_Manager_Store';
 
-window.addEventListener('DOMContentLoaded', () => {
+window.addEventListener('load', () => {
     const settings_panel_el = document.getElementById( 'atbdp-settings-manager' );
 
     if ( settings_panel_el ) {
@@ -49,14 +49,19 @@ window.addEventListener('DOMContentLoaded', () => {
         $temp.val($(this).text()).select();
         document.execCommand('copy');
         $temp.remove();
-        $(this).after(
-            "<p class='copy-notify' style='color: #32cc6f; margin-top: 5px;'>Copied to clipboard!</p>"
-        );
-        setTimeout(function () {
-            $this.siblings('.copy-notify').fadeOut(300, function () {
-                $(this).remove();
-            });
-        }, 3000);
+        // Check if '.copy-notify' already exists next to the clicked element
+        if (!$this.siblings('.copy-notify').length) {
+            $this.after(
+                "<p class='copy-notify' style='color: #32cc6f; margin-top: 5px;'>Copied to clipboard!</p>"
+            );
+
+            let timeout = setTimeout(function () {
+                $this.siblings('.copy-notify').fadeOut(300, function () {
+                    $(this).remove();
+                });
+
+                clearTimeout(timeout);
+            }, 3000);
+        }
     });
 });
-

@@ -137,23 +137,6 @@ function directorist_710_update_db_version() {
 	\ATBDP_Installation::update_db_version( '7.1.0' );
 }
 
-function directorist_711_merge_dashboard_login_registration_page() {
-	if ( ! current_user_can( 'manage_options' ) ) {
-		return;
-	}
-
-	$migrated = get_option( 'directorist_merge_dashboard_login_reg_page', false );
-
-	if ( $migrated ) {
-		return;
-	}
-
-	update_option( 'directorist_merge_dashboard_login_reg_page', true );
-}
-
-function directorist_711_update_db_version() {
-	\ATBDP_Installation::update_db_version( '7.11.0' );
-}
 function directorist_7100_clean_falsy_never_expire_meta() {
 	global $wpdb;
 
@@ -215,6 +198,20 @@ function directorist_7100_update_db_version() {
 	\ATBDP_Installation::update_db_version( '7.10.0' );
 }
 
+function directorist_7110_merge_dashboard_login_registration_page() {
+	$migrated = get_option( 'directorist_merge_dashboard_login_reg_page', false );
+
+	if ( $migrated ) {
+		return;
+	}
+
+	update_option( 'directorist_merge_dashboard_login_reg_page', true );
+}
+
+function directorist_7110_update_db_version() {
+	\ATBDP_Installation::update_db_version( '7.11.0' );
+}
+
 function directorist_7123_remove_upload_files_cap() {
 	// contributor
 	$contributor = get_role( 'contributor' );
@@ -237,4 +234,8 @@ function directorist_7123_remove_upload_files_cap() {
 
 function directorist_7123_update_db_version() {
 	\ATBDP_Installation::update_db_version( '7.12.3' );
+}
+
+function directorist_800_update_db_version() {
+    \ATBDP_Installation::update_db_version( '8.0.0' );
 }

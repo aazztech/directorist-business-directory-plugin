@@ -109,10 +109,10 @@ if ( ! class_exists( 'ATBDP_Helper' ) ) :
 			$blur_background   = $is_blur;
 			$background_color  = get_directorist_option( 'prv_background_color', 'gainsboro' );
 
-			$listing_img     = get_post_meta( get_the_ID(), '_listing_img', true );
+			$listing_img     = directorist_get_listing_gallery_images( get_the_ID() );
 			$listing_img_src = atbdp_get_image_source( $listing_img[0], 'medium' );
 
-			$listing_prv_img = get_post_meta( get_the_ID(), '_listing_prv_img', true );
+			$listing_prv_img = directorist_get_listing_preview_image( get_the_ID() );
 			$prv_image_src   = atbdp_get_image_source( $listing_prv_img, 'medium' );
 
 			$default_image_src = get_directorist_option( 'default_preview_image', DIRECTORIST_ASSETS . 'images/grid.jpg' );
@@ -297,7 +297,7 @@ if ( ! class_exists( 'ATBDP_Helper' ) ) :
 		public function social_links() {
 			$s = array(
 				'facebook'       => __( 'Facebook', 'directorist' ),
-				'twitter'        => __( 'Twitter', 'directorist' ),
+				'twitter'        => __( 'X', 'directorist' ),
 				'linkedin'       => __( 'LinkedIn', 'directorist' ),
 				'pinterest'      => __( 'Pinterest', 'directorist' ),
 				'instagram'      => __( 'Instagram', 'directorist' ),
@@ -305,7 +305,7 @@ if ( ! class_exists( 'ATBDP_Helper' ) ) :
 				'flickr'         => __( 'Flickr', 'directorist' ),
 				'snapchat'       => __( 'Snapchat', 'directorist' ),
 				'reddit'         => __( 'Reddit', 'directorist' ),
-				'youtube'   => __( 'Youtube', 'directorist' ),
+				'youtube'        => __( 'Youtube', 'directorist' ),
 				'vimeo'          => __( 'Vimeo', 'directorist' ),
 				'vine'           => __( 'Vine', 'directorist' ),
 				'github'         => __( 'Github', 'directorist' ),
@@ -536,11 +536,7 @@ if ( ! class_exists( 'ATBDP_Helper' ) ) :
 			if ( 'auth' === $type && ! is_user_logged_in() && ! $login_redirect ) {
 				ob_start();
 				// user not logged in;
-				if( get_option( 'directorist_merge_dashboard_login_reg_page' ) ) {
-					$error_message = sprintf( esc_html__( 'You need to be logged in to view the content of this page. You can login/sign up %s.', 'directorist' ), apply_filters( 'atbdp_listing_form_login_link', "<a href='" . esc_url( ATBDP_Permalink::get_dashboard_page_link() ) . "'> " . esc_html__( 'Here', 'directorist' ) . '</a>' ) );
-				} else {
-					$error_message = sprintf( esc_html__( 'You need to be logged in to view the content of this page. You can login %1$s. Don\'t have an account? %2$s', 'directorist' ), apply_filters( 'atbdp_listing_form_login_link', "<a href='" . esc_url( ATBDP_Permalink::get_login_page_link() ) . "'> " . esc_html__( 'Here', 'directorist' ) . '</a>' ), apply_filters( 'atbdp_listing_form_signup_link', "<a href='" . esc_url( ATBDP_Permalink::get_registration_page_link() ) . "'> " . esc_html__( 'Sign Up', 'directorist' ) . '</a>' ) );
-				}
+				$error_message = sprintf( esc_html__( 'You need to be logged in to view the content of this page. You can login/sign up %s.', 'directorist' ), apply_filters( 'atbdp_listing_form_login_link', "<a href='" . esc_url( ATBDP_Permalink::get_dashboard_page_link() ) . "'> " . esc_html__( 'Here', 'directorist' ) . '</a>' ) );
 				?>
 				<section class="directory_wrapper single_area">
 					<?php self::show_login_message( $error_message ); ?>

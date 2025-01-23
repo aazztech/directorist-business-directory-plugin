@@ -337,7 +337,7 @@ class ATBDP_Order
                         <?php echo esc_html__( '#Order for: ', 'directorist' ) . esc_html( $title );
                         $featured = apply_filters( 'atbdp_order_for', get_post_meta( $post_id, '_featured', true), $post_id ); // is this listing featured ?
                         if ($featured) {
-                            $f_title = apply_filters( 'atbdp_order_for', get_directorist_option('featured_listing_title'), $post_id );
+                            $f_title = apply_filters( 'atbdp_order_for', get_directorist_option( 'featured_listing_title', __( 'Featured', 'directorist' ) ), $post_id );
                             echo esc_html( $f_title );
                         }else{
                             echo esc_html_e( 'Others', 'directorist' );
@@ -490,7 +490,7 @@ class ATBDP_Order
     {
         $old_status     = get_post_meta( $post_id, '_payment_status', true);
         $listing_id     = get_post_meta( $post_id, '_listing_id', true);
-        $directory_type = get_post_meta( $listing_id, '_directory_type', true );
+        $directory_type = directorist_get_listing_directory( $listing_id );
 		$new_l_status 	= get_term_meta( $directory_type, 'new_listing_status', true );
         $new_status     = str_replace('set_to_', '', $action);
         $new_status     = sanitize_key($new_status);

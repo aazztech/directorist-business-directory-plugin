@@ -11,10 +11,9 @@ if ( ! defined( 'ABSPATH' ) ) exit;
 ?>
 
 <div class="directorist-archive-items directorist-archive-grid-view">
-
-	<?php do_action( 'directorist_before_grid_listings_loop' ); ?>
-
 	<div class="<?php Helper::directorist_container_fluid(); ?>">
+
+		<?php do_action( 'directorist_before_grid_listings_loop' ); ?>
 
 		<?php if ( $listings->have_posts() ): ?>
 
@@ -30,11 +29,14 @@ if ( ! defined( 'ABSPATH' ) ) exit;
 
 			</div>
 
-			<?php do_action( 'directorist_before_listings_pagination' ); ?>
-
 			<?php
 			if ( $listings->show_pagination ) {
+
+				do_action( 'directorist_before_listings_pagination' );
+
 				$listings->pagination();
+
+				do_action( 'directorist_after_listings_pagination' );
 			}
 			?>
 
@@ -45,7 +47,5 @@ if ( ! defined( 'ABSPATH' ) ) exit;
 			<div class="directorist-archive-notfound"><?php esc_html_e( 'No listings found.', 'directorist' ); ?></div>
 
 		<?php endif; ?>
-
 	</div>
-
 </div>

@@ -226,7 +226,7 @@ class ATBDP_Metabox {
         wp_enqueue_script( 'atbdp-markerclusterer' );
 		$all_types     	= directory_types();
 		$default     	= default_directory_type();
-		$current_type   =  get_post_meta( $post->ID, '_directory_type', true );
+		$current_type   = directorist_get_listing_directory( $post->ID );
 		$value 			= $current_type ? $current_type : $default;
 		wp_nonce_field( 'listing_info_action', 'listing_info_nonce' );
 
@@ -248,13 +248,17 @@ class ATBDP_Metabox {
 			<input type="hidden" name="directory_type" value="<?php echo esc_attr( $default ); ?>">
 		<?php } ?>
 
-		<div class="form-group atbd_content_module atbdp_category_custom_fields-wrapper diectorist-hide">
-			<div class="atbdb_content_module_contents">
-				<div class="form-group atbdp_category_custom_fields"></div>
+		<div id="directiost-listing-fields_wrapper" data-id="<?php echo esc_attr( $post->ID )?>">
+			<div style="display: none" class="directorist-content-module atbd_content_module- atbdp_category_custom_fields-wrapper">
+				<div class="directorist-content-module__contents atbdb_content_module_contents-">
+					<div class="atbdp_category_custom_fields"></div>
+				</div>
+			</div>
+
+			<div class="directorist-listing-fields">
+				<?php $this->render_listing_meta_fields( $value, $post->ID ); ?>
 			</div>
 		</div>
-
-		<div id="directiost-listing-fields_wrapper" data-id="<?php echo esc_attr( $post->ID )?>"><?php $this->render_listing_meta_fields( $value, $post->ID ); ?></div>
 		<?php
 	}
 

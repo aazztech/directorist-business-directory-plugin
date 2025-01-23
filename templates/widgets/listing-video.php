@@ -11,7 +11,7 @@ if ( ! defined( 'ABSPATH' ) ) exit;
 $videourl   = ! empty( $videourl ) ? Helper::parse_video( $videourl ) : '';
 ?>
 
-<div class="atbdp">
-    <iframe class="embed-responsive-item" src="<?php echo esc_url( $videourl ); ?>" allowfullscreen></iframe>
+<div class="directorist-card__body directorist-widget__video">
+    <iframe class="directorist-embaded-item" src="<?php echo esc_url( $videourl ); ?>" allowfullscreen></iframe>
 </div>
 

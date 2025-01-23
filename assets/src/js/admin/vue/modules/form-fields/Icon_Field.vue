@@ -1,6 +1,5 @@
 <template>
-  <div class="directorist-type-icon-select">
-    <label>Icon</label>
+  <div class="cptm-form-group directorist-type-icon-select">
     <div class="icon-picker-wrap" ref="iconPickerElm"></div>
   </div>
 </template>

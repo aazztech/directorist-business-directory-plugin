@@ -9,6 +9,10 @@ use Elementor\Plugin;
 
 if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
 
+if( class_exists( 'AddonskitForELementor' ) ) {
+	return;
+}
+
 class Widget_Init {
 
 	public $prefix;
@@ -21,7 +25,7 @@ class Widget_Init {
 		$this->init();
 		add_action( 'elementor/editor/after_enqueue_styles',    array( $this, 'editor_style' ) );
 		add_action( 'elementor/elements/categories_registered', array( $this, 'widget_categoty' ) );
-		add_action( 'elementor/widgets/register',     array( $this, 'register_widgets' ) );
+		// add_action( 'elementor/widgets/register',     array( $this, 'register_widgets' ) );
 	}
 
 	public static function instance() {
@@ -109,6 +113,10 @@ add_action( 'after_setup_theme', function() {
 		if ( $activated ) {
 			Widget_Init::instance();
 		}
+
+		include_once 'deprecated-notice.php';
+		$dn = new DeprecatedNotice();
+		add_action( 'admin_notices', [$dn, 'maybe_show_notice_for_required_plugins']  );
 	}
 } );
 

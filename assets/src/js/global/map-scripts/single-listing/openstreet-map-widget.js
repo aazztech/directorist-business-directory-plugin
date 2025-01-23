@@ -1,8 +1,8 @@
 /* Widget OSMap */
 
-;
 (function ($) {
-    jQuery(document).ready(function () {
+    // Single Listing Map Initialize
+    function initSingleMap() {
         // Localized Data
         if ($('#gmap-widget').length) {
             const map_container = (localized_data_widget.map_container_id) ? localized_data_widget.map_container_id : 'gmap';
@@ -59,5 +59,25 @@
 
             mapLeaflet(loc_manual_lat, loc_manual_lng);
         }
+    }
+
+    jQuery(document).ready(function () {
+        initSingleMap()
     });
+
+    // Single Listing Map on Elementor EditMode 
+    $(window).on('elementor/frontend/init', function () {
+        setTimeout(function() {
+            if ($('body').hasClass('elementor-editor-active')) {
+                initSingleMap()
+            }
+        }, 3000);
+    });
+
+    $('body').on('click', function (e) {
+        if ($('body').hasClass('elementor-editor-active')  && (e.target.nodeName !== 'A' && e.target.nodeName !== 'BUTTON')) {
+            initSingleMap()
+        }
+    });
+
 })(jQuery);

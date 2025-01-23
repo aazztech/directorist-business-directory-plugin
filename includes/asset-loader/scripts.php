@@ -53,9 +53,9 @@ class Scripts {
 				'path' => DIRECTORIST_VENDOR_CSS . 'ez-media-uploader',
 				'rtl' => true,
 			],
-			'directorist-slick-style' => [
+			'directorist-swiper-style' => [
 				'type' => 'css',
-				'path' => DIRECTORIST_VENDOR_CSS . 'slick',
+				'path' => DIRECTORIST_VENDOR_CSS . 'swiper',
 			],
 			'directorist-sweetalert-style' => [
 				'type' => 'css',
@@ -66,6 +66,13 @@ class Scripts {
 			'directorist-main-style' => [
 				'type' => 'css',
 				'path' => DIRECTORIST_CSS . 'public-main',
+				'rtl' => true,
+			],
+
+			// Support v7 CSS
+			'directorist-support-v7-style' => [
+				'type' => 'css',
+				'path' => DIRECTORIST_CSS . 'support-v7-style',
 				'rtl' => true,
 			],
 
@@ -85,9 +92,9 @@ class Scripts {
 				'type' => 'js',
 				'path' => DIRECTORIST_VENDOR_JS . 'no-script',
 			],
-			'directorist-slick' => [
+			'directorist-swiper' => [
 				'type' => 'js',
-				'path' => DIRECTORIST_VENDOR_JS . 'slick',
+				'path' => DIRECTORIST_VENDOR_JS . 'swiper',
 			],
 			'directorist-openstreet-layers' => [
 				'type' => 'js',
@@ -182,10 +189,6 @@ class Scripts {
 				'type' => 'js',
 				'path' => DIRECTORIST_VENDOR_JS . 'jquery.barrating',
 			],
-			'directorist-plasma-slider' => [
-				'type' => 'js',
-				'path' => DIRECTORIST_VENDOR_JS . 'plasma-slider',
-			],
 			'directorist-uikit' => [
 				'type' => 'js',
 				'path' => DIRECTORIST_VENDOR_JS . 'uikit',
@@ -218,11 +221,6 @@ class Scripts {
 			],
 
 			// Public JS
-			'directorist-main' => [
-				'type' => 'js',
-				'path' => DIRECTORIST_JS . 'public-main',
-				'dep' => ['jquery', 'directorist-plasma-slider' ],
-			],
 			'directorist-widgets' => [
 				'type' => 'js',
 				'path' => DIRECTORIST_JS . 'widgets',
@@ -234,6 +232,10 @@ class Scripts {
 			'directorist-search-form' => [
 				'type' => 'js',
 				'path' => DIRECTORIST_JS . 'search-form',
+			],
+			'directorist-listing-slider' => [
+				'type' => 'js',
+				'path' => DIRECTORIST_JS . 'listing-slider',
 			],
 			'directorist-dashboard' => [
 				'type' => 'js',
@@ -329,10 +331,12 @@ class Scripts {
 			'directorist-multi-directory-builder' => [
 				'type' => 'js',
 				'path' => DIRECTORIST_JS . 'admin-multi-directory-builder',
+				'dep'  => [ 'lodash' ]
 			],
 			'directorist-settings-manager' => [
 				'type' => 'js',
 				'path' => DIRECTORIST_JS . 'admin-settings-manager',
+				'dep'  => [ 'lodash' ]
 			],
 			'directorist-plugins' => [
 				'type' => 'js',
@@ -349,7 +353,7 @@ class Scripts {
 
 	private static function gmap_url() {
 		$api = get_directorist_option( 'map_api_key', 'AIzaSyCwxELCisw4mYqSv_cBfgOahfrPFjjQLLo' );
-		$url = '//maps.googleapis.com/maps/api/js?key=' . $api . '&libraries=places&callback=Function.prototype';
+		$url = '//maps.googleapis.com/maps/api/js?key=' . $api . '&libraries=places,marker&callback=Function.prototype&v=weekly';
 		return $url;
 	}
 }

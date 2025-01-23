@@ -81,7 +81,7 @@
 /******/
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 7);
+/******/ 	return __webpack_require__(__webpack_require__.s = 8);
 /******/ })
 /************************************************************************/
 /******/ ({
@@ -163,7 +163,7 @@ __webpack_require__.r(__webpack_exports__);
 
 ;
 (function ($) {
-  window.addEventListener('DOMContentLoaded', function () {
+  window.addEventListener('load', function () {
     // User Dashboard Table More Button
     $('.directorist-dashboard-listings-tbody').on("click", '.directorist-btn-more', function (e) {
       e.preventDefault();
@@ -192,7 +192,7 @@ __webpack_require__.r(__webpack_exports__);
 
 ;
 (function ($) {
-  window.addEventListener('DOMContentLoaded', function () {
+  window.addEventListener('load', function () {
     // Clear seen Announcements
     var cleared_seen_announcements = false;
     $('.directorist-tab__nav__link').on('click', function () {
@@ -201,8 +201,6 @@ __webpack_require__.r(__webpack_exports__);
       }
       var target = $(this).attr('target');
       if ('dashboard_announcement' === target) {
-        // console.log( target, 'clear seen announcements' );
-
         $.ajax({
           type: "post",
           url: directorist.ajaxurl,
@@ -210,8 +208,6 @@ __webpack_require__.r(__webpack_exports__);
             action: 'atbdp_clear_seen_announcements'
           },
           success: function success(response) {
-            // console.log( response );
-
             if (response.success) {
               cleared_seen_announcements = true;
               $('.directorist-announcement-count').removeClass('show');
@@ -219,9 +215,9 @@ __webpack_require__.r(__webpack_exports__);
             }
           },
           error: function error(_error) {
-            console.log({
-              error: _error
-            });
+            // console.log({
+            //     error
+            // });
           }
         });
       }
@@ -232,7 +228,6 @@ __webpack_require__.r(__webpack_exports__);
     $('.close-announcement').on('click', function (e) {
       e.preventDefault();
       if (closing_announcement) {
-        // console.log('Please wait...');
         return;
       }
       var post_id = $(this).closest('.directorist-announcement').data('post-id');
@@ -292,7 +287,7 @@ __webpack_require__.r(__webpack_exports__);
 
 ;
 (function ($) {
-  window.addEventListener('DOMContentLoaded', function () {
+  window.addEventListener('load', function () {
     // Dashboard become an author
     $('.directorist-become-author').on('click', function (e) {
       e.preventDefault();
@@ -334,7 +329,7 @@ __webpack_require__.r(__webpack_exports__);
 
 ;
 (function ($) {
-  window.addEventListener('DOMContentLoaded', function () {
+  window.addEventListener('load', function () {
     // Dashboard Listing Ajax
     function directorist_dashboard_listing_ajax($activeTab) {
       var paged = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 1;
@@ -500,7 +495,7 @@ __webpack_require__.r(__webpack_exports__);
 
 ;
 (function ($) {
-  window.addEventListener('DOMContentLoaded', function () {
+  window.addEventListener('load', function () {
     //dashboard content responsive fix
     var tabContentWidth = $(".directorist-user-dashboard .directorist-user-dashboard__contents").innerWidth();
     if (tabContentWidth < 1399) {
@@ -512,7 +507,7 @@ __webpack_require__.r(__webpack_exports__);
         $(".directorist-shade").removeClass("directorist-active");
       }
     }).trigger("resize");
-    $('.directorist-dashboard__nav--close, .directorist-shade').on('click', function () {
+    $('.directorist-dashboard__nav__close, .directorist-shade').on('click', function () {
       $(".directorist-user-dashboard__nav").addClass('directorist-dashboard-nav-collapsed');
       $(".directorist-shade").removeClass("directorist-active");
     });
@@ -537,7 +532,7 @@ __webpack_require__.r(__webpack_exports__);
 
 ;
 (function ($) {
-  window.addEventListener('DOMContentLoaded', function () {
+  window.addEventListener('load', function () {
     //dashboard sidebar nav toggler
     $(".directorist-user-dashboard__toggle__link").on("click", function (e) {
       e.preventDefault();
@@ -562,7 +557,7 @@ __webpack_require__.r(__webpack_exports__);
       }
     });
     if ($(window).innerWidth() < 1199) {
-      $(".directorist-tab__nav__link").on("click", function () {
+      $(".directorist-tab__nav__link:not(.atbd-dash-nav-dropdown)").on("click", function () {
         $(".directorist-user-dashboard__nav").addClass('directorist-dashboard-nav-collapsed');
         $(".directorist-shade").removeClass("directorist-active");
       });
@@ -605,7 +600,7 @@ __webpack_require__.r(__webpack_exports__);
   } else {
     return;
   }
-  window.addEventListener('DOMContentLoaded', function () {
+  window.addEventListener('load', function () {
     /* Directorist alert dismiss */
     var getUrl = window.location.href;
     var newUrl = getUrl.replace('notice=1', '');
@@ -638,7 +633,7 @@ __webpack_require__.r(__webpack_exports__);
   } else {
     return;
   }
-  window.addEventListener('DOMContentLoaded', function () {
+  window.addEventListener('load', function () {
     /* custom dropdown */
     var atbdDropdown = document.querySelectorAll('.directorist-dropdown-select');
 
@@ -707,8 +702,8 @@ __webpack_require__.r(__webpack_exports__);
 
     // Hide Clicked Anywhere
     $(document).bind('click', function (e) {
-      var clickedDom = $(e.target);
-      if (!clickedDom.parents().hasClass('directorist-dropdown')) $('.directorist-dropdown-option').hide();
+      var clickedDOM = $(e.target);
+      if (!clickedDOM.parents().hasClass('directorist-dropdown')) $('.directorist-dropdown-option').hide();
     });
 
     //atbd_dropdown
@@ -762,21 +757,18 @@ __webpack_require__.r(__webpack_exports__);
   } else {
     return;
   }
-  window.addEventListener('DOMContentLoaded', function () {
+  window.addEventListener('load', function () {
     // Add or Remove from favourites
-    $('#atbdp-favourites').on('click', function (e) {
+    $('.directorist-action-bookmark').on('click', function (e) {
       e.preventDefault();
       var data = {
         'action': 'atbdp_public_add_remove_favorites',
         'directorist_nonce': directorist.directorist_nonce,
-        'post_id': $("a.atbdp-favourites").data('post_id')
+        'post_id': $(this).data('listing_id')
       };
       $.post(directorist.ajaxurl, data, function (response) {
-        console.log('added');
-        console.log(response);
-        console.log(directorist.ajaxurl);
         if (response) {
-          $('#atbdp-favourites').html(response);
+          $('.directorist-action-bookmark').html(response);
         }
       });
     });
@@ -845,7 +837,7 @@ __webpack_require__.r(__webpack_exports__);
 /*! no static exports found */
 /***/ (function(module, exports) {
 
-window.addEventListener('DOMContentLoaded', function () {
+window.addEventListener('load', function () {
   // Make sure the codes in this file runs only once, even if enqueued twice
   if (typeof window.directorist_select_executed === 'undefined') {
     window.directorist_select_executed = true;
@@ -873,10 +865,10 @@ window.addEventListener('DOMContentLoaded', function () {
   var atbdSelectData = document.querySelectorAll('.atbd-drop-select.with-sort');
   atbdSelectData.forEach(function (el) {
     el.querySelectorAll('.atbd-dropdown-item').forEach(function (item) {
-      var ds = el.querySelector('.atbd-dropdown-toggle');
-      var itemds = item.getAttribute('data-status');
+      var atbd_dropdown = el.querySelector('.atbd-dropdown-toggle');
+      var dropdown_item = item.getAttribute('data-status');
       item.addEventListener('click', function (e) {
-        ds.setAttribute('data-status', "".concat(itemds));
+        atbd_dropdown.setAttribute('data-status', "".concat(dropdown_item));
       });
     });
   });
@@ -891,7 +883,7 @@ window.addEventListener('DOMContentLoaded', function () {
 /*! no static exports found */
 /***/ (function(module, exports) {
 
-window.addEventListener('DOMContentLoaded', function () {
+window.addEventListener('load', function () {
   /* custom dropdown */
   var atbdDropdown = document.querySelectorAll('.atbd-dropdown');
 
@@ -903,13 +895,13 @@ window.addEventListener('DOMContentLoaded', function () {
         e.preventDefault();
         clickCount++;
         if (clickCount % 2 === 1) {
-          document.querySelectorAll('.atbd-dropdown-items').forEach(function (elem) {
-            elem.classList.remove('atbd-show');
+          document.querySelectorAll('.atbd-dropdown-items').forEach(function (el) {
+            el.classList.remove('atbd-show');
           });
           el.querySelector('.atbd-dropdown-items').classList.add('atbd-show');
         } else {
-          document.querySelectorAll('.atbd-dropdown-items').forEach(function (elem) {
-            elem.classList.remove('atbd-show');
+          document.querySelectorAll('.atbd-dropdown-items').forEach(function (el) {
+            el.classList.remove('atbd-show');
           });
         }
       });
@@ -929,6 +921,76 @@ window.addEventListener('DOMContentLoaded', function () {
 
 /***/ }),
 
+/***/ "./assets/src/js/public/components/preferenceForm.js":
+/*!***********************************************************!*\
+  !*** ./assets/src/js/public/components/preferenceForm.js ***!
+  \***********************************************************/
+/*! no static exports found */
+/***/ (function(module, exports) {
+
+;
+(function ($) {
+  if ($('#display_author_email').length) {
+    $('#display_author_email').select2();
+  }
+  window.addEventListener('load', function () {
+    var is_processing = false;
+    $('#user_preferences').on('submit', function (e) {
+      // submit the form to the ajax handler and then send a response from the database and then work accordingly and then after finishing the update profile then work on remove listing and also remove the review and rating form the custom table once the listing is deleted successfully.
+      e.preventDefault();
+      var submit_button = $('#update_user_preferences');
+      submit_button.attr('disabled', true);
+      submit_button.addClass("directorist-loader");
+      if (is_processing) {
+        submit_button.removeAttr('disabled');
+        return;
+      }
+      var form_data = new FormData();
+      var err_log = {};
+
+      // ajax action
+      form_data.append('action', 'update_user_preferences');
+      form_data.append('directorist_nonce', directorist.directorist_nonce);
+      var $form = $(this);
+      var arrData = $form.serializeArray();
+      $.each(arrData, function (index, elem) {
+        var name = elem.name;
+        var value = elem.value;
+        form_data.append(name, value);
+      });
+      $.ajax({
+        method: 'POST',
+        processData: false,
+        contentType: false,
+        url: directorist.ajaxurl,
+        data: form_data,
+        success: function success(response) {
+          submit_button.removeAttr('disabled');
+          submit_button.removeClass("directorist-loader");
+          if (response.success) {
+            $('#directorist-preference-notice').html('<span class="directorist-alert directorist-alert-success">' + response.data.message + '</span>');
+          } else {
+            $('#directorist-preference-notice').html('<span class="directorist-alert directorist-alert-danger">' + response.data.message + '</span>');
+          }
+        },
+        error: function error(response) {
+          submit_button.removeAttr('disabled');
+          console.log(response);
+        }
+      });
+      // remove notice after five second
+      setTimeout(function () {
+        $("#directorist-preference-notice .directorist-alert").remove();
+      }, 5000);
+
+      // prevent the from submitting
+      return false;
+    });
+  });
+})(jQuery);
+
+/***/ }),
+
 /***/ "./assets/src/js/public/components/profileForm.js":
 /*!********************************************************!*\
   !*** ./assets/src/js/public/components/profileForm.js ***!
@@ -938,7 +1000,7 @@ window.addEventListener('DOMContentLoaded', function () {
 
 ;
 (function ($) {
-  window.addEventListener('DOMContentLoaded', function () {
+  window.addEventListener('load', function () {
     var profileMediaUploader = null;
     if ($(".directorist-profile-uploader").length) {
       profileMediaUploader = new EzMediaUploader({
@@ -1011,7 +1073,7 @@ window.addEventListener('DOMContentLoaded', function () {
           // console.log(response);
 
           if (response.success) {
-            $('#directorist-prifile-notice').html('<span class="directorist-alert directorist-alert-success">' + response.data + '</span>');
+            $('#directorist-profile-notice').html('<span class="directorist-alert directorist-alert-success">' + response.data + '</span>');
 
             // Reload if password updated
             var newPass = form_data.get('user[new_pass]');
@@ -1020,7 +1082,7 @@ window.addEventListener('DOMContentLoaded', function () {
               return false;
             }
           } else {
-            $('#directorist-prifile-notice').html('<span class="directorist-alert directorist-alert-danger">' + response.data + '</span>');
+            $('#directorist-profile-notice').html('<span class="directorist-alert directorist-alert-danger">' + response.data + '</span>');
           }
         },
         error: function error(response) {
@@ -1030,7 +1092,7 @@ window.addEventListener('DOMContentLoaded', function () {
       });
       // remove notice after five second
       setTimeout(function () {
-        $("#directorist-prifile-notice .directorist-alert").remove();
+        $("#directorist-profile-notice .directorist-alert").remove();
       }, 5000);
 
       // prevent the from submitting
@@ -1121,12 +1183,13 @@ function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len 
       }
     };
     this.navLinksSetup = function (selector) {
-      var selector = document.querySelectorAll(selector);
-      selector.forEach(function (el) {
-        a = el.querySelectorAll('.directorist-tab__nav__link:not(.atbd-dash-nav-dropdown)');
-        a.forEach(function (element) {
-          element.style.cursor = 'pointer';
-          element.addEventListener('click', function (event) {
+      var elements = document.querySelectorAll(selector);
+      if (!elements.length) return;
+      elements.forEach(function (el) {
+        var links = el.querySelectorAll('.directorist-tab__nav__link:not(.atbd-dash-nav-dropdown)');
+        links.forEach(function (link) {
+          link.style.cursor = 'pointer';
+          link.addEventListener('click', function (event) {
             event.preventDefault();
             event.stopPropagation();
             var ul = event.target.closest('.directorist-tab__nav'),
@@ -1221,6 +1284,8 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _components_directoristFavorite__WEBPACK_IMPORTED_MODULE_12___default = /*#__PURE__*/__webpack_require__.n(_components_directoristFavorite__WEBPACK_IMPORTED_MODULE_12__);
 /* harmony import */ var _components_directoristAlert__WEBPACK_IMPORTED_MODULE_13__ = __webpack_require__(/*! ../components/directoristAlert */ "./assets/src/js/public/components/directoristAlert.js");
 /* harmony import */ var _components_directoristAlert__WEBPACK_IMPORTED_MODULE_13___default = /*#__PURE__*/__webpack_require__.n(_components_directoristAlert__WEBPACK_IMPORTED_MODULE_13__);
+/* harmony import */ var _components_preferenceForm__WEBPACK_IMPORTED_MODULE_14__ = __webpack_require__(/*! ../components/preferenceForm */ "./assets/src/js/public/components/preferenceForm.js");
+/* harmony import */ var _components_preferenceForm__WEBPACK_IMPORTED_MODULE_14___default = /*#__PURE__*/__webpack_require__.n(_components_preferenceForm__WEBPACK_IMPORTED_MODULE_14__);
 // Lib
 
 
@@ -1242,9 +1307,10 @@ __webpack_require__.r(__webpack_exports__);
 
 
 
+
 /***/ }),
 
-/***/ 7:
+/***/ 8:
 /*!*********************************************************!*\
   !*** multi ./assets/src/js/public/modules/dashboard.js ***!
   \*********************************************************/

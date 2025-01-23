@@ -2,7 +2,7 @@
 /**
  * @author  wpWax
  * @since   6.7
- * @version 7.10.4
+ * @version 8.0
  */
 
 if ( ! defined( 'ABSPATH' ) ) exit;
@@ -10,15 +10,22 @@ if ( ! defined( 'ABSPATH' ) ) exit;
 if( $listing->contact_owner_form_disabled() ) {
 	return;
 }
+
+$fields = $listing->contact_owner_fields( $section_data['fields'] );
 ?>
 
-<div class="directorist-card directorist-card-contact-owner <?php echo esc_attr( $class );?>" <?php $listing->section_id( $id ); ?>>
+<section class="directorist-card directorist-card-contact-owner <?php echo esc_attr( $class );?>" <?php $listing->section_id( $id ); ?>>
 
-	<div class="directorist-card__header">
+	<header class="directorist-card__header">
 
-		<h4 class="directorist-card__header--title"><?php directorist_icon( $icon );?><?php echo esc_html( $label );?></h4>
+		<h3 class="directorist-card__header__title">
+			<?php if ( ! empty( $icon ) ) : ?>
+				<span class="directorist-card__header-icon"><?php directorist_icon( $icon );?></span>
+			<?php endif; ?>
+			<span class="directorist-card__header-text"><?php echo esc_html( $label );?></span>
+		</h3>
 
-	</div>
+	</header>
 
 	<div class="directorist-card__body">
 
@@ -26,16 +33,18 @@ if( $listing->contact_owner_form_disabled() ) {
 
 			<div class="directorist-contact-owner-form-inner">
 
+				<?php if( ! empty( $fields['name']['enable'] ) ) : ?>
+					<div class="directorist-form-group">
+						<input type="text" class="directorist-form-element" name="atbdp-contact-name" placeholder="<?php echo esc_attr( $fields['name']['placeholder'] ); ?>" required />
+					</div>
+				<?php endif; ?>
+
 				<div class="directorist-form-group">
-					<input type="text" class="directorist-form-element" name="atbdp-contact-name" placeholder="<?php esc_attr_e( 'Name', 'directorist' ); ?>" required />
+					<input type="email" class="directorist-form-element" name="atbdp-contact-email" placeholder="<?php echo esc_attr( $fields['email']['placeholder'] ); ?>" required />
 				</div>
 
 				<div class="directorist-form-group">
-					<input type="email" class="directorist-form-element" name="atbdp-contact-email" placeholder="<?php esc_attr_e( 'Email', 'directorist' ); ?>" required />
-				</div>
-
-				<div class="directorist-form-group">
-					<textarea class="directorist-form-element" name="atbdp-contact-message" rows="3" placeholder="<?php esc_attr_e( 'Message...', 'directorist' ); ?>" required></textarea>
+					<textarea class="directorist-form-element" name="atbdp-contact-message" rows="3" placeholder="<?php echo esc_attr( $fields['message']['placeholder'] ); ?>" required></textarea>
 				</div>
 
 				<input type="hidden" name="atbdp-post-id" value="<?php echo esc_attr( $listing->id ); ?>" />
@@ -45,7 +54,7 @@ if( $listing->contact_owner_form_disabled() ) {
 
 				<p class="directorist-contact-message-display"></p>
 
-				<button type="submit" class="directorist-btn directorist-btn-primary directorist-btn-sm directorist-btn-submit"><?php esc_html_e( 'Submit', 'directorist' ); ?></button>
+				<button type="submit" class="directorist-btn directorist-btn-light directorist-btn-md directorist-btn-submit"><?php esc_html_e( 'Submit now', 'directorist' ); ?></button>
 
 			</div>
 
@@ -53,4 +62,4 @@ if( $listing->contact_owner_form_disabled() ) {
 
 	</div>
 
-</div>
+</section>

@@ -38,12 +38,15 @@ class ATBDP_Installation {
 			'directorist_7100_update_db_version',
 		],
 		'7.11.0' => [
-			'directorist_711_merge_dashboard_login_registration_page',
-			'directorist_711_update_db_version',
+			'directorist_7110_merge_dashboard_login_registration_page',
+			'directorist_7110_update_db_version',
 		],
 		'7.12.3' => [
 			'directorist_7123_remove_upload_files_cap',
 			'directorist_7123_update_db_version',
+		],
+		'8.0.0' => [
+			'directorist_800_update_db_version',
 		]
 	);
 

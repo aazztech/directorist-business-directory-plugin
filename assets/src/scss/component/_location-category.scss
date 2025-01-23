@@ -17,8 +17,8 @@
             width: 35px;
             height: 35px;
             border-radius: 50%;
-            background: #2C99FF;
-            color: #fff;
+            background-color: #2C99FF;
+            color: var(--directorist-color-white);
             font-size: 16px;
             display: inline-flex;
             align-items: center;
@@ -30,21 +30,19 @@
     @include e(body) {
         padding: 15px 20px;
 
-        ul {
-            li {
-                &:not(:last-child) {
-                    margin-bottom: 5px;
-                }
+        li {
+            &:not(:last-child) {
+                margin-bottom: 5px;
+            }
 
-                a {
-                    display: flex;
-                    align-items: center;
-                    justify-content: space-between;
-                    color: #444752;
+            a {
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                color: #444752;
 
-                    span {
-                        color: $text-color;
-                    }
+                span {
+                    color: var(--directorist-color-body);
                 }
             }
         }

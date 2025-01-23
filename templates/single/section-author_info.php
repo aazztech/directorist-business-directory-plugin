@@ -2,7 +2,7 @@
 /**
  * @author  wpWax
  * @since   6.7
- * @version 7.4.0
+ * @version 8.0
  */
 
 use \Directorist\Helper;
@@ -17,13 +17,18 @@ $author_img = !empty($u_pro_pic) ? $u_pro_pic[0] : '';
 $avatar_img = get_avatar($author_id, 32);
 ?>
 
-<div class="directorist-card directorist-card-author-info <?php echo esc_attr( $class );?>" <?php $listing->section_id( $id ); ?>>
+<section class="directorist-card directorist-card-author-info <?php echo esc_attr( $class );?>" <?php $listing->section_id( $id ); ?>>
 
-	<div class="directorist-card__header">
+	<header class="directorist-card__header">
 
-		<h4 class="directorist-card__header--title"><?php directorist_icon( $icon );?><?php echo esc_html( $label );?></h4>
+		<h3 class="directorist-card__header__title">
+			<?php if ( ! empty( $icon ) ) : ?>
+				<span class="directorist-card__header-icon"><?php directorist_icon( $icon ); ?></span>
+			<?php endif; ?>
+			<span class="directorist-card__header-text"><?php echo esc_html( $label ); ?></span>
+		</h3>
 
-	</div>
+	</header>
 
 	<div class="directorist-card__body">
 
@@ -31,13 +36,13 @@ $avatar_img = get_avatar($author_id, 32);
 
 			<div class="directorist-single-author-avatar">
 
-				<div class="directorist-single-author-avatar-inner">
+				<figure class="directorist-single-author-avatar-inner">
 					<?php if ( $author_img ): ?>
 						<img src="<?php echo esc_url( $author_img ); ?>" alt="<?php esc_attr_e( 'Avatar', 'directorist' );?>">
 					<?php else: ?>
 						<?php echo wp_kses_post( $avatar_img ); ?>
 					<?php endif; ?>
-				</div>
+				</figure>
 
 				<div class="directorist-single-author-name">
 					<h4><?php echo esc_html( $listing->author_info( 'name' ) ); ?></h4>
@@ -51,7 +56,7 @@ $avatar_img = get_avatar($author_id, 32);
 				<ul>
 					<?php if ( $address = $listing->author_info( 'address' ) ): ?>
 						<li>
-							<?php directorist_icon( 'las la-map-marker' ); ?>
+							<?php directorist_icon( 'fas fa-map-marker-alt' ); ?>
 							<span class="directorist-single-author-contact-info-text"><?php echo esc_html( $address ); ?></span>
 						</li>
 					<?php endif; ?>
@@ -59,23 +64,23 @@ $avatar_img = get_avatar($author_id, 32);
 
 					<?php if ( $phone = $listing->author_info( 'phone' ) ): ?>
 						<li>
-							<?php directorist_icon( 'las la-phone' ); ?>
+							<?php directorist_icon( 'fas fa-phone-alt' ); ?>
 							<span class="directorist-single-author-contact-info-text">
 								<a href="tel:<?php Helper::formatted_tel( $phone ); ?>"><?php echo esc_html( $phone ); ?></a>
 							</span>
 						</li>
 					<?php endif; ?>
 
-					<?php if ( $listing->author_display_email() ): ?>
+					<?php if ( $listing->author_display_email( $section_data ) ): ?>
 						<li>
-							<?php directorist_icon( 'las la-envelope' ); ?>
+							<?php directorist_icon( 'fas fa-envelope-open' ); ?>
 							<span class="directorist-single-author-contact-info-text"><?php echo esc_html( $listing->author_info( 'email' ) ); ?></span>
 						</li>
 					<?php endif; ?>
 
 					<?php if ( $website = $listing->author_info( 'website' ) ): ?>
 						<li>
-							<?php directorist_icon( 'las la-globe' ); ?>
+							<?php directorist_icon( 'fas fa-globe-americas' ); ?>
 							<a href="<?php echo esc_url( $website ); ?>" class="directorist-single-author-contact-info-text"><?php echo esc_url( $website ); ?></a>
 						</li>
 					<?php endif; ?>
@@ -88,28 +93,28 @@ $avatar_img = get_avatar($author_id, 32);
 				<ul class="directorist-author-social">
 
 					<?php if ( $facebook = $listing->author_info( 'facebook' ) ): ?>
-						<li class="directorist-author-social-item"><a target="_blank" href="<?php echo esc_url( $facebook ); ?>"><?php directorist_icon( 'lab la-facebook' ); ?></a></li>
+						<li class="directorist-author-social-item directorist-author-social__item"><a target="_blank" href="<?php echo esc_url( $facebook ); ?>"><?php directorist_icon( 'lab la-facebook' ); ?></a></li>
 					<?php endif; ?>
 
 					<?php if ( $twitter = $listing->author_info( 'twitter' ) ): ?>
-						<li class="directorist-author-social-item"><a target="_blank" href="<?php echo esc_url( $twitter ); ?>"><?php directorist_icon( 'lab la-twitter' ); ?></a></li>
+						<li class="directorist-author-social-item directorist-author-social__item"><a target="_blank" href="<?php echo esc_url( $twitter ); ?>"><?php directorist_icon( 'lab la-twitter' ); ?></a></li>
 					<?php endif; ?>
 
 					<?php if ( $linkedin = $listing->author_info( 'linkedin' ) ): ?>
-						<li class="directorist-author-social-item"><a target="_blank" href="<?php echo esc_url( $linkedin ); ?>"><?php directorist_icon( 'lab la-linkedin' ); ?></a></li>
+						<li class="directorist-author-social-item directorist-author-social__item"><a target="_blank" href="<?php echo esc_url( $linkedin ); ?>"><?php directorist_icon( 'lab la-linkedin' ); ?></a></li>
 					<?php endif; ?>
 
 					<?php if ( $youtube = $listing->author_info( 'youtube' ) ): ?>
-						<li class="directorist-author-social-item"><a target="_blank" href="<?php echo esc_url( $youtube ); ?>"><?php directorist_icon( 'lab la-youtube' ); ?></a></li>
+						<li class="directorist-author-social-item directorist-author-social__item"><a target="_blank" href="<?php echo esc_url( $youtube ); ?>"><?php directorist_icon( 'lab la-youtube' ); ?></a></li>
 					<?php endif; ?>
 
 				</ul>
 
 			<?php endif; ?>
 
-			<a class="directorist-btn directorist-btn-primary directorist-btn-sm diretorist-view-profile-btn" href="<?php echo esc_url( ATBDP_Permalink::get_user_profile_page_link( $author_id ) ); ?>"><?php esc_html_e( 'View Profile', 'directorist' ); ?></a>
+			<a class="directorist-btn directorist-btn-light directorist-btn-md diretorist-view-profile-btn" href="<?php echo esc_url( ATBDP_Permalink::get_user_profile_page_link( $author_id ) ); ?>"><?php esc_html_e( 'View Profile', 'directorist' ); ?></a>
 
 		</div>
 	</div>
 
-</div>
+</section>

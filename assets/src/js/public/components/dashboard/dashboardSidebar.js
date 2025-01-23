@@ -1,6 +1,6 @@
 ;
 (function ($) {
-    window.addEventListener('DOMContentLoaded', () => {
+    window.addEventListener('load', () => {
         //dashboard sidebar nav toggler
         $(".directorist-user-dashboard__toggle__link").on("click", function (e) {
             e.preventDefault();
@@ -26,7 +26,7 @@
         });
         
         if ($(window).innerWidth() < 1199) {
-            $(".directorist-tab__nav__link").on("click", function () {
+            $(".directorist-tab__nav__link:not(.atbd-dash-nav-dropdown)").on("click", function () {
                 $(".directorist-user-dashboard__nav").addClass('directorist-dashboard-nav-collapsed');
                 $(".directorist-shade").removeClass("directorist-active");
             });

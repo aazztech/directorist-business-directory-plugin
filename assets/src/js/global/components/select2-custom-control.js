@@ -25,6 +25,27 @@ function init() {
             return;
         }
         selec2_add_custom_close_button($(this));
+
+        let selectItems = this.parentElement.querySelectorAll('.select2-selection__choice');
+        selectItems.forEach(item => { 
+            item.childNodes && item.childNodes.forEach(node => {
+                if (node.nodeType && node.nodeType === Node.TEXT_NODE) {
+                    let originalString = node.textContent;
+                    let modifiedString = originalString.replace(/^[\s\xa0]+/, '');
+                    node.textContent = modifiedString;
+                    item.title = modifiedString;
+                }
+            });
+        })
+
+        let customSelectItem = this.parentElement.querySelector('.select2-selection__rendered');
+        customSelectItem.childNodes && customSelectItem.childNodes.forEach(node => {
+            if (node.nodeType && node.nodeType === Node.TEXT_NODE) {
+                let originalString = node.textContent;
+                let modifiedString = originalString.replace(/^[\s\xa0]+/, '');
+                node.textContent = modifiedString;
+            }
+        });
     });
 }
 
@@ -61,7 +82,18 @@ function selec2_add_custom_dropdown_toggle_button() {
     $('.select2-hidden-accessible').on('select2:close', function (e) {
         let dropdown_btn = $(this).next().find('.directorist-select2-dropdown-toggle');
         dropdown_btn.removeClass('--is-open');
+        
+        let dropdownParent = $(this).closest('.directorist-search-field');
+        let renderTitle = $(this).next().find('.select2-selection__rendered').attr('title');
+        
+        // Check if renderTitle is empty and remove the focus class if so
+        if (!renderTitle) {
+            dropdownParent.removeClass('input-is-focused');
+        } else {
+            dropdownParent.addClass('input-has-value');
+        }
     });
+    
 
     // Toggle Dropdown
     selec2_custom_dropdown.on('click', function (e) {

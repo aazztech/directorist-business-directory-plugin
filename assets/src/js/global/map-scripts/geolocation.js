@@ -1,4 +1,16 @@
-window.addEventListener('DOMContentLoaded', () => {
+window.addEventListener('load', () => {
+
+    // Add focus class to the parent field of .directorist-location-js
+    function addFocusClass(location) {
+        // Get the parent field of .directorist-location-js
+        let parentField = location.closest('.directorist-search-field');
+
+        // Add the 'input-is-focused' class if not already present
+        if (parentField && !parentField.hasClass('input-is-focused')) {
+            parentField.addClass('input-is-focused');
+        }
+    }
+
     (function ($) {
         /* get current location */
         setTimeout(() => {
@@ -15,9 +27,9 @@ window.addEventListener('DOMContentLoaded', () => {
                 } 
                 (function () {
                     eventDelegation('click', '.directorist-filter-location-icon > i, .directorist-filter-location-icon > span', function (e) {
-                        const locationInput = e.target.closest('.directorist-search-field').querySelector('.location-name');
-                        const get_lat = e.target.closest('.directorist-search-field').querySelector("#cityLat");
-                        const get_lng = e.target.closest('.directorist-search-field').querySelector("#cityLng");
+                        let locationInput = e.target.closest('.directorist-search-field').querySelector('.location-name');
+                        let get_lat = e.target.closest('.directorist-search-field').querySelector("#cityLat");
+                        let get_lng = e.target.closest('.directorist-search-field').querySelector("#cityLng");
 
                         function getLocation() {
                             if (navigator.geolocation) {
@@ -56,7 +68,7 @@ window.addEventListener('DOMContentLoaded', () => {
                         function displayLocation(latitude, longitude) {
                             let geocoder;
                             geocoder = new google.maps.Geocoder();
-                            const latlng = new google.maps.LatLng(latitude, longitude);
+                            let latlng = new google.maps.LatLng(latitude, longitude);
                             geocoder.geocode({
                                 latLng: latlng,
                                 componentRestrictions: {
@@ -66,8 +78,8 @@ window.addEventListener('DOMContentLoaded', () => {
                             function (results, status) {
                                 if (status == google.maps.GeocoderStatus.OK) {
                                     if (results[0]) {
-                                        const add = results[0].formatted_address;
-                                        const value = add.split(',');
+                                        let add = results[0].formatted_address;
+                                        let value = add.split(',');
 
                                         count = value.length;
                                         country = value[count - 1];
@@ -86,21 +98,21 @@ window.addEventListener('DOMContentLoaded', () => {
                         function displayCurrentLocation(latitude, longitude) {
                             let geocoder;
                             geocoder = new google.maps.Geocoder();
-                            const latlng = new google.maps.LatLng(latitude, longitude);
+                            let latlng = new google.maps.LatLng(latitude, longitude);
                             geocoder.geocode({
                                 latLng: latlng
                             },
                             function (results, status) {
                                 if (status == google.maps.GeocoderStatus.OK) {
                                     if (results[0]) {
-                                        const add = results[0].formatted_address;
-                                        const value = add.split(',');
+                                        let add = results[0].formatted_address;
+                                        let value = add.split(',');
 
                                         count = value.length;
                                         country = value[count - 1];
                                         state = value[count - 2];
                                         city = value[count - 3];
-                                        locationInput.value = city;
+                                        locationInput.value = value;
                                         $('.directorist-location-js, .atbdp-search-address').attr("data-value", city);
                                     } else {
                                         locationInput.value = 'address not found';
@@ -110,13 +122,19 @@ window.addEventListener('DOMContentLoaded', () => {
                                 }
                             });
                         }
+
+                        let parentField = e.target.closest('.directorist-search-field');
+
+                        if (parentField && !parentField.classList.contains('input-is-focused')) {
+                            parentField.classList.add('input-is-focused');
+                        }
                     })
                 })();
             } else if (directorist.i18n_text.select_listing_map === 'openstreet') {
                 function displayLocation(position, event) {
-                    const lat = position.coords.latitude;
-                    const lng = position.coords.longitude;
-                    const locIcon = event.target;
+                    let lat = position.coords.latitude;
+                    let lng = position.coords.longitude;
+                    let locIcon = event.target;
 
                     $.ajax({
                         url: `https://nominatim.openstreetmap.org/reverse?format=json&lon=${lng}&lat=${lat}`,
@@ -127,11 +145,22 @@ window.addEventListener('DOMContentLoaded', () => {
                             $('.directorist-location-js, .atbdp-search-address').attr("data-value", data.display_name);
                             $('#cityLat').val(lat);
                             $('#cityLng').val(lng);
+                            addFocusClass($('.directorist-location-js'));
                         },
+                        error(err) {
+                            $('.directorist-location-js').val('Location not found');
+                            addFocusClass($('.directorist-location-js'));
+                        }
                     });
                 }
                 $('body').on("click", ".directorist-filter-location-icon", function (e) {
                     navigator.geolocation.getCurrentPosition((position) => displayLocation(position, e));
+                    
+                    // let parentField = e.target.closest('.directorist-search-field');
+
+                    // if (parentField && !parentField.classList.contains('input-is-focused')) {
+                    //     parentField.classList.add('input-is-focused');
+                    // }
                 });
             }
 

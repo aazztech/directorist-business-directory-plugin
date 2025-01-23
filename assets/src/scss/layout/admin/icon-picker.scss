@@ -5,7 +5,7 @@
     right: 0;
     bottom: 0;
     left: 0;
-    z-index: 999;
+    z-index: 9999;
     visibility: hidden;
     opacity: 0;
     pointer-events: none;
@@ -26,7 +26,7 @@
         width: 34px;
         height: 34px;
         border-radius: 50%;
-        background: #5A5F7D;
+        background-color: #5A5F7D;
         color: #fff;
         font-size: 12px;
         display: flex;
@@ -35,44 +35,54 @@
         position: absolute;
         right: 20px;
         top: 23px;
+        z-index: 1;
         transition: 0.3s ease;
         &:hover{
             color: #fff;
-            background: #222;
+            background-color: #222;
         }
     }
     &__sidebar{
-        width: 25%;
-        background: #eff0f3;
+        width: 30%;
+        background-color: #eff0f3;
         padding: 30px 20px;
+        box-sizing: border-box;
     }
     &__content{
-        width: 75%;
+        width: 70%;
         overflow: auto;
         .icons-group{
+            padding-top: 80px;
             h4{
                 font-size: 16px;
                 font-weight: 500;
                 color: #272B41;
+                background-color: #ffffff;
                 padding: 33px 0 27px 20px;
                 border-bottom: 1px solid #E3E6EF;
                 margin: 0;
+                position: absolute;
+                left: 30%;
+                top: 0;
+                width: 70%;
             }
         }
         .icons-group-icons{
             padding: 17px 0 17px 17px;
             .font-icon-btn{
+                justify-content: center;
                 margin: 5px 3px;
                 width: 70px;
                 height: 70px;
-                background: #F4F5F7;
+                background-color: #F4F5F7;
                 border-radius: 5px;
                 font-size: 24px;
                 color: #868EAE;
+                font-size: 18px !important;
                 border: 0 none;
                 transition: 0.3s ease;
                 &.cptm-btn-primary{
-                    background: #3e62f5;
+                    background-color: #3e62f5;
                     color: #fff;
                     font-size: 30px;
                     box-shadow: 0 3px 10px rgba(#272B41, 0.2);
@@ -173,7 +183,7 @@
     &__btn{
         margin: 0 10px;
         height: 40px;
-        background: #DADCE0;
+        background-color: #DADCE0;
         border-radius: 4px;
         border: 0 none;
         font-weight: 500;
@@ -183,6 +193,8 @@
 }
 .directorist-category-icon-picker{
     margin-top: 10px;
+    width: 100%;
+    display: flex;
     .icon-picker-selector{
         width: 100%;
     }

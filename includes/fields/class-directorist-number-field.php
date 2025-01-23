@@ -14,18 +14,19 @@ class Number_Field extends Base_Field {
 	public $type = 'number';
 
 	public function validate( $posted_data ) {
-		$value = $this->get_value( $posted_data );
-
+		$value     = $this->get_value( $posted_data );
+		$min_value = $this->__get('min_value');
+		$max_value = $this->__get('max_value');
+		
 		if ( ! is_numeric( $value ) ) {
 			$this->add_error( __( 'Invalid number.', 'directorist' ) );
 
 			return false;
 		}
 
-		$max_limit = (int) $this->__get( 'max' );
-
-		if ( $max_limit != -1 && $max_limit > 0 && $value > $max_limit ) {
-			$this->add_error( sprintf( __( 'Maximum allowed number is %1$s, you have given %2$s.', 'directorist' ), $max_limit, $value ) );
+		if ( isset( $min_value, $max_value ) && ( $min_value > $value || ( $max_value > 0 && $max_value < $value ) ) ) {
+			$error_message = sprintf( __( 'Value should be between %d and %d', 'directorist' ), $min_value, $max_value );
+			$this->add_error( $error_message );
 
 			return false;
 		}

@@ -11,6 +11,7 @@
     padding-left: 15px;
     margin-right: auto;
     margin-left: auto;
+    box-sizing: border-box;
 }
 
 @media (min-width: 576px) {
@@ -96,9 +97,9 @@
     width: 8.3333333333%;
 }
 
-.directorist-col-2 {
+.directorist-col-2-5{
     flex: 0 0 auto;
-    width: 16.6666666667%;
+    width: 100%;
 }
 
 .directorist-col-3 {
@@ -196,6 +197,12 @@
 }
 
 @media (min-width: 576px) {
+    .directorist-col-2,
+    .directorist-col-2-5{
+        flex: 0 0 auto;
+        width: 50%;
+    }
+
     .directorist-col-sm {
         flex: 1 0 0%;
     }
@@ -315,6 +322,12 @@
 }
 
 @media (min-width: 768px) {
+    .directorist-col-2,
+    .directorist-col-2-5{
+        flex: 0 0 auto;
+        width: 33.3333333333%;
+    }
+
     .directorist-col-md {
         flex: 1 0 0%;
     }
@@ -434,6 +447,12 @@
 }
 
 @media (min-width: 992px) {
+    .directorist-col-2,
+    .directorist-col-2-5{
+        flex: 0 0 auto;
+        width: 25%;
+    }
+
     .directorist-col-lg {
         flex: 1 0 0%;
     }
@@ -571,6 +590,11 @@
         flex: 0 0 auto;
         width: 16.6666666667%;
     }
+    .directorist-col-2,
+    .directorist-col-2-5{
+        flex: 0 0 auto;
+        width: 20%;
+    }
 
     .directorist-col-xl-3 {
         flex: 0 0 auto;
@@ -672,6 +696,10 @@
 }
 
 @media (min-width: 1400px) {
+    .directorist-col-2{
+        flex: 0 0 auto;
+        width: 16.6666666667%;
+    }
     .directorist-col-xxl {
         flex: 1 0 0%;
     }

@@ -26,6 +26,7 @@ class Background_Updater extends Background_Process {
 	 * Initiate new background process.
 	 */
 	public function __construct() {
+
 		// Uses unique prefix per blog so each blog has separate queue.
 		$this->prefix = 'wp_' . get_current_blog_id();
 		$this->action = 'directorist_updater';

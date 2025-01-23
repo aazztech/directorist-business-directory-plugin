@@ -81,7 +81,7 @@
 /******/
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 22);
+/******/ 	return __webpack_require__(__webpack_require__.s = 23);
 /******/ })
 /************************************************************************/
 /******/ ({
@@ -95,9 +95,9 @@
 
 /* Widget google map */
 
-window.addEventListener('DOMContentLoaded', function () {
-  ;
-  (function ($) {
+(function ($) {
+  // Single Listing Map Initialize   
+  function initSingleMap() {
     if ($('#gmap-widget').length) {
       var MAP_PIN = 'M0-48c-9.8 0-17.7 7.8-17.7 17.4 0 15.5 17.7 30.6 17.7 30.6s17.7-15.4 17.7-30.6c0-9.6-7.9-17.4-17.7-17.4z';
       var inherits = function inherits(childCtor, parentCtor) {
@@ -139,7 +139,7 @@ window.addEventListener('DOMContentLoaded', function () {
         this.div.className = 'map-icon-label';
 
         // Trigger the marker click handler if clicking on the label
-        google.maps.event.addDomListener(this.div, 'click', function (e) {
+        google.maps.event.addListener(this.div, 'click', function (e) {
           e.stopPropagation && e.stopPropagation();
           google.maps.event.trigger(self.marker, 'click');
         });
@@ -181,71 +181,71 @@ window.addEventListener('DOMContentLoaded', function () {
         div.style.left = position.x - div.offsetWidth / 2 + 'px';
         div.style.top = position.y - div.offsetHeight + 'px';
       };
-      $(document).ready(function () {
-        // initialize all vars here to avoid hoisting related misunderstanding.
-        var map, info_window, saved_lat_lng, info_content;
 
-        // Localized Data
-        var map_container = localized_data_widget.map_container_id ? localized_data_widget.map_container_id : 'gmap';
-        var loc_default_latitude = parseFloat(localized_data_widget.default_latitude);
-        var loc_default_longitude = parseFloat(localized_data_widget.default_longitude);
-        var loc_manual_lat = parseFloat(localized_data_widget.manual_lat);
-        var loc_manual_lng = parseFloat(localized_data_widget.manual_lng);
-        var loc_map_zoom_level = parseInt(localized_data_widget.map_zoom_level);
-        var display_map_info = localized_data_widget.display_map_info;
-        var cat_icon = localized_data_widget.cat_icon;
-        var info_content = localized_data_widget.info_content;
-        loc_manual_lat = isNaN(loc_manual_lat) ? loc_default_latitude : loc_manual_lat;
-        loc_manual_lng = isNaN(loc_manual_lng) ? loc_default_longitude : loc_manual_lng;
-        $manual_lat = $('#manual_lat');
-        $manual_lng = $('#manual_lng');
-        saved_lat_lng = {
-          lat: loc_manual_lat,
-          lng: loc_manual_lng
-        };
+      // initialize all vars here to avoid hoisting related misunderstanding.
+      var map, info_window, saved_lat_lng, info_content;
 
-        // create an info window for map
-        if (display_map_info) {
-          info_window = new google.maps.InfoWindow({
-            content: info_content,
-            maxWidth: 400 /*Add configuration for max width*/
-          });
-        }
+      // Localized Data
+      var map_container = localized_data_widget.map_container_id ? localized_data_widget.map_container_id : 'gmap';
+      var loc_default_latitude = parseFloat(localized_data_widget.default_latitude);
+      var loc_default_longitude = parseFloat(localized_data_widget.default_longitude);
+      var loc_manual_lat = parseFloat(localized_data_widget.manual_lat);
+      var loc_manual_lng = parseFloat(localized_data_widget.manual_lng);
+      var loc_map_zoom_level = parseInt(localized_data_widget.map_zoom_level);
+      var display_map_info = localized_data_widget.display_map_info;
+      var cat_icon = localized_data_widget.cat_icon;
+      var info_content = localized_data_widget.info_content;
+      loc_manual_lat = isNaN(loc_manual_lat) ? loc_default_latitude : loc_manual_lat;
+      loc_manual_lng = isNaN(loc_manual_lng) ? loc_default_longitude : loc_manual_lng;
+      $manual_lat = $('#manual_lat');
+      $manual_lng = $('#manual_lng');
+      saved_lat_lng = {
+        lat: loc_manual_lat,
+        lng: loc_manual_lng
+      };
 
-        function initMap() {
-          /* Create new map instance*/
-          map = new google.maps.Map(document.getElementById(map_container), {
-            zoom: loc_map_zoom_level,
-            center: saved_lat_lng
-          });
-          /*var marker = new google.maps.Marker({
-              map: map,
-              position: saved_lat_lng
-          });*/
-          var marker = new Marker({
-            position: saved_lat_lng,
+      // create an info window for map
+      if (display_map_info) {
+        info_window = new google.maps.InfoWindow({
+          content: info_content,
+          maxWidth: 400 /*Add configuration for max width*/
+        });
+      }
+
+      function initMap() {
+        console.log('initMap');
+        /* Create new map instance*/
+        map = new google.maps.Map(document.getElementById(map_container), {
+          zoom: loc_map_zoom_level,
+          center: saved_lat_lng
+        });
+        /*var marker = new google.maps.Marker({
             map: map,
-            icon: {
-              path: MAP_PIN,
-              fillColor: 'transparent',
-              fillOpacity: 1,
-              strokeColor: '',
-              strokeWeight: 0
-            },
-            map_icon_label: '<div class="atbd_map_shape">' + cat_icon + '</div>'
-          });
+            position: saved_lat_lng
+        });*/
+        var marker = new Marker({
+          position: saved_lat_lng,
+          map: map,
+          icon: {
+            path: MAP_PIN,
+            fillColor: 'transparent',
+            fillOpacity: 1,
+            strokeColor: '',
+            strokeWeight: 0
+          },
+          map_icon_label: '<div class="atbd_map_shape">' + cat_icon + '</div>'
+        });
+        marker.addListener('click', function () {
           if (display_map_info) {
-            marker.addListener('click', function () {
-              info_window.open(map, marker);
-            });
-            google.maps.event.addListener(info_window, 'domready', function () {
-              var closeBtn = $('.iw-close-btn').get();
-              google.maps.event.addDomListener(closeBtn[0], 'click', function () {
-                info_window.close();
-              });
-            });
+            info_window.open(map, marker);
+            display_map_info = false;
+          } else {
+            info_window.close();
+            display_map_info = true;
           }
-        }
+        });
+      }
+      $(document).ready(function () {
         initMap();
         //Convert address tags to google map links -
         $('address').each(function () {
@@ -254,12 +254,29 @@ window.addEventListener('DOMContentLoaded', function () {
         });
       });
     }
-  })(jQuery);
-});
+  }
+  $(document).ready(function () {
+    initSingleMap();
+  });
+
+  // Single Listing Map on Elementor EditMode 
+  $(window).on('elementor/frontend/init', function () {
+    setTimeout(function () {
+      if ($('body').hasClass('elementor-editor-active')) {
+        initSingleMap();
+      }
+    }, 3000);
+  });
+  $('body').on('click', function (e) {
+    if ($('body').hasClass('elementor-editor-active') && e.target.nodeName !== 'A' && e.target.nodeName !== 'BUTTON') {
+      initSingleMap();
+    }
+  });
+})(jQuery);
 
 /***/ }),
 
-/***/ 22:
+/***/ 23:
 /*!************************************************************************************!*\
   !*** multi ./assets/src/js/global/map-scripts/single-listing/google-map-widget.js ***!
   \************************************************************************************/

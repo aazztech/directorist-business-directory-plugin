@@ -40,12 +40,12 @@ trait Markup_Helper {
 	}
 
 	public static function directorist_single_column() {
-		$column = is_active_sidebar('right-sidebar-listing') ? 'md-8' : 'md-12';
+		$column = is_active_sidebar('right-sidebar-listing') ? 'lg-8' : 'lg-12';
 		Helper::directorist_column( $column );
 	}
 
 	public static function search_filter_class( $display_type ) {
-		$result = ( 'overlapping' === $display_type ) ? 'directorist-search-float' : 'directorist-search-slide';
+		$result = ( 'overlapping' === $display_type ) ? 'directorist-search-float' : 'directorist-search-slide directorist-search-modal';
 		echo esc_attr( $result );
 	}
 }

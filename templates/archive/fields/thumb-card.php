@@ -2,7 +2,7 @@
 /**
  * @author  wpWax
  * @since   6.6
- * @version 7.3.1
+ * @version 8.0
  */
 
 if ( ! defined( 'ABSPATH' ) ) exit;
@@ -74,12 +74,4 @@ switch ($image_size) {
 $link_start = '<a href="'.esc_url( apply_filters( 'directorist_archive_single_listing_url', $listings->loop['permalink'], $listings->loop['id'], 'thumbnail' ) ).'">';
 $link_end   = '</a>';
 
-if (!$listings->disable_single_listing) {
-	echo wp_kses_post( $link_start );
-}
-
 echo wp_kses_post( $the_html );
-
-if (!$listings->disable_single_listing) {
-	echo wp_kses_post( $link_end );
-}

@@ -81,7 +81,7 @@
 /******/
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 20);
+/******/ 	return __webpack_require__(__webpack_require__.s = 21);
 /******/ })
 /************************************************************************/
 /******/ ({
@@ -95,9 +95,9 @@
 
 /* Widget OSMap */
 
-;
 (function ($) {
-  jQuery(document).ready(function () {
+  // Single Listing Map Initialize
+  function initSingleMap() {
     // Localized Data
     if ($('#gmap-widget').length) {
       var map_container = localized_data_widget.map_container_id ? localized_data_widget.map_container_id : 'gmap';
@@ -142,12 +142,29 @@
       }
       mapLeaflet(loc_manual_lat, loc_manual_lng);
     }
+  }
+  jQuery(document).ready(function () {
+    initSingleMap();
+  });
+
+  // Single Listing Map on Elementor EditMode 
+  $(window).on('elementor/frontend/init', function () {
+    setTimeout(function () {
+      if ($('body').hasClass('elementor-editor-active')) {
+        initSingleMap();
+      }
+    }, 3000);
+  });
+  $('body').on('click', function (e) {
+    if ($('body').hasClass('elementor-editor-active') && e.target.nodeName !== 'A' && e.target.nodeName !== 'BUTTON') {
+      initSingleMap();
+    }
   });
 })(jQuery);
 
 /***/ }),
 
-/***/ 20:
+/***/ 21:
 /*!****************************************************************************************!*\
   !*** multi ./assets/src/js/global/map-scripts/single-listing/openstreet-map-widget.js ***!
   \****************************************************************************************/

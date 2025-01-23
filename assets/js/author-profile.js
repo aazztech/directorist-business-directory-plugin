@@ -81,7 +81,7 @@
 /******/
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 8);
+/******/ 	return __webpack_require__(__webpack_require__.s = 9);
 /******/ })
 /************************************************************************/
 /******/ ({
@@ -101,7 +101,7 @@
   } else {
     return;
   }
-  window.addEventListener('DOMContentLoaded', function () {
+  window.addEventListener('load', function () {
     /* Directorist alert dismiss */
     var getUrl = window.location.href;
     var newUrl = getUrl.replace('notice=1', '');
@@ -134,7 +134,7 @@
   } else {
     return;
   }
-  window.addEventListener('DOMContentLoaded', function () {
+  window.addEventListener('load', function () {
     /* custom dropdown */
     var atbdDropdown = document.querySelectorAll('.directorist-dropdown-select');
 
@@ -203,8 +203,8 @@
 
     // Hide Clicked Anywhere
     $(document).bind('click', function (e) {
-      var clickedDom = $(e.target);
-      if (!clickedDom.parents().hasClass('directorist-dropdown')) $('.directorist-dropdown-option').hide();
+      var clickedDOM = $(e.target);
+      if (!clickedDOM.parents().hasClass('directorist-dropdown')) $('.directorist-dropdown-option').hide();
     });
 
     //atbd_dropdown
@@ -258,21 +258,18 @@
   } else {
     return;
   }
-  window.addEventListener('DOMContentLoaded', function () {
+  window.addEventListener('load', function () {
     // Add or Remove from favourites
-    $('#atbdp-favourites').on('click', function (e) {
+    $('.directorist-action-bookmark').on('click', function (e) {
       e.preventDefault();
       var data = {
         'action': 'atbdp_public_add_remove_favorites',
         'directorist_nonce': directorist.directorist_nonce,
-        'post_id': $("a.atbdp-favourites").data('post_id')
+        'post_id': $(this).data('listing_id')
       };
       $.post(directorist.ajaxurl, data, function (response) {
-        console.log('added');
-        console.log(response);
-        console.log(directorist.ajaxurl);
         if (response) {
-          $('#atbdp-favourites').html(response);
+          $('.directorist-action-bookmark').html(response);
         }
       });
     });
@@ -349,10 +346,10 @@
   } else {
     return;
   }
-  window.addEventListener('DOMContentLoaded', function () {
+  window.addEventListener('load', function () {
     // Sorting Js
     if (!$('.directorist-instant-search').length) {
-      $('.directorist-dropdown__links--single-js').click(function (e) {
+      $('.directorist-dropdown__links__single-js').click(function (e) {
         e.preventDefault();
         var href = $(this).attr('data-link');
         $('#directorsit-listing-sort').attr('action', href);
@@ -378,7 +375,7 @@
 
 // Fix listing with no thumb if card width is less than 220px
 (function ($) {
-  window.addEventListener('DOMContentLoaded', function () {
+  window.addEventListener('load', function () {
     if ($('.directorist-listing-no-thumb').innerWidth() <= 220) {
       $('.directorist-listing-no-thumb').addClass('directorist-listing-no-thumb--fix');
     }
@@ -390,6 +387,11 @@
     if ($('.directorist-archive-grid-view').innerWidth() <= 500) {
       $('.directorist-archive-grid-view').addClass('directorist-archive-grid--fix');
     }
+
+    // Back Button to go back to the previous page
+    $('body').on('click', '.directorist-btn__back', function (e) {
+      window.history.back();
+    });
   });
 })(jQuery);
 
@@ -402,7 +404,7 @@
 /*! no static exports found */
 /***/ (function(module, exports) {
 
-window.addEventListener('DOMContentLoaded', function () {
+window.addEventListener('load', function () {
   ;
   (function ($) {
     //Star rating
@@ -447,7 +449,7 @@ __webpack_require__.r(__webpack_exports__);
 
 /***/ }),
 
-/***/ 8:
+/***/ 9:
 /*!**************************************************************!*\
   !*** multi ./assets/src/js/public/modules/author-profile.js ***!
   \**************************************************************/

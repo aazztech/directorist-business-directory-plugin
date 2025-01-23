@@ -6,7 +6,7 @@
     } else {
         return;
     }
-    window.addEventListener('DOMContentLoaded', () => {
+    window.addEventListener('load', () => {
         /* custom dropdown */
         const atbdDropdown = document.querySelectorAll('.directorist-dropdown-select');
 
@@ -75,8 +75,8 @@
 
         // Hide Clicked Anywhere
         $(document).bind('click', function (e) {
-            let clickedDom = $(e.target);
-            if (!clickedDom.parents().hasClass('directorist-dropdown'))
+            let clickedDOM = $(e.target);
+            if (!clickedDOM.parents().hasClass('directorist-dropdown'))
                 $('.directorist-dropdown-option').hide();
         });
 

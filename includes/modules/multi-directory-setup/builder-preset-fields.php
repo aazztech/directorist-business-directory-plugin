@@ -6,7 +6,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-return array(
+return apply_filters( 'atbdp_form_preset_widgets', array(
 	'title' => [
 		'label'    => __( 'Title', 'directorist' ),
 		'icon'     => 'las la-text-height',
@@ -44,7 +44,7 @@ return array(
 
 	'description' => [
 		'label'   => __( 'Description', 'directorist' ),
-		'icon'    => 'las la-align-left',
+		'icon'    => 'uil uil-align-left',
 		'show'    => true,
 		'options' => [
 			'type' => [
@@ -94,7 +94,7 @@ return array(
 			],
 			'only_for_admin' => [
 				'type'  => 'toggle',
-				'label' => __( 'Administrative Only', 'directorist' ),
+				'label' => __( 'Admin Only', 'directorist' ),
 				'value' => false,
 			],
 		]
@@ -134,7 +134,7 @@ return array(
 			],
 			'only_for_admin' => [
 				'type'  => 'toggle',
-				'label' => __( 'Administrative Only', 'directorist' ),
+				'label' => __( 'Admin Only', 'directorist' ),
 				'value' => false,
 			],
 
@@ -179,7 +179,7 @@ return array(
 						['key' => 'value', 'compare' => '=', 'value' => 'price_range'],
 					],
 				],
-				'label' => __( 'Select Pricing Type', 'directorist' ),
+				'label' => __( 'Price Range Label', 'directorist' ),
 				'value' => 'Price Range',
 			],
 			'price_range_placeholder' => [
@@ -240,7 +240,7 @@ return array(
 			],
 			'only_for_admin' => [
 				'type'  => 'toggle',
-				'label' => __( 'Administrative Only', 'directorist' ),
+				'label' => __( 'Admin Only', 'directorist' ),
 				'value' => false,
 			],
 			'modules' => [
@@ -261,48 +261,9 @@ return array(
 		]
 	],
 
-	'view_count' => [
-		'label'   => __( 'View Count', 'directorist' ),
-		'icon'    => 'uil uil-eye',
-		'options' => [
-			'type' => [
-				'type'  => 'hidden',
-				'value' => 'number',
-			],
-			'field_key' => [
-				'type'  => 'hidden',
-				'value' => 'atbdp_post_views_count',
-				'rules' => [
-					'unique'   => true,
-					'required' => true,
-				]
-			],
-			'label' => [
-				'type'  => 'text',
-				'label' => __( 'Label', 'directorist' ),
-				'value' => 'View Count',
-			],
-			'placeholder' => [
-				'type'  => 'text',
-				'label' => __( 'Placeholder', 'directorist' ),
-				'value' => '',
-			],
-			'required' => [
-				'type'  => 'toggle',
-				'label' => __( 'Required', 'directorist' ),
-				'value' => false,
-			],
-			'only_for_admin' => [
-				'type'  => 'toggle',
-				'label' => __( 'Administrative Only', 'directorist' ),
-				'value' => true,
-			],
-		],
-	],
-
 	'excerpt' => [
 		'label'   => __( 'Excerpt', 'directorist' ),
-		'icon'    => 'uil uil-subject',
+		'icon'    => 'uil uil-paragraph',
 		'options' => [
 			'type' => [
 				'type'  => 'hidden',
@@ -333,7 +294,7 @@ return array(
 			],
 			'only_for_admin' => [
 				'type'  => 'toggle',
-				'label' => __( 'Administrative Only', 'directorist' ),
+				'label' => __( 'Admin Only', 'directorist' ),
 				'value' => false,
 			],
 		],
@@ -400,7 +361,7 @@ return array(
 			],
 			'only_for_admin' => [
 				'type'  => 'toggle',
-				'label' => __( 'Administrative Only', 'directorist' ),
+				'label' => __( 'Admin Only', 'directorist' ),
 				'value' => false,
 			],
 		],
@@ -455,7 +416,7 @@ return array(
 			],
 			'only_for_admin' => [
 				'type'  => 'toggle',
-				'label' => __( 'Administrative Only', 'directorist' ),
+				'label' => __( 'Admin Only', 'directorist' ),
 				'value' => false,
 			],
 		],
@@ -510,7 +471,7 @@ return array(
 			],
 			'only_for_admin' => [
 				'type'  => 'toggle',
-				'label' => __( 'Administrative Only', 'directorist' ),
+				'label' => __( 'Admin Only', 'directorist' ),
 				'value' => false,
 			],
 		],
@@ -543,7 +504,7 @@ return array(
 			],
 			'only_for_admin' => [
 				'type'  => 'toggle',
-				'label' => __( 'Administrative Only', 'directorist' ),
+				'label' => __( 'Admin Only', 'directorist' ),
 				'value' => false,
 			],
 		],
@@ -582,7 +543,7 @@ return array(
 			],
 			'only_for_admin' => [
 				'type'  => 'toggle',
-				'label' => __( 'Administrative Only', 'directorist' ),
+				'label' => __( 'Admin Only', 'directorist' ),
 				'value' => false,
 			],
 		],
@@ -621,7 +582,7 @@ return array(
 			],
 			'only_for_admin' => [
 				'type'  => 'toggle',
-				'label' => __( 'Administrative Only'),
+				'label' => __( 'Admin Only', 'directorist' ),
 				'value' => false,
 			],
 		],
@@ -660,7 +621,7 @@ return array(
 			],
 			'only_for_admin' => [
 				'type'  => 'toggle',
-				'label' => __( 'Administrative Only', 'directorist' ),
+				'label' => __( 'Admin Only', 'directorist' ),
 				'value' => false,
 			],
 			'whatsapp' => [
@@ -704,7 +665,7 @@ return array(
 			],
 			'only_for_admin' => [
 				'type'  => 'toggle',
-				'label' => __( 'Administrative Only', 'directorist' ),
+				'label' => __( 'Admin Only', 'directorist' ),
 				'value' => false,
 			],
 			'whatsapp' => [
@@ -748,7 +709,7 @@ return array(
 			],
 			'only_for_admin' => [
 				'type'  => 'toggle',
-				'label' => __( 'Administrative Only', 'directorist' ),
+				'label' => __( 'Admin Only', 'directorist' ),
 				'value' => false,
 			],
 		],
@@ -787,7 +748,7 @@ return array(
 			],
 			'only_for_admin' => [
 				'type'  => 'toggle',
-				'label' => __( 'Administrative Only', 'directorist' ),
+				'label' => __( 'Admin Only', 'directorist' ),
 				'value' => false,
 			],
 		],
@@ -826,7 +787,7 @@ return array(
 			],
 			'only_for_admin' => [
 				'type'  => 'toggle',
-				'label' => __( 'Administrative Only', 'directorist' ),
+				'label' => __( 'Admin Only', 'directorist' ),
 				'value' => false,
 			],
 		],
@@ -834,7 +795,7 @@ return array(
 
 	'social_info' => [
 		'label'   => 'Social Info',
-		'icon'    => 'uil uil-user-arrows',
+		'icon'    => 'uil uil-users-alt',
 		'options' => [
 			'type' => [
 				'type'  => 'hidden',
@@ -860,7 +821,7 @@ return array(
 			],
 			'only_for_admin' => [
 				'type'  => 'toggle',
-				'label' => __( 'Administrative Only', 'directorist' ),
+				'label' => __( 'Admin Only', 'directorist' ),
 				'value' => false,
 			],
 		],
@@ -914,7 +875,7 @@ return array(
 			],
 			'only_for_admin' => [
 				'type'  => 'toggle',
-				'label' => __( 'Administrative Only', 'directorist' ),
+				'label' => __( 'Admin Only', 'directorist' ),
 				'value' => false,
 			]
 		],
@@ -953,33 +914,45 @@ return array(
 			],
 			'only_for_admin' => [
 				'type'  => 'toggle',
-				'label' => __( 'Administrative Only', 'directorist' ),
+				'label' => __( 'Admin Only', 'directorist' ),
 				'value' => false,
 			],
 		],
 	],
 
-	'hide_contact_owner' => [
-		'label'   => __( 'Hide Owner Contact Form', 'directorist' ),
-		'icon'    => 'uil uil-postcard',
+	'terms_privacy' => [
+		'label'   => __( 'Terms & Privacy', 'directorist' ),
+		'icon'    => 'uil uil-text-fields',
+		'show'    => true,
 		'options' => [
 			'type' => [
 				'type'  => 'hidden',
-				'value' => 'checkbox',
+				'value' => 'text',
 			],
 			'field_key' => [
 				'type'  => 'hidden',
-				'value' => 'hide_contact_owner',
+				'value' => 'privacy_policy',
 				'rules' => [
 					'unique'   => true,
 					'required' => true,
 				]
 			],
-			'label' => [
-				'type'  => 'text',
-				'label' => __( 'Label', 'directorist' ),
-				'value' => 'Hide contact owner form for single listing page',
+			'text' => [
+				'label'       => __( 'Text', 'directorist' ),
+				'type'        => 'textarea',
+                'editor'      => 'wp_editor',
+                'editorID'    => 'wp_editor_terms_privacy',
+                'value'       => sprintf(
+					__( 'I agree to the <a href="%s" target="_blank">Privacy Policy</a> and <a href="%s" target="_blank">Terms of Service</a>', 'directorist' ),
+					ATBDP_Permalink::get_privacy_policy_page_url(),
+					ATBDP_Permalink::get_terms_and_conditions_page_url(),
+				),
+			],
+			'required' => [
+				'type'  => 'toggle',
+				'label' => __( 'Required', 'directorist' ),
+				'value' => false,
 			],
 		],
 	],
-);
+));

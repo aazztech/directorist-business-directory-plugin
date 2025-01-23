@@ -81,7 +81,7 @@
 /******/
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 18);
+/******/ 	return __webpack_require__(__webpack_require__.s = 19);
 /******/ })
 /************************************************************************/
 /******/ ({
@@ -93,7 +93,17 @@
 /*! no static exports found */
 /***/ (function(module, exports) {
 
-window.addEventListener('DOMContentLoaded', function () {
+window.addEventListener('load', function () {
+  // Add focus class to the parent field of .directorist-location-js
+  function addFocusClass(location) {
+    // Get the parent field of .directorist-location-js
+    var parentField = location.closest('.directorist-search-field');
+
+    // Add the 'input-is-focused' class if not already present
+    if (parentField && !parentField.hasClass('input-is-focused')) {
+      parentField.addClass('input-is-focused');
+    }
+  }
   (function ($) {
     /* get current location */
     setTimeout(function () {
@@ -186,7 +196,7 @@ window.addEventListener('DOMContentLoaded', function () {
                     country = value[count - 1];
                     state = value[count - 2];
                     city = value[count - 3];
-                    locationInput.value = city;
+                    locationInput.value = value;
                     $('.directorist-location-js, .atbdp-search-address').attr("data-value", city);
                   } else {
                     locationInput.value = 'address not found';
@@ -195,6 +205,10 @@ window.addEventListener('DOMContentLoaded', function () {
                   locationInput.value = "Geocoder failed due to: ".concat(status);
                 }
               });
+            }
+            var parentField = e.target.closest('.directorist-search-field');
+            if (parentField && !parentField.classList.contains('input-is-focused')) {
+              parentField.classList.add('input-is-focused');
             }
           });
         })();
@@ -212,6 +226,11 @@ window.addEventListener('DOMContentLoaded', function () {
               $('.directorist-location-js, .atbdp-search-address').attr("data-value", data.display_name);
               $('#cityLat').val(lat);
               $('#cityLng').val(lng);
+              addFocusClass($('.directorist-location-js'));
+            },
+            error: function error(err) {
+              $('.directorist-location-js').val('Location not found');
+              addFocusClass($('.directorist-location-js'));
             }
           });
         }
@@ -219,6 +238,12 @@ window.addEventListener('DOMContentLoaded', function () {
           navigator.geolocation.getCurrentPosition(function (position) {
             return displayLocation(position, e);
           });
+
+          // let parentField = e.target.closest('.directorist-search-field');
+
+          // if (parentField && !parentField.classList.contains('input-is-focused')) {
+          //     parentField.classList.add('input-is-focused');
+          // }
         });
       }
     }, 1000);
@@ -227,7 +252,7 @@ window.addEventListener('DOMContentLoaded', function () {
 
 /***/ }),
 
-/***/ 18:
+/***/ 19:
 /*!***************************************************************!*\
   !*** multi ./assets/src/js/global/map-scripts/geolocation.js ***!
   \***************************************************************/

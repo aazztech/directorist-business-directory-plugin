@@ -2,19 +2,29 @@
 /**
  * @author  wpWax
  * @since   6.7
- * @version 6.7
+ * @version 8.0.6
  */
 
 if ( ! defined( 'ABSPATH' ) ) exit;
 ?>
 
-<div class="directorist-card directorist-card-general-section <?php echo esc_attr( $class );?>" <?php $listing->section_id( $id ); ?>>
+<section class="directorist-card directorist-card-general-section <?php echo esc_attr( $class );?>" 
+	<?php $listing->section_id( $id ); ?>>
 
-	<div class="directorist-card__header">
+	<?php if ( $label || $icon ): ?>
+		<header class="directorist-card__header">
 
-		<h4 class="directorist-card__header--title"><?php directorist_icon( $icon );?><?php echo esc_html( $label );?></h4>
+			<h3 class="directorist-card__header__title">
+				<?php if ( $icon ) : ?>
+					<span class="directorist-card__header-icon"><?php directorist_icon( $icon ); ?></span>
+				<?php endif; ?>
+				<?php if ( $label ) : ?>
+					<span class="directorist-card__header-text"><?php echo esc_html( $label ); ?></span>
+				<?php endif; ?>
+			</h3>
 
-	</div>
+		</header>
+	<?php endif; ?>
 
 	<div class="directorist-card__body">
 
@@ -28,4 +38,4 @@ if ( ! defined( 'ABSPATH' ) ) exit;
 
 	</div>
 
-</div>
+</section>

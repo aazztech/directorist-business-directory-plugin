@@ -2,17 +2,13 @@
 /**
  * @author  wpWax
  * @since   6.7
- * @version 7.3.1
+ * @version 8.0
  */
 
 if ( ! defined( 'ABSPATH' ) ) exit;
 
-if ( !$has_slider ) {
-   return;
-}
-$img_size_class = ( 'contain' === $data['background-size'] ) ? '' : ' plasmaSlider__cover';
 ?>
-<div id="directorist-single-listing-slider" class="plasmaSlider"
+<section id="directorist-single-listing-slider-wrap" class="directorist-single-listing-slider-wrap background-<?php echo esc_attr( $data['background-size'] ); ?>"
 	data-width="<?php echo esc_attr( $data['width'] ); ?>"
 	data-height="<?php echo esc_attr( $data['height'] ); ?>"
 	data-rtl="<?php echo esc_attr( $data['rtl'] ); ?>"
@@ -22,24 +18,57 @@ $img_size_class = ( 'contain' === $data['background-size'] ) ? '' : ' plasmaSlid
 	data-background-color="<?php echo esc_attr( $data['background-color'] ); ?>"
 	data-thumbnail-background-color="<?php echo esc_attr( $data['thumbnail-bg-color'] ); ?>">
 
-	<div class="plasmaSliderTempImage" style="padding-top: <?php echo esc_attr( $data['padding-top'] ) ."%;" ?>">
-		<?php
-		if ( ! empty( $data['images'] ) ) :
-			$img_src = $data['images'][0]['src'];
-			$img_alt = $data['images'][0]['alt'];
-			if ( 'contain' === $data['background-size'] && $data['blur-background'] ) : ?>
-				<img class="plasmaSliderTempImgBlur" src="<?php echo esc_url( $img_src ); ?>" loading="lazy" alt="<?php echo esc_attr( $img_alt ); ?>">
-			<?php endif; ?>
+	<div class="directorist-swiper directorist-single-listing-slider">
+		<div class="swiper-wrapper">
+			<?php
+				if ( ! empty( $data['images'] )  ):
+					foreach ( $data['images'] as $image ) {
+						if ( empty( $image['src'] ) ) {
+							continue;
+						}
+						printf(
+							'<div class="swiper-slide"><img src="%1$s" alt="%2$s"></div>',
+							esc_url( $image['src'] ),
+							esc_attr( $image['alt'] )
+						);
+					}
+				endif;
+			?>
+		</div>
+		<div class='directorist-swiper__navigation'>
+			<div class='directorist-swiper__nav directorist-swiper__nav--prev directorist-swiper__nav--prev-single-listing'><?php directorist_icon('las la-angle-left')?></div>
+			<div class='directorist-swiper__nav directorist-swiper__nav--next directorist-swiper__nav--next-single-listing'><?php directorist_icon('las la-angle-right')?></div>
+		</div>
 
-			<img class="plasmaSliderTempImg <?php echo esc_attr( $img_size_class ); ?>" loading="lazy" width="<?php echo esc_attr( $data['width'] ); ?>" height="<?php echo esc_attr( $data['height'] ); ?>" src="<?php echo esc_url( $img_src ); ?>" alt="<?php echo esc_attr( $img_alt ); ?>">
-		<?php endif; ?>
+		<div class='directorist-swiper__pagination directorist-swiper__pagination--single-listing'></div>
 	</div>
 
-	<div class="plasmaSliderImages">
-		<?php if ( ! empty( $data['images'] )  ) :
-			foreach ( $data['images'] as $image ) : ?>
-				<span class='plasmaSliderImageItem' data-src="<?php echo esc_url( $image['src'] ); ?>" data-alt="<?php echo esc_attr( $image['alt'] ); ?>"></span>
-			<?php endforeach;
-		endif; ?>
+	<?php if ( ! empty( $data['show-thumbnails'] ) ) : ?>
+	<div class="directorist-swiper directorist-single-listing-slider-thumb">
+		<div class="swiper-wrapper">
+			<?php
+			if ( ! empty( $data['images'] )  ):
+				foreach ( $data['images'] as $image ) {
+					if ( empty( $image['src'] ) ) {
+						continue;
+					}
+
+					printf(
+						'<div class="swiper-slide"><img src="%1$s" alt="%2$s"></div>',
+						esc_url( $image['src'] ),
+						esc_attr( $image['alt'] )
+					);
+				}
+			endif;
+			?>
+		</div>
+		<div class='directorist-swiper__navigation'>
+			<div class='directorist-swiper__nav directorist-swiper__nav--prev directorist-swiper__nav--prev-single-listing-thumb'><?php directorist_icon('las la-angle-left')?></div>
+			<div class='directorist-swiper__nav directorist-swiper__nav--next directorist-swiper__nav--next-single-listing-thumb'><?php directorist_icon('las la-angle-right')?></div>
+		</div>
+
+		<div class='directorist-swiper__pagination directorist-swiper__pagination--single-listing-thumb'></div>
 	</div>
-</div>
+	<?php endif; ?>
+
+</section>

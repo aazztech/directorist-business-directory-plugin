@@ -3,8 +3,8 @@
  * Plugin Name: Directorist - Business Directory Plugin
  * Plugin URI: https://wpwax.com
  * Description: A comprehensive solution to create professional looking directory site of any kind. Like Yelp, Foursquare, etc.
- * Version: 7.12.5
- * Author: wpWax - WP Business Directory Plugin and Classified Listings Directory
+ * Version: 8.0.12
+ * Author: wpWax - Business Directory and Classified Listings Directory Team by wpWax
  * Author URI: https://wpwax.com
  * Text Domain: directorist
  * Domain Path: /languages
@@ -149,6 +149,14 @@ final class Directorist_Base
 	public $tools;
 
 	/**
+     * Insights class
+     *
+     * @var Insights
+	 * @since 8.0
+     */
+    public $insights = null;
+
+	/**
 	 * ATBDP_Single_Templates Object.
 	 *
 	 * @var ATBDP_Single_Templates
@@ -161,6 +169,7 @@ final class Directorist_Base
 	public $hooks;
 	public $announcement;
 	public $review;
+	public $beta;
 
 	public $background_image_process = null;
 
@@ -185,9 +194,11 @@ final class Directorist_Base
 			self::$instance = new Directorist_Base();
 			self::$instance->setup_constants();
 
-			add_action('plugins_loaded', array(self::$instance, 'load_textdomain'));
-			add_action('plugins_loaded', array(self::$instance, 'add_polylang_swicher_support') );
+			add_action( 'plugins_loaded', array( self::$instance, 'redirect_to_setup_wizard' ) );
+			add_action('init', array(self::$instance, 'load_textdomain'));
+			add_action('init', array(self::$instance, 'add_polylang_swicher_support') );
 			add_action('widgets_init', array(self::$instance, 'register_widgets'));
+			add_filter('widget_display_callback', array(self::$instance, 'custom_widget_body_wrapper'), 10, 3);
 			add_action('after_setup_theme', array(self::$instance, 'add_image_sizes'));
 			add_action( 'template_redirect', [ self::$instance, 'check_single_listing_page_restrictions' ] );
 			add_action( 'atbdp_show_flush_messages', [ self::$instance, 'show_flush_messages' ] );
@@ -273,11 +284,9 @@ final class Directorist_Base
 			// add uninstall menu
 			add_filter('atbdp_settings_menus', array(self::$instance, 'add_uninstall_menu'));
 			add_filter( 'display_post_states', array(self::$instance, 'add_page_states'), 10, 2 );
-
 			self::init_hooks();
-
-			// Initialize appsero tracking
-			self::$instance->init_appsero();
+			// Register blocks
+			self::$instance->init_blocks();
 
 			/**
 			 * Fire loaded action hook once everything is loaded.
@@ -344,6 +353,14 @@ final class Directorist_Base
 
 	// add_polylang_swicher_support
 	public function add_polylang_swicher_support() {
+		// beta plugin lookup
+		$plugin_data = get_plugin_data( plugin_dir_path( __FILE__ ) . 'directorist-base.php' );
+
+		if( ! empty( $plugin_data['Version'] ) ) {
+			self::$instance->beta = strpos( $plugin_data['Version'], 'Beta' ) ? true : false;
+		}
+
+
 		add_filter('pll_the_language_link', function($url, $current_lang) {
 			// Adjust the category link
 			$category_url = $this->get_polylang_swicher_link_for_term([
@@ -470,6 +487,7 @@ final class Directorist_Base
 			ATBDP_INC_DIR . 'modules/multi-directory-setup/class-multi-directory-migration',
 			ATBDP_INC_DIR . 'modules/multi-directory-setup/class-multi-directory-manager',
 			__DIR__ . '/blocks/init',
+			ATBDP_INC_DIR . 'modules/multi-directory-setup/class-ai-builder',
 		]);
 
 		$this->autoload( ATBDP_INC_DIR . 'database/' );
@@ -548,13 +566,61 @@ final class Directorist_Base
 				'name' => apply_filters('atbdp_right_sidebar_name', __('Directorist - Listing Right Sidebar', 'directorist')),
 				'id' => 'right-sidebar-listing',
 				'description' => __('Add widgets for the right sidebar on single listing page', 'directorist'),
-				'before_widget' => '<div class="widget atbd_widget %2$s">',
+				'before_widget' => '<div class="directorist-card %2$s">',
 				'after_widget' => '</div>',
-				'before_title' => '<div class="atbd_widget_title"><h4>',
-				'after_title' => '</h4></div>',
+				'before_title' => '<div class="directorist-card__header directorist-widget__header"><h3 class="directorist-card__header__title directorist-widget__header__title">',
+				'after_title' => '</h3></div>',
 			));
 		}
 	}
+
+	public function custom_widget_body_wrapper( $instance, $widget, $args ) {
+		// Check if this is the specific sidebar
+		if ( $args['id'] === 'right-sidebar-listing' ) {
+			// Create a wrapper for the widget body
+			$widget_output = '';
+
+			// Check and append before_widget if it exists
+			if ( isset( $instance['before_widget'] ) ) {
+				$widget_output .= $instance['before_widget'];
+			}
+
+			// Check and append before_title, title, and after_title if they exist
+			if ( isset( $instance['before_title'] ) ) {
+				$widget_output .= $instance['before_title'];
+			}
+
+			if ( isset( $instance['title'] ) ) {
+				$widget_output .= $instance['title'];
+			}
+
+			if ( isset( $instance['after_title'] ) ) {
+				$widget_output .= $instance['after_title'];
+			}
+
+			// Open custom body wrapper
+			$widget_output .= '<div class="directorist-card__body">';
+
+			// Check for actual widget content (may vary based on your widget implementation)
+			if ( isset( $instance['content'] ) ) {
+				$widget_output .= $instance['content'];
+			}
+
+			// Close custom body wrapper
+			$widget_output .= '</div>';
+
+			// Check and append after_widget if it exists
+			if ( isset( $instance['after_widget'] ) ) {
+				$widget_output .= $instance['after_widget'];
+			}
+
+			// Update instance output
+			$instance['content'] = $widget_output;
+		}
+
+		return $instance;
+	}
+
 
 	public function add_image_sizes() {
 		$current_preview_size = get_directorist_option( 'preview_image_quality', 'directorist_preview' );
@@ -565,13 +631,29 @@ final class Directorist_Base
 		}
 	}
 
-	public function load_textdomain()
-	{
-
-		load_plugin_textdomain('directorist', false, ATBDP_LANG_DIR);
+	/**
+	 * Handles redirection to the Directorist setup wizard.
+	 *
+	 * This method checks if the user is currently in the WordPress admin area and if the
+	 * _directorist_setup_page_redirect transient exists. If both conditions are met,
+	 * it triggers the redirection to the Directorist setup wizard page.
+	 *
+	 * @return void
+	 */
+	public function redirect_to_setup_wizard() {
 		if ( is_admin() && get_transient( '_directorist_setup_page_redirect' ) ) {
 			directorist_redirect_to_admin_setup_wizard();
 		}
+	}
+
+	public function load_textdomain() {
+		// Determine the current locale
+		$locale = determine_locale();
+		// Allow filters to modify the locale
+		$locale = apply_filters( 'plugin_locale', $locale, 'directorist' );
+		load_textdomain( 'directorist', WP_LANG_DIR . '/plugins/directorist-' . $locale . '.mo' );
+
+		load_plugin_textdomain( 'directorist', false, ATBDP_LANG_DIR );
 	}
 
 	/**
@@ -609,15 +691,14 @@ final class Directorist_Base
 	* @param WP_Post $post        The current post object.
 	*/
 	public function add_page_states( $post_states, $post ) {
-	   
 		if ( get_directorist_option( 'add_listing_page' ) === $post->ID ) {
 		   $post_states['directorist_add_listing'] = __( 'Directorist Add Listing', 'directorist' );
 	   	}
 		if ( get_directorist_option( 'all_listing_page' ) === $post->ID ) {
-		   $post_states['directorist_all_listing'] = __( 'Directorist All Listing', 'directorist' );
+		   $post_states['directorist_all_listing'] = __( 'Directorist All Listings', 'directorist' );
 	   	}
 		if ( get_directorist_option( 'user_dashboard' ) === $post->ID ) {
-		   $post_states['directorist_user_dashboard'] = __( 'Directorist Login, Registration & Dashboard', 'directorist' );
+		   $post_states['directorist_user_dashboard'] = __( 'Directorist Dashboard', 'directorist' );
 	   	}
 		if ( get_directorist_option( 'author_profile_page' ) === $post->ID ) {
 		   $post_states['directorist_author_profile_page'] = __( 'Directorist Author Profile', 'directorist' );
@@ -661,7 +742,10 @@ final class Directorist_Base
 		if ( get_directorist_option( 'pricing_plans' ) === $post->ID ) {
 		   $post_states['directorist_pricing_plans'] = __( 'Directorist Pricing Plan', 'directorist' );
 	   	}
-   
+		if ( get_directorist_option( 'signin_signup_page' ) === $post->ID ) {
+		   $post_states['directorist_signin_signup'] = __( 'Directorist Sign In', 'directorist' );
+	   	}
+
 	   return $post_states;
    }
 
@@ -778,10 +862,15 @@ final class Directorist_Base
 		}
 
 		$client = new \Directorist\Appsero\Client( 'd9f81baf-2b03-49b1-b899-b4ee71c1d1b1', 'Directorist', __FILE__ );
+		$this->insights = $client->insights();
 
 		// Active insights
 		$client->set_textdomain( 'directorist' );
 		$client->insights()->init();
+	}
+
+	public function init_blocks() {
+		require_once ATBDP_DIR . 'blocks/init.php';
 	}
 
 } // ends Directorist_Base

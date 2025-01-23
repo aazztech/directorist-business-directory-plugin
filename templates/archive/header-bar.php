@@ -2,7 +2,7 @@
 /**
  * @author  wpWax
  * @since   6.6
- * @version 7.3.1
+ * @version 8.0.1
  */
 
 use \Directorist\Helper;
@@ -11,22 +11,22 @@ if ( ! defined( 'ABSPATH' ) ) exit;
 ?>
 
 <div class="directorist-header-bar">
-
 	<div class="<?php Helper::directorist_container_fluid(); ?>">
-
 		<div class="directorist-listings-header">
 
 			<?php if ( $listings->has_listings_header() ): ?>
 
 				<div class="directorist-listings-header__left">
 
-					<?php if ( $listings->has_filters_button ): ?>
-						<a href="#" class="directorist-btn directorist-btn-sm directorist-btn-px-15 directorist-btn-outline-primary directorist-filter-btn"><?php echo wp_kses_post( $listings->filter_btn_html() ); ?></a>
+					<?php if ( $listings->has_filters_button && 'no_sidebar' === $listings->sidebar ): ?>
+						<button class="directorist-btn directorist-btn-sm directorist-filter-btn directorist-modal-btn directorist-modal-btn--full" aria-label="Modal Button"><?php echo wp_kses_post( $listings->filter_btn_html() ); ?></button>
 					<?php endif; ?>
 
-					<?php if ( $listings->header_title ): ?>
-						<h3 class="directorist-header-found-title"><?php echo wp_kses_post( $listings->item_found_title() ); ?></h3>
-					<?php endif; ?>
+					<?php 
+						if ( $listings->header_title && ! empty( $listings->options['display_listings_count'] ) ) {
+							echo $listings->listings_header_title();
+						} 
+					?>
 				</div>
 
 			<?php endif; ?>
@@ -48,13 +48,5 @@ if ( ! defined( 'ABSPATH' ) ) exit;
 			<?php endif; ?>
 
 		</div>
-
-		<?php if ( $listings->advanced_filter ) { ?>
-			<div class="<?php Helper::search_filter_class( $listings->filters_display ); ?>">
-				<?php $listings->search_form_template();?>
-			</div>
-		<?php } ?>
-
 	</div>
-
 </div>

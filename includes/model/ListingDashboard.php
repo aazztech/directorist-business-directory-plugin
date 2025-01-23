@@ -44,20 +44,19 @@ class Directorist_Listing_Dashboard {
 	public function ajax_listing_tab() {
 		check_ajax_referer( directorist_get_nonce_key() );
 
-		$data     = array_filter( $_POST, 'sanitize_text_field' ); // sanitization
-		$type     = $data['tab'];
-		$paged    = $data['paged'];
-		$search   = !empty( $data['search'] ) ? $data['search'] : '';
-		$task     = !empty( $data['task'] ) ? $data['task'] : '';
-		$taskdata = !empty( $data['taskdata'] ) ? $data['taskdata'] : '';
+		$tab        = isset( $_POST['tab'] ) ? sanitize_key( $_POST['tab'] ) : 'all';
+		$paged      = isset( $_POST['paged'] ) ? absint( $_POST['paged'] ) : 1;
+		$search     = isset( $_POST['search'] ) ? sanitize_text_field( $_POST['search'] ) : '';
+		$action     = isset( $_POST['task'] ) ? sanitize_key( $_POST['task'] ) : '';
+		$listing_id = isset( $_POST['taskdata'] ) ? absint( $_POST['taskdata'] ) : 0;
 
-		if ( $task ) {
-			$this->listing_task( $task, $taskdata );
+		if ( $action && $listing_id && in_array( $action, array( 'delete' ), true ) ) {
+			$this->handle_listing_action( $action, $listing_id );
 		}
 
 		$args = array(
 			'dashboard' => $this,
-			'query'     => $this->listings_query( $type, $paged, $search ),
+			'query'     => $this->listings_query( $tab, $paged, $search ),
 		);
 
 		$result = [
@@ -70,47 +69,43 @@ class Directorist_Listing_Dashboard {
 		wp_die();
 	}
 
-	public function listing_task( $task, $taskdata ){
-		if ( $task === 'delete' ) {
-			if ( current_user_can( get_post_type_object( ATBDP_POST_TYPE )->cap->delete_post, $taskdata ) )  {
-				wp_delete_post( $taskdata );
+	public function handle_listing_action( $action, $listing_id ) {
+		if ( $action === 'delete' && current_user_can( get_post_type_object( ATBDP_POST_TYPE )->cap->delete_post, $listing_id ) ) {
+			wp_delete_post( $listing_id );
 
-				do_action( 'directorist_listing_deleted', $taskdata );
-			}
+			do_action( 'directorist_listing_deleted', $listing_id );
 		}
 	}
 
-	public function listings_query( $type = 'all', $paged = 1, $search = '' ) {
-		$pagination        = get_directorist_option('user_listings_pagination',1);
-		$listings_per_page = get_directorist_option('user_listings_per_page',9);
+	public function listings_query( $status = 'all', $paged = 1, $search = '' ) {
+		$pagination_enabled = (bool) get_directorist_option( 'user_listings_pagination', 1 );
+		$per_page           = (int) get_directorist_option( 'user_listings_per_page', 9 );
 
-		$args  = array(
+		$args = array(
 			'author'         => get_current_user_id(),
 			'post_type'      => ATBDP_POST_TYPE,
-			'posts_per_page' => (int) $listings_per_page,
+			'posts_per_page' => $per_page,
 			'order'          => 'DESC',
 			'orderby'        => 'date',
-			'post_status'    => array('publish', 'pending', 'private'),
 		);
 
-		if( ! empty( $pagination) ) {
+		if ( $pagination_enabled) {
 			$args['paged'] = $paged;
-		}
-		else{
+		} else{
 			$args['no_found_rows'] = false;
 		}
 
-		if ( $type === 'pending' || $type === 'expired' ||  $type === 'publish' ) {
-			$args['post_status'] = $type;
+		if ( $status === 'pending' || $status === 'expired' || $status === 'publish' ) {
+			$args['post_status'] = $status;
 		} else {
-			$args['post_status'] = array( 'publish', 'pending', 'expired' );
+			$args['post_status'] = array( 'publish', 'pending', 'expired', 'private' );
 		}
 
 		if ( $search ) {
-			$args['s'] = $search;
+			$args['s'] = esc_sql( $search );
 		}
 
-		$this->current_listings_query = new \WP_Query( apply_filters( 'directorist_dashboard_query_arguments', $args, $type ) );
+		$this->current_listings_query = new \WP_Query( apply_filters( 'directorist_dashboard_query_arguments', $args, $status ) );
 
 		return $this->current_listings_query;
 	}
@@ -138,19 +133,21 @@ class Directorist_Listing_Dashboard {
 		// $exp_text  = !empty($never_exp) ? __('Never Expires', 'directorist') : date_i18n($date_format, strtotime($exp_date));
 		// $exp_html  = ( $status == 'expired' ) ? '<span style="color: red">' . __('Expired', 'directorist') . '</span>' : $exp_text;
 		// return $exp_html;
-
-		if ( get_post_status( get_the_ID() ) === 'expired' ) {
-			return '<span style="color: red">' . esc_html__( 'Expired', 'directorist' ) . '</span>';
-		}
-
-		$never_expire = (bool) get_post_meta( get_the_ID(), '_never_expire', true );
+		$listing_id   = get_the_ID();
+		$never_expire = (bool) get_post_meta( $listing_id, '_never_expire', true );
 		if ( $never_expire ) {
 			return '<span>' . esc_html__( 'Never Expires', 'directorist' ) . '</span>';
 		}
 
-		$expiry_date  = strtotime( get_post_meta( get_the_ID(), '_expiry_date', true ) );
+		$expiry_date    = strtotime( get_post_meta( $listing_id, '_expiry_date', true ) );
+		$formatted_date = date_i18n( get_option( 'date_format' ), $expiry_date );
+		$status         = get_post_status( $listing_id );
+
+		// Determine the color based on the status
+		$color = ( $status === 'expired' ) ? 'style="color: red"' : '';
+
 		if ( $expiry_date ) {
-			return '<span>' . date_i18n( get_option( 'date_format' ), $expiry_date ) . '</span>';
+			return '<span ' . $color . '>' . esc_html( $formatted_date ) . '</span>';
 		}
 
 		return '';
@@ -166,8 +163,8 @@ class Directorist_Listing_Dashboard {
 			'format'    => '?paged=%#%',
 			'current'   => max(1, $paged),
 			'total'     => $query->max_num_pages,
-			'prev_text' => directorist_icon( 'las la-arrow-left', false ),
-			'next_text' => directorist_icon( 'las la-arrow-right', false ),
+			'prev_text' => directorist_icon( 'fas fa-chevron-left', false ),
+			'next_text' => directorist_icon( 'fas fa-chevron-right', false ),
 		));
 
 		return $links;
@@ -181,20 +178,19 @@ class Directorist_Listing_Dashboard {
 	}
 
 	public function get_listing_type() {
-		$id   = get_the_ID();
-		$type = get_post_meta( $id, '_directory_type', true );
+		$type = directorist_get_listing_directory( get_the_ID() );
 		$term = get_term( $type );
 		return !empty( $term->name ) ? $term->name : '';
 	}
 
 	public function get_listing_thumbnail() {
 		$id                = get_the_ID();
-		$type              = get_post_meta( $id, '_directory_type', true );
+		$type              = directorist_get_listing_directory( $id );
 
 		$default_image_src = Helper::default_preview_image_src( $type );
 		$image_quality     = get_directorist_option('preview_image_quality', 'directorist_preview');
-		$listing_prv_img   = get_post_meta($id, '_listing_prv_img', true);
-		$listing_img       = get_post_meta($id, '_listing_img', true);
+		$listing_prv_img   = directorist_get_listing_preview_image( $id );
+		$listing_img       = directorist_get_listing_gallery_images( $id );
 
 		if ( is_array( $listing_img ) && ! empty( $listing_img[0] ) ) {
 			$thumbnail_img = atbdp_get_image_source( $listing_img[0], $image_quality );
@@ -231,7 +227,7 @@ class Directorist_Listing_Dashboard {
 
 		if ( $fav_listings->have_posts() ){
 			foreach ( $fav_listings->posts as $post ) {
-				$listing_type  = get_post_meta( $post->ID, '_directory_type', true );
+				$listing_type  = directorist_get_listing_directory( $post->ID );
 				$title         = ! empty( $post->post_title ) ? $post->post_title : __( 'Untitled', 'directorist' );
 				$cats          = get_the_terms( $post->ID, ATBDP_CATEGORY );
 				$category      = get_post_meta( $post->ID, '_admin_category_select', true );
@@ -248,8 +244,8 @@ class Directorist_Listing_Dashboard {
 				$category_link = ! empty( $cats ) ? esc_url( ATBDP_Permalink::atbdp_get_category_page( $cats[0] ) ) : '#';
 				$post_link     = esc_url( get_post_permalink( $post->ID ) );
 
-				$listing_img     	= get_post_meta( $post->ID, '_listing_img', true );
-				$listing_prv_img 	= get_post_meta( $post->ID, '_listing_prv_img', true );
+				$listing_img     	= directorist_get_listing_gallery_images( $post->ID );
+				$listing_prv_img 	= directorist_get_listing_preview_image( $post->ID );
 				$default_image_src 	= Helper::default_preview_image_src( $listing_type );
 				$crop_width      	= get_directorist_option( 'crop_width', 360 );
 				$crop_height     	= get_directorist_option( 'crop_height', 300 );
@@ -346,6 +342,18 @@ class Directorist_Listing_Dashboard {
 			case 'bio':
 			$result = get_user_meta( $id, 'description', true );
 			break;
+
+			case 'hide_contact_form':
+			$result = get_user_meta( $id, 'directorist_hide_contact_form', true );
+			break;
+
+			case 'display_author_email':
+			$result = get_user_meta( $id, 'directorist_display_author_email', true );
+			break;
+
+			case 'contact_owner_recipient':
+			$result = get_user_meta( $id, 'directorist_contact_owner_recipient', true );
+			break;
 		}
 
 		return $result;
@@ -367,7 +375,7 @@ class Directorist_Listing_Dashboard {
 			$list_found = $listings->found_posts;
 
 			$dashboard_tabs['dashboard_my_listings'] = array(
-				'title'     => sprintf(__('%s (%s)', 'directorist'), $my_listing_tab_text, $list_found),
+				'title'     => sprintf( '%1$s (%2$s)', $my_listing_tab_text, $list_found ),
 				'content'   => Helper::get_template_contents( 'dashboard/tab-my-listings', [ 'dashboard' => $this ] ),
 				'icon'	    => 'las la-list',
 			);
@@ -389,24 +397,13 @@ class Directorist_Listing_Dashboard {
 			);
 		}
 
-		if ( $announcement_tab ) {
-			$dashboard_tabs['dashboard_announcement'] = array(
-				'title'    => $this->get_announcement_label(),
-				'content'  => Helper::get_template_contents( 'dashboard/tab-announcement', [ 'dashboard' => $this ] ),
-				'icon'	   => 'las la-bullhorn',
-			);
-		}
+		$dashboard_tabs['dashboard_preferences'] = array(
+			'title'     => __( 'Preferences', 'directorist' ),
+			'content'   => Helper::get_template_contents( 'dashboard/tab-preferences', [ 'dashboard' => $this ] ),
+			'icon'		=> 'las la-sliders-h',
+		);
 
 		return apply_filters( 'directorist_dashboard_tabs', $dashboard_tabs );
-	}
-
-	public function get_announcement_label() {
-		$announcement_label = get_directorist_option( 'announcement_tab_text', __( 'Announcements', 'directorist' ) );
-		$new_announcements  = ATBDP()->announcement->get_new_announcement_count();
-		if ( $new_announcements > 0 ) {
-			$announcement_label = $announcement_label . "<span class='directorist-announcement-count show'>{$new_announcements}</span>";
-		}
-		return apply_filters( 'directorist_announcement_label', $announcement_label );
 	}
 
 	public function get_announcements() {
@@ -534,88 +531,6 @@ class Directorist_Listing_Dashboard {
 		}
 
 		return Helper::get_template_contents( 'dashboard-contents', [ 'dashboard' => $this ] );
-	}
-
-	public function render_shortcode_login_registration( $atts = [] ) {
-		if ( is_user_logged_in() ) {
-
-			do_action( 'atbdp_show_flush_messages' );
-
-			$error_message = sprintf( __( 'Login page is not for logged-in user. <a href="%s">Go to Dashboard</a>', 'directorist' ), esc_url( ATBDP_Permalink::get_dashboard_page_link() ) );
-			ob_start();
-			ATBDP()->helper->show_login_message( apply_filters( 'atbdp_login_page_loggedIn_msg', $error_message ) );
-			return ob_get_clean();
-		}
-
-		$redirection = ATBDP_Permalink::get_login_redirection_page_link();
-		$data        = [
-			'ajax_url'            => admin_url( 'admin-ajax.php' ),
-			'redirect_url'        => $redirection ? $redirection : ATBDP_Permalink::get_dashboard_page_link(),
-			'loading_message'     => esc_html__( 'Sending user info, please wait...', 'directorist' ),
-			'login_error_message' => esc_html__( 'Wrong username or password.', 'directorist' ),
-		];
-		wp_localize_script( 'directorist-main-script', 'ajax_login_object', $data );
-
-		$atts = shortcode_atts( array(
-			'user_type'			  => '',
-		), $atts );
-
-		$user_type = ! empty( $atts['user_type'] ) ? $atts['user_type'] : '';
-		$user_type = ! empty( $_REQUEST['user_type'] ) ? sanitize_text_field( wp_unslash( $_REQUEST['user_type'] ) ) : $user_type;
-
-		$args = [
-			'log_username'        => get_directorist_option( 'log_username', __( 'Username or Email Address', 'directorist' ) ),
-			'log_password'        => get_directorist_option( 'log_password', __( 'Password', 'directorist' ) ),
-			'display_rememberMe'  => get_directorist_option( 'display_rememberme', 1 ),
-			'log_rememberMe'      => get_directorist_option( 'log_rememberme', __( 'Remember Me', 'directorist' ) ),
-			'log_button'          => get_directorist_option( 'log_button', __( 'Log In', 'directorist' ) ),
-			'display_recpass'     => get_directorist_option( 'display_recpass', 1 ),
-			'recpass_text'        => get_directorist_option( 'recpass_text', __( 'Recover Password', 'directorist' ) ),
-			'recpass_desc'        => get_directorist_option( 'recpass_desc', __( 'Lost your password? Please enter your email address. You will receive a link to create a new password via email.', 'directorist' ) ),
-			'recpass_username'    => get_directorist_option( 'recpass_username', __( 'E-mail:', 'directorist' ) ),
-			'recpass_placeholder' => get_directorist_option( 'recpass_placeholder', __( 'eg. mail@example.com', 'directorist' ) ),
-			'recpass_button'      => get_directorist_option( 'recpass_button', __( 'Get New Password', 'directorist' ) ),
-			'reg_text'            => get_directorist_option( 'reg_text', __( "Don't have an account?", 'directorist' ) ),
-			'reg_url'             => ATBDP_Permalink::get_registration_page_link(),
-			'reg_linktxt'         => get_directorist_option( 'reg_linktxt', __( 'Sign Up', 'directorist' ) ),
-			'display_signup'      => get_directorist_option( 'display_signup', 1 ),
-			'new_user_registration' => get_directorist_option( 'new_user_registration', true ),
-			'parent'               => 0,
-			'container_fluid'      => is_directoria_active() ? 'container' : 'container-fluid',
-			'username'             => get_directorist_option( 'reg_username', __( 'Username', 'directorist' ) ),
-			'password'             => get_directorist_option( 'reg_password', __( 'Password', 'directorist' ) ),
-			'display_password_reg' => get_directorist_option( 'display_password_reg', 1 ),
-			'require_password'     => get_directorist_option( 'require_password_reg', 1 ),
-			'email'                => get_directorist_option( 'reg_email', __( 'Email', 'directorist' ) ),
-			'display_website'      => get_directorist_option( 'display_website_reg', 0 ),
-			'website'              => get_directorist_option( 'reg_website', __( 'Website', 'directorist' ) ),
-			'require_website'      => get_directorist_option( 'require_website_reg', 0 ),
-			'display_fname'        => get_directorist_option( 'display_fname_reg', 0 ),
-			'first_name'           => get_directorist_option( 'reg_fname', __( 'First Name', 'directorist' ) ),
-			'require_fname'        => get_directorist_option( 'require_fname_reg', 0 ),
-			'display_lname'        => get_directorist_option( 'display_lname_reg', 0 ),
-			'last_name'            => get_directorist_option( 'reg_lname', __( 'Last Name', 'directorist' ) ),
-			'require_lname'        => get_directorist_option( 'require_lname_reg', 0 ),
-			'display_bio'          => get_directorist_option( 'display_bio_reg', 0 ),
-			'bio'                  => get_directorist_option( 'reg_bio', __( 'About/bio', 'directorist' ) ),
-			'require_bio'          => get_directorist_option( 'require_bio_reg', 0 ),
-			'reg_signup'           => get_directorist_option( 'reg_signup', __( 'Sign Up', 'directorist' ) ),
-			'display_login'        => get_directorist_option( 'display_login', 1 ),
-			'login_text'           => get_directorist_option( 'login_text', __( 'Already have an account? Please login', 'directorist' ) ),
-			'login_url'            => ATBDP_Permalink::get_login_page_link(),
-			'log_linkingmsg'       => get_directorist_option( 'log_linkingmsg', __( 'here', 'directorist' ) ),
-			'terms_label'          => get_directorist_option( 'regi_terms_label', __( 'I agree with all', 'directorist' ) ),
-			'terms_label_link'     => get_directorist_option( 'regi_terms_label_link', __( 'terms & conditions', 'directorist' ) ),
-			't_C_page_link'        => ATBDP_Permalink::get_terms_and_conditions_page_url(),
-			'privacy_page_link'    => ATBDP_Permalink::get_privacy_policy_page_url(),
-			'privacy_label'        => get_directorist_option( 'registration_privacy_label', __( 'I agree to the', 'directorist' ) ),
-			'privacy_label_link'   => get_directorist_option( 'registration_privacy_label_link', __( 'Privacy & Policy', 'directorist' ) ),
-			'user_type'			   => $user_type,
-			'author_checked'	   => ( 'general' != $user_type ) ? 'checked' : '',
-			'general_checked'	   => ( 'general' == $user_type ) ? 'checked' : '',
-		];
-
-		return Helper::get_template_contents( 'account/login-registration-form', $args );
 	}
 
 	public function can_renew() {

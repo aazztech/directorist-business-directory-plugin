@@ -933,6 +933,7 @@ class Multi_Directory_Migration {
         // Price Field
         if ( in_array( 'search_price', $old_advanced_search_fields ) || in_array( 'search_price_range', $old_advanced_search_fields ) ) {
             $search_form_fields_advanced_items[ 'pricing' ] = [
+                'label' => 'Pricing',
                 'price_range_min_placeholder' => 'Min',
                 'price_range_max_placeholder' => 'Max',
                 "widget_name"  => "pricing",
@@ -1037,7 +1038,7 @@ class Multi_Directory_Migration {
         if ( '0' == get_directorist_option( 'disable_list_price', true ) ) {
             $quick_info[] = [
                 "type"        => "badge",
-                "label"       => "Listings Price",
+                "label"       => "Pricing",
                 "hook"        => "atbdp_single_listings_price",
                 "widget_name" => "price",
                 "widget_key"  => "price"

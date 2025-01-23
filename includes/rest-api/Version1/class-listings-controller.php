@@ -595,16 +595,16 @@ class Listings_Controller extends Posts_Controller {
 		if ( has_post_thumbnail( $listing ) ) {
 			$attachment_ids[] = get_post_thumbnail_id( $listing );
 		} else {
-			$thumbnail_id = (int) get_post_meta( $listing->ID, '_listing_prv_img', true );
-			if ( $thumbnail_id ) {
-				$attachment_ids[] = $thumbnail_id;
+			$thumbnail_id = directorist_get_listing_preview_image( $listing->ID );
+			if ( ! empty( $thumbnail_id ) ) {
+				$attachment_ids[] = (int) $thumbnail_id;
 			}
 		}
 
 		// Add gallery images.
-		$gallery_images = (array) get_post_meta( $listing->ID, '_listing_img', true );
-		if ( ! empty( $gallery_images ) ) {
-			$attachment_ids = array_unique( array_merge( $attachment_ids, array_filter( wp_parse_id_list( $gallery_images ) ) ) );
+		$gallery_images = directorist_get_listing_gallery_images( $listing->ID );
+		if ( ! empty( $gallery_images ) || is_array( $gallery_images ) ) {
+			$attachment_ids = array_merge( $attachment_ids, $gallery_images );
 		}
 
 		// Build image data.
@@ -678,7 +678,7 @@ class Listings_Controller extends Posts_Controller {
 					$base_data['views_count'] = directorist_get_listing_views_count( $listing->ID );
 					break;
 				case 'directory':
-					$base_data['directory'] = $this->get_directory_id( $listing );
+					$base_data['directory'] = directorist_get_listing_directory( $listing->ID );
 					break;
 				case 'date_expired':
 					$base_data['date_expired'] = directorist_rest_prepare_date_response( get_post_meta( $listing->ID, '_expiry_date', true ) );
@@ -833,7 +833,7 @@ class Listings_Controller extends Posts_Controller {
 	}
 
 	protected function get_related_listings_ids( $listing_id ) {
-		$directory_type = (int) get_post_meta( $listing_id, '_directory_type', true );
+		$directory_type = directorist_get_listing_directory( $listing_id );
 		$number         = get_directorist_type_option( $directory_type, 'similar_listings_number_of_listings_to_show', 2 );
 		$same_author    = get_directorist_type_option( $directory_type, 'listing_from_same_author', false );
 		$logic          = get_directorist_type_option( $directory_type, 'similar_listings_logics', 'OR' );

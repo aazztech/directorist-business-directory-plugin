@@ -81,7 +81,7 @@
 /******/
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 19);
+/******/ 	return __webpack_require__(__webpack_require__.s = 20);
 /******/ })
 /************************************************************************/
 /******/ ({
@@ -96,7 +96,8 @@
 /* Single listing OSMap */
 
 (function ($) {
-  jQuery(document).ready(function () {
+  // Single Listing Map Initialize
+  function initSingleMap() {
     // Localized Data
     if ($('.directorist-single-map').length) {
       document.querySelectorAll('.directorist-single-map').forEach(function (mapElm) {
@@ -119,7 +120,7 @@
         };
         function mapLeaflet(lat, lon) {
           var fontAwesomeIcon = L.divIcon({
-            html: "<div class=\"atbd_map_shape\"><span class=\"\">".concat(cat_icon, "</span></div>"),
+            html: "<div class=\"atbd_map_shape\">".concat(cat_icon, "</div>"),
             iconSize: [20, 20],
             className: 'myDivIcon'
           });
@@ -142,12 +143,29 @@
         mapLeaflet(loc_manual_lat, loc_manual_lng);
       });
     }
+  }
+  jQuery(document).ready(function () {
+    initSingleMap();
+  });
+
+  // Single Listing Map on Elementor EditMode 
+  $(window).on('elementor/frontend/init', function () {
+    setTimeout(function () {
+      if ($('body').hasClass('elementor-editor-active')) {
+        initSingleMap();
+      }
+    }, 3000);
+  });
+  $('body').on('click', function (e) {
+    if ($('body').hasClass('elementor-editor-active') && e.target.nodeName !== 'A' && e.target.nodeName !== 'BUTTON') {
+      initSingleMap();
+    }
   });
 })(jQuery);
 
 /***/ }),
 
-/***/ 19:
+/***/ 20:
 /*!*********************************************************************************!*\
   !*** multi ./assets/src/js/global/map-scripts/single-listing/openstreet-map.js ***!
   \*********************************************************************************/

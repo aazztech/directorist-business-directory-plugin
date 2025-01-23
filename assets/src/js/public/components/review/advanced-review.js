@@ -1,4 +1,4 @@
-window.addEventListener('DOMContentLoaded', () => {
+window.addEventListener('load', () => {
     ;(function ($) {
         'use strict';
         class ReplyFormObserver {
@@ -94,13 +94,17 @@ window.addEventListener('DOMContentLoaded', () => {
                 const $form = $(event.target);
                 const originalButtonLabel = $form.find('[type="submit"]').val();
                 $(document).trigger('directorist_review_before_submit', $form);
+                let formData = new FormData($form[0]);
+
+                // Apply the filter
+                formData = wp.hooks.applyFilters('directorist_add_review_form_data', formData, 'directorist-advanced-review');
                 const updateComment = $.ajax({
                     url: $form.attr('action'),
                     type: 'POST',
                     contentType: false,
                     cache: false,
                     processData: false,
-                    data: new FormData($form[0])
+                    data: formData
                 });
 
                 $form.find('#comment').prop('disabled', true);
@@ -195,16 +199,21 @@ window.addEventListener('DOMContentLoaded', () => {
 
             onSubmit(event) {
                 event.preventDefault();
+                console.log(wp.hooks);
                 const form = $('.directorist-review-container #commentform');
                 const originalButtonLabel = form.find('[type="submit"]').val();
                 $(document).trigger('directorist_review_before_submit', form);
+                let formData = new FormData(form[0]);
+
+                // Apply the filter
+                formData = wp.hooks.applyFilters('directorist_add_review_form_data', formData, 'directorist-advanced-review');
                 const do_comment = $.ajax({
                     url: form.attr('action'),
                     type: 'POST',
                     contentType: false,
                     cache: false,
                     processData: false,
-                    data: new FormData(form[0])
+                    data: formData
                 });
 
                 $('#comment').prop('disabled', true);
@@ -345,9 +354,10 @@ window.addEventListener('DOMContentLoaded', () => {
                         method: 'GET',
                         reload: 'strict',
                         success: function (response) {
+                            $target.prop('disabled', true);
                             $target
                                 .parents('#div-comment-' + $target.data('commentid'))
-                                .find('.directorist-review-single__contents-wrap').append(response.data.html);
+                                .find('.directorist-review-single__info').append(response.data.html);
 
                             $wrap
                                 .removeClass('directorist-comment-edit-request')
@@ -372,6 +382,7 @@ window.addEventListener('DOMContentLoaded', () => {
                         .removeClass(['directorist-comment-edit-request', 'directorist-comment-editing'])
                         .find('form')
                         .remove();
+                    $wrap.find('.directorist-js-edit-comment').prop('disabled', false);
                 });
             }
 

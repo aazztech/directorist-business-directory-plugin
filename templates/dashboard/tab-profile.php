@@ -28,7 +28,7 @@ if ( ! defined( 'ABSPATH' ) ) exit;
 
 					<div class="directorist-card__header">
 
-						<h4 class="directorist-card__header--title"><?php esc_html_e( 'My Profile', 'directorist' ); ?></h4>
+						<h3 class="directorist-card__header__title"><?php esc_html_e( 'My Profile', 'directorist' ); ?></h3>
 
 					</div>
 
@@ -189,9 +189,9 @@ if ( ! defined( 'ABSPATH' ) ) exit;
 
 							</div>
 
-							<button type="submit" class="directorist-btn directorist-btn-lg directorist-btn-dark directorist-btn-profile-save" id="update_user_profile"><?php esc_html_e( 'Save Changes', 'directorist' ); ?></button>
+							<button type="submit" class="directorist-btn directorist-btn-lg directorist-btn-profile-save" id="update_user_profile"><?php esc_html_e( 'Save Changes', 'directorist' ); ?></button>
 
-							<div id="directorist-prifile-notice"></div>
+							<div id="directorist-profile-notice"></div>
 
 						</div>
 

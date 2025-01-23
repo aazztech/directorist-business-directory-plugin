@@ -2,15 +2,15 @@
 /**
  * @author  wpWax
  * @since   7.3.0
- * @version 7.3.1
+ * @version 8.0
  */
 
 if ( ! defined( 'ABSPATH' ) ) exit;
 ?>
 
-<div class="atbdp atbdp-widget-categories">
+<div class="directorist-card__body">
     <?php if( 'dropdown' == $query_args['template'] ) : ?>
-        <form action="<?php echo esc_url( ATBDP_Permalink::get_search_result_page_link() ); ?>" role="form">
+        <form action="<?php echo esc_url( ATBDP_Permalink::get_search_result_page_link() ); ?>">
             <input type="hidden" name="q" placeholder="">
             <select name="in_cat" id="at_biz_dir-category" onchange="this.form.submit()">
                 <?php echo directorist_kses( $categories, 'form_input' ); ?>

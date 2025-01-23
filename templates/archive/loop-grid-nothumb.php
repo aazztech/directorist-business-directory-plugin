@@ -2,44 +2,77 @@
 /**
  * @author  wpWax
  * @since   6.6
- * @version 6.7
+ * @version 8.0
  */
 
 if ( ! defined( 'ABSPATH' ) ) exit;
 
 $loop_fields = $listings->loop['card_fields']['template_data']['grid_view_without_thumbnail'];
+
+// Capture output for avatar
+ob_start();
+$listings->render_loop_fields($loop_fields['body']['avatar']);
+$listing_avatar = ob_get_clean();
+
+// Capture output for title
+ob_start();
+$listings->render_loop_fields($loop_fields['body']['title']);
+$listing_title = ob_get_clean();
+
+// Capture output for quick actions
+ob_start();
+$listings->render_loop_fields($loop_fields['body']['quick_actions']);
+$quick_actions_field = ob_get_clean();
+
+// Capture output for quick_info
+ob_start();
+$listings->render_loop_fields($loop_fields['body']['quick_info']);
+$quick_info_field = ob_get_clean();
 ?>
 
-<div class="directorist-listing-single directorist-listing-card directorist-listing-no-thumb <?php echo esc_attr( $listings->loop_wrapper_class() ); ?>">
+<article class="directorist-listing-single directorist-listing-single--bg directorist-listing-card directorist-listing-no-thumb <?php echo esc_attr( $listings->loop_wrapper_class() ); ?>">
 
-	<div class="directorist-listing-single__header">
+	<section class="directorist-listing-single__header">
 
-		<div class="directorist-listing-single__header__left">
-			<?php $listings->render_loop_fields($loop_fields['body']['avatar']); ?>
-
-			<div class="directorist-listing-single__title"><?php $listings->render_loop_fields($loop_fields['body']['title']); ?></div>
-		</div>
-
-		<div class="directorist-listing-single__header__right">
-			<div class="directorist-listing-single__action"><?php $listings->render_loop_fields($loop_fields['body']['quick_actions']); ?></div>
-		</div>
+		<?php if ( ! empty( $listing_avatar ) ) : ?>
+			<figure class="directorist-listing-single__header__left">
+				<?php echo $listing_avatar; ?>
+			</figure>
+		<?php endif; ?>
 		
-	</div>
+		<?php if ( ! empty( $listing_title ) ) : ?>
+			<header class="directorist-listing-single__header__title">
+				<?php echo $listing_title; ?>
+			</header>
+		<?php endif; ?>
+		
+		<?php if ( ! empty( $quick_actions_field ) ) : ?>
+			<div class="directorist-listing-single__header__right">
+				<div class="directorist-listing-single__action">
+					<?php echo $quick_actions_field; ?>
+				</div>
+			</div>
+		<?php endif; ?>
 
-	<div class="directorist-listing-single__info"><?php $listings->render_loop_fields($loop_fields['body']['quick_info']); ?></div>
+	</section>
 
-	<div class="directorist-listing-single__content">
-
-		<div class="directorist-listing-single__content__body">
-			<div class="directorist-listing-single__info--list"><ul><?php $listings->render_loop_fields($loop_fields['body']['bottom'], '<li>', '</li>'); ?></ul></div>
-			<div class="directorist-listing-single__info--excerpt"><?php $listings->render_loop_fields($loop_fields['body']['excerpt']); ?></div>
+	<?php if ( ! empty( $quick_info_field ) ) : ?>
+		<div class="directorist-listing-single__info">
+			<?php echo $quick_info_field; ?>
 		</div>
+	<?php endif; ?>
 
-		<div class="directorist-listing-single__meta">
-			<div class="directorist-listing-single__meta--left"><?php $listings->render_loop_fields($loop_fields['footer']['left']); ?></div>
-			<div class="directorist-listing-single__meta--right"><?php $listings->render_loop_fields($loop_fields['footer']['right']); ?></div>
-		</div>
+	<section class="directorist-listing-single__content">
+		<ul class="directorist-listing-single__info__list"><?php $listings->render_loop_fields($loop_fields['body']['bottom'], '', ''); ?></ul>
 
-	</div>
+		<?php if ( ! empty( $loop_fields['body']['excerpt'] ) ) : ?>
+			<?php $listings->render_loop_fields( $loop_fields['body']['excerpt'] ) ?>
+		<?php endif; ?>
+	</section>
 
-</div>
+	<footer class="directorist-listing-single__meta">
+		<div class="directorist-listing-single__meta__left"><?php $listings->render_loop_fields($loop_fields['footer']['left']); ?></div>
+		<div class="directorist-listing-single__meta__right"><?php $listings->render_loop_fields($loop_fields['footer']['right']); ?></div>
+	</footer>
+
+</article>

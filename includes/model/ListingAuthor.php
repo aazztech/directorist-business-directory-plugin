@@ -178,17 +178,6 @@ class Directorist_Listing_Author {
 			$args['no_found_rows'] = true;
 		}
 
-		if ( ! empty( $this->current_listing_type ) ) {
-			$args['tax_query'] = array(
-				array(
-					'taxonomy'         => ATBDP_TYPE,
-					'field'            => 'term_id',
-					'terms'            => $this->current_listing_type ,
-					'include_children' => true, /*@todo; Add option to include children or exclude it*/
-				),
-			);
-		}
-
 		if ( ! empty( $category ) ) {
 			$category = array(
 				array(
@@ -204,14 +193,14 @@ class Directorist_Listing_Author {
 			$args['tax_query'] = $category;
 		}
 		$meta_queries   = array();
-		// TODO: Status has been migrated, remove related code.
-		// $meta_queries['expired'] = array(
-		// 	array(
-		// 		'key'     => '_listing_status',
-		// 		'value'   => 'expired',
-		// 		'compare' => '!=',
-		// 	),
-		// );
+
+		if ( ! empty( $this->current_listing_type ) ) {
+			$meta_queries['meta_query'] = array(
+				'key'     => '_directory_type',
+				'value'   => $this->current_listing_type,
+				'compare' => '=',
+			);
+		}
 
 		$meta_queries       = apply_filters( 'atbdp_author_listings_meta_queries', $meta_queries );
 		$count_meta_queries = count( $meta_queries );
@@ -235,16 +224,18 @@ class Directorist_Listing_Author {
 	}
 
 	public function avatar_html() {
-		$html = '';
-		$author_id = $this->id;
-		$u_pro_pic = get_user_meta( $author_id, 'pro_pic', true );
-
-		if ( !empty( $u_pro_pic ) ) {
+		$html         = '';
+		$author_id    = $this->id;
+		$u_pro_pic    = get_user_meta( $author_id, 'pro_pic', true );
+		$author_data  = get_userdata( $author_id );
+		$display_name = ! empty( $author_data->display_name ) ? $author_data->display_name : '';
+		
+		if ( ! empty( $u_pro_pic ) ) {
 			$html = wp_get_attachment_image( $u_pro_pic );
 		}
 
-		if ( !$html ) {
-			$html = get_avatar( $author_id );
+		if ( ! $html ) {
+			$html = get_avatar( $author_id, 96, '', $display_name );
 		}
 
 		return $html;
@@ -259,7 +250,7 @@ class Directorist_Listing_Author {
 
 	public function review_count_html() {
 		$review_count = $this->total_review;
-		$review_count_html = sprintf( _nx( '<span>%s</span> Review', '<span>%s</span> Reviews', $review_count, 'author review count', 'directorist' ), $review_count );
+		$review_count_html = sprintf( _nx( '%s Review', '%s Reviews', $review_count, 'author review count', 'directorist' ), $review_count );
 		return $review_count_html;
 	}
 
@@ -274,7 +265,9 @@ class Directorist_Listing_Author {
 	}
 
 	public function rating_count() {
-		return $this->rating;
+		$rating = $this->rating;
+		$rating_count = sprintf( '<span>%s</span>', $rating, 'directorist' );
+		return $rating_count;
 	}
 
 	public function display_name() {
@@ -293,7 +286,8 @@ class Directorist_Listing_Author {
 		$bio = get_user_meta($author_id, 'description', true);
 		$bio = trim( $bio );
 
-		$display_email = get_directorist_option('display_author_email', 'public');
+		$display_email = get_user_meta( $author_id, 'directorist_display_author_email', true );
+		$display_email = ! empty( $display_email ) ? $display_email : 'public';
 
 		if ( $display_email == 'public' ) {
 			$email_endabled = true;
@@ -338,7 +332,8 @@ class Directorist_Listing_Author {
 	}
 
 	public function cat_filter_enabled() {
-		return get_directorist_option( 'author_cat_filter', 1 );
+		_deprecated_function( __METHOD__, '8.0' );
+		return true;
 	}
 
 	public function get_listing_categories() {

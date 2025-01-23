@@ -114,7 +114,7 @@ function get_file_upload_field_options() {
 	return $options;
 }
 
-return array(
+return apply_filters( 'atbdp_form_custom_widgets', array(
 	'text' => [
 		'label'   => __( 'Text', 'directorist' ),
 		'icon'    => 'uil uil-text',
@@ -148,15 +148,19 @@ return array(
 			],
 			'only_for_admin' => [
 				'type'  => 'toggle',
-				'label' => __( 'Administrative Only', 'directorist' ),
+				'label' => __( 'Admin Only', 'directorist' ),
 				'value' => false,
 			],
-			'assign_to' => get_assign_to_field(),
+			'assign_to' => [
+				'type'  => 'toggle',
+				'label' => __('Assign to Category', 'directorist'),
+				'value' => false,
+			],
 			'category'  => get_category_select_field([
 				'show_if' => [
 					'where'      => "self.assign_to",
 					'conditions' => [
-						['key' => 'value', 'compare' => '=', 'value' => 'category'],
+						['key' => 'value', 'compare' => '=', 'value' => true],
 					],
 				],
 			]),
@@ -165,7 +169,7 @@ return array(
 
 	'textarea' => [
 		'label'   => __( 'Textarea', 'directorist' ),
-		'icon'    => 'uil uil-text-fields',
+		'icon'    => 'uil uil-align-left',
 		'options' => [
 			'type' => [
 				'type'  => 'hidden',
@@ -201,15 +205,19 @@ return array(
 			],
 			'only_for_admin' => [
 				'type'  => 'toggle',
-				'label' => __( 'Administrative Only', 'directorist' ),
+				'label' => __( 'Admin Only', 'directorist' ),
 				'value' => false,
 			],
-			'assign_to' => get_assign_to_field(),
+			'assign_to' => [
+				'type'  => 'toggle',
+				'label' => __('Assign to Category', 'directorist'),
+				'value' => false,
+			],
 			'category'  => get_category_select_field([
 				'show_if' => [
 					'where'      => "self.assign_to",
 					'conditions' => [
-						['key' => 'value', 'compare' => '=', 'value' => 'category'],
+						['key' => 'value', 'compare' => '=', 'value' => true],
 					],
 				],
 			]),
@@ -249,15 +257,46 @@ return array(
 			],
 			'only_for_admin' => [
 				'type'  => 'toggle',
-				'label' => __( 'Administrative Only', 'directorist' ),
+				'label' => __( 'Admin Only', 'directorist' ),
 				'value' => false,
 			],
-			'assign_to' => get_assign_to_field(),
+			'min_value' => [
+				'type'  => 'number',
+				'label' => __( 'Min Value', 'directorist' ),
+				'value' => '',
+			],
+			'max_value' => [
+				'type'  => 'number',
+				'label' => __( 'Max Value', 'directorist' ),
+				'value' => '',
+			],
+			'step'       => [
+				'type'  => 'number',
+				'label' => __( 'Step', 'directorist' ),
+				'value' => 1,
+			],
+			'prepend' => [
+				'type'        => 'text',
+				'label'       => __( 'Prepend', 'directorist' ),
+				'description' => __( 'Appears before The Input', 'directorist' ),
+				'value'       => "",
+			],
+			'append' => [
+				'type'        => 'text',
+				'label'       => __( 'Append', 'directorist' ),
+				'description' => __( 'Appears after The Input', 'directorist' ),
+				'value'       => "",
+			],
+			'assign_to' => [
+				'type'  => 'toggle',
+				'label' => __('Assign to Category', 'directorist'),
+				'value' => false,
+			],
 			'category'  => get_category_select_field([
 				'show_if' => [
 					'where'      => "self.assign_to",
 					'conditions' => [
-						['key' => 'value', 'compare' => '=', 'value' => 'category'],
+						['key' => 'value', 'compare' => '=', 'value' => true],
 					],
 				],
 			]),
@@ -302,15 +341,19 @@ return array(
 			],
 			'only_for_admin' => [
 				'type'  => 'toggle',
-				'label' => __( 'Administrative Only', 'directorist' ),
+				'label' => __( 'Admin Only', 'directorist' ),
 				'value' => false,
 			],
-			'assign_to' => get_assign_to_field(),
+			'assign_to' => [
+				'type'  => 'toggle',
+				'label' => __('Assign to Category', 'directorist'),
+				'value' => false,
+			],
 			'category'  => get_category_select_field([
 				'show_if' => [
 					'where'      => "self.assign_to",
 					'conditions' => [
-						['key' => 'value', 'compare' => '=', 'value' => 'category'],
+						['key' => 'value', 'compare' => '=', 'value' => true],
 					],
 				],
 			]),
@@ -350,15 +393,19 @@ return array(
 			],
 			'only_for_admin' => [
 				'type'  => 'toggle',
-				'label' => __( 'Administrative Only', 'directorist' ),
+				'label' => __( 'Admin Only', 'directorist' ),
 				'value' => false,
 			],
-			'assign_to' => get_assign_to_field(),
+			'assign_to' => [
+				'type'  => 'toggle',
+				'label' => __('Assign to Category', 'directorist'),
+				'value' => false,
+			],
 			'category'  => get_category_select_field([
 				'show_if' => [
 					'where'      => "self.assign_to",
 					'conditions' => [
-						['key' => 'value', 'compare' => '=', 'value' => 'category'],
+						['key' => 'value', 'compare' => '=', 'value' => true],
 					],
 				],
 			]),
@@ -398,15 +445,19 @@ return array(
 			],
 			'only_for_admin' => [
 				'type'  => 'toggle',
-				'label' => __( 'Administrative Only', 'directorist' ),
+				'label' => __( 'Admin Only', 'directorist' ),
 				'value' => false,
 			],
-			'assign_to' => get_assign_to_field(),
+			'assign_to' => [
+				'type'  => 'toggle',
+				'label' => __('Assign to Category', 'directorist'),
+				'value' => false,
+			],
 			'category'  => get_category_select_field([
 				'show_if' => [
 					'where'      => "self.assign_to",
 					'conditions' => [
-						['key' => 'value', 'compare' => '=', 'value' => 'category'],
+						['key' => 'value', 'compare' => '=', 'value' => true],
 					],
 				],
 			]),
@@ -441,15 +492,19 @@ return array(
 			],
 			'only_for_admin' => [
 				'type'  => 'toggle',
-				'label' => __( 'Administrative Only', 'directorist' ),
+				'label' => __( 'Admin Only', 'directorist' ),
 				'value' => false,
 			],
-			'assign_to' => get_assign_to_field(),
+			'assign_to' => [
+				'type'  => 'toggle',
+				'label' => __('Assign to Category', 'directorist'),
+				'value' => false,
+			],
 			'category'  => get_category_select_field([
 				'show_if' => [
 					'where'      => "self.assign_to",
 					'conditions' => [
-						['key' => 'value', 'compare' => '=', 'value' => 'category'],
+						['key' => 'value', 'compare' => '=', 'value' => true],
 					],
 				],
 			]),
@@ -457,8 +512,8 @@ return array(
 	],
 
 	'select' => [
-		'label'   => __( 'Select', 'directorist' ),
-		'icon'    => 'uil uil-file-check',
+		'label'   => __( 'Dropdown', 'directorist' ),
+		'icon'    => 'uil uil-file-check-alt',
 		'options' => [
 			'type' => [
 				'type'  => 'hidden',
@@ -501,15 +556,19 @@ return array(
 			],
 			'only_for_admin' => [
 				'type'  => 'toggle',
-				'label' => __( 'Administrative Only', 'directorist' ),
+				'label' => __( 'Admin Only', 'directorist' ),
 				'value' => false,
 			],
-			'assign_to' => get_assign_to_field(),
+			'assign_to' => [
+				'type'  => 'toggle',
+				'label' => __('Assign to Category', 'directorist'),
+				'value' => false,
+			],
 			'category'  => get_category_select_field([
 				'show_if' => [
 					'where'      => "self.assign_to",
 					'conditions' => [
-						['key' => 'value', 'compare' => '=', 'value' => 'category'],
+						['key' => 'value', 'compare' => '=', 'value' => true],
 					],
 				],
 			]),
@@ -561,15 +620,19 @@ return array(
 			],
 			'only_for_admin' => [
 				'type'  => 'toggle',
-				'label' => __( 'Administrative Only', 'directorist' ),
+				'label' => __( 'Admin Only', 'directorist' ),
 				'value' => false,
 			],
-			'assign_to' => get_assign_to_field(),
+			'assign_to' => [
+				'type'  => 'toggle',
+				'label' => __('Assign to Category', 'directorist'),
+				'value' => false,
+			],
 			'category'  => get_category_select_field([
 				'show_if' => [
 					'where'      => "self.assign_to",
 					'conditions' => [
-						['key' => 'value', 'compare' => '=', 'value' => 'category'],
+						['key' => 'value', 'compare' => '=', 'value' => true],
 					],
 				],
 			]),
@@ -621,15 +684,19 @@ return array(
 			],
 			'only_for_admin' => [
 				'type'  => 'toggle',
-				'label' => __( 'Administrative Only', 'directorist' ),
+				'label' => __( 'Admin Only', 'directorist' ),
 				'value' => false,
 			],
-			'assign_to' => get_assign_to_field(),
+			'assign_to' => [
+				'type'  => 'toggle',
+				'label' => __('Assign to Category', 'directorist'),
+				'value' => false,
+			],
 			'category'  => get_category_select_field([
 				'show_if' => [
 					'where'      => "self.assign_to",
 					'conditions' => [
-						['key' => 'value', 'compare' => '=', 'value' => 'category'],
+						['key' => 'value', 'compare' => '=', 'value' => true],
 					],
 				],
 			]),
@@ -638,7 +705,7 @@ return array(
 
 	'file' => [
 		'label'   => __( 'File Upload', 'directorist' ),
-		'icon'    => 'uil uil-file-upload-alt',
+		'icon'    => 'uil uil-paperclip',
 		'options' => [
 			'type' => [
 				'type'  => 'hidden',
@@ -677,9 +744,9 @@ return array(
 			],
 			'only_for_admin' => [
 				'type'  => 'toggle',
-				'label' => __( 'Administrative Only', 'directorist' ),
+				'label' => __( 'Admin Only', 'directorist' ),
 				'value' => false,
 			],
 		]
 	],
-);
+));

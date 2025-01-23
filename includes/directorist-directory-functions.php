@@ -13,12 +13,6 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 function directorist_get_directory_meta( $directory_id, string $meta_key ) {
-	$directory_id = absint( $directory_id );
-
-	if ( ! $directory_id || empty( $meta_key ) ) {
-		return false;
-	}
-
     return get_term_meta( $directory_id, $meta_key, true );
 }
 
@@ -29,7 +23,15 @@ function directorist_get_listing_form_fields_data( $directory_id ) {
 		return array();
 	}
 
-	return directorist_get_var( $form_data['fields'], array() );
+	foreach ( $fields_keys as $field_key ) {
+		$fields[ $field_key ] = $_fields[ $field_key ];
+	}
+
+	if ( isset( $fields['view_count'] ) ) {
+		unset( $fields['view_count'] );
+	}
+	
+	return $fields;
 }
 
 function directorist_get_listing_form_groups_data( $directory_id ) {
@@ -152,13 +154,41 @@ function directorist_get_listing_create_status( $directory_id ) {
 
 /**
  * Get listing default edit status from directory settings.
+ * And if $listing_id is given then follow the conditions.
  *
  * @param  int  $directory_id
+ * @param  int  $listing_id Added in version 8.
  *
  * @return string Default edit status.
  */
-function directorist_get_listing_edit_status( $directory_id ) {
-	$status = directorist_get_directory_meta( $directory_id, 'edit_listing_status' );
+function directorist_get_listing_edit_status( $directory_id, $listing_id = 0 ) {
+	$builder_status = directorist_get_directory_meta( $directory_id, 'edit_listing_status' );
+	$status         = 'pending';
+	/**
+	 * Builder Edit Status, Listing Edit Status.
+	 * BES - Publish
+	 * LES - Publish
+	 * Result - Publish
+	 *
+	 * BES - Pending
+	 * LES - Pending
+	 * Result - Pending
+	 *
+	 * BES - Publish
+	 * LES - Pending
+	 * Result - Pending
+	 *
+	 * BES - Pending
+	 * LES - Publish
+	 * Result - Pending
+	 */
+	if ( $listing_id && ( $listing_status = get_post_status( $listing_id ) ) !== false ) {
+		if ( $builder_status === 'publish' && $listing_status === 'publish' ) {
+			$status = 'publish';
+		} else if ( $builder_status === 'pending' || $listing_status === 'pending' ) {
+			$status = 'pending';
+		}
+	}
 
 	return apply_filters( 'directorist_listing_edit_status', $status, $directory_id );
 }
@@ -230,6 +260,10 @@ function directorist_get_single_listing_groups( int $directory_id, $plan_id = 0 
 	return array_filter( $groups, static function( $group ) {
 		return ! empty( $group['fields'] );
 	} );
+}
+
+function directorist_get_field( $properties ) {
+	return Directorist\Fields\Fields::create( $properties );
 }
 
 function directorist_update_term_directory( $term_id, array $directory_ids = array(), $append = false ) {
@@ -328,4 +362,43 @@ function directorist_get_directories_for_template( array $args = array() ) {
 
 		return $carry;
 	}, array() );
+}
+
+/**
+ * Get the the relations of directory custom fields to category.
+ *
+ * @since 8.0.0
+ * @param  int $directory_id
+ *
+ * @return array
+ */
+function directorist_get_category_custom_field_relations( $directory_id ) {
+	$submission_form_fields = get_term_meta( $directory_id, 'submission_form_fields', true );
+
+	if ( empty( $submission_form_fields['fields'] ) ) {
+		return array();
+	}
+
+	$relations = array();
+
+	foreach( $submission_form_fields['fields'] as $field ) {
+		if ( empty( $field['assign_to'] ) || empty( $field['category'] ) ) {
+			continue;
+		}
+
+		$relations[ $field['field_key'] ] = (int) $field['category'];
+	}
+
+	return $relations;
+}
+
+/**
+ * Check if the given directory has preview mode enabled.
+ *
+ * @param  int $directory_id
+ *
+ * @return bool
+ */
+function directorist_is_preview_enabled( $directory_id ) {
+	return (bool) directorist_get_directory_meta( $directory_id, 'preview_mode' );
 }

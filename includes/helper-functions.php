@@ -132,13 +132,7 @@ if ( ! function_exists( 'atbdp_auth_guard' ) ) {
 
 		$args          = array_merge( $default, $args );
 		$current_page  = home_url( $wp->request );
-        $migrated      = get_option( 'directorist_merge_dashboard_login_reg_page', false );
-
-        if( $migrated ) {
-            $login_page_id = (int) get_directorist_option( 'user_dashboard' );
-        } else {
-            $login_page_id = (int) get_directorist_option( 'user_login' );
-        }
+        $login_page_id = (int) get_directorist_option( 'user_dashboard' );
 
 		$redirect_url  = $login_page_id ? get_page_link( $login_page_id ) : \ATBDP_Permalink::get_dashboard_page_link();
 		$redirect_url  = add_query_arg( 'redirect', urlencode( $current_page ), $redirect_url );
@@ -291,50 +285,31 @@ if ( ! function_exists( 'atbdp_get_listing_order' ) ) :
 endif;
 
 if ( ! function_exists( 'atbdp_get_listing_status_after_submission' ) ) :
-// atbdp_get_listing_status_after_submission
 function atbdp_get_listing_status_after_submission( array $args = [] ) {
-    $default = ['id' => '', 'edited' => true];
-    $args = array_merge( $default, $args );
+    // Set default values and sanitize input parameters
+    $args = array_merge( [
+        'id'     => 0,
+        'edited' => false,  // Default to false if not set
+    ], $args);
 
-    $args['edited'] = ( true === $args['edited'] || '1' === $args['edited'] || 'yes' === $args['edited'] ) ? true : false;
-    $listing_id = $args['id'];
-
-    $new_l_status   = $args['new_l_status'];
-    $edit_l_status  = ( 'publish' !== $new_l_status ) ? $new_l_status : $args['edit_l_status'];
-    $edited         = $args['edited'];
-    $listing_status = ( true === $edited || 'yes' === $edited || '1' === $edited ) ? $edit_l_status : $new_l_status;
-
-    $monitization          = directorist_is_monetization_enabled();
+    $listing_id            = $args['id'];
+    $listing_status        = $args['edited'] ? $args['edit_status'] : $args['create_status'];
+    $monetization_enabled  = directorist_is_monetization_enabled();
     $featured_enabled      = directorist_is_featured_listing_enabled();
     $pricing_plans_enabled = is_fee_manager_active();
 
-    $post_status =  $listing_status;
-
-    // If Pricing Plans are Enabled
-    if ( $monitization && $pricing_plans_enabled ) {
-        $plan_id   = get_post_meta($listing_id, '_fm_plans', true);
-        $plan_meta = get_post_meta($plan_id);
-        $plan_type = ( ! empty( $plan_meta['plan_type'] ) && ! empty( $plan_meta['plan_type'][0] ) ) ? $plan_meta['plan_type'][0] : '';
-        // $plan_type = $plan_meta['plan_type'][0];
-
-        $_listing_id    = ( 'pay_per_listng' === $plan_type ) ? $listing_id : false;
-        $plan_purchased = subscribed_package_or_PPL_plans(get_current_user_id(), 'completed', $plan_id, $_listing_id);
-
-        $post_status = ( ! $plan_purchased ) ? 'pending' : $listing_status;
+    // Determine post status based on monetization settings and plans
+    if ( $monetization_enabled ) {
+        if ( $pricing_plans_enabled ) {
+            return directorist_get_pricing_plan_status( $listing_id, $listing_status );
+        } elseif ( $featured_enabled ) {
+            return directorist_get_featured_listing_status( $listing_id, $listing_status );
+        }
     }
 
-    // If Featured Listing is Enabled
-    if ( $monitization && ! $pricing_plans_enabled && $featured_enabled ) {
-        $has_order      = atbdp_get_listing_order( $listing_id );
-        $payment_status = ( $has_order ) ? get_post_meta( $has_order->ID, '_payment_status', true) : null;
-
-        $post_status = ( $has_order && 'completed' !== $payment_status ) ? 'pending' : $listing_status;
-    }
-
-    return $post_status;
+    return $listing_status;
 }
 endif;
-
 
 if (!function_exists('load_dependencies')):
     /**
@@ -923,7 +898,7 @@ if (!function_exists('atbdp_get_featured_settings_array')) {
     {
         return array(
             'active' => directorist_is_featured_listing_enabled(),
-            'label' => get_directorist_option('featured_listing_title'),
+            'label' => get_directorist_option( 'featured_listing_title', __('Featured', 'directorist') ),
             'desc' => get_directorist_option('featured_listing_desc'),
             'price' => get_directorist_option('featured_listing_price'),
         );
@@ -940,17 +915,11 @@ if (!function_exists('atbdp_only_logged_in_user')) {
      */
     function atbdp_is_user_logged_in($message = '')
     {
-        if (!is_user_logged_in()) {
+        if ( ! is_user_logged_in() ) {
             // user not logged in;
-            if( get_option( 'directorist_merge_dashboard_login_reg_page' ) ) {
-                $error_message = ( empty( $message ) )
-                    ? sprintf( __( 'You need to be logged in to view the content of this page. You can login/sign up %s', 'directorist' ), apply_filters( "atbdp_login_page_link", "<a href='" . ATBDP_Permalink::get_dashboard_page_link() . "'> " . __( 'Here', 'directorist' ) . "</a>" ) )
-                    : $message;
-            } else {
-                $error_message = ( empty( $message ) )
-                    ? sprintf( __( 'You need to be logged in to view the content of this page. You can login %s. Don\'t have an account? %s', 'directorist' ), apply_filters( "atbdp_login_page_link", "<a href='" . ATBDP_Permalink::get_login_page_link() . "'> " . __('Here', 'directorist') . "</a>" ), apply_filters("atbdp_signup_page_link", "<a href='" . ATBDP_Permalink::get_registration_page_link() . "'> " . __( 'Sign up', 'directorist' ) . "</a>" ) )
-                    : $message;
-            }
+            $error_message = ( empty( $message ) )
+                ? sprintf( __( 'You need to be logged in to view the content of this page. You can login/sign up %s', 'directorist' ), apply_filters( "atbdp_login_page_link", "<a href='" . ATBDP_Permalink::get_dashboard_page_link() . "'> " . __( 'Here', 'directorist' ) . "</a>" ) )
+                : $message;
             $container_fluid = is_directoria_active() ? 'container' : 'container-fluid';
             ?>
             <section class="directory_wrapper single_area">
@@ -1167,20 +1136,20 @@ function atbdp_display_price_range($price_range)
     $output = '';
     if ('skimming' == $price_range) {
         $output =
-            '<span class="atbd_meta atbd_listing_average_pricing atbd_tooltip" aria-label="Skimming"><span class="atbd_active">' . $c_symbol . '</span><span class="atbd_active">' . $c_symbol . '</span><span class="atbd_active">' . $c_symbol . '</span><span class="atbd_active">' . $c_symbol . '</span>
+            '<span class="directorist-listing-price-range directorist-tooltip" data-label="Skimming"><span class="directorist-price-active">' . $c_symbol . '</span><span class="directorist-price-active">' . $c_symbol . '</span><span class="directorist-price-active">' . $c_symbol . '</span><span class="directorist-price-active">' . $c_symbol . '</span>
         </span>';
     } elseif ('moderate' == $price_range) {
         $output =
-            '<span class="atbd_meta atbd_listing_average_pricing atbd_tooltip" aria-label="Moderate"><span class="atbd_active">' . $c_symbol . '</span><span class="atbd_active">' . $c_symbol . '</span><span class="atbd_active">' . $c_symbol . '</span><span>' . $c_symbol . '</span>
+            '<span class="directorist-listing-price-range directorist-tooltip" data-label="Moderate"><span class="directorist-price-active">' . $c_symbol . '</span><span class="directorist-price-active">' . $c_symbol . '</span><span class="directorist-price-active">' . $c_symbol . '</span><span>' . $c_symbol . '</span>
             </span>';
     } elseif ('economy' == $price_range) {
         $output =
-            '<span class="atbd_meta atbd_listing_average_pricing atbd_tooltip" aria-label="Economy"><span class="atbd_active">' . $c_symbol . '</span><span class="atbd_active">' . $c_symbol . '</span><span>' . $c_symbol . '</span><span>' . $c_symbol . '</span>
+            '<span class="directorist-listing-price-range directorist-tooltip" data-label="Economy"><span class="directorist-price-active">' . $c_symbol . '</span><span class="directorist-price-active">' . $c_symbol . '</span><span>' . $c_symbol . '</span><span>' . $c_symbol . '</span>
         </span>';
     } elseif ('bellow_economy' == $price_range) {
 
         $output =
-            '<span class="atbd_meta atbd_listing_average_pricing atbd_tooltip" aria-label="Cheap"><span class="atbd_active">' . $c_symbol . '</span><span>' . $c_symbol . '</span><span>' . $c_symbol . '</span><span>' . $c_symbol . '</span>
+            '<span class="directorist-listing-price-range directorist-tooltip" data-label="Cheap"><span class="directorist-price-active">' . $c_symbol . '</span><span>' . $c_symbol . '</span><span>' . $c_symbol . '</span><span>' . $c_symbol . '</span>
         </span>';
 
     }
@@ -1197,7 +1166,7 @@ function atbdp_display_price_range($price_range)
  * @since    4.0.0
  *
  */
-function atbdp_listings_count_by_category( $term_id, $lisitng_type = '' )
+function atbdp_listings_count_by_category( $term_id, $listing_type = '' )
 {
     $args = array(
         'fields'         => 'ids',
@@ -1206,7 +1175,7 @@ function atbdp_listings_count_by_category( $term_id, $lisitng_type = '' )
         'post_status'    => 'publish',
     );
 
-    if( ! empty( $lisitng_type ) ) {
+    if( ! empty( $listing_type ) && 'all' !== $listing_type ) {
         $args['tax_query'] = array(
             'relation' => 'AND',
             array(
@@ -1218,7 +1187,7 @@ function atbdp_listings_count_by_category( $term_id, $lisitng_type = '' )
             array(
                 'taxonomy' => ATBDP_TYPE,
                 'field' => 'term_id',
-                'terms' => (int) $lisitng_type,
+                'terms' => (int) $listing_type,
             )
         );
     } else {
@@ -1305,7 +1274,7 @@ function atbdp_list_categories($settings)
  * @since    4.0.0
  *
  */
-function atbdp_listings_count_by_location( $term_id, $lisitng_type = '' ) {
+function atbdp_listings_count_by_location( $term_id, $listing_type = '' ) {
     $args = array(
         'fields' => 'ids',
         'posts_per_page' => -1,
@@ -1313,7 +1282,7 @@ function atbdp_listings_count_by_location( $term_id, $lisitng_type = '' ) {
         'post_status' => 'publish',
     );
 
-    if( ! empty( $lisitng_type ) ) {
+    if( ! empty( $listing_type ) && 'all' !== $listing_type ) {
         $args['tax_query'] = array(
             'relation' => 'AND',
             array(
@@ -1325,7 +1294,7 @@ function atbdp_listings_count_by_location( $term_id, $lisitng_type = '' ) {
             array(
                 'taxonomy' => ATBDP_TYPE,
                 'field' => 'term_id',
-                'terms' => (int) $lisitng_type,
+                'terms' => (int) $listing_type,
             )
         );
     } else {
@@ -1747,6 +1716,22 @@ function directorist_clean($var)
     }
 }
 
+/*
+ * Clean variables using wp_kses_post. Arrays are cleaned recursively.
+ * Non-scalar values are ignored.
+ *
+ * @param string|array $var Data to sanitize.
+ * @return string|array
+ */
+function directorist_clean_post( $var )
+{
+    if (is_array($var)) {
+        return array_map('directorist_clean_post', $var);
+    } else {
+        return is_scalar($var) ? wp_kses_post( $var ) : $var;
+    }
+}
+
 /**
  * Display the favourites link.
  *
@@ -1756,20 +1741,16 @@ function directorist_clean($var)
  *
  */
 function the_atbdp_favourites_link( $post_id = 0 ) {
-    if ( is_user_logged_in() ) {
-        if ( $post_id == 0 ) {
-            global $post;
-            $post_id = $post->ID;
-        }
+    if ( $post_id == 0 ) {
+        global $post;
+        $post_id = $post->ID;
+    }
 
-        $favourites = directorist_get_user_favorites( get_current_user_id() );
-        if ( in_array( $post_id, $favourites ) ) {
-            return directorist_icon( 'las la-heart', false, 'directorist-added-to-favorite') . '<a href="#" class="atbdp-favourites" data-post_id="' . $post_id . '"></a>';
-        } else {
-            return directorist_icon( 'las la-heart', false ) . '<a href="#" class="atbdp-favourites" data-post_id="' . $post_id . '"></a>';
-        }
+    $favourites = directorist_get_user_favorites( get_current_user_id() );
+    if ( in_array( $post_id, $favourites ) ) {
+        return directorist_icon( 'las la-heart', false, 'directorist-added-to-favorite');
     } else {
-        return '<a href="#" class="atbdp-require-login">'.directorist_icon( 'las la-heart', false ).'</a>';
+        return directorist_icon( 'las la-heart', false );
     }
 }
 
@@ -1901,113 +1882,99 @@ endif;
  * @since   1.0.0
  * @since   1.5.6 Added to check GD invoices and GD checkout pages.
  */
-function atbdp_is_page($atbdppages = '')
-{
-    global $post;
 
-    $atbdppages = preg_replace( '/[-]/', '_', $atbdppages );
+if ( ! function_exists('atbdp_is_page') ) {
+    function atbdp_is_page( $page_type = '' ) {
+        global $post;
 
-    switch ($atbdppages):
-        case 'home':
-            if (is_page() && get_the_ID() == get_directorist_option('search_listing')) {
-                return true;
-            } elseif (is_page() && isset($post->post_content) && has_shortcode($post->post_content, 'directorist_search_listing')) {
-                return true;
-            }
-            break;
-        case 'search_result':
-            if (is_page() && get_the_ID() == get_directorist_option('search_result_page')) {
-                return true;
-            } elseif (is_page() && isset($post->post_content) && has_shortcode($post->post_content, 'directorist_search_result')) {
-                return true;
-            }
-            break;
-        case 'add_listing':
-            if (is_page() && get_the_ID() == get_directorist_option('add_listing_page')) {
-                return true;
-            } elseif (is_page() && isset($post->post_content) && has_shortcode($post->post_content, 'directorist_add_listing')) {
-                return true;
-            }
-            break;
-        case 'all_listing':
-            if (is_page() && get_the_ID() == get_directorist_option('all_listing_page')) {
-                return true;
-            } elseif (is_page() && isset($post->post_content) && has_shortcode($post->post_content, 'directorist_all_listing')) {
-                return true;
-            }
-            break;
-        case 'dashboard':
-            if (is_page() && get_the_ID() == get_directorist_option('user_dashboard')) {
-                return true;
-            } elseif (is_page() && isset($post->post_content) && has_shortcode($post->post_content, 'directorist_user_dashboard')) {
-                return true;
-            }
-            break;
-        case 'author':
-            if (is_page() && get_the_ID() == get_directorist_option('author_profile_page')) {
-                return true;
-            } elseif (is_page() && isset($post->post_content) && has_shortcode($post->post_content, 'directorist_author_profile')) {
-                return true;
-            }
-            break;
-        case 'category':
-            if (is_page() && get_the_ID() == get_directorist_option('all_categories_page')) {
-                return true;
-            } elseif (is_page() && isset($post->post_content) && has_shortcode($post->post_content, 'directorist_all_categories')) {
-                return true;
-            }
-            break;
-        case 'single_listing':
-            return is_singular('at_biz_dir');
-            break;
-        case 'single_category':
-            if (is_page() && get_the_ID() == get_directorist_option('single_category_page')) {
-                return true;
-            } elseif (is_page() && isset($post->post_content) && has_shortcode($post->post_content, 'directorist_category')) {
-                return true;
-            }
-            break;
-        case 'all_locations':
-            if (is_page() && get_the_ID() == get_directorist_option('all_locations_page')) {
-                return true;
-            } elseif (is_page() && isset($post->post_content) && has_shortcode($post->post_content, 'directorist_all_locations')) {
-                return true;
-            }
-            break;
-        case 'single_location':
-            if (is_page() && get_the_ID() == get_directorist_option('single_location_page')) {
-                return true;
-            } elseif (is_page() && isset($post->post_content) && has_shortcode($post->post_content, 'directorist_location')) {
-                return true;
-            }
-            break;
-        case 'single_tag':
-            if (is_page() && get_the_ID() == get_directorist_option('single_tag_page')) {
-                return true;
-            } elseif (is_page() && isset($post->post_content) && has_shortcode($post->post_content, 'directorist_tag')) {
-                return true;
-            }
-            break;
-        case 'registration':
-            if (is_page() && get_the_ID() == get_directorist_option('custom_registration')) {
-                return true;
-            } elseif (is_page() && isset($post->post_content) && has_shortcode($post->post_content, 'directorist_custom_registration')) {
-                return true;
-            }
-            break;
-        case 'login':
-            if (is_page() && get_the_ID() == get_directorist_option('user_login')) {
-                return true;
-            } elseif (is_page() && isset($post->post_content) && has_shortcode($post->post_content, 'directorist_user_login')) {
-                return true;
-            }
-            break;
+        // Normalize page type by replacing dashes with underscores for consistency.
+        $page_type = str_replace( '-', '_', $page_type );
 
-    endswitch;
+        // Handle singular page types separately.
+        if ( $page_type === 'single_listing' ) {
+            return is_singular( 'at_biz_dir' );
+        }
 
-    //endif;
+        // Map page types to their corresponding options and shortcodes.
+        $page_map = [
+            'home' => [
+                'option'    => 'search_listing',
+                'shortcode' => 'directorist_search_listing',
+            ],
+            'search_result' => [
+                'option'    => 'search_result_page',
+                'shortcode' => 'directorist_search_result',
+            ],
+            'add_listing' => [
+                'option'    => 'add_listing_page',
+                'shortcode' => 'directorist_add_listing',
+            ],
+            'all_listing' => [
+                'option'    => 'all_listing_page',
+                'shortcode' => 'directorist_all_listing',
+            ],
+            'dashboard' => [
+                'option'    => 'user_dashboard',
+                'shortcode' => 'directorist_user_dashboard',
+            ],
+            'author' => [
+                'option'    => 'author_profile_page',
+                'shortcode' => 'directorist_author_profile',
+            ],
+            'category' => [
+                'option'    => 'all_categories_page',
+                'shortcode' => 'directorist_all_categories',
+            ],
+            'single_category' => [
+                'option'    => 'single_category_page',
+                'shortcode' => 'directorist_category',
+            ],
+            'all_locations' => [
+                'option'    => 'all_locations_page',
+                'shortcode' => 'directorist_all_locations',
+            ],
+            'single_location' => [
+                'option'    => 'single_location_page',
+                'shortcode' => 'directorist_location',
+            ],
+            'single_tag' => [
+                'option'    => 'single_tag_page',
+                'shortcode' => 'directorist_tag',
+            ],
+            'signin_signup' => [
+                'option'    => 'signin_signup_page',
+                'shortcode' => 'directorist_signin_signup',
+            ],
+            'login' => [
+                'option'    => 'signin_signup_page',
+                'shortcode' => 'directorist_signin_signup',
+            ],
+            'registration' => [
+                'option'    => 'signin_signup_page',
+                'shortcode' => 'directorist_signin_signup',
+            ],
+        ];
 
-    return false;
+        // Check if the specified page type matches the current page.
+        if ( isset( $page_map[ $page_type ] ) ) {
+            $option    = $page_map[ $page_type ]['option'];
+            $page_id   = get_directorist_option( $option );
+
+            if ( is_page( $page_id ) ) {
+                return true;
+            }
+
+            $shortcode     = $page_map[ $page_type ]['shortcode'];
+            $has_shortcode = isset( $post->post_content ) && has_shortcode( $post->post_content, $shortcode );
+
+            if ( $has_shortcode ) {
+                return true;
+            }
+        }
+
+        // Return false if no match is found.
+        return false;
+    }
 }
 
 /**
@@ -2326,6 +2293,8 @@ function search_category_location_filter($settings, $taxonomy_id, $prefix = '')
 
         foreach ($terms as $term) {
             $directory_type = get_term_meta( $term->term_id, '_directory_type', true );
+            $icon           = get_cat_icon( $term->term_id );
+            $icon_src       = \Directorist\Helper::get_icon_src( $icon );
             $directory_type = ! empty( $directory_type ) ? $directory_type : array();
             if( in_array( $settings['listing_type'], $directory_type ) ) {
                 $settings['term_id'] = $term->term_id;
@@ -2338,18 +2307,19 @@ function search_category_location_filter($settings, $taxonomy_id, $prefix = '')
                 }
                 $selected = ($term_id == $term->term_id) ? "selected" : '';
 
-                $custom_field = '';
+                $has_custom_field = false;
 
-                if(is_array($settings['assign_to_category']['assign_to_cat'])) {
-                    $custom_field = in_array( $term->term_id, $settings['assign_to_category']['assign_to_cat'] ) ? true : '';
+                if ( ! empty( $settings['categories_with_custom_field'] ) ) {
+                    $has_custom_field = in_array( (int) $term->term_id, $settings['categories_with_custom_field'], true );
                 }
 
-                $html .= '<option data-custom-field="' . $custom_field . '" value="' . $term->term_id . '" ' . $selected . '>';
+                $html .= '<option data-icon = "' . esc_attr( $icon_src ). '" data-custom-field="' . esc_attr( $has_custom_field ) . '" value="' . $term->term_id . '" ' . $selected . '>';
+
                 $html .= $prefix . $term->name;
                 if (!empty($settings['show_count'])) {
                     $html .= ' (' . $count . ')';
                 }
-                $html .= search_category_location_filter($settings, $taxonomy_id, $prefix . '&nbsp;&nbsp;&nbsp;');
+                $html .= search_category_location_filter($settings, $taxonomy_id, $prefix . '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;');
                 $html .= '</option>';
             }
         }
@@ -2459,29 +2429,21 @@ function atbdp_guest_submission($guest_email)
 				update_user_meta( $user_id, 'directorist_user_email_unverified', 1 );
 			}
 
-			wp_new_user_notification($user_id, null, 'admin'); // send activation to the admin
-
-			ATBDP()->email->custom_wp_new_user_notification_email($user_id);
+            wp_new_user_notification($user_id, null, 'admin'); // send activation to the admin
+            ATBDP()->email->custom_wp_new_user_notification_email($user_id);
         }
     }
 }
 
 function atbdp_get_listing_attachment_ids( $listing_id ) {
-	$featured_image = (int) get_post_meta( $listing_id, '_listing_prv_img', true );
+	$featured_image = directorist_get_listing_preview_image( $listing_id );
 	$attachment_ids = array();
 
 	if ( $featured_image ) {
-		$attachment_ids[] = $featured_image;
+		$attachment_ids[] = (int) $featured_image;
 	}
 
-    $gallery_images = (array) get_post_meta( $listing_id, '_listing_img', true );
-
-	if ( empty( $gallery_images ) ) {
-		return $attachment_ids;
-	}
-
-	$gallery_images = wp_parse_id_list( $gallery_images );
-	$gallery_images = array_filter( $gallery_images );
+    $gallery_images = directorist_get_listing_gallery_images( $listing_id );
 
 	if ( empty( $gallery_images ) ) {
 		return $attachment_ids;
@@ -2655,6 +2617,10 @@ function atbdp_create_required_pages(){
             'title' => __('Dashboard', 'directorist'),
             'content' => '[directorist_user_dashboard]'
         ),
+        'signin_signup_page' => array(
+            'title' => __('Sign In', 'directorist'),
+            'content' => '[directorist_signin_signup]'
+        ),
         /* 'checkout_page' => array(
             'title' => __('Checkout', 'directorist'),
             'content' => '[directorist_checkout]'
@@ -2758,8 +2724,8 @@ function atbdp_thumbnail_card($img_src = '', $_args = array())
 
     $thumbnail_img = '';
 
-    $listing_prv_img   = get_post_meta(get_the_ID(), '_listing_prv_img', true);
-    $listing_img       = get_post_meta(get_the_ID(), '_listing_img', true);
+    $listing_prv_img   = directorist_get_listing_preview_image( get_the_ID() );
+    $listing_img       = directorist_get_listing_gallery_images( get_the_ID() );
     $default_image_src = get_directorist_option('default_preview_image', DIRECTORIST_ASSETS . 'images/grid.jpg');
 
     if ( is_array( $listing_img ) && ! empty( $listing_img ) ) {
@@ -2997,14 +2963,22 @@ if( !function_exists('directory_types') ){
 
 if ( ! function_exists( 'directorist_get_default_directory' ) ) {
 	/**
-	 * Get default directory id.
+	 * Get default directory id or slug.
 	 *
-	 * @return int Default directory id.
+	 * @param string $return Return type {id, slug}
+	 *
+	 * @return int|string Default directory id or slug depending on return type.
 	 */
-	function directorist_get_default_directory() {
+	function directorist_get_default_directory( $return = 'id' ) {
+		if ( $return === 'slug' ) {
+			$fields = 'slugs';
+		} else {
+			$fields = 'ids';
+		}
+
 		$directories = directorist_get_directories( array(
 			'default_only' => true,
-			'fields'       => 'ids',
+			'fields'       => $fields,
 		) );
 
 		if ( empty( $directories ) || is_wp_error( $directories ) || ! isset( $directories[0] ) ) {
@@ -3037,13 +3011,16 @@ if( !function_exists('get_listing_types') ){
 if( !function_exists('directorist_get_form_fields_by_directory_type') ){
     function directorist_get_form_fields_by_directory_type( $field = 'id', $value = '' ) {
         $term                   = get_term_by( $field, $value, ATBDP_TYPE );
-        if( is_wp_error( $term ) ) {
+        if( is_wp_error( $term ) || empty( $term ) || is_array( $term ) ) {
+            return [];
+        }
+        if( ! isset( $term->term_id ) ) {
             return [];
         }
 
-		if ( ! ( $term instanceof \WP_Term ) ) {
-		    return [];
-		}
+        if ( ! ( $term instanceof \WP_Term ) ) {
+		      return [];
+		    }
 
         $submission_form        = get_term_meta( $term->term_id, 'submission_form_fields', true );
         $submission_form_fields = ! empty( $submission_form['fields'] ) ? $submission_form['fields'] : [];
@@ -3071,8 +3048,7 @@ if( ! function_exists( 'directorist_warnings' ) ) {
         $single_category_page 	 	= get_directorist_option( 'single_category_page' );
         $single_location_page	 	= get_directorist_option( 'single_location_page' );
         $single_tag_page		 	= get_directorist_option( 'single_tag_page' );
-        $custom_registration     	= get_directorist_option( 'custom_registration' );
-        $user_login				 	= get_directorist_option( 'user_login' );
+        $signin_signup_page			= get_directorist_option( 'signin_signup_page' );
         $search_result_page      	= get_directorist_option( 'search_result_page' );
         $checkout_page			 	= get_directorist_option( 'checkout_page' );
         $payment_receipt_page	 	= get_directorist_option( 'payment_receipt_page' );
@@ -3083,12 +3059,13 @@ if( ! function_exists( 'directorist_warnings' ) ) {
         $map_api_key				= get_directorist_option( 'map_api_key' );
         $host                       = gethostname();
         $connection                 =  @fsockopen( $host, 25, $errno, $errstr, 5 );
+        $page_settings_link         = esc_url( admin_url() . "/edit.php?post_type=at_biz_dir&page=atbdp-settings#page_settings" );
         $warnings = [];
         if( empty( $add_listing ) ) {
             $warnings[] = array(
                 'title' => __( 'Add listing page not selected', 'directorist'),
                 'desc'  => __( "Contains a collection of relevant data that will help you debug your website accurately and more efficiently.", 'directorist'),
-                'link'  => admin_url()."/edit.php?post_type=at_biz_dir&page=aazztech_settings#_pages",
+                'link'  => $page_settings_link,
                 'link_text' => __( 'Select Page', 'directorist' )
             );
         }
@@ -3096,7 +3073,7 @@ if( ! function_exists( 'directorist_warnings' ) ) {
             $warnings[] = array(
                 'title' => __( 'Dashboard page not selected', 'directorist'),
                 'desc'  => __( "Contains a collection of relevant data that will help you debug your website accurately and more efficiently.", 'directorist'),
-                'link'  => admin_url()."/edit.php?post_type=at_biz_dir&page=aazztech_settings#_pages",
+                'link'  => $page_settings_link,
                 'link_text' => __( 'Select Page', 'directorist' )
             );
         }
@@ -3104,7 +3081,7 @@ if( ! function_exists( 'directorist_warnings' ) ) {
             $warnings[] = array(
                 'title' => __( 'User Profile page not selected', 'directorist'),
                 'desc'  => __( "Contains a collection of relevant data that will help you debug your website accurately and more efficiently.", 'directorist'),
-                'link'  => admin_url()."/edit.php?post_type=at_biz_dir&page=aazztech_settings#_pages",
+                'link'  => $page_settings_link,
                 'link_text' => __( 'Select Page', 'directorist' )
             );
         }
@@ -3112,7 +3089,7 @@ if( ! function_exists( 'directorist_warnings' ) ) {
             $warnings[] = array(
                 'title' => __( 'Single Category page not selected', 'directorist'),
                 'desc'  => __( "Contains a collection of relevant data that will help you debug your website accurately and more efficiently.", 'directorist'),
-                'link'  => admin_url()."/edit.php?post_type=at_biz_dir&page=aazztech_settings#_pages",
+                'link'  => $page_settings_link,
                 'link_text' => __( 'Select Page', 'directorist' )
             );
         }
@@ -3120,7 +3097,7 @@ if( ! function_exists( 'directorist_warnings' ) ) {
             $warnings[] = array(
                 'title' => __( 'Single Location page not selected', 'directorist'),
                 'desc'  => __( "Contains a collection of relevant data that will help you debug your website accurately and more efficiently.", 'directorist'),
-                'link'  => admin_url()."/edit.php?post_type=at_biz_dir&page=aazztech_settings#_pages",
+                'link'  => $page_settings_link,
                 'link_text' => __( 'Select Page', 'directorist' )
             );
         }
@@ -3128,23 +3105,15 @@ if( ! function_exists( 'directorist_warnings' ) ) {
             $warnings[] = array(
                 'title' => __( 'Single Location page not selected', 'directorist'),
                 'desc'  => __( "Contains a collection of relevant data that will help you debug your website accurately and more efficiently.", 'directorist'),
-                'link'  => admin_url()."/edit.php?post_type=at_biz_dir&page=aazztech_settings#_pages",
+                'link'  => $page_settings_link,
                 'link_text' => __( 'Select Page', 'directorist' )
             );
         }
-        if( empty( $custom_registration ) ) {
+        if( empty( $signin_signup_page ) ) {
             $warnings[] = array(
-                'title' => __( 'Registration page not selected', 'directorist'),
+                'title' => __( 'Sign In & Signup page not selected', 'directorist'),
                 'desc'  => __( "Contains a collection of relevant data that will help you debug your website accurately and more efficiently.", 'directorist'),
-                'link'  => admin_url()."/edit.php?post_type=at_biz_dir&page=aazztech_settings#_pages",
-                'link_text' => __( 'Select Page', 'directorist' )
-            );
-        }
-        if( empty( $user_login ) ) {
-            $warnings[] = array(
-                'title' => __( 'Login page not selected', 'directorist'),
-                'desc'  => __( "Contains a collection of relevant data that will help you debug your website accurately and more efficiently.", 'directorist'),
-                'link'  => admin_url()."/edit.php?post_type=at_biz_dir&page=aazztech_settings#_pages",
+                'link'  => $page_settings_link,
                 'link_text' => __( 'Select Page', 'directorist' )
             );
         }
@@ -3152,7 +3121,7 @@ if( ! function_exists( 'directorist_warnings' ) ) {
             $warnings[] = array(
                 'title' => __( 'Search Result page not selected', 'directorist'),
                 'desc'  => __( "Contains a collection of relevant data that will help you debug your website accurately and more efficiently.", 'directorist'),
-                'link'  => admin_url()."/edit.php?post_type=at_biz_dir&page=aazztech_settings#_pages",
+                'link'  => $page_settings_link,
                 'link_text' => __( 'Select Page', 'directorist' )
             );
         }
@@ -3160,7 +3129,7 @@ if( ! function_exists( 'directorist_warnings' ) ) {
             $warnings[] = array(
                 'title' => __( 'Checkout page not selected', 'directorist'),
                 'desc'  => __( "Contains a collection of relevant data that will help you debug your website accurately and more efficiently.", 'directorist'),
-                'link'  => admin_url()."/edit.php?post_type=at_biz_dir&page=aazztech_settings#_pages",
+                'link'  => $page_settings_link,
                 'link_text' => __( 'Select Page', 'directorist' )
             );
         }
@@ -3168,7 +3137,7 @@ if( ! function_exists( 'directorist_warnings' ) ) {
             $warnings[] = array(
                 'title' => __( 'Payment Receipt page not selected', 'directorist'),
                 'desc'  => __( "Contains a collection of relevant data that will help you debug your website accurately and more efficiently.", 'directorist'),
-                'link'  => admin_url()."/edit.php?post_type=at_biz_dir&page=aazztech_settings#_pages",
+                'link'  => $page_settings_link,
                 'link_text' => __( 'Select Page', 'directorist' )
             );
         }
@@ -3176,7 +3145,7 @@ if( ! function_exists( 'directorist_warnings' ) ) {
             $warnings[] = array(
                 'title' => __( 'Transaction Failure page not selected', 'directorist'),
                 'desc'  => __( "Contains a collection of relevant data that will help you debug your website accurately and more efficiently.", 'directorist'),
-                'link'  => admin_url()."/edit.php?post_type=at_biz_dir&page=aazztech_settings#_pages",
+                'link'  => $page_settings_link,
                 'link_text' => __( 'Select Page', 'directorist' )
             );
         }
@@ -3184,7 +3153,7 @@ if( ! function_exists( 'directorist_warnings' ) ) {
             $warnings[] = array(
                 'title'      => __( 'Map Api Key is missing', 'directorist'),
                 'desc'       => __( "Contains a collection of relevant data that will help you debug your website accurately and more efficiently.", 'directorist'),
-                'link'       => admin_url()."/edit.php?post_type=at_biz_dir&page=aazztech_settings#_map_setting",
+                'link'       => esc_url( admin_url() . "/edit.php?post_type=at_biz_dir&page=atbdp-settings#listing_settings__map" ),
                 'link_text'  => __( 'Give the Api', 'directorist' )
             );
         }
@@ -3195,7 +3164,7 @@ if( ! function_exists( 'directorist_warnings' ) ) {
             );
         }
 
-        return $warnings;
+        return apply_filters( 'directorist_warnings', $warnings );
     }
 }
 
@@ -3280,9 +3249,19 @@ function directorist_get_registration_error_message( $error_code ) {
 	$message = [
 		'0' => __( 'Something went wrong!', 'directorist' ),
 		'1' => __( 'Registration failed. Please make sure you filed up all the necessary fields marked with <span style="color: red">*</span>', 'directorist' ),
-		'2' => sprintf( __( 'This email is already registered. Please <a href="%s">click here to login</a>.', 'directorist' ), ATBDP_Permalink::get_login_page_link() ),
+		'2' => sprintf(
+			/** translators: %1$s - link opening, %2$s - link closing */
+			__( 'This email is already registered. Please %1$sclick here to login%2$s.', 'directorist' ),
+			'<a class="directorist-authentication__toggle" href="' . ATBDP_Permalink::get_dashboard_page_link() . '">',
+			'</a>'
+		),
 		'3' => __( 'Username too short. At least 4 characters is required', 'directorist' ),
-		'4' => sprintf( __( 'This username is already registered. Please <a href="%s">click here to login</a>.', 'directorist' ), ATBDP_Permalink::get_login_page_link() ),
+		'4' => sprintf(
+			/** translators: %1$s - link opening, %2$s - link closing */
+			__( 'This username is already registered. Please %1$sclick here to login%2$s.', 'directorist' ),
+			'<a class="directorist-authentication__toggle" href="' . ATBDP_Permalink::get_dashboard_page_link() . '">',
+			'</a>'
+		),
 		'5' => __( 'Password length must be greater than 5', 'directorist' ),
 		'6' => __( 'Email is not valid', 'directorist' ),
 		'7' => __( 'Space is not allowed in username', 'directorist' ),
@@ -3771,8 +3750,8 @@ function directorist_get_var( &$var, $default = null ) {
  *
  * @return mixed
  */
-function directorist_maybe_json( $input_data = '', $return_first_item = false ) {
-    return directorist_clean( Helper::maybe_json( $input_data, $return_first_item ) );
+function directorist_maybe_json( $input_data = '', $return_first_item = false, $sanitizer = 'directorist_clean' ) {
+    return call_user_func( $sanitizer, Helper::maybe_json( $input_data, $return_first_item ) );
 }
 
 /**
@@ -3808,6 +3787,7 @@ function directorist_get_allowed_attributes() {
         'd'       => array(),
 
 		'data-custom-field' => array(),
+		'data-icon' => array(),
     );
 
     return apply_filters( 'directorist_get_allowed_attributes', $allowed_attributes );
@@ -4036,7 +4016,7 @@ function directorist_password_reset_url( $user, $password_reset = true, $confirm
         $args['confirm_mail'] = true;
     }
 
-    $reset_password_url = ATBDP_Permalink::get_dashboard_page_link( $args );
+    $reset_password_url = ATBDP_Permalink::get_signin_signup_page_link( $args );
 
     return apply_filters( 'directorist_password_reset_url', $reset_password_url );
 }
@@ -4049,6 +4029,7 @@ function directorist_password_reset_url( $user, $password_reset = true, $confirm
  *
  * @return array
  */
+
 function directorist_get_mime_types( $filterby = '', $return_type = '' ) {
 	$allowed_mime_types = get_allowed_mime_types();
 
@@ -4221,7 +4202,6 @@ function directorist_background_image_process( $images ) {
 		}
 
 		$should_dispatch = true;
-
 		ATBDP()->background_image_process->push_to_queue( array( $image_id => $image_path ) );
 	}
 
@@ -4230,8 +4210,97 @@ function directorist_background_image_process( $images ) {
 	}
 }
 
+function directorist_get_json_from_url( $url ) {
+    $zip_content = file_get_contents( $url );
+
+    if ( $zip_content === false ) {
+        return false;
+    }
+
+    $temp_zip_path = tempnam( sys_get_temp_dir(), 'unzip_temp' );
+
+    if ( ! $temp_zip_path ) {
+        return false;
+    }
+
+    if ( file_put_contents($temp_zip_path, $zip_content) === false ) {
+        return false;
+    }
+
+    $zip = new ZipArchive;
+
+    if ( $zip->open( $temp_zip_path ) === true ) {
+
+        $json_content = $zip->getFromIndex( 0 );
+        $decoded_data = json_decode( $json_content, true );
+
+        if ( $decoded_data === null ) {
+            return false;
+        }
+
+        $zip->close();
+
+        unlink($temp_zip_path);
+
+        return $decoded_data;
+    }
+}
+
 /**
- * Delete directory even when non empty.
+ * Calculate number options for select and radio inputs.
+ *
+ * @param array $data {
+ *     An array of data containing configuration parameters.
+ *
+ *     @type array $options {
+ *         An array of options for configuring the calculation.
+ *
+ *         @type int $min_value The minimum value for the range. Defaults to 1 if not provided.
+ *         @type int $max_value The maximum value for the range. Defaults to 100 if not provided.
+ *     }
+ *     @type int $step The step size for calculating options. Defaults to dividing the range into 5 parts if not provided.
+ * }
+ * @return array Associative array containing 'select' and 'radio' options.
+ */
+
+if ( ! function_exists('directorist_calculate_number_options') ) {
+    function directorist_calculate_number_options( $data ) {
+        $min_val = ! empty( $data['options']['min_value'] ) ? absint( $data['options']['min_value'] ) : 1;
+        $max_val = ! empty( $data['options']['max_value'] ) ? absint( $data['options']['max_value'] ) : 100;
+
+        // Calculate step
+        $step = absint( ! empty( $data['options']['step'] ) ? $data['options']['step'] : ( $max_val - $min_val ) / 5 );
+
+        if( empty( $data['options']['step'] ) && $max_val < 10 ) {
+            $step = 1;
+        }
+
+        // Calculate select options
+        $select_options = array();
+        if( $max_val > $min_val ) {
+            for ( $i = $min_val; $i <= $max_val; $i += $step ) {
+                $select_options[] = (int) round( $i );
+            }
+        }
+
+        // Calculate radio options
+        $radio_options = array();
+        if( $max_val > $min_val ) {
+            for ( $i = $min_val; $i <= $max_val; $i += $step ) {
+                $range_start     = $i;
+                $range_end       = min( $i + $step - 1, $max_val );
+                $radio_options[] = array( 'start' => $range_start, 'end' => $range_end );
+            }
+        }
+
+        return array(
+            'select' => $select_options,
+            'radio' => $radio_options,
+        );
+    }
+}
+
+/** Delete directory even when non empty.
  *
  * @since 7.9.1
  *
@@ -4354,4 +4423,244 @@ function directorist_delete_listing_empty_metadata( $listing_id, array $metadata
 	foreach ( $deletable_meta_data as $deletable_meta_key => $v ) {
 		delete_post_meta( $listing_id, $deletable_meta_key );
 	}
+}
+
+function directorist_download_plugin( array $args = array() ) {
+    $status = array( 'success' => false );
+
+    $default = array(
+        'url' => '',
+        'init_wp_filesystem' => true,
+    );
+    $args    = array_merge( $default, $args );
+
+    $allowed_host = array( 'directorist.com', 'wordpress.org', 'downloads.wordpress.org' );
+
+    if ( empty( $args['url'] ) || ! in_array( parse_url( $args['url'], PHP_URL_HOST ), $allowed_host, true ) ) {
+        $status['success'] = false;
+        $status['message'] = __( 'Invalid download link', 'directorist' );
+
+        return $status;
+    }
+
+    global $wp_filesystem;
+
+    if ( $args['init_wp_filesystem'] ) {
+
+        if ( ! function_exists( 'WP_Filesystem' ) ) {
+            include ABSPATH . 'wp-admin/includes/file.php';
+        }
+
+        WP_Filesystem();
+    }
+
+    $plugin_path = WP_CONTENT_DIR . '/plugins';
+    $temp_dest   = "{$plugin_path}/atbdp-temp-dir";
+    $file_url    = $args['url'];
+    $file_name   = basename( $file_url );
+    $tmp_file    = download_url( $file_url );
+
+    if ( ! is_string( $tmp_file ) ) {
+        $status['success']  = false;
+        $status['tmp_file'] = $tmp_file;
+        $status['file_url'] = $file_url;
+        $status['message']  = 'Could not download the file';
+
+        return $status;
+    }
+
+    // Make Temp Dir
+    if ( $wp_filesystem->exists( $temp_dest ) ) {
+        $wp_filesystem->delete( $temp_dest, true );
+    }
+
+    $wp_filesystem->mkdir( $temp_dest );
+
+    if ( ! file_exists( $temp_dest ) ) {
+        $status['success'] = false;
+        $status['message'] = __( 'Could not create temp directory', 'directorist' );
+
+        return $status;
+    }
+
+    // Sets file temp destination.
+    $file_path = "{$temp_dest}/{$file_name}";
+
+    set_error_handler(
+        function ( $errno, $errstr, $errfile, $errline ) {
+            // error was suppressed with the @-operator
+            if ( 0 === error_reporting() ) {
+                  return false;
+            }
+
+            throw new ErrorException( $errstr, 0, $errno, $errfile, $errline );
+        }
+    );
+
+    // Copies the file to the final destination and deletes temporary file.
+    try {
+        copy( $tmp_file, $file_path );
+    } catch ( Exception $e ) {
+        $status['success'] = false;
+        $status['message'] = $e->getMessage();
+
+        return $status;
+    }
+
+    @unlink( $tmp_file );
+    unzip_file( $file_path, $temp_dest );
+
+    if ( "{$plugin_path}/" !== $file_path || $file_path !== $plugin_path ) {
+        @unlink( $file_path );
+    }
+
+    $extracted_file_dir = glob( "{$temp_dest}/*", GLOB_ONLYDIR );
+
+    foreach ( $extracted_file_dir as $dir_path ) {
+        $dir_name  = basename( $dir_path );
+        $dest_path = "{$plugin_path}/{$dir_name}";
+
+        // Delete Previous Files if Exists
+        if ( $wp_filesystem->exists( $dest_path ) ) {
+            $wp_filesystem->delete( $dest_path, true );
+        }
+    }
+
+    copy_dir( $temp_dest, $plugin_path );
+    $wp_filesystem->delete( $temp_dest, true );
+
+    $status['success'] = true;
+    $status['message'] = __( 'The plugin has been downloaded successfully', 'directorist' );
+
+    return $status;
+}
+
+/**
+ * Check user can signup.
+ *
+ * @since 8.0.0
+ *
+ * @return bool
+ */
+function directorist_is_user_registration_enabled() {
+	return (bool) get_directorist_option( 'new_user_registration', true );
+}
+
+function directorist_hex_to_rgb( $hex ) {
+    $hex = str_replace( "#", "", $hex );
+
+    if ( strlen( $hex ) == 3 ) {
+        $r = hexdec( str_repeat( substr( $hex, 0, 1 ), 2 ) );
+        $g = hexdec( str_repeat( substr( $hex, 1, 1 ), 2 ) );
+        $b = hexdec( str_repeat( substr( $hex, 2, 1 ), 2 ) );
+    } else {
+        $r = hexdec( substr( $hex, 0, 2 ) );
+        $g = hexdec( substr( $hex, 2, 2 ) );
+        $b = hexdec( substr( $hex, 4, 2 ) );
+    }
+    return "$r, $g, $b";
+}
+
+/**
+ * Determine post status based on pricing plan.
+ *
+ * @param int $listing_id
+ * @param string $default_status
+ * @return string
+ */
+function directorist_get_pricing_plan_status( $listing_id, $default_status ) {
+    $plan_id   = (int) get_post_meta( $listing_id, '_fm_plans', true );
+    $plan_meta = get_post_meta( $plan_id );
+    $plan_type = ( isset( $plan_meta['plan_type'] ) && isset( $plan_meta['plan_type'][0] ) ) ? $plan_meta['plan_type'][0] : '';
+
+    $listing_id_for_plan = ( 'pay_per_listng' === $plan_type ) ? $listing_id : false;
+    $plan_purchased = subscribed_package_or_PPL_plans( get_current_user_id(), 'completed', $plan_id, $listing_id_for_plan );
+
+    return $plan_purchased ? $default_status : 'pending';
+}
+
+/**
+ * Determine post status for featured listings.
+ *
+ * @param int $listing_id
+ * @param string $default_status
+ * @return string
+ */
+function directorist_get_featured_listing_status( $listing_id, $default_status ) {
+    $order = atbdp_get_listing_order( $listing_id );
+
+    if ( $order ) {
+        $payment_status = get_post_meta( $order->ID, '_payment_status', true );
+        return ( 'completed' === $payment_status ) ? $default_status : 'pending';
+    }
+
+    return $default_status;
+}
+
+function directorist_get_distance_range( $miles ) {
+    // Set default values for min and max distance
+    $min_distance = 0;
+    $max_distance = 100;
+
+    // Check if the 'miles' parameter is in the "min-max" format
+    if ( !empty( $miles ) && strpos( $miles, '-' ) !== false ) {
+        $miles = sanitize_text_field( $miles );
+
+        list( $min_distance, $max_distance ) = explode( '-', $miles );
+        $min_distance = floatval( $min_distance );
+        $max_distance = floatval( $max_distance );
+    }
+
+    return array( 'min' => $min_distance, 'max' => $max_distance );
+}
+
+/**
+ * Get listing directory id.
+ *
+ * @since 8.0.3
+ * @param  int  $listing_id
+ *
+ * @return int
+ */
+function directorist_get_listing_directory( $listing_id = 0 ) {
+	return (int) get_post_meta( $listing_id, '_directory_type', true );
+}
+
+/**
+ * Get listing preview image.
+ *
+ * @since 8.0.8
+ *
+ * @param int $listing_id Listing ID.
+ * @return int
+ */
+function directorist_get_listing_preview_image( $listing_id = 0 ) {
+	$image = get_post_meta( $listing_id, '_listing_prv_img', true );
+
+	if ( empty( $image ) || ! is_numeric( $image ) ) {
+		return 0;
+	}
+
+	return $image;
+}
+
+/**
+ * Get listing gallery images.
+ *
+ * @since 8.0.8
+ *
+ * @param int $listing_id Listing ID.
+ * @return array
+ */
+function directorist_get_listing_gallery_images( $listing_id = 0 ) {
+	$images = get_post_meta( $listing_id, '_listing_img', true );
+
+	if ( empty( $images ) || ! is_array( $images ) ) {
+		return [];
+	}
+
+	$images = wp_parse_id_list( $images );
+	$images = array_filter( $images );
+
+	return $images;
 }
