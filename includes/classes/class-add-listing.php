@@ -15,7 +15,6 @@ defined( 'ABSPATH' ) || die( 'Direct access is not allowed.' );
 
 use Directorist\Helper;
 use Directorist\Fields\Fields;
-use Directorist\AddListingForm\SubmissionController;
 
 if ( ! class_exists( 'ATBDP_Add_Listing' ) ) :
 
@@ -49,7 +48,85 @@ if ( ! class_exists( 'ATBDP_Add_Listing' ) ) :
 			add_action( 'parse_query', array( $this, 'parse_query' ) ); // do stuff likes adding, editing, renewing, favorite etc in this hook.
 			add_action( 'wp_ajax_add_listing_action', array( $this, 'atbdp_submit_listing' ) );
 			add_action( 'wp_ajax_nopriv_add_listing_action', array( $this, 'atbdp_submit_listing' ) );
+
+			add_action( 'wp_ajax_directorist_upload_listing_image', array( __CLASS__, 'upload_listing_image' ) );
+			add_action( 'wp_ajax_nopriv_directorist_upload_listing_image', array( __CLASS__, 'upload_listing_image' ) );
 		}
+
+		public static function upload_listing_image() {
+			try {
+				if ( ! directorist_verify_nonce() ) {
+					throw new Exception( __( 'Invalid request.', 'directorist' ), 400 );
+				}
+
+				$image = ! empty( $_FILES['image'] ) ? directorist_clean( $_FILES['image'] ) : array();
+
+				if ( empty( $image ) ) {
+					return;
+				}
+
+				// Set temporary upload directory.
+				add_filter( 'upload_dir', array( __CLASS__, 'set_temporary_upload_dir' ) );
+
+				// handle file upload
+				$status = wp_handle_upload(
+					$image,
+					array(
+						'test_form' => true,
+						'test_type' => true,
+						'action'    => 'directorist_upload_listing_image',
+						'mimes'     => directorist_get_mime_types( 'image' ),
+					)
+				);
+
+				// Restore to default upload directory.
+				remove_filter( 'upload_dir', array( __CLASS__, 'set_temporary_upload_dir' ) );
+
+				if ( ! empty( $status['error'] ) ) {
+					throw new Exception( sprintf( '%s - (%s)', $status['error'], $image['name'] ), 500 );
+				}
+
+				if ( empty( $status['url'] ) ) {
+					throw new Exception( sprintf( __( 'Could not upload (%s), please try again.', 'directorist' ), $image['name'] ), 500 );
+				}
+
+				wp_send_json_success( basename( $status['url'] ) );
+
+			} catch ( Exception $e ) {
+
+				wp_send_json_error( $e->getMessage(), $e->getCode() );
+
+			}
+		}
+
+		public static function set_temporary_upload_dir( $upload ) {
+			$upload['subdir'] = '/directorist_temp_uploads/' . date( 'nj' );
+			$upload['path']   = $upload['basedir'] . $upload['subdir'];
+			$upload['url']    = $upload['baseurl'] . $upload['subdir'];
+
+			return $upload;
+		}
+
+		/**
+		 * Not sure what this function does.
+		 *
+		 * @deprecated 7.3.1
+		 * @param  array  $array
+		 * @param  string $name
+		 *
+		 * @return mixed
+		 */
+		private function atbdp_get_file_attachment_id( $array, $name ) {
+			$id = null;
+			foreach ( $array as $item ) {
+				if ( $item['name'] === $name ) {
+					$id = $item['id'];
+					break;
+				}
+			}
+			return $id;
+		}
+
 
 		/**
 		 * Process listing submission.
@@ -71,7 +148,8 @@ if ( ! class_exists( 'ATBDP_Add_Listing' ) ) :
 				 * */
 				do_action( 'atbdp_before_processing_submitted_listing_frontend', $posted_data );
 
-				$response = SubmissionController::submit( $posted_data, 'web' );
+				$maybe_directory_id = sanitize_text_field( directorist_get_var( $posted_data['directory_type'], '' ) );
+				$directory          = get_term_by( ( is_numeric( $maybe_directory_id ) ? 'id' : 'slug' ), $maybe_directory_id, ATBDP_DIRECTORY_TYPE );
 
 				if ( directorist_is_multi_directory_enabled() && ! $directory ) {
 					throw new Exception( __( 'Invalid directory!', 'directorist' ), 200 );
@@ -219,7 +297,7 @@ if ( ! class_exists( 'ATBDP_Add_Listing' ) ) :
 				if ( $error->has_errors() ) {
 					return wp_send_json( apply_filters( 'atbdp_listing_form_submission_info', array(
 						'error'     => true,
-						'error_msg' => implode( '<br>', $response->get_error_messages() ),
+						'error_msg' => implode( '<br>', $error->get_error_messages() ),
 					) ) );
 				}
 
@@ -233,20 +311,24 @@ if ( ! class_exists( 'ATBDP_Add_Listing' ) ) :
 				$default_expiration    = directorist_get_default_expiration( $directory_id );
 				$preview_enable        = directorist_is_preview_enabled( $directory_id );
 
-			// 	// Make sure we are dealing with a real listing in edit mode.
-			// 	$listing_id = absint( directorist_get_var( $posted_data['listing_id'], 0 ) );
+				/**
+				 * It applies a filter to the meta values that are going to be saved with the listing submitted from the front end
+				 *
+				 * @param array $meta_data the array of meta keys and meta values
+				 */
+				$meta_data = apply_filters( 'atbdp_listing_meta_user_submission', $meta_data );
+				$meta_data = apply_filters( 'atbdp_ultimate_listing_meta_user_submission', $meta_data, $posted_data );
 
-			// 	if ( $listing_id && ! directorist_is_listing_post_type( $listing_id ) ) {
-			// 		throw new Exception( __( 'Invalid listing!', 'directorist' ), 200 );
-			// 	}
+				$meta_input = self::filter_empty_meta_data( $meta_data );
 
-			// 	if ( $listing_id && ! current_user_can( get_post_type_object( ATBDP_POST_TYPE )->cap->edit_post, $listing_id ) ) {
-			// 		throw new Exception( __( 'Not allowed to edit this listing.', 'directorist' ), 200 );
-			// 	}
+				$listing_data['meta_input'] = $meta_input;
+				$listing_data['tax_input']  = $taxonomy_data;
 
-			// 	if ( ! directorist_is_guest_submission_enabled() && ! self::current_user_can_create() ) {
-			// 		throw new Exception( __( 'Not allowed to create listing.', 'directorist' ), 200 );
-			// 	}
+				if ( $listing_id ) {
+					/**
+					 * @since 5.4.0
+					 */
+					do_action( 'atbdp_before_processing_to_update_listing' );
 
 					$listing_data['ID']          = $listing_id;
 					$listing_data['post_status'] = directorist_get_listing_edit_status( $directory_id, $listing_id );
@@ -257,81 +339,74 @@ if ( ! class_exists( 'ATBDP_Add_Listing' ) ) :
 					// 	$listing_data['post_status'] = directorist_get_listing_edit_status( $directory_id, $listing_id );
 					// }
 
-			// 		if ( ! is_email( $guest_email ) ) {
-			// 			throw new Exception( __( 'Invalid guest email.', 'directorist' ), 200 );
-			// 		}
+					$listing_id = wp_update_post( $listing_data );
 
-			// 		atbdp_guest_submission( $guest_email );
-			// 	}
+					if ( is_wp_error( $listing_id ) ) {
+						throw new Exception( $listing_id->get_error_message() );
+					}
 
-			// 	// When invalid directory is selected fallback to default directory.
-			// 	if ( ! $directory ) {
-			// 		$directory_id = (int) directorist_get_default_directory();
-			// 	} else {
-			// 		$directory_id = (int) $directory->term_id;
-			// 	}
+					self::reset_listing_taxonomy( $listing_id, $taxonomy_data );
+					directorist_set_listing_directory( $listing_id, $directory_id );
 
-			// 	$posted_data['directory_id'] = $directory_id;
+					// Clean empty meta data.
+					$deletable_meta_fields = array_keys( array_diff_key( $meta_data, $meta_input ) );
 
-			// 	$error         = new \WP_Error();
-			// 	$taxonomy_data = array();
-			// 	$meta_data     = array();
-			// 	$listing_data  = array(
-			// 		'post_type' => ATBDP_POST_TYPE,
-			// 	);
+					foreach ( $deletable_meta_fields as $deletable_meta_field ) {
+						delete_post_meta( $listing_id, $deletable_meta_field );
+					}
 
-			// 	// Cache categories to check assigned categories in custom fields.
-			// 	$category_field = directorist_get_listing_form_category_field( $directory_id );
+					do_action( 'atbdp_listing_updated', $listing_id );
 
-			// 	if ( ! empty( $category_field ) ) {
-			// 		$selected_categories = Fields::create( $category_field )->get_value( $posted_data );
+				} else {
+					if ( $preview_enable ) {
+						$listing_data['post_status'] = 'private';
+					} else {
+						$listing_data['post_status'] = $listing_create_status;
+					}
 
-			// 		if ( is_null( self::$selected_categories ) && ! empty( $selected_categories ) ) {
-			// 			self::$selected_categories = array_filter( wp_parse_id_list( $selected_categories ) );
-			// 		}
-			// 	}
+					$listing_id = wp_insert_post( $listing_data );
 
-			// 	/**
-			// 	 * Process form fields.
-			// 	 */
-			// 	$form_fields = directorist_get_listing_form_fields( $directory_id );
+					if ( is_wp_error( $listing_id ) ) {
+						throw new Exception( $listing_id->get_error_message() );
+					}
 
-			// 	foreach ( $form_fields as $form_field ) {
-			// 		$field = Fields::create( $form_field );
+					directorist_set_listing_directory( $listing_id, $directory_id );
 
-			// 		// Ignore admin only fields when current user do not have that capability.
-			// 		if ( self::is_admin_only_field( $field ) ) {
-			// 			continue;
-			// 		}
+					do_action( 'atbdp_listing_inserted', $listing_id ); // for sending email notification
 
-			// 		$result = self::validate_field( $field, $posted_data );
+					// Every post with the published status should contain all the post meta keys so that we can include them in query.
+					if ( 'publish' === $listing_create_status || 'pending' === $listing_create_status ) {
+						if ( $default_expiration <= 0 ) {
+							update_post_meta( $listing_id, '_never_expire', 1 );
+						} else {
+							$expiration_date = calc_listing_expiry_date( '', $default_expiration );
+							update_post_meta( $listing_id, '_expiry_date', $expiration_date );
+						}
 
-			// 		if ( ! $result['is_valid'] ) {
-			// 			$error->add(
-			// 				$field->get_key(),
-			// 				sprintf( '<strong>%1$s</strong>: %2$s', $field->label, $result['message'] )
-			// 			);
+						update_post_meta( $listing_id, '_featured', 0 );
+						// TODO: Status has been migrated, remove related code.
+						update_post_meta( $listing_id, '_listing_status', 'post_status' );
 
-			// 			continue;
-			// 		}
+						/*
+						 * It fires before processing a listing from the front end
+						 * @param array $_POST the array containing the submitted fee data.
+						 * */
+						do_action( 'atbdp_before_processing_listing_frontend', $listing_id );
+					}
 
-			// 		if ( self::should_ignore_category_custom_field( $field ) ) {
-			// 			continue;
-			// 		}
+					if ( 'publish' === $listing_create_status ) {
+						do_action( 'atbdp_listing_published', $listing_id );// for sending email notification
+					}
+				}
 
-			// 		switch ( $field->get_internal_key() ) {
-			// 			case 'title':
-			// 				$listing_data['post_title'] = $field->sanitize( $posted_data );
-			// 				break;
+				do_action( 'atbdp_after_created_listing', $listing_id );
 
-			// 			case 'excerpt':
-			// 				$listing_data['post_excerpt'] = $field->sanitize( $posted_data );
-			// 				$meta_data['_excerpt']        = $field->sanitize( $posted_data );
-			// 				break;
+				$data = array(
+					'id' => $listing_id
+				);
 
-			// 			case 'description':
-			// 				$listing_data['post_content'] = $field->sanitize( $posted_data );
-			// 				break;
+				// handling media files
+				self::upload_images( $listing_id, $posted_data );
 
 				$permalink = get_permalink( $listing_id );
 
@@ -341,45 +416,45 @@ if ( ! class_exists( 'ATBDP_Add_Listing' ) ) :
 					$data['redirect_url'] = add_query_arg( 'notice', true, $data['redirect_url'] );
 				}
 
-			// 			case 'pricing':
-			// 				self::process_pricing( $field, $posted_data, $meta_data, $error );
-			// 				break;
-				// $redirect_page = get_directorist_option( 'edit_listing_redirect', 'view_listing' );
+				$is_listing_featured = ( ! empty( $posted_data['listing_type'] ) && ( 'featured' === $posted_data['listing_type'] ) );
+				$should_monetize     = ( directorist_is_monetization_enabled() && directorist_is_featured_listing_enabled() && $is_listing_featured );
 
-				// if ( 'view_listing' === $redirect_page ) {
-				// 	$redirect_url = $permalink;
-				// } else {
-				// 	$redirect_url = add_query_arg( 'listing_id', $listing_id, ATBDP_Permalink::get_dashboard_page_link() );
-				// }
+				if ( $should_monetize && ! is_fee_manager_active() ) {
+					$payment_status            = Helper::get_listing_payment_status( $listing_id );
+					$rejectable_payment_status = array( 'failed', 'cancelled', 'refunded' );
 
-				// if ( (bool) get_directorist_option( 'submission_confirmation', 1 ) ) {
-				// 	$redirect_url = urlencode( add_query_arg( 'notice', true, $redirect_url ) );
-				// }
+					if ( empty( $payment_status ) || in_array( $payment_status, $rejectable_payment_status, true ) ) {
+						$data['redirect_url'] = ATBDP_Permalink::get_checkout_page_link( $listing_id );
+						$data['need_payment'] = true;
 
-				// $data['redirect_url'] = $redirect_url;
+						wp_update_post( array(
+							'ID'          => $listing_id,
+							'post_status' => 'pending',
+						) );
+					}
+				}
 
 				$data['success']     = true;
 				$data['success_msg'] = __( 'Your listing submission is completed! Redirecting...', 'directorist' );
 				$data['preview_url'] = $permalink;
 
-			// 			case 'map':
-			// 				self::process_map( $field, $posted_data, $meta_data, $error );
-			// 				break;
+				if ( ! empty( $data['need_payment'] ) && $data['need_payment'] === true ) {
+					$data['success_msg'] = __( 'Payment required! Redirecting to checkout...', 'directorist' );
+				}
 
 				$data['preview_mode'] = $preview_enable;
 
-			// 			default:
-			// 				$meta_data[ '_' . $field->get_key() ] = $field->sanitize( $posted_data );
-			// 		}
-			// 	}
+				if ( ! empty( $posted_data['listing_id'] ) ) {
+					$data['edited_listing'] = true;
+				}
 
-			// 	if ( directorist_should_check_privacy_policy( $directory_id ) && empty( $posted_data['privacy_policy'] ) ) {
-			// 		$error->add( 'privacy_policy_required', __( 'Privacy Policy is required.', 'directorist' ) );
-			// 	}
+				if ( ! empty( $posted_data['preview_url'] ) ) {
+					$data['preview_url'] = Helper::escape_query_strings_from_url( $posted_data['preview_url'] );
+				}
 
-			// 	if ( directorist_should_check_terms_and_condition( $directory_id ) && empty( $posted_data['t_c_check'] ) ) {
-			// 		$error->add( 'terms_and_condition_required', __( 'Terms and condition is required.', 'directorist' ) );
-			// 	}
+				if ( ! empty( $posted_data['redirect_url'] ) ) {
+					$data['redirect_url'] = Helper::escape_query_strings_from_url( $posted_data['redirect_url'] );
+				}
 
 				if ( $preview_enable ) {
 					$data['redirect_url'] = wp_nonce_url( $data['redirect_url'], 'directorist_listing_form_redirect_url_' . $listing_id, '_token' );
@@ -471,7 +546,7 @@ if ( ! class_exists( 'ATBDP_Add_Listing' ) ) :
 
 			try {
 				$upload_dir                    = wp_get_upload_dir();
-				$temp_dir                      = trailingslashit( $upload_dir['basedir'] ) . trailingslashit( directorist_get_temp_upload_dir() . DIRECTORY_SEPARATOR . date( 'nj' ) );
+				$temp_dir                      = $upload_dir['basedir'] . '/directorist_temp_uploads/' . date( 'nj' ) . '/';
 				$target_dir                    = trailingslashit( $upload_dir['path'] );
 				$uploaded_images               = $old_images;
 				$background_processable_images = array();

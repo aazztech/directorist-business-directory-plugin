@@ -16,84 +16,42 @@ function directorist_get_directory_meta( $directory_id, string $meta_key ) {
     return get_term_meta( $directory_id, $meta_key, true );
 }
 
-function directorist_get_listing_form_fields_data( $directory_id ) {
+function directorist_get_listing_form_fields( $directory_id ) {
 	$form_data = directorist_get_directory_meta( $directory_id, 'submission_form_fields' );
+	$_fields   = directorist_get_var( $form_data['fields'], array() );
+	$_groups   = directorist_get_var( $form_data['groups'], array() );
 
-	if ( empty( $form_data ) || ! is_array( $form_data ) ) {
-		return array();
+	$fields_keys = array();
+	$fields      = array();
+
+	foreach ( $_groups as $group ) {
+		$fields_keys = array_merge( $fields_keys, $group['fields'] );
 	}
 
 	foreach ( $fields_keys as $field_key ) {
 		$fields[ $field_key ] = $_fields[ $field_key ];
 	}
 
-	if ( isset( $fields['view_count'] ) ) {
+	if( isset( $fields['view_count'] ) ) {
 		unset( $fields['view_count'] );
 	}
 	
 	return $fields;
 }
 
-function directorist_get_listing_form_groups_data( $directory_id ) {
+function directorist_get_listing_form_groups( $directory_id ) {
 	$form_data = directorist_get_directory_meta( $directory_id, 'submission_form_fields' );
-
-	if ( empty( $form_data ) || ! is_array( $form_data ) ) {
-		return array();
-	}
-
-	return directorist_get_var( $form_data['groups'], array() );
-}
-
-function directorist_get_listing_form_data( $directory_id, $plan_id = 0 ) {
-	$_fields   = directorist_get_listing_form_fields_data( $directory_id );
-	$groups    = directorist_get_listing_form_groups_data( $directory_id );
-	$fields    = array();
-
-	foreach ( $groups as &$group ) {
-		$allowed_fields_key = array();
-
-		foreach ( $group['fields'] as $field_key ) {
-			if ( empty( $_fields[ $field_key ] ) || ! is_array( $_fields[ $field_key ] ) ) {
-				continue;
-			}
-
-			if ( (bool) apply_filters( 'directorist_listing_form_field_is_allowed', true, $_fields[ $field_key ], $directory_id, $plan_id ) ) {
-				$allowed_fields_key[] = $field_key;
-				$fields[ $field_key ] = apply_filters( 'directorist_listing_form_field', $_fields[ $field_key ], $directory_id, $plan_id );
-			}
-		}
-
-		$group['fields'] = $allowed_fields_key;
-	}
-
-	return array(
-		'fields' => $fields,
-		'groups' => $groups,
-	);
-}
-
-function directorist_get_listing_form_fields( $directory_id, $plan_id = 0 ) {
-	$fields = directorist_get_listing_form_data( $directory_id, $plan_id )['fields'];
-
-	return apply_filters( 'directorist_listing_form_fields', $fields, $directory_id, $plan_id );
-}
-
-function directorist_get_listing_form_groups( $directory_id, $plan_id = 0 ) {
-	$_groups = directorist_get_listing_form_data( $directory_id, $plan_id )['groups'];
-	$groups  = array();
+	$_groups   = directorist_get_var( $form_data['groups'], array() );
+	$groups    = array();
 
     foreach ( $_groups as $group ) {
-		if ( empty( $group['fields'] ) ) {
-			continue;
-		}
-
 		$groups[] = array(
-			'label'  => $group['label'],
+			'label' => $group['label'],
 			'fields' => $group['fields'],
 		);
 	}
 
-	return apply_filters( 'directorist_listing_form_field_groups', $groups, $directory_id, $plan_id );
+	return $groups;
 }
 
 function directorist_get_listing_form_field( $directory_id, $field_key = '' ) {
@@ -216,50 +174,6 @@ function directorist_set_listing_directory( $listing_id, $directory_id ) {
 	wp_set_object_terms( $listing_id, $directory_id, ATBDP_DIRECTORY_TYPE );
 
 	return true;
-}
-
-function directorist_get_single_listing_data( int $directory_id, $plan_id = 0 ) {
-	$single_listing_data = directorist_get_directory_meta( $directory_id, 'single_listings_contents' );
-	$_fields             = directorist_get_var( $single_listing_data['fields'], array() );
-	$groups              = directorist_get_var( $single_listing_data['groups'], array() );
-	$listing_form_fields = directorist_get_listing_form_fields( $directory_id, $plan_id );
-	$fields              = array();
-
-	foreach ( $groups as &$group ) {
-		$allowed_fields_key = array();
-
-		foreach ( $group['fields'] as $field_key ) {
-			if ( empty( $_fields[ $field_key ] ) || ! is_array( $_fields[ $field_key ] ) ) {
-				continue;
-			}
-
-			if ( ! isset( $_fields[ $field_key ]['original_widget_key'] ) || ! isset( $listing_form_fields[ $_fields[ $field_key ]['original_widget_key'] ] ) ) {
-				continue;
-			}
-
-			$fields[ $field_key ] = $_fields[ $field_key ];
-			$allowed_fields_key[] = $field_key;
-		}
-
-		$group['fields'] = $allowed_fields_key;
-	}
-
-	return array(
-		'fields' => $fields,
-		'groups' => $groups,
-	);
-}
-
-function directorist_get_single_listing_fields( int $directory_id, $plan_id = 0 ) {
-	return directorist_get_single_listing_data( $directory_id, $plan_id )['fields'];
-}
-
-function directorist_get_single_listing_groups( int $directory_id, $plan_id = 0 ) {
-	$groups = directorist_get_single_listing_data( $directory_id, $plan_id )['groups'];
-
-	return array_filter( $groups, static function( $group ) {
-		return ! empty( $group['fields'] );
-	} );
 }
 
 function directorist_get_field( $properties ) {
