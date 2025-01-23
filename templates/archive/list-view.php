@@ -2,7 +2,7 @@
 /**
  * @author  wpWax
  * @since   6.6
- * @version 8.0.13
+ * @version 8.1
  */
 
 use \Directorist\Helper;
@@ -16,6 +16,7 @@ if ( ! defined( 'ABSPATH' ) ) exit;
 		<?php do_action( 'directorist_before_list_listings_loop' ); ?>
 
 			<?php if ( $listings->have_posts() ): ?>
+
 				<div class="<?php Helper::directorist_row(); ?>">
 					<?php $listings->render_list_view( $listings->post_ids() ) ?>
 					</div>
