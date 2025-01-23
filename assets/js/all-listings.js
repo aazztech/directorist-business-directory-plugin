@@ -1425,6 +1425,10 @@ function _objectSpread(e) { for (var r = 1; r < arguments.length; r++) { var t =
   /* Directorist instant search */
   $('body').on("submit", ".directorist-instant-search form", function (e) {
     e.preventDefault();
+    // infinite pagination loading reset
+    page = 1;
+    infinitePaginationIsLoading = false;
+    infinitePaginationCompleted = false;
     var instant_search_element = $(this).closest('.directorist-instant-search');
     var tag = [];
     var search_by_rating = [];
@@ -1998,6 +2002,10 @@ function _objectSpread(e) { for (var r = 1; r < arguments.length; r++) { var t =
   // Directorist sort by changes
   $('body').on("click", ".directorist-instant-search .directorist-sortby-dropdown .directorist-dropdown__links__single-js", function (e) {
     e.preventDefault();
+    // infinite pagination loading reset
+    page = 1;
+    infinitePaginationIsLoading = false;
+    infinitePaginationCompleted = false;
     var instant_search_element = $(this).closest('.directorist-instant-search');
     var tag = [];
     var price = [];
@@ -2292,6 +2300,9 @@ function _objectSpread(e) { for (var r = 1; r < arguments.length; r++) { var t =
         customField[postId] = $(el).val();
       }
     });
+    var view_href = $(".directorist-viewas .directorist-viewas__item.active").attr('href');
+    var view_as = view_href && view_href.length ? view_href.match(/view=.+/) : '';
+    var view = view_as && view_as.length ? view_as[0].replace(/view=/, '') : '';
     var getValue = function getValue(selector, fallback) {
       return activeForm.find(selector).val() || fallback;
     };
@@ -2316,8 +2327,7 @@ function _objectSpread(e) { for (var r = 1; r < arguments.length; r++) { var t =
       website: getValue('input[name="website"]', getURLParameter(full_url, 'website')),
       phone: getValue('input[name="phone"]', getURLParameter(full_url, 'phone')),
       custom_field: customField,
-      // view            : getURLParameter(full_url, 'view'),
-      view: dataAtts.view,
+      view: view,
       paged: page,
       data_atts: dataAtts,
       sort: getSortValue(instantSearchElement),
@@ -2381,6 +2391,11 @@ function _objectSpread(e) { for (var r = 1; r < arguments.length; r++) { var t =
     if (!searchElm) {
       return;
     }
+
+    // infinite pagination loading reset
+    page = 1;
+    infinitePaginationIsLoading = false;
+    infinitePaginationCompleted = false;
     var _this = searchElm;
     var tag = [];
     var price = [];

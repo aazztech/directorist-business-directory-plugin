@@ -141,6 +141,11 @@ import debounce from '../../global/components/debounce';
     /* Directorist instant search */
     $('body').on("submit", ".directorist-instant-search form", function (e) {
         e.preventDefault();
+        // infinite pagination loading reset
+        page = 1;
+        infinitePaginationIsLoading = false;
+        infinitePaginationCompleted = false;
+
         let instant_search_element = $(this).closest('.directorist-instant-search');
         let tag                    = [];
         let search_by_rating       = [];
@@ -770,6 +775,11 @@ import debounce from '../../global/components/debounce';
     // Directorist sort by changes
     $('body').on("click", ".directorist-instant-search .directorist-sortby-dropdown .directorist-dropdown__links__single-js", function (e) {
         e.preventDefault();
+        // infinite pagination loading reset
+        page = 1;
+        infinitePaginationIsLoading = false;
+        infinitePaginationCompleted = false;
+        
         let instant_search_element = $(this).closest('.directorist-instant-search');
         let tag                    = [];
         let price                  = [];
@@ -1084,6 +1094,10 @@ import debounce from '../../global/components/debounce';
             }
         });
 
+        let view_href      = $(".directorist-viewas .directorist-viewas__item.active").attr('href');
+        let view_as        = (view_href && view_href.length) ? view_href.match(/view=.+/) : '';
+        let view           = (view_as && view_as.length) ? view_as[0].replace(/view=/, '') : '';
+
         const getValue = (selector, fallback) => activeForm.find(selector).val() || fallback;
         return {
             action          : 'directorist_instant_search',
@@ -1106,8 +1120,7 @@ import debounce from '../../global/components/debounce';
             website         : getValue('input[name="website"]', getURLParameter(full_url, 'website')),
             phone           : getValue('input[name="phone"]', getURLParameter(full_url, 'phone')),
             custom_field    : customField,
-            // view            : getURLParameter(full_url, 'view'),
-            view            : dataAtts.view,
+            view            : view,
             paged           : page,
             data_atts       : dataAtts,
             sort            : getSortValue(instantSearchElement),
@@ -1173,6 +1186,11 @@ import debounce from '../../global/components/debounce';
         if (!searchElm) {
             return;
         }
+
+        // infinite pagination loading reset
+        page = 1;
+        infinitePaginationIsLoading = false;
+        infinitePaginationCompleted = false;
 
         let _this            = searchElm;
         let tag              = [];
