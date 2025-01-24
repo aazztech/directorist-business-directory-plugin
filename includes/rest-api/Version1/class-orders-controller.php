@@ -159,11 +159,12 @@ class Orders_Controller extends Posts_Controller {
 	 * @return array
 	 */
 	protected function prepare_objects_query( $request ) {
-		$args            = [];
-		$args['order']   = $request['order'];
-		$args['orderby'] = $request['orderby'];
-		$args['paged']   = $request['page'];
-		$args['author']  = $request['customer'];
+		$args                   = [];
+		$args['order']          = $request['order'];
+		$args['orderby']        = $request['orderby'];
+		$args['paged']          = $request['page'];
+		$args['author']         = $request['customer'];
+		$args['posts_per_page'] = $request['per_page'];
 
 		/**
 		 * Filter the query arguments for a request.
