@@ -45,7 +45,7 @@ class Orders_Controller extends Posts_Controller {
 				array(
 					'methods'             => WP_REST_Server::READABLE,
 					'callback'            => array( $this, 'get_items' ),
-					'permission_callback' => array( $this, 'update_item_permissions_check' ),
+					'permission_callback' => array( $this, 'get_items_permissions_check' ),
 					'args'                => $this->get_collection_params(),
 				),
 				'schema' => array( $this, 'get_public_item_schema' ),
@@ -79,6 +79,10 @@ class Orders_Controller extends Posts_Controller {
 		);
 	}
 
+	public function get_items_permissions_check( $request ) {
+		return is_user_logged_in();
+	}
+
 	/**
 	 * Get a collection of posts.
 	 *
@@ -94,7 +98,7 @@ class Orders_Controller extends Posts_Controller {
 
 		$objects = array();
 		foreach ( $query_results['objects'] as $object ) {
-			if ( ! $this->check_post_permissions( $this->post_type, 'read', $object->ID ) ) {
+			if ( ! $this->check_post_permissions( $this->post_type, 'edit', $object->ID ) ) {
 				continue;
 			}
 
@@ -119,6 +123,7 @@ class Orders_Controller extends Posts_Controller {
 			$prev_link = add_query_arg( 'page', $prev_page, $base );
 			$response->link_header( 'prev', $prev_link );
 		}
+
 		if ( $max_pages > $page ) {
 			$next_page = $page + 1;
 			$next_link = add_query_arg( 'page', $next_page, $base );
