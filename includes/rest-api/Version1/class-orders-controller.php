@@ -13,7 +13,6 @@ defined( 'ABSPATH' ) || exit;
 use WP_Error;
 use WP_Query;
 use WP_REST_Server;
-use Directorist\Helper;
 
 /**
  * Orders controller class.
@@ -48,6 +47,12 @@ class Orders_Controller extends Posts_Controller {
 					'permission_callback' => array( $this, 'get_items_permissions_check' ),
 					'args'                => $this->get_collection_params(),
 				),
+				array(
+					'methods'             => WP_REST_Server::CREATABLE,
+					'callback'            => array( $this, 'create_item' ),
+					'permission_callback' => '__return_true', // array( $this, 'create_item_permissions_check' ),
+					'args'                => $this->get_endpoint_args_for_item_schema( WP_REST_Server::CREATABLE ),
+				),
 				'schema' => array( $this, 'get_public_item_schema' ),
 			)
 		);
@@ -80,7 +85,36 @@ class Orders_Controller extends Posts_Controller {
 	}
 
 	public function get_items_permissions_check( $request ) {
-		return is_user_logged_in();
+		return true; //is_user_logged_in();
+	}
+
+	public function create_item( $request ) {
+		if ( ! directorist_is_monetization_enabled() ) {
+			return new WP_Error( 'invalid_request', __( 'Monetization disabled.', 'directorist' ), array( 'status' => 400 ) );
+		}
+
+		$customer_id = $request['customer'];
+		if ( ! get_user( $customer_id ) ) {
+			return new WP_Error( 'invalid_customer', __( 'Invalid customer.', 'directorist' ), array( 'status' => 400 ) );
+		}
+
+		$plan_id = $request['plan'];
+		if ( get_post_type( $plan_id ) !== 'atbdp_pricing_plans' ) {
+			return new WP_Error( 'invalid_plan', __( 'Invalid plan.', 'directorist' ), array( 'status' => 400 ) );
+		}
+
+		if ( isset( $request['listing'] ) && ! directorist_is_listing_post_type( $request['listing'] ) ) {
+			return new WP_Error( 'invalid_listing', __( 'Invalid listing.', 'directorist' ), array( 'status' => 400 ) );
+		}
+
+		if ( function_exists( 'directorist_direct_purchase' ) && directorist_direct_purchase() ) {
+			$listing_id = 0;
+		}
+
+		// Direct Plan Purchase
+		// Direct purchase of a plan without a listing. So, no need to check for listing id.
+		// Featured listing purchase will have featured=>true
+		// Regular plan purchase will have listing id
 	}
 
 	/**
@@ -98,9 +132,9 @@ class Orders_Controller extends Posts_Controller {
 
 		$objects = array();
 		foreach ( $query_results['objects'] as $object ) {
-			if ( ! $this->check_post_permissions( $this->post_type, 'edit', $object->ID ) ) {
-				continue;
-			}
+			// if ( ! $this->check_post_permissions( $this->post_type, 'edit', $object->ID ) ) {
+			// 	continue;
+			// }
 
 			$data = $this->prepare_item_for_response( $object, $request );
 			$objects[] = $this->prepare_response_for_collection( $data );
@@ -294,9 +328,9 @@ class Orders_Controller extends Posts_Controller {
 				case 'directory':
 					$data[ $field ] = (int) get_post_meta( $this->get_plan_id( $order ), '_assign_to_directory', true );
 					break;
-				case 'plan_position':
-					$data[ $field ] = (int) get_post_meta( $order->ID, '_dpp_plan_sorting_order', true );
-					break;
+				// case 'plan_position':
+				// 	$data[ $field ] = (int) get_post_meta( $order->ID, '_dpp_plan_sorting_order', true );
+				// 	break;
 				case 'listing':
 					$data[ $field ] = (int) get_post_meta( $order->ID, '_listing_id', true );
 					break;
@@ -385,27 +419,31 @@ class Orders_Controller extends Posts_Controller {
 				'customer'           => array(
 					'description' => __( 'Customer id.', 'directorist' ),
 					'type'        => 'integer',
+					'required'    => true,
 					'context'     => array( 'view', 'edit' ),
 				),
 				'plan'           => array(
 					'description' => __( 'Pricing plan id.', 'directorist' ),
 					'type'        => 'integer',
+					'required'    => true,
 					'context'     => array( 'view', 'edit' ),
 				),
-				'plan_position'           => array(
-					'description' => __( 'Pricing plan order position.', 'directorist' ),
-					'type'        => 'integer',
-					'context'     => array( 'view', 'edit' ),
-				),
+				// 'plan_position'           => array(
+				// 	'description' => __( 'Pricing plan order position.', 'directorist' ),
+				// 	'type'        => 'integer',
+				// 	'context'     => array( 'view', 'edit' ),
+				// ),
 				'directory'         => array(
 					'description' => __( 'Directory type of the plan.', 'directorist' ),
 					'type'        => 'integer',
-					'context'     => array( 'view', 'edit' ),
+					'context'     => array( 'view' ),
+					'readonly'    => true,
 				),
 				'listing'           => array(
 					'description' => __( 'Listing id.', 'directorist' ),
 					'type'        => 'integer',
 					'context'     => array( 'view', 'edit' ),
+					'required'    => ( ! function_exists( 'directorist_direct_purchase' ) || ! directorist_direct_purchase() )
 				),
 				'featured'           => array(
 					'description' => __( 'Featured status.', 'directorist' ),
@@ -415,12 +453,14 @@ class Orders_Controller extends Posts_Controller {
 				'remaining_listings'           => array(
 					'description' => __( 'Remaining regular listings count.', 'directorist' ),
 					'type'        => 'integer',
-					'context'     => array( 'view', 'edit' ),
+					'context'     => array( 'view' ),
+					'readonly'    => true,
 				),
 				'remaining_featured_listings'           => array(
 					'description' => __( 'Remaining featured listings count.', 'directorist' ),
 					'type'        => 'integer',
-					'context'     => array( 'view', 'edit' ),
+					'context'     => array( 'view' ),
+					'readonly'    => true,
 				),
 				'amount'           => array(
 					'description' => __( 'Amount.', 'directorist' ),
