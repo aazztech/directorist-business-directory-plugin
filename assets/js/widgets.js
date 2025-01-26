@@ -147,13 +147,21 @@ window.addEventListener('load', function () {
       data: {
         action: 'directorist_taxonomy_pagination',
         nonce: directorist.directorist_nonce,
+<<<<<<< HEAD
+        page: parseInt(pageNumber),
+        attrs: containerAttributes
+=======
         page: parseInt(page),
         attrs: attrs
+>>>>>>> ce7b527b02965221257c6a913eb7f1a35e6e80a4
       },
       beforeSend: function beforeSend() {
         $(containerSelector).addClass('atbdp-form-fade');
       },
+<<<<<<< HEAD
+=======
 
+>>>>>>> ce7b527b02965221257c6a913eb7f1a35e6e80a4
       success: function success(response) {
         var _tempContainer$queryS, _tempContainer$queryS2;
         if (!(response !== null && response !== void 0 && response.success)) {
@@ -179,7 +187,11 @@ window.addEventListener('load', function () {
         }
       },
       complete: function complete() {
+<<<<<<< HEAD
+        $(containerSelector).removeClass('atbdp-form-fade');
+=======
         $(selector).removeClass('atbdp-form-fade');
+>>>>>>> ce7b527b02965221257c6a913eb7f1a35e6e80a4
       }
     });
   }

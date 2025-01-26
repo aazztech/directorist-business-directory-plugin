@@ -19,16 +19,13 @@ $taxonomy->atts['directory_type'] = isset( $_GET['directory_type'] ) && ! empty(
 <div id="directorist" class="atbd_wrapper directorist-w-100">
 	<div class="<?php Helper::directorist_container_fluid(); ?>">
 		<div class="directorist-location directorist-location--grid directorist-location--grid-one" data-attrs="<?php echo esc_attr(wp_json_encode( $taxonomy->atts )); ?>">
-			<div class="<?php Helper::directorist_row(); ?>">
-				<div class="directorist-col-12">
-					<?php
-						/**
-						 * @since 5.6.6
-						 */
-						do_action( 'atbdp_before_all_locations_loop', $taxonomy );
-					?>
-				</div>
-				<?php if ( $locations ) : ?>
+			<?php
+				/**
+				 * @since 5.6.6
+				 */
+				do_action( 'atbdp_before_all_locations_loop', $taxonomy );
+			?>
+			<?php if ( $locations ) : ?>
 					<div class="<?php echo apply_filters( 'directorist_taxonomy_location_wrapper', Helper::directorist_row() . ' taxonomy-location-wrapper' ); ?>">
 						<?php
 						foreach ($locations as $location) {
@@ -61,8 +58,6 @@ $taxonomy->atts['directory_type'] = isset( $_GET['directory_type'] ) && ! empty(
 				<?php else : ?>
 					<p><?php esc_html_e( 'No Results found!', 'directorist' ); ?></p>
 				<?php endif; ?>
-
-			</div>
 		</div>
 	</div>
 	<?php
