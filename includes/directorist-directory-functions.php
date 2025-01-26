@@ -36,10 +36,16 @@ function directorist_get_listing_form_fields( $directory_id ) {
 		$fields[ $field_key ] = $_fields[ $field_key ];
 	}
 
-	if( isset( $fields['view_count'] ) ) {
+	if ( isset( $fields['view_count'] ) ) {
 		unset( $fields['view_count'] );
 	}
-	
+
+	// Remove listing type field if pricing plan is disabled.
+	// Otherwise it causes validation error.
+	if ( ! atbdp_pricing_plan_is_enabled() ) {
+		unset( $fields['listing_type'] );
+	}
+
 	return $fields;
 }
 

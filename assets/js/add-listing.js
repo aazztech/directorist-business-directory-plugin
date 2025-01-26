@@ -536,7 +536,7 @@ $(function () {
       _iterator.f();
     }
   }
-  var on_processing = false;
+  var FORM_ON_PROCESSING = false;
   var has_media = true;
   var quickLoginModalSuccessCallback = null;
   var $notification = $('#listing_notifier');
@@ -544,28 +544,26 @@ $(function () {
   // -----------------------------
   // Submit The Form
   // -----------------------------
-
+  var UPLOADED_IMAGES_CACHE = new WeakMap();
   $('body').on('submit', '#directorist-add-listing-form', function (e) {
     e.preventDefault();
-    var $form = $(e.target);
-    var error_count = 0;
-    var err_log = {};
-    var $submitButton = $('.directorist-form-submit__btn');
-    if (on_processing) {
+    if (FORM_ON_PROCESSING) {
       return;
     }
+    var $form = $(e.target);
+    var err_log = {};
+    var $submitButton = $form.find('.directorist-form-submit__btn');
+    var error_count = 0;
+    var uploadableImages = [];
+    var counter = 0;
     function disableSubmitButton() {
-      on_processing = true;
+      FORM_ON_PROCESSING = true;
       $submitButton.addClass('atbd_loading').attr('disabled', true);
     }
     function enableSubmitButton() {
-      on_processing = false;
+      FORM_ON_PROCESSING = false;
       $submitButton.removeClass('atbd_loading').attr('disabled', false);
     }
-
-    // images
-    var selectedImages = [];
-    var uploadedImages = [];
     if (mediaUploaders.length) {
       for (var _i = 0, _mediaUploaders = mediaUploaders; _i < _mediaUploaders.length; _i++) {
         var uploader = _mediaUploaders[_i];
@@ -582,22 +580,31 @@ $(function () {
           break;
         }
         uploader.media_uploader.getTheFiles().forEach(function (file) {
-          selectedImages.push({
+          if (UPLOADED_IMAGES_CACHE.has(file)) {
+            return;
+          }
+          uploadableImages.push({
             field: uploader.uploaders_data.meta_name,
-            file: file
+            file: file,
+            uploadedFile: ''
           });
         });
       }
     }
-    if (selectedImages.length) {
-      var counter = 0;
+    if (uploadableImages.length) {
       function uploadImage() {
+        if (UPLOADED_IMAGES_CACHE.has(uploadableImages[counter].file)) {
+          return;
+        }
         var formData = new FormData();
-        formData.append('action', 'directorist_upload_listing_image');
-        formData.append('directorist_nonce', directorist.directorist_nonce);
-        formData.append('image', selectedImages[counter]);
-        formData.append('image', selectedImages[counter].file);
-        formData.append('field', selectedImages[counter].field);
+
+        // formData.append( 'action', 'directorist_upload_listing_image' );
+        // formData.append( 'directorist_nonce', directorist.directorist_nonce );
+        // formData.append( 'file', uploadableImages[ counter ] );
+        formData.append('file', uploadableImages[counter].file);
+        // formData.append( 'field', uploadableImages[ counter ].field );
+        // console.log(uploadableImages, counter);
+
         $.ajax({
           method: 'POST',
           processData: false,
@@ -609,7 +616,7 @@ $(function () {
           beforeSend: function beforeSend(xhr) {
             xhr.setRequestHeader('X-WP-Nonce', directorist.rest_nonce);
             disableSubmitButton();
-            var totalImages = selectedImages.length;
+            var totalImages = uploadableImages.length;
             if (totalImages === 1) {
               $notification.show().html("<span class=\"atbdp_success\">".concat(localized_data.i18n_text.image_uploading_msg, "</span>"));
             } else {
@@ -619,15 +626,13 @@ $(function () {
           },
           success: function success(response) {
             var data = JSON.parse(response);
-            uploadedImages.push({
-              field: selectedImages[counter].field,
-              file: data.file
-            });
-            counter++;
-            if (counter < selectedImages.length) {
+            uploadableImages[counter].uploadedFile = data.file;
+            UPLOADED_IMAGES_CACHE.set(uploadableImages[counter].file, true);
+            ++counter;
+            if (counter < uploadableImages.length) {
               uploadImage();
             } else {
-              submitForm($form, uploadedImages);
+              submitForm($form, uploadableImages);
             }
           },
           error: function error(xhr) {
@@ -637,10 +642,10 @@ $(function () {
           }
         });
       }
-      if (uploadedImages.length === selectedImages.length) {
-        submitForm($form, uploadedImages);
-      } else {
+      if (counter < uploadableImages.length) {
         uploadImage();
+      } else {
+        submitForm($form, uploadableImages);
       }
     } else {
       submitForm($form);
@@ -700,7 +705,7 @@ $(function () {
       // Upload new image
       if (uploadedImages.length) {
         uploadedImages.forEach(function (image) {
-          form_data.append("".concat(image.field, "[]"), image.file);
+          form_data.append("".concat(image.field, "[]"), image.uploadedFile);
         });
       }
 

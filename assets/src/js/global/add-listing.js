@@ -469,7 +469,7 @@ $(function() {
         }
     }
 
-    let on_processing = false;
+    let FORM_ON_PROCESSING = false;
     let has_media = true;
     let quickLoginModalSuccessCallback = null;
     const $notification = $('#listing_notifier');
@@ -477,32 +477,31 @@ $(function() {
     // -----------------------------
     // Submit The Form
     // -----------------------------
+    const UPLOADED_IMAGES_CACHE = new WeakMap();
 
     $('body').on('submit', '#directorist-add-listing-form', function (e) {
         e.preventDefault();
 
-        const $form       = $(e.target);
-        let   error_count = 0;
-        const err_log     = {};
-        const $submitButton = $('.directorist-form-submit__btn');
-
-        if (on_processing) {
+        if ( FORM_ON_PROCESSING ) {
             return;
         }
 
+        const $form            = $(e.target);
+        const err_log          = {};
+        const $submitButton    = $form.find('.directorist-form-submit__btn');
+        let   error_count      = 0;
+        let   uploadableImages = [];
+        let   counter          = 0;
+
         function disableSubmitButton() {
-            on_processing = true;
+            FORM_ON_PROCESSING = true;
             $submitButton.addClass('atbd_loading').attr('disabled', true);
         }
 
         function enableSubmitButton() {
-            on_processing = false;
+            FORM_ON_PROCESSING = false;
             $submitButton.removeClass('atbd_loading').attr('disabled', false);
         }
-
-        // images
-        let selectedImages = [];
-        let uploadedImages = [];
 
         if (mediaUploaders.length) {
             for (var uploader of mediaUploaders) {
@@ -523,25 +522,33 @@ $(function() {
                 }
 
                 uploader.media_uploader.getTheFiles().forEach( function( file ) {
-                    selectedImages.push( {
-                        field: uploader.uploaders_data.meta_name,
-                        file: file
+                    if ( UPLOADED_IMAGES_CACHE.has( file ) ) {
+                        return;
+                    }
+
+                    uploadableImages.push( {
+                        field       : uploader.uploaders_data.meta_name,
+                        file        : file,
+                        uploadedFile: ''
                     } );
                 } );
             }
         }
 
-        if ( selectedImages.length ) {
-            let counter = 0;
-
+        if ( uploadableImages.length ) {
             function uploadImage() {
+                if ( UPLOADED_IMAGES_CACHE.has( uploadableImages[ counter ].file ) ) {
+                    return;
+                }
+
                 const formData = new FormData();
 
-                formData.append( 'action', 'directorist_upload_listing_image' );
-                formData.append( 'directorist_nonce', directorist.directorist_nonce );
-                formData.append( 'image', selectedImages[ counter ] );
-                formData.append( 'image', selectedImages[ counter ].file );
-                formData.append( 'field', selectedImages[ counter ].field );
+                // formData.append( 'action', 'directorist_upload_listing_image' );
+                // formData.append( 'directorist_nonce', directorist.directorist_nonce );
+                // formData.append( 'file', uploadableImages[ counter ] );
+                formData.append( 'file', uploadableImages[ counter ].file );
+                // formData.append( 'field', uploadableImages[ counter ].field );
+                // console.log(uploadableImages, counter);
 
                 $.ajax( {
                     method: 'POST',
@@ -556,7 +563,7 @@ $(function() {
 
                         disableSubmitButton();
 
-                        const totalImages = selectedImages.length;
+                        const totalImages = uploadableImages.length;
                         if ( totalImages === 1 ) {
                             $notification
                                 .show()
@@ -571,16 +578,16 @@ $(function() {
                     success( response ) {
                         const data = JSON.parse( response );
 
-                        uploadedImages.push( {
-                            field: selectedImages[ counter ].field,
-                            file: data.file
-                        } );
+                        uploadableImages[ counter ].uploadedFile = data.file;
 
-                        counter++;
-                        if ( counter < selectedImages.length ) {
+                        UPLOADED_IMAGES_CACHE.set( uploadableImages[ counter ].file, true );
+
+                        ++counter;
+
+                        if ( counter < uploadableImages.length ) {
                             uploadImage();
                         } else {
-                            submitForm( $form, uploadedImages );
+                            submitForm( $form, uploadableImages );
                         }
                     },
                     error( xhr ) {
@@ -593,10 +600,10 @@ $(function() {
                 } );
             }
 
-            if ( uploadedImages.length === selectedImages.length ) {
-                submitForm( $form, uploadedImages );
-            } else {
+            if ( counter < uploadableImages.length ) {
                 uploadImage();
+            } else {
+                submitForm( $form, uploadableImages );
             }
         } else {
             submitForm( $form );
@@ -649,7 +656,7 @@ $(function() {
             // Upload new image
             if ( uploadedImages.length ) {
                 uploadedImages.forEach( function( image ) {
-                    form_data.append(`${image.field}[]`, image.file);
+                    form_data.append(`${image.field}[]`, image.uploadedFile);
                 } );
             }
 
