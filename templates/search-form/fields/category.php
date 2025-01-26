@@ -2,15 +2,12 @@
 /**
  * @author  wpWax
  * @since   6.6
- * @version 8.1.0
+ * @version 8.0
  */
 
 if ( ! defined( 'ABSPATH' ) ) exit;
-
-$selected_item         = $searchform::get_selected_category_option_data();
-$single_category_class = $args['taxonomy-page']['is_single_category'] ? 'directorist-search-form__single-category' : '';
+	$selected_item = $searchform::get_selected_category_option_data();
 ?>
-
 <div class="directorist-search-field directorist-form-group <?php echo esc_attr( $empty_label ); ?>">
 	<div class="directorist-select directorist-search-category directorist-search-field__input">
 

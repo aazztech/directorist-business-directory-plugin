@@ -2,7 +2,7 @@
 /**
  * @author  wpWax
  * @since   6.6
- * @version 8.1.0
+ * @version 8.0.9
  */
 
 if ( ! defined( 'ABSPATH' ) ) exit;
@@ -10,8 +10,7 @@ if ( ! defined( 'ABSPATH' ) ) exit;
 $location_source = !empty($data['location_source']) && $data['location_source'] == 'from_map_api' ? 'map' : 'listing';
 
 if ( $location_source == 'listing' ) {
-	$selected_item         = $searchform::get_selected_location_option_data();
-	$single_location_class = $args['taxonomy-page']['is_single_location'] ? 'directorist-search-form__single-location' : '';
+	$selected_item = $searchform::get_selected_location_option_data();
 	?>
 
 	<div class="directorist-search-field <?php echo esc_attr( $empty_label ); ?>">

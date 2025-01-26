@@ -418,21 +418,12 @@ class Directorist_Listing_Search_Form {
 			$value = $key && isset( $_REQUEST[$key] ) ? sanitize_text_field( wp_unslash( $_REQUEST[$key] ) ): '';
 		}
 
-		$current_page_id    = ! empty($_REQUEST) && isset($_REQUEST['current_page_id']) ? (int) $_REQUEST['current_page_id'] : get_the_ID();
-		$category_page_id   = (int) get_directorist_option( 'single_category_page' );
-		$location_page_id   = (int) get_directorist_option( 'single_location_page' );
-		$is_single_category = $current_page_id === $category_page_id ? true : false;
-		$is_single_location = $current_page_id === $location_page_id ? true : false;
 
 		$args = array(
-			'searchform'     => $this,
-			'data'           => $field_data,
-			'value'          => $value,
-			'empty_label'    => empty( $field_data['label'] ) ? 'input-has-noLabel' : '',
-			'taxonomy-page' => [
-				'is_single_category' => $is_single_category,
-				'is_single_location' => $is_single_location,
-			],
+			'searchform' 		=> $this,
+			'data'       		=> $field_data,
+			'value'      		=> $value,
+			'empty_label'  => empty( $field_data['label'] ) ? 'input-has-noLabel' : '',
 		);
 
 		// if ( $this->is_custom_field( $field_data ) && ( ! in_array( $field_data['field_key'], $this->assign_to_category()['custom_field_key'] ) ) ) {
