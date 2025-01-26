@@ -601,6 +601,9 @@ import debounce from '../../global/components/debounce';
                     $(_this).closest('.directorist-instant-search').find( '.atbdp-form-fade' ).removeClass('atbdp-form-fade');
                     window.dispatchEvent(new CustomEvent('directorist-instant-search-reloaded'));
                     window.dispatchEvent(new CustomEvent('directorist-reload-listings-map-archive'));
+
+                    // SearchForm Item in Single Category Location Page Init
+                    singleCategoryLocationInit();
                 }
                 let events = [
                     new CustomEvent('directorist-instant-search-reloaded'),
@@ -1412,9 +1415,9 @@ import debounce from '../../global/components/debounce';
         }
         
         if (shortcode === 'directorist_location' && location.trim() !== '') {
-            const categorySelect = document.querySelector('.directorist-search-form .directorist-location-select');
-            if (categorySelect) {
-                categorySelect.closest('.directorist-search-location').classList.add('directorist-search-form__single-location');
+            const locationSelect = document.querySelector('.directorist-search-form .directorist-location-select');
+            if (locationSelect) {
+                locationSelect.closest('.directorist-search-location').classList.add('directorist-search-form__single-location');
             }
         }
     }
