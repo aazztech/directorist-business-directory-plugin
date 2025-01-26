@@ -297,29 +297,34 @@ Directorist is a complete directory solution and in combination with its advance
 
 == Changelog ==
 
+8.1 - Jan 29, 2025
+
+### Added
+ - Infinite Scroll Pagination for listings archive pages, including all listings, search results, single category, and single location pages. (#2210)
+ - AJAX Pagination for all taxonomy pages, including categories and locations.
+ - User Query Limit restricted to published listings owners for users accessing the `users` REST API endpoint. (#2198)
+
+### Changed
+ - Disabled the taxonomy field on single taxonomy page (#2203)
+
+### Fixed
+ - Number custom field range issue ( #2173 ).
+ - Title markup inconsistency issue ( #2195 ).
+ - Pagination issue on single taxonomy pages ( #2188 ).
+ - Category conflict with the number custom field.
+ - Badge display issue on the all listings page ( #2189 ).
+ - Category custom field issue in the search form ( #2190 ).
+ - Incorrect Twitter text in the social info section ( #2191 ).
+ - Listing expired status handling issue ( #2194 ).
+ - View count reset issue ( #2207 ).
+ - Category icon issue in the search form ( #2183 ).
+ - Translation issue ( #2192 )
+ - Listing directory update on quick and bulk edit screens ( #2201 ).
+ - Zipcode radius search issue with OpenStreetMap ( #2208 ).
+
 8.0.12 - Jan 10, 2025
 
 * Improve: Community guidelines
-
-8.1 - Jan 29, 2025
-
-* New: Added scrolling pagination to the all listings page (#2210)
-* New: Introduced AJAX pagination for all taxonomy pages (#2199)
-* New: Added users query limit to published listings owners only (#2198)
-* Tweak: Disabled the taxonomy field on single taxonomy page (#2203)
-* Fixed: Number custom field range issue ( #2173 ).
-* Fixed: Title markup inconsistency issue ( #2195 ).
-* Fixed: Pagination issue on single taxonomy pages ( #2188 ).
-* Fixed: Category conflict with the number custom field.
-* Fixed: Badge display issue on the all listings page ( #2189 ).
-* Fixed: Category custom field issue in the search form ( #2190 ).
-* Fixed: Incorrect Twitter text in the social info section ( #2191 ).
-* Fixed: Listing expired status handling issue ( #2194 ).
-* Fixed: View count reset issue ( #2207 ).
-* Fixed: Category icon issue in the search form ( #2183 ).
-* Fixed: Translation issue ( #2192 )
-* Fixed: Listing directory update on quick and bulk edit screens ( #2201 ).
-* Fixed: Zipcode radius search issue with OpenStreetMap ( #2208 ).
 
 8.0.11 - Jan 02, 2025
 
