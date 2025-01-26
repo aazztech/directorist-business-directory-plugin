@@ -2687,6 +2687,27 @@ function _objectSpread(e) { for (var r = 1; r < arguments.length; r++) { var t =
     });
   }
 
+  // Single Location Category Page Search Form Item Disable
+  function singleCategoryLocationInit() {
+    var directoristDataAttributes = document.querySelector('.directorist-archive-contents').getAttribute('data-atts');
+    var _JSON$parse = JSON.parse(directoristDataAttributes),
+      shortcode = _JSON$parse.shortcode,
+      location = _JSON$parse.location,
+      category = _JSON$parse.category;
+    if (shortcode === 'directorist_category' && category.trim() !== '') {
+      var categorySelect = document.querySelector('.directorist-search-form .directorist-category-select');
+      if (categorySelect) {
+        categorySelect.closest('.directorist-search-category').classList.add('directorist-search-form__single-category');
+      }
+    }
+    if (shortcode === 'directorist_location' && location.trim() !== '') {
+      var _categorySelect = document.querySelector('.directorist-search-form .directorist-location-select');
+      if (_categorySelect) {
+        _categorySelect.closest('.directorist-search-location').classList.add('directorist-search-form__single-location');
+      }
+    }
+  }
+
   // sidebar on keyup searching
   $('body').on("keyup", ".directorist-instant-search .listing-with-sidebar form", Object(_global_components_debounce__WEBPACK_IMPORTED_MODULE_1__["default"])(function (e) {
     if ($(e.target).closest('.directorist-custom-range-slider__value').length > 0) {
@@ -2741,6 +2762,7 @@ function _objectSpread(e) { for (var r = 1; r < arguments.length; r++) { var t =
   }
   window.addEventListener('load', function () {
     Object(_global_components_debounce__WEBPACK_IMPORTED_MODULE_1__["default"])(initObserver(), 250);
+    singleCategoryLocationInit();
   });
 })(jQuery);
 

@@ -15,7 +15,7 @@ if ( $location_source == 'listing' ) {
 	?>
 
 	<div class="directorist-search-field <?php echo esc_attr( $empty_label ); ?>">
-		<div class="directorist-select directorist-search-location directorist-search-field__input <?php echo esc_attr($single_location_class); ?>">
+		<div class="directorist-select directorist-search-location directorist-search-field__input">
 
 			<?php if ( ! empty( $data['label'] ) ) : ?>
 				<label class="directorist-search-field__label"><?php echo esc_attr( $data['label'] ); ?></label>

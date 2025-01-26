@@ -12,7 +12,7 @@ $single_category_class = $args['taxonomy-page']['is_single_category'] ? 'directo
 ?>
 
 <div class="directorist-search-field directorist-form-group <?php echo esc_attr( $empty_label ); ?>">
-	<div class="directorist-select directorist-search-category directorist-search-field__input <?php echo esc_attr($single_category_class); ?>">
+	<div class="directorist-select directorist-search-category directorist-search-field__input">
 
 		<?php if ( ! empty( $data['label'] ) ) : ?>
 			<label class="directorist-search-field__label"><?php echo esc_attr( $data['label'] ); ?></label>
