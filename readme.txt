@@ -5,7 +5,7 @@ Tags: member directory, listing, classifieds, directory plugin, business directo
 Requires at least: 4.6
 Tested up to: 6.7
 Requires PHP: 7.0
-Stable tag: 8.0.12
+Stable tag: 8.1
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -300,6 +300,26 @@ Directorist is a complete directory solution and in combination with its advance
 8.0.12 - Jan 10, 2025
 
 * Improve: Community guidelines
+
+8.1 - Jan 29, 2025
+
+* New: Added scrolling pagination to the all listings page (#2210)
+* New: Introduced AJAX pagination for all taxonomy pages (#2199)
+* New: Added users query limit to published listings owners only (#2198)
+* Tweak: Disabled the taxonomy field on single taxonomy page (#2203)
+* Fixed: Number custom field range issue ( #2173 ).
+* Fixed: Title markup inconsistency issue ( #2195 ).
+* Fixed: Pagination issue on single taxonomy pages ( #2188 ).
+* Fixed: Category conflict with the number custom field.
+* Fixed: Badge display issue on the all listings page ( #2189 ).
+* Fixed: Category custom field issue in the search form ( #2190 ).
+* Fixed: Incorrect Twitter text in the social info section ( #2191 ).
+* Fixed: Listing expired status handling issue ( #2194 ).
+* Fixed: View count reset issue ( #2207 ).
+* Fixed: Category icon issue in the search form ( #2183 ).
+* Fixed: Translation issue ( #2192 )
+* Fixed: Listing directory update on quick and bulk edit screens ( #2201 ).
+* Fixed: Zipcode radius search issue with OpenStreetMap ( #2208 ).
 
 8.0.11 - Jan 02, 2025
 
