@@ -173,7 +173,12 @@ class Directorist_Listing_Dashboard {
 	public function get_listing_status_html() {
 		$id = get_the_ID();
 		$status = get_post_status( $id );
-		$statuses = get_post_statuses();
+		$statuses = array(
+			'draft'   => __( 'Draft', 'directorist' ),
+			'pending' => __( 'Pending Review', 'directorist' ),
+			'private' => __( 'Private', 'directorist' ),
+			'publish' => __( 'Published', 'directorist' ),
+		);;
 		$status_label = $statuses[$status] ?? __( 'Unknown', 'directorist' );
 		$html = sprintf('<span class="directorist_badge dashboard-badge directorist_status_%s">%s</span>', strtolower( $status ), $status_label );
 		return $html;
