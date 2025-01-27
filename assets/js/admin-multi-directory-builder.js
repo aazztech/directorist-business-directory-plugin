@@ -1235,18 +1235,31 @@ function _objectSpread(e) { for (var r = 1; r < arguments.length; r++) { var t =
   computed: _objectSpread(_objectSpread({}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapState"])({
     config: 'config'
   })), {}, {
+    canChange: function canChange() {
+      var is_changeable = false;
+      if (this.changeIf) {
+        var change_if_condition = this.changeIf;
+        var change_if_cond = this.checkChangeIfCondition({
+          condition: change_if_condition,
+          fieldKey: this.fieldKey
+        });
+        is_changeable = change_if_cond.status;
+      }
+      this.$emit('is-changeable', is_changeable);
+      return is_changeable;
+    },
     canShow: function canShow() {
-      var is_visible = true;
+      var is_changeable = true;
       if (this.showIf || this.show_if) {
         var show_if_condition = this.showIf ? this.showIf : this.show_if;
         var show_if_cond = this.checkShowIfCondition({
           condition: show_if_condition,
           root: this.root
         });
-        is_visible = show_if_cond.status;
+        is_changeable = show_if_cond.status;
       }
-      this.$emit('is-visible', is_visible);
-      return is_visible;
+      this.$emit('is-changeable', is_changeable);
+      return is_changeable;
     }
   }),
   methods: {
@@ -1373,6 +1386,10 @@ __webpack_require__.r(__webpack_exports__);
       type: [String, Number],
       default: ''
     },
+    fieldKey: {
+      type: [String, Number],
+      default: ''
+    },
     root: {
       required: false
     },
@@ -1409,6 +1426,9 @@ __webpack_require__.r(__webpack_exports__);
     },
     saveOptionData: {
       default: false
+    },
+    changeIf: {
+      required: false
     },
     showIf: {
       required: false
@@ -3168,6 +3188,69 @@ function _objectSpread(e) { for (var r = 1; r < arguments.length; r++) { var t =
         }
       });
     },
+    checkChangeIfCondition: function checkChangeIfCondition(payload) {
+      var root = this.fields;
+      var isChangeable = false;
+
+      // Extract from payload   
+      var condition = payload.condition,
+        fieldKey = payload.fieldKey;
+      var currentField = root[fieldKey];
+      var conditionField = root[condition.where];
+
+      // Loop through the conditions to check if they match
+      var _iterator = _createForOfIteratorHelper(condition.conditions),
+        _step;
+      try {
+        for (_iterator.s(); !(_step = _iterator.n()).done;) {
+          var item = _step.value;
+          if (item.key === "value" && item.compare === "=") {
+            // Compare the value
+            if (conditionField && conditionField.value === item.value) {
+              isChangeable = true;
+              break;
+            }
+          }
+        }
+
+        // If the isChangeable is true, apply all effects
+      } catch (err) {
+        _iterator.e(err);
+      } finally {
+        _iterator.f();
+      }
+      if (isChangeable) {
+        var _iterator2 = _createForOfIteratorHelper(condition.effects),
+          _step2;
+        try {
+          for (_iterator2.s(); !(_step2 = _iterator2.n()).done;) {
+            var effect = _step2.value;
+            currentField[effect.key] = effect.value; // Apply the effect value
+          }
+        } catch (err) {
+          _iterator2.e(err);
+        } finally {
+          _iterator2.f();
+        }
+      } else {
+        // Reset to default values for all effects if not changeable
+        var _iterator3 = _createForOfIteratorHelper(condition.effects),
+          _step3;
+        try {
+          for (_iterator3.s(); !(_step3 = _iterator3.n()).done;) {
+            var _effect = _step3.value;
+            if (_effect.default_value !== undefined) {
+              currentField[_effect.key] = _effect.default_value;
+            }
+          }
+        } catch (err) {
+          _iterator3.e(err);
+        } finally {
+          _iterator3.f();
+        }
+      }
+      return isChangeable;
+    },
     checkShowIfCondition: function checkShowIfCondition(payload) {
       var args = {
         condition: null
@@ -3202,11 +3285,11 @@ function _objectSpread(e) { for (var r = 1; r < arguments.length; r++) { var t =
       if (typeof condition.compare === 'string' && accepted_comparison.indexOf(condition.compare)) {
         compare = condition.compare;
       }
-      var _iterator = _createForOfIteratorHelper(condition.conditions),
-        _step;
+      var _iterator4 = _createForOfIteratorHelper(condition.conditions),
+        _step4;
       try {
-        for (_iterator.s(); !(_step = _iterator.n()).done;) {
-          var sub_condition = _step.value;
+        for (_iterator4.s(); !(_step4 = _iterator4.n()).done;) {
+          var sub_condition = _step4.value;
           if (typeof sub_condition.key !== 'string') {
             continue;
           }
@@ -3301,9 +3384,9 @@ function _objectSpread(e) { for (var r = 1; r < arguments.length; r++) { var t =
 
         // Get Status
       } catch (err) {
-        _iterator.e(err);
+        _iterator4.e(err);
       } finally {
-        _iterator.f();
+        _iterator4.f();
       }
       var status = false;
       switch (compare) {
@@ -3405,11 +3488,11 @@ function _objectSpread(e) { for (var r = 1; r < arguments.length; r++) { var t =
       var terget_missmatched = false;
       if (terget_fields && _babel_runtime_helpers_typeof__WEBPACK_IMPORTED_MODULE_0___default()(terget_fields) === 'object') {
         terget_field = this.fields;
-        var _iterator2 = _createForOfIteratorHelper(terget_fields),
-          _step2;
+        var _iterator5 = _createForOfIteratorHelper(terget_fields),
+          _step5;
         try {
-          for (_iterator2.s(); !(_step2 = _iterator2.n()).done;) {
-            var key = _step2.value;
+          for (_iterator5.s(); !(_step5 = _iterator5.n()).done;) {
+            var key = _step5.value;
             if (!key.length) {
               continue;
             }
@@ -3428,9 +3511,9 @@ function _objectSpread(e) { for (var r = 1; r < arguments.length; r++) { var t =
             terget_field = terget_field !== null ? terget_field[key] : args.root[key];
           }
         } catch (err) {
-          _iterator2.e(err);
+          _iterator5.e(err);
         } finally {
-          _iterator2.f();
+          _iterator5.f();
         }
       }
       if (terget_missmatched) {
@@ -26377,7 +26460,13 @@ __webpack_require__.r(__webpack_exports__);
 
 /* harmony default export */ __webpack_exports__["default"] = ({
   name: 'color-field-theme-butterfly',
-  mixins: [_mixins_form_fields_color_field__WEBPACK_IMPORTED_MODULE_0__["default"]]
+  mixins: [_mixins_form_fields_color_field__WEBPACK_IMPORTED_MODULE_0__["default"]],
+  mounted: function mounted() {
+    // If have condition to check if this.canChange is a function.
+    if (this.canChange) {
+      this.canChange();
+    }
+  }
 });
 
 /***/ }),
@@ -26575,7 +26664,13 @@ __webpack_require__.r(__webpack_exports__);
 
 /* harmony default export */ __webpack_exports__["default"] = ({
   name: 'text-field-theme-butterfly',
-  mixins: [_mixins_form_fields_text_field__WEBPACK_IMPORTED_MODULE_0__["default"]]
+  mixins: [_mixins_form_fields_text_field__WEBPACK_IMPORTED_MODULE_0__["default"]],
+  mounted: function mounted() {
+    // If have condition to check if this.canChange is a function.
+    if (this.canChange) {
+      this.canChange();
+    }
+  }
 });
 
 /***/ }),
@@ -27795,6 +27890,7 @@ var render = function render() {
         class: _babel_runtime_helpers_defineProperty__WEBPACK_IMPORTED_MODULE_0___default()({}, "highlight-field", _vm.getHighlightState(field)),
         attrs: {
           "field-id": field_key,
+          fieldKey: field,
           id: _vm.menuKey + "__" + section_key + "__" + field,
           "cached-data": _vm.cached_fields[field],
           listing_type_id: _vm.listing_type_id
@@ -33287,6 +33383,9 @@ var render = function render() {
     _c = _vm._self._c;
   return _vm.canShow ? _c(_vm.getTheTheme("color-field"), _vm._b({
     tag: "component",
+    attrs: {
+      canChange: _vm.canChange
+    },
     on: {
       "do-action": function doAction($event) {
         return _vm.$emit("do-action", $event);
@@ -34170,6 +34269,9 @@ var render = function render() {
     _c = _vm._self._c;
   return _vm.canShow ? _c(_vm.getTheTheme("text-field"), _vm._b({
     tag: "component",
+    attrs: {
+      canChange: _vm.canChange
+    },
     on: {
       enter: function enter($event) {
         return _vm.$emit("enter", $event);
@@ -35400,6 +35502,7 @@ var render = function render() {
     staticClass: "cptm-form-control",
     class: _vm.formControlClass,
     attrs: {
+      id: _vm.fieldId,
       type: _vm.input_type,
       min: _vm.min,
       max: _vm.max,

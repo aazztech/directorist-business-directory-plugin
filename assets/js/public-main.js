@@ -471,6 +471,43 @@ function maybeLazyLoadTaxonomyTermsSelect2(args) {
     width: '100%',
     escapeMarkup: function escapeMarkup(text) {
       return text;
+    },
+    templateResult: function templateResult(data) {
+      if (!data.id) {
+        return data.text;
+      }
+
+      // Fetch the data-icon attribute
+      var iconURI = $(data.element).attr('data-icon');
+
+      // Get the original text
+      var originalText = data.text;
+
+      // Match and count leading spaces
+      var leadingSpaces = originalText.match(/^\s+/);
+      var spaceCount = leadingSpaces ? leadingSpaces[0].length : 0;
+
+      // Trim leading spaces from the original text
+      originalText = originalText.trim();
+
+      // Construct the icon element
+      var iconElm = iconURI ? "<i class=\"directorist-icon-mask\" aria-hidden=\"true\" style=\"--directorist-icon: url('".concat(iconURI, "')\"></i>") : '';
+
+      // Prepare the combined text (icon + text)
+      var combinedText = iconElm + originalText;
+
+      // Create the state container
+      var $state = $('<div class="directorist-select2-contents"></div>');
+
+      // Determine the level based on space count
+      var level = Math.floor(spaceCount / 8) + 1; // 8 spaces = level 2, 16 spaces = level 3, etc.
+      if (level > 1) {
+        $state.addClass('item-level-' + level); // Add class for the level (e.g., level-1, level-2, etc.)
+      }
+
+      $state.html(combinedText); // Set the combined content (icon + text)
+
+      return $state;
     }
   };
   if (directorist.lazy_load_taxonomy_fields) {
