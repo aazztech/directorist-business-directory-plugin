@@ -5,7 +5,6 @@ import initSearchCategoryCustomFields from './components/category-custom-fields'
 import './components/colorPicker';
 import './components/directoristDropdown';
 import './components/directoristSelect';
-import './range-slider';
 
 (function ($) {
     window.addEventListener('load', () => {
@@ -1007,13 +1006,13 @@ import './range-slider';
                 const milesParams = new URLSearchParams(window.location.search).has('miles');
 
                 directoristCustomRangeSlider?.create(slider, {
-                    start: [minInput.value, sliderDefaultValue && !milesParams ? sliderDefaultValue : maxInput.value],
+                    start: [0, sliderDefaultValue ? sliderDefaultValue : 100],
                     connect: true,
                     direction: isRTL ? 'rtl' : 'ltr',
                     step: sliderStep ? sliderStep : 1,
                     range: {
-                        'min': Number(0),
-                        'max': Number(sliderMaxValue)
+                        'min': Number(minInput.value ? minInput.value : 0),
+                        'max': Number(maxInput.value ? maxInput.value : 100)
                     }
                 });
 
@@ -1131,7 +1130,7 @@ import './range-slider';
             };
             $.ajax({
                 url: url,
-                method: 'POST',
+                method: 'GET',
                 data : directorist.i18n_text.select_listing_map === 'google' ? google_data : "",
                 success: function( data ) {
                     if( data.data && data.data.error_message ) {

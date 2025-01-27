@@ -46,7 +46,10 @@ function login() {
     clickBtns: document.querySelectorAll('.directorist-account-block-logout-mode .wp-block-button__link'),
     loginInBtn: document.querySelector('.directory_regi_btn button'),
     popup: document.getElementById('directorist-account-block-login-modal'),
-    closeBtn: document.querySelector('#directorist-account-block-login-modal .directorist-account-block-close')
+    closeBtn: document.querySelector('#directorist-account-block-login-modal .directorist-account-block-close'),
+    signupBtn: document.querySelector('.directory_login_btn button'),
+    signupPopup: document.getElementById('directorist-account-block-register-modal'),
+    signupCloseBtn: document.querySelector('#directorist-account-block-register-modal .directorist-account-block-close')
   };
 
   // Check if all required elements exist
@@ -83,6 +86,22 @@ function login() {
   if (elements.popup) {
     elements.popup.addEventListener('click', function (event) {
       if (event.target === elements.popup) hideModal(elements.popup);
+    });
+  }
+  if (elements.signupBtn) {
+    elements.signupBtn.addEventListener('click', function (event) {
+      event.preventDefault();
+      toggleModals(elements.popup, elements.signupPopup);
+    });
+  }
+  if (elements.signupCloseBtn) {
+    elements.signupCloseBtn.addEventListener('click', function () {
+      return hideModal(elements.signupPopup);
+    });
+  }
+  if (elements.signupPopup) {
+    elements.signupPopup.addEventListener('click', function (event) {
+      if (event.target === elements.signupPopup) hideModal(elements.signupPopup);
     });
   }
   if (elements.loginInBtn) {
