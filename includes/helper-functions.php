@@ -3602,6 +3602,22 @@ function directorist_get_listing_views_count_meta_key() {
 }
 
 /**
+ * This function returns the types of listing statuses.
+ *
+ * @since 8.1.1
+ *
+ * @return array
+ */
+function directorist_get_listing_statuses() {
+	return array(
+        'draft'   => __( 'Draft', 'directorist' ),
+        'pending' => __( 'Pending Review', 'directorist' ),
+        'private' => __( 'Private', 'directorist' ),
+        'publish' => __( 'Published', 'directorist' ),
+    );
+}
+
+/**
  * Get the number of views for a listing.
  *
  * @since 7.2.0
