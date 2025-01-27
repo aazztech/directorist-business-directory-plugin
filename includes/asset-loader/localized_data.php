@@ -287,9 +287,19 @@ class Localized_Data {
 
 	public static function login_data() {
 		$redirection = \ATBDP_Permalink::get_login_redirection_page_link();
+		$redirection_url = $redirection ? $redirection : \ATBDP_Permalink::get_dashboard_page_link();
+		$rand = directorist_get_rand_string( 10 );
+		$redirection_url = strpos( $redirection_url, '?' ) !== false ? $redirection . '&rand=' . $rand : $redirection . '?rand=' . $rand;
+		
+		if( strpos( $redirection_url, '?' ) !== false ) {
+			$redirection_url = $redirection_url . '&rand=' . $rand;
+		} else {
+			$redirection_url = $redirection_url . '?rand=' . $rand;
+		}
+		
 		$data = [
 			'ajax_url'            => admin_url( 'admin-ajax.php' ),
-			'redirect_url'        => $redirection ? $redirection : \ATBDP_Permalink::get_dashboard_page_link(),
+			'redirect_url'        => $redirection_url,
 			'loading_message'     => esc_html__( 'Sending user info, please wait...', 'directorist' ),
 			'login_error_message' => esc_html__( 'Wrong username or password.', 'directorist' ),
 		];
