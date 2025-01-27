@@ -29,11 +29,10 @@ import {
             let loc_manual_lng = parseFloat(localized_data.manual_lng);
             const loc_map_zoom_level = parseInt(localized_data.map_zoom_level);
 
-            const searchIcon = `<i class="directorist-icon-mask"></i>`
-
-            const markerShape = document.createElement("div");
-            markerShape.className = "atbd_map_shape";
-            markerShape.innerHTML = searchIcon;
+            const searchIcon = {
+                url: '', // replace with your marker icon URL
+                scaledSize: new google.maps.Size(40, 40), // set the size of the icon
+            };
 
             loc_manual_lat = isNaN(loc_manual_lat) ? loc_default_latitude : loc_manual_lat;
             loc_manual_lng = isNaN(loc_manual_lng) ? loc_default_longitude : loc_manual_lng;
@@ -57,20 +56,6 @@ import {
             address_input = document.getElementById('address');
             if (address_input !== null) {
                 address_input.addEventListener('focus', geolocate);
-            }
-
-            var geocoder = new google.maps.Geocoder;
-
-            // This function will help to get the current location of the user
-            function markerDragInit(marker) {
-                marker.addListener('dragend', (event) => {
-                    // set the value of input field to save them to the database
-                    $manual_lat.val(event.latLng.lat());
-                    $manual_lng.val(event.latLng.lng());
-
-                    // Regenerate Address
-                    geocodeAddress(geocoder, map);
-                });
             }
 
             // this function will work on sites that uses SSL, it applies to Chrome especially, other browsers may allow location sharing without securing.
@@ -117,18 +102,20 @@ import {
                 $manual_lat.val(place.geometry.location.lat());
                 $manual_lng.val(place.geometry.location.lng());
                 map.setCenter(place.geometry.location);
-                const marker = new google.maps.marker.AdvancedMarkerElement({
+                const marker = new google.maps.Marker({
                     map,
                     position: place.geometry.location,
-                    gmpDraggable: true,
-                    content: markerShape, 
+                    draggable: true,
                     title: localized_data.marker_title,
+                    icon: searchIcon, 
                 });
+
+                // marker.addListener('click', function () {
+                //     info_window.open(map, marker);
+                // });
 
                 // add the marker to the markers array to keep track of it, so that we can show/hide/delete them all later.
                 markers.push(marker);
-
-                markerDragInit(marker);
             }
 
             initAutocomplete(); // start google map place auto complete API call
@@ -139,18 +126,20 @@ import {
                 map = new google.maps.Map(document.getElementById('gmap'), {
                     zoom: loc_map_zoom_level,
                     center: saved_lat_lng,
-                    mapId: "add_listing_map",
                 });
 
-                const marker = new google.maps.marker.AdvancedMarkerElement({
+                const marker = new google.maps.Marker({
                     map,
                     position: saved_lat_lng,
-                    gmpDraggable: true,
-                    content: markerShape, 
+                    draggable: true,
                     title: localized_data.marker_title,
-                });                
+                    icon: searchIcon, 
+                });
                 
                 markers.push(marker);
+
+                // create a Geocode instance
+                const geocoder = new google.maps.Geocoder();
 
                 document.getElementById('generate_admin_map').addEventListener('click', function (e) {
                     e.preventDefault();
@@ -158,7 +147,7 @@ import {
                 });
 
                 // This event listener calls addMarker() when the map is clicked.
-                marker.addListener('click', (event) => {
+                google.maps.event.addListener(map, 'click', function (event) {
                     deleteMarker(); // at first remove previous marker and then set new marker;
                     // set the value of input field to save them to the database
                     $manual_lat.val(event.latLng.lat());
@@ -167,8 +156,12 @@ import {
                     // add the marker to the given map.
                     addMarker(event.latLng, map);
                 });
-                
-                markerDragInit(marker);
+                // This event listener update the lat long field of the form so that we can add the lat long to the database when the MARKER is drag.
+                google.maps.event.addListener(marker, 'dragend', function (event) {
+                    // set the value of input field to save them to the database
+                    $manual_lat.val(event.latLng.lat());
+                    $manual_lng.val(event.latLng.lng());
+                });
             }
 
             /*
@@ -176,34 +169,32 @@ import {
              * */
 
             function geocodeAddress(geocoder, resultsMap) {
+                const address = address_input.value;
                 const lat = parseFloat(document.getElementById('manual_lat').value);
                 const lng = parseFloat(document.getElementById('manual_lng').value);
                 const latLng = new google.maps.LatLng(lat, lng);
                 const opt = {
                     location: latLng,
+                    address
                 };
-
                 geocoder.geocode(opt, function (results, status) {
                     if (status === 'OK') {
                         // set the value of input field to save them to the database
                         $manual_lat.val(results[0].geometry.location.lat());
                         $manual_lng.val(results[0].geometry.location.lng());
                         resultsMap.setCenter(results[0].geometry.location);
-                        const marker = new google.maps.marker.AdvancedMarkerElement({
+                        const marker = new google.maps.Marker({
                             map: resultsMap,
                             position: results[0].geometry.location,
-                            gmpDraggable: true,
-                            content: markerShape, 
-                            title: localized_data.marker_title,
                         });
+
+                        // marker.addListener('click', function () {
+                        //     info_window.open(map, marker);
+                        // });
 
                         deleteMarker();
                         // add the marker to the markers array to keep track of it, so that we can show/hide/delete them all later.
                         markers.push(marker);
-
-                        address_input.value = results[0].formatted_address;
-
-                        markerDragInit(marker);
                     } else {
                         alert(localized_data.geocode_error_msg + status);
                     }
@@ -221,19 +212,19 @@ import {
                 // Add the marker at the clicked location, and add the next-available label;
 
                 // from the array of alphabetical characters.
-                const marker = new google.maps.marker.AdvancedMarkerElement({
+                const marker = new google.maps.Marker({
                     map,
                     position: location,
                     /* label: labels[labelIndex++ % labels.length], */
-                    gmpDraggable: true,
-                    content: markerShape, 
+                    draggable: true,
                     title: localized_data.marker_title,
+                    icon: searchIcon, 
                 });
-                
+                // marker.addListener('click', function () {
+                //     info_window.open(map, marker);
+                // });
                 // add the marker to the markers array to keep track of it, so that we can show/hide/delete them all later.
                 markers.push(marker);
-
-                markerDragInit(marker);
             }
 
             // Delete Marker
