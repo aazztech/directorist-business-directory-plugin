@@ -322,6 +322,7 @@ Directorist is a complete directory solution and in combination with its advance
  - Translation issue ( #2192 )
  - Listing directory update on quick and bulk edit screens ( #2201 ).
  - Zipcode radius search issue with OpenStreetMap ( #2208 ).
+ - Checkout Amount Format ( #2214 ).
 
 8.0.12 - Jan 10, 2025
 
