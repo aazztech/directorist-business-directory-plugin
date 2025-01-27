@@ -556,6 +556,9 @@ $(function () {
     var error_count = 0;
     var uploadableImages = [];
     var counter = 0;
+    var $directory = $form.find("input[name='directory_type']");
+    var directory_id = $directory !== undefined ? $directory.val() : 0;
+    directory_id = qs.directory_type ? qs.directory_type : directory_id;
     function disableSubmitButton() {
       FORM_ON_PROCESSING = true;
       $submitButton.addClass('atbd_loading').attr('disabled', true);
@@ -602,6 +605,8 @@ $(function () {
         // formData.append( 'directorist_nonce', directorist.directorist_nonce );
         // formData.append( 'file', uploadableImages[ counter ] );
         formData.append('file', uploadableImages[counter].file);
+        formData.append('field', uploadableImages[counter].field);
+        formData.append('directory', directory_id);
         // formData.append( 'field', uploadableImages[ counter ].field );
         // console.log(uploadableImages, counter);
 
@@ -725,10 +730,7 @@ $(function () {
       if (form_data.has('directory_type')) {
         form_data.delete('directory_type');
       }
-      var form_directory_type = $form.find("input[name='directory_type']");
-      var form_directory_type_value = form_directory_type !== undefined ? form_directory_type.val() : '';
-      var directory_type = qs.directory_type ? qs.directory_type : form_directory_type_value;
-      form_data.append('directory_type', directory_type);
+      form_data.append('directory_type', directory_id);
       if (qs.plan) {
         form_data.append('plan_id', qs.plan);
       }

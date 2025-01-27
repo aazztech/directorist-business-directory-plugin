@@ -50,7 +50,7 @@ class Temporary_Media_Upload_Controller extends Abstract_Controller {
 		if ( is_null( $nonce ) && ! current_user_can( 'upload_files' ) ) {
 			return new WP_Error(
 				'directorist_rest_cannot_create',
-				__( 'Sorry, you are not allowed to upload image.', 'directorist' ),
+				__( 'Sorry, you are not allowed to upload any file.', 'directorist' ),
 				array( 'status' => 400 )
 			);
 		}
@@ -58,7 +58,7 @@ class Temporary_Media_Upload_Controller extends Abstract_Controller {
 		if ( ! is_null( $nonce ) && ! wp_verify_nonce( $nonce, 'wp_rest' ) ) {
 			return new WP_Error(
 				'directorist_rest_cannot_create',
-				__( 'Sorry, you are not allowed to upload image.', 'directorist' ),
+				__( 'Sorry, you are not allowed to upload any file.', 'directorist' ),
 				array( 'status' => 400 )
 			);
 		}
@@ -67,6 +67,19 @@ class Temporary_Media_Upload_Controller extends Abstract_Controller {
 	}
 
 	public function create_item( $request ) {
+		$directory = get_term_by( 'slug', $request['directory'], ATBDP_DIRECTORY_TYPE );
+		if ( ! $directory ) {
+			return new WP_Error( 'invalid_directory', __( 'Invalid directory.', 'directorist' ), array( 'status' => 400 ) );
+		}
+
+		$field = wp_list_filter( directorist_get_listing_form_fields( (int) $directory->term_id ), array( 'field_key' => $request['field'] ) );
+
+		if ( empty( $field ) ) {
+			return new WP_Error( 'invalid_field', __( 'Invalid field.', 'directorist' ), array( 'status' => 400 ) );
+		}
+
+		$field = current( $field );
+
 		// Get the file via $_FILES or raw data.
 		$files   = $request->get_file_params();
 		$headers = $request->get_headers();
@@ -79,7 +92,7 @@ class Temporary_Media_Upload_Controller extends Abstract_Controller {
 			);
 		}
 
-		$file = $this->upload_from_file( $files, $headers );
+		$file = $this->upload_from_file( $files, $headers, $field );
 
 		if ( is_wp_error( $file ) ) {
 			return $file;
@@ -171,7 +184,7 @@ class Temporary_Media_Upload_Controller extends Abstract_Controller {
 		return true;
 	}
 
-	protected function upload_from_file( $files, $headers ) {
+	protected function upload_from_file( $files, $headers, $field ) {
 		if ( empty( $files ) ) {
 			return new WP_Error(
 				'directorist_rest_upload_no_data',
@@ -206,13 +219,15 @@ class Temporary_Media_Upload_Controller extends Abstract_Controller {
 		// Set temporary upload directory.
 		add_filter( 'upload_dir', array( __CLASS__, 'set_temporary_upload_dir' ) );
 
+		$maybe_mime_group = $field['file_type'] ?? 'image';
+
 		// handle file upload
 		$status = wp_handle_upload(
 			$files['file'],
 			array(
 				'test_form' => false,
 				'test_type' => true,
-				'mimes'     => directorist_get_mime_types( 'image' ),
+				'mimes'     => $this->get_supported_mime_types( $maybe_mime_group ),
 			)
 		);
 
@@ -233,19 +248,58 @@ class Temporary_Media_Upload_Controller extends Abstract_Controller {
 			'title'      => 'Temporary Media',
 			'type'       => 'object',
 			'properties' => array(
-				'name'                  => array(
+				'name' => array(
 					'description' => __( 'Media file name.', 'directorist' ),
 					'type'        => 'string',
-					'context'     => array( 'view', 'edit' ),
+					'context'     => array( 'view' ),
+					'readonly'    => true,
 				),
-				'file'                  => array(
+				'file' => array(
 					'description' => __( 'Media file slug.', 'directorist' ),
 					'type'        => 'string',
+					'context'     => array( 'view' ),
+					'readonly'    => true,
+				),
+				'field' => array(
+					'description' => __( 'Field key.', 'directorist' ),
+					'type'        => 'string',
 					'context'     => array( 'view', 'edit' ),
+					'required'    => true,
+				),
+				'directory' => array(
+					'description' => __( 'Directory slug.', 'directorist' ),
+					'type'        => 'string',
+					'context'     => array( 'view', 'edit' ),
+					'required'    => true,
 				),
 			)
 		);
 
 		return $this->add_additional_fields_schema( $schema );
+	}
+
+	protected function get_supported_mime_types( $file_type = 'image' ) {
+		if ( in_array( $file_type, array( '', 'all_types', 'all' ), true ) ) {
+			$file_types = directorist_get_supported_file_types();
+		} else {
+			$groups = directorist_get_supported_file_types_groups();
+
+			if ( isset( $groups[ $file_type ] ) ) {
+				$file_types = $groups[ $file_type ];
+			} else {
+				$file_types = (array) $file_type;
+			}
+		}
+
+		$_supported_mimes = array();
+		foreach ( get_allowed_mime_types() as $ext => $mime ) {
+			$_exts = explode( '|', $ext );
+			$match = array_intersect( $file_types, $_exts );
+			if ( count( $match ) ) {
+				$_supported_mimes[ $ext ] = $mime;
+			}
+		}
+
+		return $_supported_mimes;
 	}
 }
