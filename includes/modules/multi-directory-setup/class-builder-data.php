@@ -2492,23 +2492,23 @@ class Builder_Data {
                         'type' => "badge",
                         'label' => __( "Listings Category", "directorist" ),
                         'icon' => 'uil uil-text-fields',
-                        'show_if' => [
-                            'where' => "submission_form_fields.value.fields",
-                            'conditions' => [
-                                ['key' => '_any.widget_name', 'compare' => '=', 'value' => 'category'],
-                            ],
-                        ],
+                        // 'show_if' => [
+                        //     'where' => "submission_form_fields.value.fields",
+                        //     'conditions' => [
+                        //         ['key' => '_any.widget_name', 'compare' => '=', 'value' => 'category'],
+                        //     ],
+                        // ],
                     ],
                     'location' => [
                         'type' => "badge",
                         'label' => __( "Listings Location", "directorist" ),
                         'icon' => 'uil uil-text-fields',
-                        'show_if' => [
-                            'where' => "submission_form_fields.value.fields",
-                            'conditions' => [
-                                ['key' => '_any.widget_name', 'compare' => '=', 'value' => 'location'],
-                            ],
-                        ],
+                        // 'show_if' => [
+                        //     'where' => "submission_form_fields.value.fields",
+                        //     'conditions' => [
+                        //         ['key' => '_any.widget_name', 'compare' => '=', 'value' => 'location'],
+                        //     ],
+                        // ],
                     ],
                 ],
 
@@ -2540,7 +2540,7 @@ class Builder_Data {
                     [
                         'type'              => 'placeholder_item',
                         'placeholderKey'    => 'listing-title-placeholder',
-                        // 'label'             => __( 'Listing Title', 'directorist' ),
+                        'label'             => __( 'Listing Title', 'directorist' ),
                         'maxWidget'         => 1,
                         'maxWidgetInfoText' => "Up to __DATA__ item{s} can be added",
                         'acceptedWidgets'   => ['title'],
@@ -2557,7 +2557,7 @@ class Builder_Data {
                     ],
                     [
                         'type'            => 'placeholder_item',
-                        // 'label'           => 'Image/Slider',
+                        'label'           => 'Image/Slider',
                         'placeholderKey'  => 'slider-placeholder',
                         'selectedWidgets' => ['slider'],
                         'acceptedWidgets' => ['slider'],

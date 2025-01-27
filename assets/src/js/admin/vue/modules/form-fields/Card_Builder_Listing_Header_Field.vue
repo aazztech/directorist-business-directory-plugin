@@ -46,7 +46,6 @@
               containerClass="cptm-preview-placeholder__card__box cptm-card-light"
               :label="placeholderSubItem.label"
               :availableWidgets="theAvailableWidgets"
-              :activeWidgets="active_widgets"
               :acceptedWidgets="placeholderSubItem.acceptedWidgets"
               :rejectedWidgets="placeholderSubItem.rejectedWidgets"
               :selectedWidgets="placeholderSubItem.selectedWidgets"
@@ -78,7 +77,6 @@
                   containerClass="cptm-preview-placeholder__card__box cptm-card-light"
                   :label="placeholderItem.label"
                   :availableWidgets="theAvailableWidgets"
-                  :activeWidgets="active_widgets"
                   :acceptedWidgets="placeholderItem.acceptedWidgets"
                   :rejectedWidgets="placeholderItem.rejectedWidgets"
                   :selectedWidgets="placeholderItem.selectedWidgets"
@@ -276,7 +274,7 @@ export default {
     output_data() {
       let output = [];
       let placeholders = this.placeholders;
-      let allPlaceholders = this.allPlaceholderItems;
+      let allPlaceholders = this.allPlaceholderItems || [];
 
       const getWidgetData = (placeholderKey) => {
         const placeholderData = allPlaceholders.find(
@@ -294,7 +292,7 @@ export default {
         let data = [];
 
         for (let widgetIndex in placeholderData.selectedWidgets) {
-          const widget_name = placeholderData.selectedWidgets[widgetIndex];
+          let widget_name = placeholderData.selectedWidgets[widgetIndex].widget_name || placeholderData.selectedWidgets[widgetIndex];
 
           data.push(widget_name);
 
@@ -397,7 +395,22 @@ export default {
         }
       }
 
-      console.log('@Output Data', {output, placeholders, allPlaceholders});
+      // Update Placeholders
+      const updatedPlaceholders = allPlaceholders.map((placeholder) => {
+        // Transform selectedWidgets into an array of widget_name
+        if (Array.isArray(placeholder.selectedWidgets)) {
+          return {
+            ...placeholder,
+            selectedWidgets: placeholder.selectedWidgets.map(widget => widget.widget_name || widget),
+          };
+        }
+        return placeholder; // If no selectedWidgets, return placeholder as is
+      });
+
+      this.placeholders = output;
+      this.allPlaceholderItems = updatedPlaceholders;
+
+      console.log('@Output Data', {output, placeholders: this.placeholders, allPlaceholderItems:this.allPlaceholderItems, theAvailableWidgets: this.available_widgets});
       
       return output;
     },
@@ -615,10 +628,15 @@ export default {
               selectedWidgets.splice(newSelectedIndex, 0, movedWidget);
             }
 
+            console.log('@CHK onElementsDrop', { 
+              allPlaceholderItems: this.allPlaceholderItems,
+              placeholders: this.placeholders,
+            });
+
             // Update Placeholders
             const updatedPlaceholders = this.syncPlaceholdersWithAllPlaceholderItems(
               this.allPlaceholderItems,
-              this.placeholders
+              this.placeholders || [],
             );
 
             this.placeholders = updatedPlaceholders;
@@ -756,46 +774,45 @@ export default {
 
       // Import Layout
       // -------------------------
-      // const addActiveWidget = (widget) => {
-      //   console.log('@addActiveWidget', { widget, active_widgets: this.active_widgets });
-      //   let widgets_template = {
-      //     ...this.theAvailableWidgets[widget],
-      //   };
+      const addActiveWidget = (widget) => {
+        let widgets_template = {
+          ...this.theAvailableWidgets[widget],
+        };
 
-      //   let has_widget_options = false;
+        let has_widget_options = false;
 
-      //   if (widgets_template.options && widgets_template.options.fields) {
-      //     has_widget_options = true;
-      //   }
+        if (widgets_template.options && widgets_template.options.fields) {
+          has_widget_options = true;
+        }
 
-      //   for (let root_option in widgets_template) {
-      //     if ("options" === root_option) {
-      //       continue;
-      //     }
+        for (let root_option in widgets_template) {
+          if ("options" === root_option) {
+            continue;
+          }
 
-      //     if (widget[root_option] === "undefined") {
-      //       continue;
-      //     }
+          if (widget[root_option] === "undefined") {
+            continue;
+          }
 
-      //     widgets_template[root_option] = widget[root_option];
-      //   }
+          widgets_template[root_option] = widget[root_option];
+        }
 
-      //   if (has_widget_options) {
-      //     for (let option_key in widgets_template.options.fields) {
-      //       if (typeof widget[option_key] === "undefined") {
-      //         continue;
-      //       }
+        if (has_widget_options) {
+          for (let option_key in widgets_template.options.fields) {
+            if (typeof widget[option_key] === "undefined") {
+              continue;
+            }
 
-      //       widgets_template.options.fields[option_key].value =
-      //         widget[option_key];
-      //     }
-      //   }
+            widgets_template.options.fields[option_key].value =
+              widget[option_key];
+          }
+        }
 
-      //   Vue.set(this.active_widgets, widget, widgets_template);
-      // };
+        Vue.set(this.active_widgets, widget, widgets_template);
+      };
 
       const importWidgets = (placeholder, destination) => {
-
+        console.log('@CHK: importWidgets', { placeholder, destination });
         if (!this.placeholdersMap.hasOwnProperty(placeholder.placeholderKey)) {
           return;
         }
@@ -804,49 +821,53 @@ export default {
           JSON.stringify(this.placeholdersMap[placeholder.placeholderKey])
         );
 
-        newPlaceholder.selectedWidgets = placeholder.selectedWidgets;
-        newPlaceholder.acceptedWidgets = placeholder.acceptedWidgets;
+        if ( newPlaceholder.selectedWidgets ) {
+          newPlaceholder.selectedWidgets = placeholder.selectedWidgets;
+        }
+        
+        if ( placeholder.acceptedWidgets ) {
+          newPlaceholder.acceptedWidgets = placeholder.acceptedWidgets;
+        }
 
         newPlaceholder.maxWidget =
           typeof newPlaceholder.maxWidget !== "undefined"
             ? parseInt(newPlaceholder.maxWidget)
             : 0;
 
-        console.log('@importWidgets', { placeholder, newPlaceholder });
-
         newAllPlaceholders.push(newPlaceholder);
         let targetPlaceholderIndex = destination.length;
 
         destination.splice(targetPlaceholderIndex, 0, newPlaceholder);
 
-        let widgetIndex = 0;
+        // let widgetIndex = 0;
 
         for (let widget of placeholder.selectedWidgets) {
-          if (typeof widget.widget_key === "undefined") {
+          if (typeof widget === "undefined") {
             continue;
           }
-          if (typeof widget.widget_name === "undefined") {
+          if (typeof widget === "undefined") {
             continue;
           }
 
           if (
-            typeof this.available_widgets[widget.widget_name] === "undefined"
+            typeof this.available_widgets[widget] === "undefined"
           ) {
             continue;
           }
 
-          // addActiveWidget(widget);
+          addActiveWidget(widget);
 
-          destination[targetPlaceholderIndex].selectedWidgets.splice(
-            widgetIndex,
-            0,
-            widget
-          );
-          widgetIndex++;
+          // destination[targetPlaceholderIndex].selectedWidgets.splice(
+          //   widgetIndex,
+          //   0,
+          //   widget
+          // );
+          // widgetIndex++;
         }
       };
 
       value.forEach((placeholder, index) => {
+        console.log('@CHK: value', { placeholder, index, selectedWidgets: placeholder.selectedWidgets });
         if (!this.isTruthyObject(placeholder)) {
           return;
         }
@@ -1081,10 +1102,12 @@ export default {
         if (widgetIndex !== -1) {
           selectedWidgets.splice(widgetIndex, 0, widget_key);
         }
+        this.active_widgets[widget_key] = this.theAvailableWidgets[widget_key];
       } else if (!isChecked) {
         this.allPlaceholderItems[placeholder_index].selectedWidgets = selectedWidgets.filter(
           (item) => item !== widget_key
         );
+        delete this.active_widgets[widget_key];
       }
 
       console.log('@toggleWidgetInSelectedWidgets:', {
@@ -1092,6 +1115,7 @@ export default {
         Widget: this.allPlaceholderItems[placeholder_index],
         selectedWidgets,
         acceptedWidgets,
+        active_widgets: this.active_widgets,
       });
     },
 
@@ -1129,6 +1153,7 @@ export default {
     },
 
     syncPlaceholdersWithAllPlaceholderItems(allPlaceholderItems, placeholders) {
+      console.log('Sync Placeholders With All Placeholder Items:', {allPlaceholderItems, placeholders});
       // Helper function to update a placeholder item's widgets
       const updatePlaceholderItem = (placeholder, allPlaceholderItem) => {
         if (placeholder.placeholderKey === allPlaceholderItem.placeholderKey) {
@@ -1139,7 +1164,9 @@ export default {
 
       // Iterate through placeholders and update them based on allPlaceholderItems
       const updatePlaceholders = (placeholders) => {
-        placeholders.forEach((placeholder) => {
+        console.log('Update Placeholders:', {placeholders});
+        placeholders && placeholders.forEach((placeholder) => {
+          console.log('@placeholder:', placeholder);
           if (placeholder.type === "placeholder_group") {
             // Recursively update placeholders within groups
             updatePlaceholders(placeholder.placeholders);
@@ -1148,6 +1175,7 @@ export default {
               (item) => item.placeholderKey === placeholder.placeholderKey
             );
             if (matchingItem) {
+              console.log('@matchingItem:', {placeholder, matchingItem});
               updatePlaceholderItem(placeholder, matchingItem);
             }
           }

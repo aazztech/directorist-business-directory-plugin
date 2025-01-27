@@ -23039,10 +23039,10 @@ function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len 
 __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _babel_runtime_helpers_toConsumableArray__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @babel/runtime/helpers/toConsumableArray */ "./node_modules/@babel/runtime/helpers/toConsumableArray.js");
 /* harmony import */ var _babel_runtime_helpers_toConsumableArray__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_babel_runtime_helpers_toConsumableArray__WEBPACK_IMPORTED_MODULE_0__);
-/* harmony import */ var _babel_runtime_helpers_defineProperty__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! @babel/runtime/helpers/defineProperty */ "./node_modules/@babel/runtime/helpers/defineProperty.js");
-/* harmony import */ var _babel_runtime_helpers_defineProperty__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(_babel_runtime_helpers_defineProperty__WEBPACK_IMPORTED_MODULE_1__);
-/* harmony import */ var _babel_runtime_helpers_slicedToArray__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! @babel/runtime/helpers/slicedToArray */ "./node_modules/@babel/runtime/helpers/slicedToArray.js");
-/* harmony import */ var _babel_runtime_helpers_slicedToArray__WEBPACK_IMPORTED_MODULE_2___default = /*#__PURE__*/__webpack_require__.n(_babel_runtime_helpers_slicedToArray__WEBPACK_IMPORTED_MODULE_2__);
+/* harmony import */ var _babel_runtime_helpers_slicedToArray__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! @babel/runtime/helpers/slicedToArray */ "./node_modules/@babel/runtime/helpers/slicedToArray.js");
+/* harmony import */ var _babel_runtime_helpers_slicedToArray__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(_babel_runtime_helpers_slicedToArray__WEBPACK_IMPORTED_MODULE_1__);
+/* harmony import */ var _babel_runtime_helpers_defineProperty__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! @babel/runtime/helpers/defineProperty */ "./node_modules/@babel/runtime/helpers/defineProperty.js");
+/* harmony import */ var _babel_runtime_helpers_defineProperty__WEBPACK_IMPORTED_MODULE_2___default = /*#__PURE__*/__webpack_require__.n(_babel_runtime_helpers_defineProperty__WEBPACK_IMPORTED_MODULE_2__);
 /* harmony import */ var _babel_runtime_helpers_typeof__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! @babel/runtime/helpers/typeof */ "./node_modules/@babel/runtime/helpers/typeof.js");
 /* harmony import */ var _babel_runtime_helpers_typeof__WEBPACK_IMPORTED_MODULE_3___default = /*#__PURE__*/__webpack_require__.n(_babel_runtime_helpers_typeof__WEBPACK_IMPORTED_MODULE_3__);
 /* harmony import */ var vue__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! vue */ "./node_modules/vue/dist/vue.esm.js");
@@ -23055,7 +23055,7 @@ __webpack_require__.r(__webpack_exports__);
 
 
 function ownKeys(e, r) { var t = Object.keys(e); if (Object.getOwnPropertySymbols) { var o = Object.getOwnPropertySymbols(e); r && (o = o.filter(function (r) { return Object.getOwnPropertyDescriptor(e, r).enumerable; })), t.push.apply(t, o); } return t; }
-function _objectSpread(e) { for (var r = 1; r < arguments.length; r++) { var t = null != arguments[r] ? arguments[r] : {}; r % 2 ? ownKeys(Object(t), !0).forEach(function (r) { _babel_runtime_helpers_defineProperty__WEBPACK_IMPORTED_MODULE_1___default()(e, r, t[r]); }) : Object.getOwnPropertyDescriptors ? Object.defineProperties(e, Object.getOwnPropertyDescriptors(t)) : ownKeys(Object(t)).forEach(function (r) { Object.defineProperty(e, r, Object.getOwnPropertyDescriptor(t, r)); }); } return e; }
+function _objectSpread(e) { for (var r = 1; r < arguments.length; r++) { var t = null != arguments[r] ? arguments[r] : {}; r % 2 ? ownKeys(Object(t), !0).forEach(function (r) { _babel_runtime_helpers_defineProperty__WEBPACK_IMPORTED_MODULE_2___default()(e, r, t[r]); }) : Object.getOwnPropertyDescriptors ? Object.defineProperties(e, Object.getOwnPropertyDescriptors(t)) : ownKeys(Object(t)).forEach(function (r) { Object.defineProperty(e, r, Object.getOwnPropertyDescriptor(t, r)); }); } return e; }
 function _createForOfIteratorHelper(o, allowArrayLike) { var it = typeof Symbol !== "undefined" && o[Symbol.iterator] || o["@@iterator"]; if (!it) { if (Array.isArray(o) || (it = _unsupportedIterableToArray(o)) || allowArrayLike && o && typeof o.length === "number") { if (it) o = it; var i = 0; var F = function F() {}; return { s: F, n: function n() { if (i >= o.length) return { done: true }; return { done: false, value: o[i++] }; }, e: function e(_e) { throw _e; }, f: F }; } throw new TypeError("Invalid attempt to iterate non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); } var normalCompletion = true, didErr = false, err; return { s: function s() { it = it.call(o); }, n: function n() { var step = it.next(); normalCompletion = step.done; return step; }, e: function e(_e2) { didErr = true; err = _e2; }, f: function f() { try { if (!normalCompletion && it.return != null) it.return(); } finally { if (didErr) throw err; } } }; }
 function _unsupportedIterableToArray(o, minLen) { if (!o) return; if (typeof o === "string") return _arrayLikeToArray(o, minLen); var n = Object.prototype.toString.call(o).slice(8, -1); if (n === "Object" && o.constructor) n = o.constructor.name; if (n === "Map" || n === "Set") return Array.from(o); if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return _arrayLikeToArray(o, minLen); }
 function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len = arr.length; for (var i = 0, arr2 = new Array(len); i < len; i++) arr2[i] = arr[i]; return arr2; }
@@ -23112,7 +23112,7 @@ function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len 
     output_data: function output_data() {
       var output = [];
       var placeholders = this.placeholders;
-      var allPlaceholders = this.allPlaceholderItems;
+      var allPlaceholders = this.allPlaceholderItems || [];
       var getWidgetData = function getWidgetData(placeholderKey) {
         var placeholderData = allPlaceholders.find(function (placeholder) {
           return placeholder.placeholderKey === placeholderKey;
@@ -23125,7 +23125,7 @@ function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len 
         }
         var data = [];
         for (var widgetIndex in placeholderData.selectedWidgets) {
-          var widget_name = placeholderData.selectedWidgets[widgetIndex];
+          var widget_name = placeholderData.selectedWidgets[widgetIndex].widget_name || placeholderData.selectedWidgets[widgetIndex];
           data.push(widget_name);
 
           // if (
@@ -23231,15 +23231,32 @@ function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len 
             continue;
           }
         }
+
+        // Update Placeholders
       } catch (err) {
         _iterator.e(err);
       } finally {
         _iterator.f();
       }
+      var updatedPlaceholders = allPlaceholders.map(function (placeholder) {
+        // Transform selectedWidgets into an array of widget_name
+        if (Array.isArray(placeholder.selectedWidgets)) {
+          return _objectSpread(_objectSpread({}, placeholder), {}, {
+            selectedWidgets: placeholder.selectedWidgets.map(function (widget) {
+              return widget.widget_name || widget;
+            })
+          });
+        }
+        return placeholder; // If no selectedWidgets, return placeholder as is
+      });
+
+      this.placeholders = output;
+      this.allPlaceholderItems = updatedPlaceholders;
       console.log('@Output Data', {
         output: output,
-        placeholders: placeholders,
-        allPlaceholders: allPlaceholders
+        placeholders: this.placeholders,
+        allPlaceholderItems: this.allPlaceholderItems,
+        theAvailableWidgets: this.available_widgets
       });
       return output;
     },
@@ -23423,7 +23440,7 @@ function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len 
 
             // Remove the widget from the source position
             var _widgets$splice = widgets.splice(sourceItemIndex, 1),
-              _widgets$splice2 = _babel_runtime_helpers_slicedToArray__WEBPACK_IMPORTED_MODULE_2___default()(_widgets$splice, 1),
+              _widgets$splice2 = _babel_runtime_helpers_slicedToArray__WEBPACK_IMPORTED_MODULE_1___default()(_widgets$splice, 1),
               movedWidget = _widgets$splice2[0];
 
             // Insert the widget at the destination position
@@ -23439,9 +23456,13 @@ function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len 
               var newSelectedIndex = widgets.indexOf(movedWidget);
               selectedWidgets.splice(newSelectedIndex, 0, movedWidget);
             }
+            console.log('@CHK onElementsDrop', {
+              allPlaceholderItems: this.allPlaceholderItems,
+              placeholders: this.placeholders
+            });
 
             // Update Placeholders
-            var updatedPlaceholders = this.syncPlaceholdersWithAllPlaceholderItems(this.allPlaceholderItems, this.placeholders);
+            var updatedPlaceholders = this.syncPlaceholdersWithAllPlaceholderItems(this.allPlaceholderItems, this.placeholders || []);
             this.placeholders = updatedPlaceholders;
             console.log('@CHK updatedPlaceholders onElementsDrop', {
               allPlaceholderItems: this.allPlaceholderItems,
@@ -23564,79 +23585,74 @@ function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len 
 
       // Import Layout
       // -------------------------
-      // const addActiveWidget = (widget) => {
-      //   console.log('@addActiveWidget', { widget, active_widgets: this.active_widgets });
-      //   let widgets_template = {
-      //     ...this.theAvailableWidgets[widget],
-      //   };
-
-      //   let has_widget_options = false;
-
-      //   if (widgets_template.options && widgets_template.options.fields) {
-      //     has_widget_options = true;
-      //   }
-
-      //   for (let root_option in widgets_template) {
-      //     if ("options" === root_option) {
-      //       continue;
-      //     }
-
-      //     if (widget[root_option] === "undefined") {
-      //       continue;
-      //     }
-
-      //     widgets_template[root_option] = widget[root_option];
-      //   }
-
-      //   if (has_widget_options) {
-      //     for (let option_key in widgets_template.options.fields) {
-      //       if (typeof widget[option_key] === "undefined") {
-      //         continue;
-      //       }
-
-      //       widgets_template.options.fields[option_key].value =
-      //         widget[option_key];
-      //     }
-      //   }
-
-      //   Vue.set(this.active_widgets, widget, widgets_template);
-      // };
-
+      var addActiveWidget = function addActiveWidget(widget) {
+        var widgets_template = _objectSpread({}, _this.theAvailableWidgets[widget]);
+        var has_widget_options = false;
+        if (widgets_template.options && widgets_template.options.fields) {
+          has_widget_options = true;
+        }
+        for (var root_option in widgets_template) {
+          if ("options" === root_option) {
+            continue;
+          }
+          if (widget[root_option] === "undefined") {
+            continue;
+          }
+          widgets_template[root_option] = widget[root_option];
+        }
+        if (has_widget_options) {
+          for (var option_key in widgets_template.options.fields) {
+            if (typeof widget[option_key] === "undefined") {
+              continue;
+            }
+            widgets_template.options.fields[option_key].value = widget[option_key];
+          }
+        }
+        vue__WEBPACK_IMPORTED_MODULE_4__["default"].set(_this.active_widgets, widget, widgets_template);
+      };
       var importWidgets = function importWidgets(placeholder, destination) {
+        console.log('@CHK: importWidgets', {
+          placeholder: placeholder,
+          destination: destination
+        });
         if (!_this.placeholdersMap.hasOwnProperty(placeholder.placeholderKey)) {
           return;
         }
         var newPlaceholder = JSON.parse(JSON.stringify(_this.placeholdersMap[placeholder.placeholderKey]));
-        newPlaceholder.selectedWidgets = placeholder.selectedWidgets;
-        newPlaceholder.acceptedWidgets = placeholder.acceptedWidgets;
+        if (newPlaceholder.selectedWidgets) {
+          newPlaceholder.selectedWidgets = placeholder.selectedWidgets;
+        }
+        if (placeholder.acceptedWidgets) {
+          newPlaceholder.acceptedWidgets = placeholder.acceptedWidgets;
+        }
         newPlaceholder.maxWidget = typeof newPlaceholder.maxWidget !== "undefined" ? parseInt(newPlaceholder.maxWidget) : 0;
-        console.log('@importWidgets', {
-          placeholder: placeholder,
-          newPlaceholder: newPlaceholder
-        });
         newAllPlaceholders.push(newPlaceholder);
         var targetPlaceholderIndex = destination.length;
         destination.splice(targetPlaceholderIndex, 0, newPlaceholder);
-        var widgetIndex = 0;
+
+        // let widgetIndex = 0;
         var _iterator6 = _createForOfIteratorHelper(placeholder.selectedWidgets),
           _step6;
         try {
           for (_iterator6.s(); !(_step6 = _iterator6.n()).done;) {
             var _widget2 = _step6.value;
-            if (typeof _widget2.widget_key === "undefined") {
+            if (typeof _widget2 === "undefined") {
               continue;
             }
-            if (typeof _widget2.widget_name === "undefined") {
+            if (typeof _widget2 === "undefined") {
               continue;
             }
-            if (typeof _this.available_widgets[_widget2.widget_name] === "undefined") {
+            if (typeof _this.available_widgets[_widget2] === "undefined") {
               continue;
             }
+            addActiveWidget(_widget2);
 
-            // addActiveWidget(widget);
-
-            destination[targetPlaceholderIndex].selectedWidgets.splice(widgetIndex, 0, _widget2);
-            widgetIndex++;
+            // destination[targetPlaceholderIndex].selectedWidgets.splice(
+            //   widgetIndex,
+            //   0,
+            //   widget
+            // );
+            // widgetIndex++;
           }
         } catch (err) {
           _iterator6.e(err);
@@ -23645,6 +23661,11 @@ function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len 
         }
       };
       value.forEach(function (placeholder, index) {
+        console.log('@CHK: value', {
+          placeholder: placeholder,
+          index: index,
+          selectedWidgets: placeholder.selectedWidgets
+        });
         if (!_this.isTruthyObject(placeholder)) {
           return;
         }
@@ -23827,16 +23848,19 @@ function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len 
         if (widgetIndex !== -1) {
           selectedWidgets.splice(widgetIndex, 0, widget_key);
         }
+        this.active_widgets[widget_key] = this.theAvailableWidgets[widget_key];
       } else if (!isChecked) {
         this.allPlaceholderItems[placeholder_index].selectedWidgets = selectedWidgets.filter(function (item) {
           return item !== widget_key;
         });
+        delete this.active_widgets[widget_key];
       }
       console.log('@toggleWidgetInSelectedWidgets:', {
         widget_key: widget_key,
         Widget: this.allPlaceholderItems[placeholder_index],
         selectedWidgets: selectedWidgets,
-        acceptedWidgets: acceptedWidgets
+        acceptedWidgets: acceptedWidgets,
+        active_widgets: this.active_widgets
       });
     },
     syncSelectedWidgets: function syncSelectedWidgets(allPlaceholderItems, placeholders) {
@@ -23866,6 +23890,10 @@ function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len 
       return updatePlaceholders(placeholders, allItemsMap);
     },
     syncPlaceholdersWithAllPlaceholderItems: function syncPlaceholdersWithAllPlaceholderItems(allPlaceholderItems, placeholders) {
+      console.log('Sync Placeholders With All Placeholder Items:', {
+        allPlaceholderItems: allPlaceholderItems,
+        placeholders: placeholders
+      });
       // Helper function to update a placeholder item's widgets
       var updatePlaceholderItem = function updatePlaceholderItem(placeholder, allPlaceholderItem) {
         if (placeholder.placeholderKey === allPlaceholderItem.placeholderKey) {
@@ -23876,7 +23904,11 @@ function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len 
 
       // Iterate through placeholders and update them based on allPlaceholderItems
       var updatePlaceholders = function updatePlaceholders(placeholders) {
-        placeholders.forEach(function (placeholder) {
+        console.log('Update Placeholders:', {
+          placeholders: placeholders
+        });
+        placeholders && placeholders.forEach(function (placeholder) {
+          console.log('@placeholder:', placeholder);
           if (placeholder.type === "placeholder_group") {
             // Recursively update placeholders within groups
             updatePlaceholders(placeholder.placeholders);
@@ -23885,6 +23917,10 @@ function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len 
               return item.placeholderKey === placeholder.placeholderKey;
             });
             if (matchingItem) {
+              console.log('@matchingItem:', {
+                placeholder: placeholder,
+                matchingItem: matchingItem
+              });
               updatePlaceholderItem(placeholder, matchingItem);
             }
           }
@@ -33003,7 +33039,6 @@ var render = function render() {
           containerClass: "cptm-preview-placeholder__card__box cptm-card-light",
           label: placeholderSubItem.label,
           availableWidgets: _vm.theAvailableWidgets,
-          activeWidgets: _vm.active_widgets,
           acceptedWidgets: placeholderSubItem.acceptedWidgets,
           rejectedWidgets: placeholderSubItem.rejectedWidgets,
           selectedWidgets: placeholderSubItem.selectedWidgets,
@@ -33036,7 +33071,6 @@ var render = function render() {
         containerClass: "cptm-preview-placeholder__card__box cptm-card-light",
         label: placeholderItem.label,
         availableWidgets: _vm.theAvailableWidgets,
-        activeWidgets: _vm.active_widgets,
         acceptedWidgets: placeholderItem.acceptedWidgets,
         rejectedWidgets: placeholderItem.rejectedWidgets,
         selectedWidgets: placeholderItem.selectedWidgets,
