@@ -299,15 +299,16 @@ Directorist is a complete directory solution and in combination with its advance
 
 8.1 - Jan 29, 2025
 
-### Added
+**Added**
  - Infinite Scroll Pagination for listings archive pages, including all listings, search results, single category, and single location pages. (#2210)
  - AJAX Pagination for all taxonomy pages, including categories and locations.
  - User Query Limit restricted to published listings owners for users accessing the `users` REST API endpoint. (#2198)
 
-### Changed
- - Disabled the taxonomy field on single taxonomy page (#2203)
+**Changed**
+ - Disabled the category dropdown search field on the single category page (#2203)
+ - Disabled the location dropdown search field on the single location page (#2203)
 
-### Fixed
+**Fixed**
  - Number custom field range issue ( #2173 ).
  - Title markup inconsistency issue ( #2195 ).
  - Pagination issue on single taxonomy pages ( #2188 ).
