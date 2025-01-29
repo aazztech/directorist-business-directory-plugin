@@ -410,7 +410,13 @@ export default {
       this.placeholders = output;
       this.allPlaceholderItems = updatedPlaceholders;
 
-      console.log('@Output Data', {output, placeholders: this.placeholders, allPlaceholderItems:this.allPlaceholderItems, theAvailableWidgets: this.available_widgets});
+      console.log('@Output Data', {
+        output, 
+        updatedPlaceholders, 
+        placeholders: this.placeholders, 
+        allPlaceholderItems:this.allPlaceholderItems, 
+        theAvailableWidgets: this.available_widgets
+      });
       
       return output;
     },

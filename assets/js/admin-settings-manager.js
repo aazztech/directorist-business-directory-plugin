@@ -23254,6 +23254,7 @@ function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len 
       this.allPlaceholderItems = updatedPlaceholders;
       console.log('@Output Data', {
         output: output,
+        updatedPlaceholders: updatedPlaceholders,
         placeholders: this.placeholders,
         allPlaceholderItems: this.allPlaceholderItems,
         theAvailableWidgets: this.available_widgets
