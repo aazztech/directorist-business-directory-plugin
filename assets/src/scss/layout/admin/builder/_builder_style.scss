@@ -4224,6 +4224,7 @@ input[type="radio"] {
           background: #E5E7EB;
         }
       }
+      
       @include e(label) {
         display: flex;
         gap: 6px;
@@ -4235,11 +4236,33 @@ input[type="radio"] {
           color: #4D5761;
         }
       }
-      @include e(switch) {
-        flex: 1;
+
+      @include e(action) {
         display: inline-flex;
+        gap: 12px;
+        flex: 1;
+        align-items: center;
         justify-content: flex-end;
+      }
+
+      @include e(edit) {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 20px;
+        height: 20px;
+        background-color: #000;
+        border-radius: 50%;
+        cursor: pointer;
+        @include e(icon) {
+          font-size: 12px;
+          color: #fff;
+        }
+      }
+
+      @include e(switch) {
         label {
+          display: inline-flex;
           position: relative;
           width: 32px;
           height: 18px;
@@ -4272,6 +4295,53 @@ input[type="radio"] {
           }
           &:checked + label::after {
             transform: translateX(14px);
+          }
+        }
+      }
+    }
+    @include e(options) {
+      .cptm-option-card {
+        margin: 0;
+        background: #fff;
+        box-shadow: 0 6px 8px 2px #1018281A;
+        .cptm-option-card-header {
+          border-radius: 8px 8px 0 0;
+          background: transparent;
+          .cptm-option-card-header-title-section {
+            padding: 16px;
+            min-height: auto;
+            .cptm-option-card-header-title {
+              font-size: 14px;
+              font-weight: 500;
+              color: #2C3239;
+              margin: 0;
+            }
+            .cptm-header-action-link {
+              display: flex;
+              align-items: center;
+              justify-content: center;
+              width: 18px;
+              height: 18px;
+              padding: 0;
+              color: #4D5761;
+            }
+          }
+        }
+        .cptm-option-card-body {
+          display: flex;
+          gap: 16px;
+          flex-direction: column;
+          padding: 16px;
+          background: transparent;
+          border-top: 1px solid #E5E7EB;
+          border-radius: 0 0 8px 8px;
+          box-shadow: none;
+          .cptm-form-group {
+            margin-bottom: 0;
+            label {
+              font-size: 13px;
+              font-weight: 500;
+            }
           }
         }
       }

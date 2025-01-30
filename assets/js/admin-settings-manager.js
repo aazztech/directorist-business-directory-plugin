@@ -14950,13 +14950,6 @@ function _objectSpread(e) { for (var r = 1; r < arguments.length; r++) { var t =
       default: false
     }
   },
-  mounted: function mounted() {
-    console.log("Selected Widgets (mounted):", {
-      selectedWidgets: this.selectedWidgets,
-      availableWidgets: this.availableWidgets,
-      activeWidgets: this.activeWidgets
-    });
-  },
   computed: {
     canAddMore: function canAddMore() {
       if (this.maxWidget < 1) {
@@ -23166,56 +23159,7 @@ function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len 
         for (var widgetIndex in placeholderData.selectedWidgets) {
           var widget_name = placeholderData.selectedWidgets[widgetIndex].widget_name || placeholderData.selectedWidgets[widgetIndex];
           data.push(widget_name);
-
-          // if (
-          //   !this.active_widgets[widget_name] &&
-          //   typeof this.active_widgets[widget_name] !== "object"
-          // ) {
-          //   continue;
-          // }
-
-          // let widget_data = {};
-
-          // for (let root_option in this.active_widgets[widget_name]) {
-          //   if ("options" === root_option) {
-          //     continue;
-          //   }
-          //   if ("icon" === root_option) {
-          //     continue;
-          //   }
-          //   if ("show_if" === root_option) {
-          //     continue;
-          //   }
-          //   if ("fields" === root_option) {
-          //     continue;
-          //   }
-
-          //   widget_data[root_option] = this.active_widgets[widget_name][
-          //     root_option
-          //   ];
-          // }
-
-          // if (typeof this.active_widgets[widget_name].options !== "object") {
-          //   data.push(widget_data);
-          //   continue;
-          // }
-
-          // if (
-          //   typeof this.active_widgets[widget_name].options.fields !== "object"
-          // ) {
-          //   data.push(widget_data);
-          //   continue;
-          // }
-
-          // let widget_options = this.active_widgets[widget_name].options.fields;
-
-          // for (let option in widget_options) {
-          //   widget_data[option] = widget_options[option].value;
-          // }
-
-          // data.push(widget_data);
         }
-
         return data;
       };
 
@@ -23298,24 +23242,25 @@ function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len 
         updatedPlaceholders: updatedPlaceholders,
         placeholders: this.placeholders,
         allPlaceholderItems: this.allPlaceholderItems,
-        theAvailableWidgets: this.available_widgets
+        theAvailableWidgets: this.available_widgets,
+        active_widgets: this.active_widgets
       });
       return output;
     },
     theAvailableWidgets: function theAvailableWidgets() {
       var available_widgets = JSON.parse(JSON.stringify(this.available_widgets));
-      for (var _widget in available_widgets) {
-        available_widgets[_widget].widget_name = _widget;
-        available_widgets[_widget].widget_key = _widget;
+      for (var widget in available_widgets) {
+        available_widgets[widget].widget_name = widget;
+        available_widgets[widget].widget_key = widget;
 
         // Check show if condition
         var show_if_cond_state = null;
-        if (this.isObject(available_widgets[_widget].show_if)) {
+        if (this.isObject(available_widgets[widget].show_if)) {
           show_if_cond_state = this.checkShowIfCondition({
-            condition: available_widgets[_widget].show_if
+            condition: available_widgets[widget].show_if
           });
-          var main_widget = available_widgets[_widget];
-          delete available_widgets[_widget];
+          var main_widget = available_widgets[widget];
+          delete available_widgets[widget];
           if (show_if_cond_state.status) {
             var widget_keys = [];
             var _iterator3 = _createForOfIteratorHelper(show_if_cond_state.matched_data),
@@ -23325,7 +23270,7 @@ function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len 
                 var matched_field = _step3.value;
                 // console.log( {matched_field} );
                 var _main_widget = JSON.parse(JSON.stringify(main_widget));
-                var current_key = widget_keys.includes(_widget) ? _widget + "_" + (widget_keys.length + 1) : _widget;
+                var current_key = widget_keys.includes(widget) ? widget + "_" + (widget_keys.length + 1) : widget;
                 _main_widget.widget_key = current_key;
                 if (matched_field.widget_key) {
                   _main_widget.widget_key = matched_field.widget_key;
@@ -23347,13 +23292,14 @@ function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len 
       return available_widgets;
     },
     widgetOptionsWindowActiveStatus: function widgetOptionsWindowActiveStatus() {
-      if (!this.widgetOptionsWindow.widget.length) {
-        return false;
-      }
-      if (typeof this.active_widgets[this.widgetOptionsWindow.widget] === "undedined") {
-        return false;
-      }
-      return true;
+      var _this = this;
+      console.log('@widgetOptionsWindowActiveStatus', this.widgetOptionsWindow);
+      return function (widgetKey) {
+        if (!widgetKey || _this.widgetOptionsWindow.widget === '' || _this.widgetOptionsWindow.widget !== widgetKey || typeof _this.active_widgets[widgetKey] === "undefined") {
+          return false;
+        }
+        return true;
+      };
     },
     widgetCardOptionsWindowActiveStatus: function widgetCardOptionsWindowActiveStatus() {
       if (!this.isObject(this.widgetCardOptionsWindow.widget)) {
@@ -23617,7 +23563,7 @@ function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len 
     },
     // Import Old Data
     importOldData: function importOldData() {
-      var _this = this;
+      var _this2 = this;
       var value = JSON.parse(JSON.stringify(this.value));
       if (!Array.isArray(value)) {
         return;
@@ -23628,7 +23574,7 @@ function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len 
       // Import Layout
       // -------------------------
       var addActiveWidget = function addActiveWidget(widget) {
-        var widgets_template = _objectSpread({}, _this.theAvailableWidgets[widget]);
+        var widgets_template = _objectSpread({}, _this2.theAvailableWidgets[widget]);
         var has_widget_options = false;
         if (widgets_template.options && widgets_template.options.fields) {
           has_widget_options = true;
@@ -23650,17 +23596,13 @@ function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len 
             widgets_template.options.fields[option_key].value = widget[option_key];
           }
         }
-        vue__WEBPACK_IMPORTED_MODULE_4__["default"].set(_this.active_widgets, widget, widgets_template);
+        vue__WEBPACK_IMPORTED_MODULE_4__["default"].set(_this2.active_widgets, widget, widgets_template);
       };
       var importWidgets = function importWidgets(placeholder, destination) {
-        console.log('@CHK: importWidgets', {
-          placeholder: placeholder,
-          destination: destination
-        });
-        if (!_this.placeholdersMap.hasOwnProperty(placeholder.placeholderKey)) {
+        if (!_this2.placeholdersMap.hasOwnProperty(placeholder.placeholderKey)) {
           return;
         }
-        var newPlaceholder = JSON.parse(JSON.stringify(_this.placeholdersMap[placeholder.placeholderKey]));
+        var newPlaceholder = JSON.parse(JSON.stringify(_this2.placeholdersMap[placeholder.placeholderKey]));
         if (newPlaceholder.selectedWidgets) {
           newPlaceholder.selectedWidgets = placeholder.selectedWidgets;
         }
@@ -23677,24 +23619,17 @@ function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len 
           _step6;
         try {
           for (_iterator6.s(); !(_step6 = _iterator6.n()).done;) {
-            var _widget2 = _step6.value;
-            if (typeof _widget2 === "undefined") {
+            var widget = _step6.value;
+            if (typeof widget === "undefined") {
               continue;
             }
-            if (typeof _widget2 === "undefined") {
+            if (typeof widget === "undefined") {
               continue;
             }
-            if (typeof _this.available_widgets[_widget2] === "undefined") {
+            if (typeof _this2.available_widgets[widget] === "undefined") {
               continue;
             }
-            addActiveWidget(_widget2);
-
-            // destination[targetPlaceholderIndex].selectedWidgets.splice(
-            //   widgetIndex,
-            //   0,
-            //   widget
-            // );
-            // widgetIndex++;
+            addActiveWidget(widget);
           }
         } catch (err) {
           _iterator6.e(err);
@@ -23703,12 +23638,7 @@ function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len 
         }
       };
       value.forEach(function (placeholder, index) {
-        console.log('@CHK: value', {
-          placeholder: placeholder,
-          index: index,
-          selectedWidgets: placeholder.selectedWidgets
-        });
-        if (!_this.isTruthyObject(placeholder)) {
+        if (!_this2.isTruthyObject(placeholder)) {
           return;
         }
         if ("placeholder_item" === placeholder.type) {
@@ -23719,12 +23649,12 @@ function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len 
           return;
         }
         if ("placeholder_group" === placeholder.type) {
-          if (!_this.placeholdersMap.hasOwnProperty(placeholder.placeholderKey)) {
+          if (!_this2.placeholdersMap.hasOwnProperty(placeholder.placeholderKey)) {
             return;
           }
-          var newPlaceholder = JSON.parse(JSON.stringify(_this.placeholdersMap[placeholder.placeholderKey]));
+          var newPlaceholder = JSON.parse(JSON.stringify(_this2.placeholdersMap[placeholder.placeholderKey]));
           newPlaceholder.placeholders = [];
-          var targetPlaceholderIndex = _this.placeholders.length;
+          var targetPlaceholderIndex = _this2.placeholders.length;
           newPlaceholders.splice(targetPlaceholderIndex, 0, newPlaceholder);
           placeholder.placeholders.forEach(function (subPlaceholder) {
             if (!Array.isArray(subPlaceholder.selectedWidgets)) {
@@ -23763,7 +23693,7 @@ function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len 
     },
     // Import Placeholders
     importPlaceholders: function importPlaceholders() {
-      var _this2 = this;
+      var _this3 = this;
       this.allPlaceholderItems = [];
       if (!Array.isArray(this.layout)) {
         return;
@@ -23772,7 +23702,7 @@ function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len 
         return;
       }
       var sanitizePlaceholderData = function sanitizePlaceholderData(placeholder) {
-        if (!_this2.isTruthyObject(placeholder)) {
+        if (!_this3.isTruthyObject(placeholder)) {
           placeholder = {};
         }
 
@@ -23793,7 +23723,7 @@ function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len 
       try {
         var _loop = function _loop() {
             var placeholder = _step7.value;
-            if (!_this2.isTruthyObject(placeholder)) {
+            if (!_this3.isTruthyObject(placeholder)) {
               return 0; // continue
             }
             var placeholderItem = placeholder;
@@ -23803,15 +23733,15 @@ function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len 
             if (typeof placeholderItem.placeholderKey === "undefined") {
               return 0; // continue
             }
-            if (_this2.placeholdersMap.hasOwnProperty(placeholderItem.placeholderKey)) {
+            if (_this3.placeholdersMap.hasOwnProperty(placeholderItem.placeholderKey)) {
               return 0; // continue
             }
-            vue__WEBPACK_IMPORTED_MODULE_4__["default"].set(_this2.placeholdersMap, placeholderItem.placeholderKey, placeholderItem);
+            vue__WEBPACK_IMPORTED_MODULE_4__["default"].set(_this3.placeholdersMap, placeholderItem.placeholderKey, placeholderItem);
             if (placeholderItem.type === "placeholder_item") {
               var placeholderItemData = sanitizePlaceholderData(placeholderItem);
               if (placeholderItemData) {
                 sanitizedPlaceholders.push(placeholderItemData);
-                _this2.allPlaceholderItems.push(placeholderItemData);
+                _this3.allPlaceholderItems.push(placeholderItemData);
               }
               return 0; // continue
             }
@@ -23826,15 +23756,15 @@ function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len 
                 return 0; // continue
               }
               placeholderItem.placeholders.forEach(function (placeholderSubItem, subPlaceholderIndex) {
-                if (_this2.placeholdersMap.hasOwnProperty(placeholderSubItem.placeholderKey)) {
+                if (_this3.placeholdersMap.hasOwnProperty(placeholderSubItem.placeholderKey)) {
                   placeholderItem.placeholders.splice(subPlaceholderIndex, 1);
                   return;
                 }
-                vue__WEBPACK_IMPORTED_MODULE_4__["default"].set(_this2.placeholdersMap, placeholderSubItem.placeholderKey, placeholderSubItem);
+                vue__WEBPACK_IMPORTED_MODULE_4__["default"].set(_this3.placeholdersMap, placeholderSubItem.placeholderKey, placeholderSubItem);
                 var placeholderItemData = sanitizePlaceholderData(placeholderSubItem);
                 if (placeholderItemData) {
                   placeholderItem.placeholders.splice(subPlaceholderIndex, 1, placeholderItemData);
-                  _this2.allPlaceholderItems.push(placeholderItemData);
+                  _this3.allPlaceholderItems.push(placeholderItemData);
                 }
               });
               if (placeholderItem.placeholders.length) {
@@ -23853,13 +23783,9 @@ function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len 
         _iterator7.f();
       }
       this.placeholders = sanitizedPlaceholders;
-      console.log({
-        placeholders: this.placeholders
-      });
-      console.log({
-        available_widgets: this.available_widgets
-      });
-      console.log({
+      console.log('@CHK Placeholders', {
+        placeholders: this.placeholders,
+        available_widgets: this.available_widgets,
         allPlaceholderItems: this.allPlaceholderItems
       });
     },
@@ -23950,7 +23876,6 @@ function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len 
           placeholders: placeholders
         });
         placeholders && placeholders.forEach(function (placeholder) {
-          console.log('@placeholder:', placeholder);
           if (placeholder.type === "placeholder_group") {
             // Recursively update placeholders within groups
             updatePlaceholders(placeholder.placeholders);
@@ -24080,6 +24005,11 @@ function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len 
       // console.log( 'handleDragleaveOnPlaceholder', where );
     },
     editWidget: function editWidget(key) {
+      console.log('Edit Widget:', {
+        key: key,
+        active: this.active_widgets[key],
+        available: this.available_widgets[key]
+      });
       if (typeof this.active_widgets[key] === "undefined") {
         return;
       }
@@ -24114,14 +24044,17 @@ function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len 
       vue__WEBPACK_IMPORTED_MODULE_4__["default"].set(this.card_option_widgets[options_window.widget].options, "fields", data);
     },
     updateWidgetOptionsData: function updateWidgetOptionsData(data, options_window) {
-      return;
-      if (typeof this.active_widgets[widget.widget] === "undefined") {
+      console.log('@updateWidgetOptionsData', {
+        data: data,
+        options_window: options_window
+      });
+      if (typeof this.active_widgets[options_window.widget] === "undefined") {
         return;
       }
-      if (typeof this.active_widgets[widget.widget].options === "undefined") {
+      if (typeof this.active_widgets[options_window.widget].options === "undefined") {
         return;
       }
-      vue__WEBPACK_IMPORTED_MODULE_4__["default"].set(this.active_widgets[widget.widget].options, "fields", data);
+      vue__WEBPACK_IMPORTED_MODULE_4__["default"].set(this.active_widgets[options_window.widget].options, "fields", data);
     },
     closeCardWidgetOptionsWindow: function closeCardWidgetOptionsWindow() {
       this.widgetCardOptionsWindow = this.widgetOptionsWindowDefault;
@@ -33101,30 +33034,7 @@ var render = function render() {
     _c = _vm._self._c;
   return _c("div", {
     staticClass: "cptm-builder-section"
-  }, [_vm.widgetCardOptionsWindowActiveStatus || _vm.widgetOptionsWindowActiveStatus ? _c("div", {
-    staticClass: "cptm-options-area"
-  }, [_c("options-window", _vm._b({
-    attrs: {
-      active: _vm.widgetCardOptionsWindowActiveStatus
-    },
-    on: {
-      close: function close($event) {
-        return _vm.closeCardWidgetOptionsWindow();
-      }
-    }
-  }, "options-window", _vm.widgetCardOptionsWindow, false)), _vm._v(" "), _c("options-window", _vm._b({
-    attrs: {
-      active: _vm.widgetOptionsWindowActiveStatus
-    },
-    on: {
-      update: function update($event) {
-        return _vm.updateWidgetOptionsData($event, _vm.widgetOptionsWindow);
-      },
-      close: function close($event) {
-        return _vm.closeWidgetOptionsWindow();
-      }
-    }
-  }, "options-window", _vm.widgetOptionsWindow, false))], 1) : _vm._e(), _vm._v(" "), _c("div", {
+  }, [_c("div", {
     staticClass: "cptm-preview-placeholder",
     class: !_vm.elementsSettingsOpened ? "cptm-preview-placeholder--settings-closed" : ""
   }, [_c("div", {
@@ -33336,7 +33246,19 @@ var render = function render() {
         staticClass: "cptm-elements-settings__group__single__label"
       }, [_vm.available_widgets[widget_key].icon ? _c("span", {
         class: _vm.available_widgets[widget_key].icon
-      }) : _vm._e(), _vm._v(" "), _vm.available_widgets[widget_key] ? _c("span", [_vm._v(_vm._s(_vm.available_widgets[widget_key].label))]) : _c("span", [_vm._v("Unknown Widget")])]), _vm._v(" "), _c("span", {
+      }) : _vm._e(), _vm._v(" "), _vm.available_widgets[widget_key] ? _c("span", [_vm._v(_vm._s(_vm.available_widgets[widget_key].label))]) : _c("span", [_vm._v("Unknown Widget")])]), _vm._v(" "), _c("div", {
+        staticClass: "cptm-elements-settings__group__single__action"
+      }, [_vm.available_widgets[widget_key].options ? _c("span", {
+        staticClass: "cptm-elements-settings__group__single__edit",
+        on: {
+          click: function click($event) {
+            $event.preventDefault();
+            return _vm.editWidget(widget_key);
+          }
+        }
+      }, [_c("span", {
+        staticClass: "cptm-elements-settings__group__single__edit__icon uil uil-cog"
+      })]) : _vm._e(), _vm._v(" "), _c("span", {
         staticClass: "cptm-elements-settings__group__single__switch"
       }, [_c("input", {
         attrs: {
@@ -33355,7 +33277,19 @@ var render = function render() {
         attrs: {
           for: "settings-".concat(widget_key, "-").concat(placeholder_index)
         }
-      })])])]);
+      })])])]), _vm._v(" "), _vm.widgetOptionsWindowActiveStatus(widget_key) ? _c("div", {
+        staticClass: "cptm-elements-settings__group__options"
+      }, [_c("options-window", _vm._b({
+        attrs: {
+          active: _vm.widgetOptionsWindowActiveStatus(widget_key)
+        },
+        on: {
+          update: function update($event) {
+            return _vm.updateWidgetOptionsData($event, _vm.widgetOptionsWindow);
+          },
+          close: _vm.closeWidgetOptionsWindow
+        }
+      }, "options-window", _vm.widgetOptionsWindow, false))], 1) : _vm._e()]);
     }), 1)], 1);
   }), 0)]], 2) : _vm._e()]);
 };

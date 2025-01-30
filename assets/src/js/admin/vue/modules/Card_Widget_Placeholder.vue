@@ -122,13 +122,6 @@ export default {
         default: false,
     },
   },
-  mounted() {
-    console.log("Selected Widgets (mounted):", { 
-      selectedWidgets: this.selectedWidgets, 
-      availableWidgets: this.availableWidgets, 
-      activeWidgets: this.activeWidgets,
-    } );
-  },
 
   computed: {
     canAddMore() {
@@ -166,6 +159,7 @@ export default {
       
     }
   },
+  
   data() {
     return {
       placeholderDragEnter: false,

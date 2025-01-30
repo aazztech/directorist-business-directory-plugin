@@ -19030,21 +19030,53 @@ input[type=radio]:checked::before {
 .cptm-elements-settings__group__single__label .icon {
   color: #4D5761;
 }
-.cptm-elements-settings__group__single__switch {
-  -webkit-box-flex: 1;
-  -webkit-flex: 1;
-      -ms-flex: 1;
-          flex: 1;
+.cptm-elements-settings__group__single__action {
   display: -webkit-inline-box;
   display: -webkit-inline-flex;
   display: -ms-inline-flexbox;
   display: inline-flex;
+  gap: 12px;
+  -webkit-box-flex: 1;
+  -webkit-flex: 1;
+      -ms-flex: 1;
+          flex: 1;
+  -webkit-box-align: center;
+  -webkit-align-items: center;
+      -ms-flex-align: center;
+          align-items: center;
   -webkit-box-pack: end;
   -webkit-justify-content: flex-end;
       -ms-flex-pack: end;
           justify-content: flex-end;
 }
+.cptm-elements-settings__group__single__edit {
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-align: center;
+  -webkit-align-items: center;
+      -ms-flex-align: center;
+          align-items: center;
+  -webkit-box-pack: center;
+  -webkit-justify-content: center;
+      -ms-flex-pack: center;
+          justify-content: center;
+  width: 20px;
+  height: 20px;
+  background-color: #000;
+  border-radius: 50%;
+  cursor: pointer;
+}
+.cptm-elements-settings__group__single__edit__icon {
+  font-size: 12px;
+  color: #fff;
+}
 .cptm-elements-settings__group__single__switch label {
+  display: -webkit-inline-box;
+  display: -webkit-inline-flex;
+  display: -ms-inline-flexbox;
+  display: inline-flex;
   position: relative;
   width: 32px;
   height: 18px;
@@ -19081,6 +19113,69 @@ input[type=radio]:checked::before {
 .cptm-elements-settings__group__single__switch input[type=checkbox]:checked + label::after {
   -webkit-transform: translateX(-14px);
           transform: translateX(-14px);
+}
+.cptm-elements-settings__group__options .cptm-option-card {
+  margin: 0;
+  background: #fff;
+  -webkit-box-shadow: 0 6px 8px 2px rgba(16, 24, 40, 0.1019607843);
+          box-shadow: 0 6px 8px 2px rgba(16, 24, 40, 0.1019607843);
+}
+.cptm-elements-settings__group__options .cptm-option-card .cptm-option-card-header {
+  border-radius: 8px 8px 0 0;
+  background: transparent;
+}
+.cptm-elements-settings__group__options .cptm-option-card .cptm-option-card-header .cptm-option-card-header-title-section {
+  padding: 16px;
+  min-height: auto;
+}
+.cptm-elements-settings__group__options .cptm-option-card .cptm-option-card-header .cptm-option-card-header-title-section .cptm-option-card-header-title {
+  font-size: 14px;
+  font-weight: 500;
+  color: #2C3239;
+  margin: 0;
+}
+.cptm-elements-settings__group__options .cptm-option-card .cptm-option-card-header .cptm-option-card-header-title-section .cptm-header-action-link {
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-align: center;
+  -webkit-align-items: center;
+      -ms-flex-align: center;
+          align-items: center;
+  -webkit-box-pack: center;
+  -webkit-justify-content: center;
+      -ms-flex-pack: center;
+          justify-content: center;
+  width: 18px;
+  height: 18px;
+  padding: 0;
+  color: #4D5761;
+}
+.cptm-elements-settings__group__options .cptm-option-card .cptm-option-card-body {
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: -ms-flexbox;
+  display: flex;
+  gap: 16px;
+  -webkit-box-orient: vertical;
+  -webkit-box-direction: normal;
+  -webkit-flex-direction: column;
+      -ms-flex-direction: column;
+          flex-direction: column;
+  padding: 16px;
+  background: transparent;
+  border-top: 1px solid #E5E7EB;
+  border-radius: 0 0 8px 8px;
+  -webkit-box-shadow: none;
+          box-shadow: none;
+}
+.cptm-elements-settings__group__options .cptm-option-card .cptm-option-card-body .cptm-form-group {
+  margin-bottom: 0;
+}
+.cptm-elements-settings__group__options .cptm-option-card .cptm-option-card-body .cptm-form-group label {
+  font-size: 13px;
+  font-weight: 500;
 }
 .cptm-elements-settings__group .dndrop-container .dndrop-draggable-wrapper {
   margin-bottom: 16px;
@@ -24318,21 +24413,53 @@ input[type=radio]:checked::before {
 .cptm-elements-settings__group__single__label .icon {
   color: #4D5761;
 }
-.cptm-elements-settings__group__single__switch {
-  -webkit-box-flex: 1;
-  -webkit-flex: 1;
-      -ms-flex: 1;
-          flex: 1;
+.cptm-elements-settings__group__single__action {
   display: -webkit-inline-box;
   display: -webkit-inline-flex;
   display: -ms-inline-flexbox;
   display: inline-flex;
+  gap: 12px;
+  -webkit-box-flex: 1;
+  -webkit-flex: 1;
+      -ms-flex: 1;
+          flex: 1;
+  -webkit-box-align: center;
+  -webkit-align-items: center;
+      -ms-flex-align: center;
+          align-items: center;
   -webkit-box-pack: end;
   -webkit-justify-content: flex-end;
       -ms-flex-pack: end;
           justify-content: flex-end;
 }
+.cptm-elements-settings__group__single__edit {
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-align: center;
+  -webkit-align-items: center;
+      -ms-flex-align: center;
+          align-items: center;
+  -webkit-box-pack: center;
+  -webkit-justify-content: center;
+      -ms-flex-pack: center;
+          justify-content: center;
+  width: 20px;
+  height: 20px;
+  background-color: #000;
+  border-radius: 50%;
+  cursor: pointer;
+}
+.cptm-elements-settings__group__single__edit__icon {
+  font-size: 12px;
+  color: #fff;
+}
 .cptm-elements-settings__group__single__switch label {
+  display: -webkit-inline-box;
+  display: -webkit-inline-flex;
+  display: -ms-inline-flexbox;
+  display: inline-flex;
   position: relative;
   width: 32px;
   height: 18px;
@@ -24369,6 +24496,69 @@ input[type=radio]:checked::before {
 .cptm-elements-settings__group__single__switch input[type=checkbox]:checked + label::after {
   -webkit-transform: translateX(-14px);
           transform: translateX(-14px);
+}
+.cptm-elements-settings__group__options .cptm-option-card {
+  margin: 0;
+  background: #fff;
+  -webkit-box-shadow: 0 6px 8px 2px rgba(16, 24, 40, 0.1019607843);
+          box-shadow: 0 6px 8px 2px rgba(16, 24, 40, 0.1019607843);
+}
+.cptm-elements-settings__group__options .cptm-option-card .cptm-option-card-header {
+  border-radius: 8px 8px 0 0;
+  background: transparent;
+}
+.cptm-elements-settings__group__options .cptm-option-card .cptm-option-card-header .cptm-option-card-header-title-section {
+  padding: 16px;
+  min-height: auto;
+}
+.cptm-elements-settings__group__options .cptm-option-card .cptm-option-card-header .cptm-option-card-header-title-section .cptm-option-card-header-title {
+  font-size: 14px;
+  font-weight: 500;
+  color: #2C3239;
+  margin: 0;
+}
+.cptm-elements-settings__group__options .cptm-option-card .cptm-option-card-header .cptm-option-card-header-title-section .cptm-header-action-link {
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-align: center;
+  -webkit-align-items: center;
+      -ms-flex-align: center;
+          align-items: center;
+  -webkit-box-pack: center;
+  -webkit-justify-content: center;
+      -ms-flex-pack: center;
+          justify-content: center;
+  width: 18px;
+  height: 18px;
+  padding: 0;
+  color: #4D5761;
+}
+.cptm-elements-settings__group__options .cptm-option-card .cptm-option-card-body {
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: -ms-flexbox;
+  display: flex;
+  gap: 16px;
+  -webkit-box-orient: vertical;
+  -webkit-box-direction: normal;
+  -webkit-flex-direction: column;
+      -ms-flex-direction: column;
+          flex-direction: column;
+  padding: 16px;
+  background: transparent;
+  border-top: 1px solid #E5E7EB;
+  border-radius: 0 0 8px 8px;
+  -webkit-box-shadow: none;
+          box-shadow: none;
+}
+.cptm-elements-settings__group__options .cptm-option-card .cptm-option-card-body .cptm-form-group {
+  margin-bottom: 0;
+}
+.cptm-elements-settings__group__options .cptm-option-card .cptm-option-card-body .cptm-form-group label {
+  font-size: 13px;
+  font-weight: 500;
 }
 .cptm-elements-settings__group .dndrop-container .dndrop-draggable-wrapper {
   margin-bottom: 16px;
@@ -29894,21 +30084,53 @@ input[type=radio]:checked::before {
 .cptm-elements-settings__group__single__label .icon {
   color: #4D5761;
 }
-.cptm-elements-settings__group__single__switch {
-  -webkit-box-flex: 1;
-  -webkit-flex: 1;
-      -ms-flex: 1;
-          flex: 1;
+.cptm-elements-settings__group__single__action {
   display: -webkit-inline-box;
   display: -webkit-inline-flex;
   display: -ms-inline-flexbox;
   display: inline-flex;
+  gap: 12px;
+  -webkit-box-flex: 1;
+  -webkit-flex: 1;
+      -ms-flex: 1;
+          flex: 1;
+  -webkit-box-align: center;
+  -webkit-align-items: center;
+      -ms-flex-align: center;
+          align-items: center;
   -webkit-box-pack: end;
   -webkit-justify-content: flex-end;
       -ms-flex-pack: end;
           justify-content: flex-end;
 }
+.cptm-elements-settings__group__single__edit {
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-align: center;
+  -webkit-align-items: center;
+      -ms-flex-align: center;
+          align-items: center;
+  -webkit-box-pack: center;
+  -webkit-justify-content: center;
+      -ms-flex-pack: center;
+          justify-content: center;
+  width: 20px;
+  height: 20px;
+  background-color: #000;
+  border-radius: 50%;
+  cursor: pointer;
+}
+.cptm-elements-settings__group__single__edit__icon {
+  font-size: 12px;
+  color: #fff;
+}
 .cptm-elements-settings__group__single__switch label {
+  display: -webkit-inline-box;
+  display: -webkit-inline-flex;
+  display: -ms-inline-flexbox;
+  display: inline-flex;
   position: relative;
   width: 32px;
   height: 18px;
@@ -29945,6 +30167,69 @@ input[type=radio]:checked::before {
 .cptm-elements-settings__group__single__switch input[type=checkbox]:checked + label::after {
   -webkit-transform: translateX(-14px);
           transform: translateX(-14px);
+}
+.cptm-elements-settings__group__options .cptm-option-card {
+  margin: 0;
+  background: #fff;
+  -webkit-box-shadow: 0 6px 8px 2px rgba(16, 24, 40, 0.1019607843);
+          box-shadow: 0 6px 8px 2px rgba(16, 24, 40, 0.1019607843);
+}
+.cptm-elements-settings__group__options .cptm-option-card .cptm-option-card-header {
+  border-radius: 8px 8px 0 0;
+  background: transparent;
+}
+.cptm-elements-settings__group__options .cptm-option-card .cptm-option-card-header .cptm-option-card-header-title-section {
+  padding: 16px;
+  min-height: auto;
+}
+.cptm-elements-settings__group__options .cptm-option-card .cptm-option-card-header .cptm-option-card-header-title-section .cptm-option-card-header-title {
+  font-size: 14px;
+  font-weight: 500;
+  color: #2C3239;
+  margin: 0;
+}
+.cptm-elements-settings__group__options .cptm-option-card .cptm-option-card-header .cptm-option-card-header-title-section .cptm-header-action-link {
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-align: center;
+  -webkit-align-items: center;
+      -ms-flex-align: center;
+          align-items: center;
+  -webkit-box-pack: center;
+  -webkit-justify-content: center;
+      -ms-flex-pack: center;
+          justify-content: center;
+  width: 18px;
+  height: 18px;
+  padding: 0;
+  color: #4D5761;
+}
+.cptm-elements-settings__group__options .cptm-option-card .cptm-option-card-body {
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: -ms-flexbox;
+  display: flex;
+  gap: 16px;
+  -webkit-box-orient: vertical;
+  -webkit-box-direction: normal;
+  -webkit-flex-direction: column;
+      -ms-flex-direction: column;
+          flex-direction: column;
+  padding: 16px;
+  background: transparent;
+  border-top: 1px solid #E5E7EB;
+  border-radius: 0 0 8px 8px;
+  -webkit-box-shadow: none;
+          box-shadow: none;
+}
+.cptm-elements-settings__group__options .cptm-option-card .cptm-option-card-body .cptm-form-group {
+  margin-bottom: 0;
+}
+.cptm-elements-settings__group__options .cptm-option-card .cptm-option-card-body .cptm-form-group label {
+  font-size: 13px;
+  font-weight: 500;
 }
 .cptm-elements-settings__group .dndrop-container .dndrop-draggable-wrapper {
   margin-bottom: 16px;

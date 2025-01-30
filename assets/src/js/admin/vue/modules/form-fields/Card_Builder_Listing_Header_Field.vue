@@ -1,24 +1,5 @@
 <template>
   <div class="cptm-builder-section">
-    <div
-      class="cptm-options-area"
-      v-if="
-        widgetCardOptionsWindowActiveStatus || widgetOptionsWindowActiveStatus
-      "
-    >
-      <options-window
-        :active="widgetCardOptionsWindowActiveStatus"
-        v-bind="widgetCardOptionsWindow"
-        @close="closeCardWidgetOptionsWindow()"
-      />
-
-      <options-window
-        :active="widgetOptionsWindowActiveStatus"
-        v-bind="widgetOptionsWindow"
-        @update="updateWidgetOptionsData($event, widgetOptionsWindow)"
-        @close="closeWidgetOptionsWindow()"
-      />
-    </div>
 
     <!-- cptm-preview-area -->
     <div 
@@ -198,18 +179,43 @@
                     <span v-if="available_widgets[widget_key]">{{ available_widgets[widget_key].label }}</span>
                     <span v-else>Unknown Widget</span>
                   </span>
+                  <div 
+                    class="cptm-elements-settings__group__single__action"
+                  >
+                    <!-- Add edit button for widget -->
+                    <span
+                      class="cptm-elements-settings__group__single__edit"
+                      @click.prevent="editWidget(widget_key)"
+                      v-if="available_widgets[widget_key].options"
+                    >
+                      <span class="cptm-elements-settings__group__single__edit__icon uil uil-cog"></span>
+                    </span>
 
-                  <!-- Add toggle switch for widget -->
-                  <span class="cptm-elements-settings__group__single__switch">
-                    <input 
-                      type="checkbox" 
-                      :id="`settings-${widget_key}-${placeholder_index}`" 
-                      :checked="placeholder.selectedWidgets.includes(widget_key)" 
-                      @click="handleWidgetSwitch($event, widget_key, placeholder_index)"
-                    />
-                    <label :for="`settings-${widget_key}-${placeholder_index}`" />
-                  </span>
+                    <!-- Add toggle switch for widget -->
+                    <span class="cptm-elements-settings__group__single__switch">
+                      <input 
+                        type="checkbox" 
+                        :id="`settings-${widget_key}-${placeholder_index}`" 
+                        :checked="placeholder.selectedWidgets.includes(widget_key)" 
+                        @click="handleWidgetSwitch($event, widget_key, placeholder_index)"
+                      />
+                      <label :for="`settings-${widget_key}-${placeholder_index}`" />
+                    </span>
+                  </div>
                 </div>
+
+                <!-- Widget Options -->
+                <div 
+                  class="cptm-elements-settings__group__options"
+                  v-if="widgetOptionsWindowActiveStatus(widget_key)"
+                >
+                  <options-window
+                    :active="widgetOptionsWindowActiveStatus(widget_key)"
+                    v-bind="widgetOptionsWindow"
+                    @update="updateWidgetOptionsData($event, widgetOptionsWindow)"
+                    @close="closeWidgetOptionsWindow"
+                  />
+                </div>  
               </Draggable>
             </Container>
           </div>
@@ -299,54 +305,6 @@ export default {
           let widget_name = placeholderData.selectedWidgets[widgetIndex].widget_name || placeholderData.selectedWidgets[widgetIndex];
 
           data.push(widget_name);
-
-          // if (
-          //   !this.active_widgets[widget_name] &&
-          //   typeof this.active_widgets[widget_name] !== "object"
-          // ) {
-          //   continue;
-          // }
-
-          // let widget_data = {};
-
-          // for (let root_option in this.active_widgets[widget_name]) {
-          //   if ("options" === root_option) {
-          //     continue;
-          //   }
-          //   if ("icon" === root_option) {
-          //     continue;
-          //   }
-          //   if ("show_if" === root_option) {
-          //     continue;
-          //   }
-          //   if ("fields" === root_option) {
-          //     continue;
-          //   }
-
-          //   widget_data[root_option] = this.active_widgets[widget_name][
-          //     root_option
-          //   ];
-          // }
-
-          // if (typeof this.active_widgets[widget_name].options !== "object") {
-          //   data.push(widget_data);
-          //   continue;
-          // }
-
-          // if (
-          //   typeof this.active_widgets[widget_name].options.fields !== "object"
-          // ) {
-          //   data.push(widget_data);
-          //   continue;
-          // }
-
-          // let widget_options = this.active_widgets[widget_name].options.fields;
-
-          // for (let option in widget_options) {
-          //   widget_data[option] = widget_options[option].value;
-          // }
-
-          // data.push(widget_data);
         }
 
         return data;
@@ -421,7 +379,8 @@ export default {
         updatedPlaceholders, 
         placeholders: this.placeholders, 
         allPlaceholderItems:this.allPlaceholderItems, 
-        theAvailableWidgets: this.available_widgets
+        theAvailableWidgets: this.available_widgets,
+        active_widgets: this.active_widgets
       });
       
       return output;
@@ -479,17 +438,13 @@ export default {
     },
 
     widgetOptionsWindowActiveStatus() {
-      if (!this.widgetOptionsWindow.widget.length) {
-        return false;
-      }
-      if (
-        typeof this.active_widgets[this.widgetOptionsWindow.widget] ===
-        "undedined"
-      ) {
-        return false;
-      }
-
-      return true;
+      console.log('@widgetOptionsWindowActiveStatus', this.widgetOptionsWindow);
+      return (widgetKey) => {
+        if (!widgetKey || this.widgetOptionsWindow.widget === '' || this.widgetOptionsWindow.widget !== widgetKey || typeof this.active_widgets[widgetKey] === "undefined") {
+          return false;
+        }
+        return true;
+      };
     },
 
     widgetCardOptionsWindowActiveStatus() {
@@ -824,7 +779,6 @@ export default {
       };
 
       const importWidgets = (placeholder, destination) => {
-        console.log('@CHK: importWidgets', { placeholder, destination });
         if (!this.placeholdersMap.hasOwnProperty(placeholder.placeholderKey)) {
           return;
         }
@@ -868,18 +822,10 @@ export default {
           }
 
           addActiveWidget(widget);
-
-          // destination[targetPlaceholderIndex].selectedWidgets.splice(
-          //   widgetIndex,
-          //   0,
-          //   widget
-          // );
-          // widgetIndex++;
         }
       };
 
       value.forEach((placeholder, index) => {
-        console.log('@CHK: value', { placeholder, index, selectedWidgets: placeholder.selectedWidgets });
         if (!this.isTruthyObject(placeholder)) {
           return;
         }
@@ -1078,9 +1024,11 @@ export default {
 
       this.placeholders = sanitizedPlaceholders;
 
-      console.log({ placeholders: this.placeholders });
-      console.log({ available_widgets: this.available_widgets });
-      console.log({ allPlaceholderItems: this.allPlaceholderItems });
+      console.log('@CHK Placeholders', { 
+        placeholders: this.placeholders, 
+        available_widgets: this.available_widgets,
+        allPlaceholderItems: this.allPlaceholderItems ,
+      });
     },
 
     // Handle widget switch
@@ -1178,7 +1126,6 @@ export default {
       const updatePlaceholders = (placeholders) => {
         console.log('Update Placeholders:', {placeholders});
         placeholders && placeholders.forEach((placeholder) => {
-          console.log('@placeholder:', placeholder);
           if (placeholder.type === "placeholder_group") {
             // Recursively update placeholders within groups
             updatePlaceholders(placeholder.placeholders);
@@ -1344,6 +1291,11 @@ export default {
     },
 
     editWidget(key) {
+      console.log('Edit Widget:', { 
+        key,
+        active: this.active_widgets[key], 
+        available: this.available_widgets[key]
+      });
       if (typeof this.active_widgets[key] === "undefined") {
         return;
       }
@@ -1401,17 +1353,16 @@ export default {
     },
 
     updateWidgetOptionsData(data, options_window) {
-      return;
-
-      if (typeof this.active_widgets[widget.widget] === "undefined") {
+      console.log('@updateWidgetOptionsData', { data, options_window });
+      if (typeof this.active_widgets[options_window.widget] === "undefined") {
         return;
       }
 
-      if (typeof this.active_widgets[widget.widget].options === "undefined") {
+      if (typeof this.active_widgets[options_window.widget].options === "undefined") {
         return;
       }
 
-      Vue.set(this.active_widgets[widget.widget].options, "fields", data);
+      Vue.set(this.active_widgets[options_window.widget].options, "fields", data);
     },
 
     closeCardWidgetOptionsWindow() {
