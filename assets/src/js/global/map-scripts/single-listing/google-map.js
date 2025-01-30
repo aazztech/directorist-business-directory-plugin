@@ -47,7 +47,7 @@
                     this.div.className = 'map-icon-label';
     
                     // Trigger the marker click handler if clicking on the label
-                    google.maps.event.addListener(this.div, 'click', function (e) {
+                    google.maps.event.addDomListener(this.div, 'click', function (e) {
                         (e.stopPropagation) && e.stopPropagation();
                         google.maps.event.trigger(self.marker, 'click');
                     });
@@ -149,16 +149,18 @@
                         },
                         map_icon_label: `<div class="atbd_map_shape">${cat_icon}</div>`
                     });
-                    
-                    marker.addListener('click', function () {
-                        if (display_map_info) {
+
+                    if (display_map_info) {
+                        marker.addListener('click', function () {
                             info_window.open(map, marker);
-                            display_map_info = false;
-                        } else {
-                            info_window.close();
-                            display_map_info = true;
-                        }
-                    });
+                        });
+                        google.maps.event.addListener(info_window, 'domready', function () {
+                            var closeBtn = $('.iw-close-btn').get();
+                            google.maps.event.addDomListener(closeBtn[0], 'click', function () {
+                                info_window.close();
+                            });
+                        });
+                    }
                 }
 
                 initMap();
