@@ -46,10 +46,12 @@
               containerClass="cptm-preview-placeholder__card__box cptm-card-light"
               :label="placeholderSubItem.label"
               :availableWidgets="theAvailableWidgets"
+              :activeWidgets="active_widgets"
               :acceptedWidgets="placeholderSubItem.acceptedWidgets"
               :rejectedWidgets="placeholderSubItem.rejectedWidgets"
               :selectedWidgets="placeholderSubItem.selectedWidgets"
               :maxWidget="placeholderSubItem.maxWidget"
+              :readOnly="true"
             />
           </div>
         </div>
@@ -77,6 +79,7 @@
                   containerClass="cptm-preview-placeholder__card__box cptm-card-light"
                   :label="placeholderItem.label"
                   :availableWidgets="theAvailableWidgets"
+                  :activeWidgets="active_widgets"
                   :acceptedWidgets="placeholderItem.acceptedWidgets"
                   :rejectedWidgets="placeholderItem.rejectedWidgets"
                   :selectedWidgets="placeholderItem.selectedWidgets"
@@ -98,6 +101,7 @@
                     activeInsertWindow('listings_header_' + index)
                   "
                   @close-widgets-picker-window="closeInsertWindow()"
+                  :readOnly="true"
                 />
               </div>
 
@@ -362,6 +366,7 @@ export default {
             placeholderKey: placeholder.placeholderKey,
             selectedWidgets: data,
             acceptedWidgets: placeholder.acceptedWidgets,
+            label: placeholder.label,
           });
 
           continue;
@@ -381,6 +386,7 @@ export default {
               placeholderKey: subPlaceholder.placeholderKey,
               selectedWidgets: data,
               acceptedWidgets: subPlaceholder.acceptedWidgets,
+              label: subPlaceholder.label,
             });
             continue;
           }

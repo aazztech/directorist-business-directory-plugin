@@ -11,6 +11,36 @@
       {{ label }}
     </p>
 
+    <div class="cptm-widget-insert-area" v-if="!readOnly">
+      <div class="cptm-widget-insert-wrap">
+        <div class="cptm-widget-insert-modal-container">
+          <widgets-window
+            :id="id"
+            :availableWidgets="availableWidgets"
+            :acceptedWidgets="acceptedWidgets"
+            :rejectedWidgets="rejectedWidgets"
+            :activeWidgets="activeWidgets"
+            :selectedWidgets="selectedWidgets"
+            :active="showWidgetsPickerWindow"
+            :maxWidget="maxWidget"
+            :maxWidgetInfoText="maxWidgetInfoText"
+            :bottomAchhor="true"
+            @widget-selection="$emit('insert-widget', $event)"
+            @close="$emit('close-widgets-picker-window')"
+          />
+        </div>
+
+        <a
+          v-if="canAddMore"
+          href="#"
+          class="cptm-widget-insert-link"
+          @click.prevent="$emit('open-widgets-picker-window')"
+        >
+          <span class="fa fa-plus"></span>
+        </a>
+      </div>
+    </div>
+
     <div class="cptm-widget-preview-area chk" v-if="selectedWidgets && selectedWidgets.length">
       <template v-for="(widget, widget_index) in selectedWidgets">
         <template v-if="hasValidWidget(widget)">
@@ -20,7 +50,15 @@
             :label="( typeof availableWidgets[widget] !== 'undefined' ) ? availableWidgets[widget].label : 'Not Available'"
             :icon="( typeof availableWidgets[widget].icon === 'string' ) ? availableWidgets[widget].icon : ''"
             :options="availableWidgets[widget].options"
-            :read-only="true"
+            :widgetDropable="widgetDropable"
+            :canMove="typeof activeWidgets[widget].can_move !== undefined ? activeWidgets[widget].can_move : true"
+            :canEdit="widgetHasOptions( activeWidgets[widget] )"
+            @drag="$emit('drag-widget', widget)"
+            @drop="$emit('drop-widget', widget)"
+            @dragend="$emit('dragend-widget', widget)"
+            @edit="$emit('edit-widget', widget)"
+            @trash="$emit('trash-widget', widget)"
+            :readOnly="readOnly"
           >
           </component>
         </template>
@@ -79,7 +117,19 @@ export default {
       type: String,
       default: "Up to __DATA__ item{s} can be added",
     },
+    readOnly: {
+        type: Boolean,
+        default: false,
+    },
   },
+  mounted() {
+    console.log("Selected Widgets (mounted):", { 
+      selectedWidgets: this.selectedWidgets, 
+      availableWidgets: this.availableWidgets, 
+      activeWidgets: this.activeWidgets,
+    } );
+  },
+
   computed: {
     canAddMore() {
       if ( this.maxWidget < 1 ) {

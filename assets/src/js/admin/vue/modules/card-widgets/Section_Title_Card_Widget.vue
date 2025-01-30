@@ -13,6 +13,7 @@
                 @dragend="dragEnd()" 
                 @edit="$emit( 'edit' )" 
                 @trash="$emit( 'trash' )"
+                v-if="!readOnly"
             />
         </div>
 
@@ -22,6 +23,7 @@
             @dragenter="handleDragEnter()"
             @dragleave="handleDragLeave()" 
             @drop="handleDrop()"
+            v-if="!readOnly"
         >
         </span>
     </div>
@@ -57,6 +59,11 @@ export default {
         canTrash: {
             type: Boolean,
             default: true,
+        },
+
+        readOnly: {
+            type: Boolean,
+            default: false,
         },
     },
 
