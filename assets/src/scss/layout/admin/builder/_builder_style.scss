@@ -4191,6 +4191,10 @@ input[type="radio"] {
   @include e(group) {
     padding: 20px;
     border-bottom: 1px solid #E5E7EB;
+    .dndrop-draggable-wrapper {
+      position: relative;
+      overflow: visible !important;
+    }
     &:last-child {
       border-bottom: none;
     }
@@ -4300,6 +4304,11 @@ input[type="radio"] {
       }
     }
     @include e(options) {
+      position: absolute;
+      width: 100%;
+      top: 30px;
+      left: 0;
+      z-index: 1;
       .cptm-option-card {
         margin: 0;
         background: #fff;

@@ -18962,6 +18962,10 @@ input[type=radio]:checked::before {
   padding: 20px;
   border-bottom: 1px solid #E5E7EB;
 }
+.cptm-elements-settings__group .dndrop-draggable-wrapper {
+  position: relative;
+  overflow: visible !important;
+}
 .cptm-elements-settings__group:last-child {
   border-bottom: none;
 }
@@ -19113,6 +19117,13 @@ input[type=radio]:checked::before {
 .cptm-elements-settings__group__single__switch input[type=checkbox]:checked + label::after {
   -webkit-transform: translateX(14px);
           transform: translateX(14px);
+}
+.cptm-elements-settings__group__options {
+  position: absolute;
+  width: 100%;
+  top: 30px;
+  left: 0;
+  z-index: 1;
 }
 .cptm-elements-settings__group__options .cptm-option-card {
   margin: 0;
@@ -24345,6 +24356,10 @@ input[type=radio]:checked::before {
   padding: 20px;
   border-bottom: 1px solid #E5E7EB;
 }
+.cptm-elements-settings__group .dndrop-draggable-wrapper {
+  position: relative;
+  overflow: visible !important;
+}
 .cptm-elements-settings__group:last-child {
   border-bottom: none;
 }
@@ -24496,6 +24511,13 @@ input[type=radio]:checked::before {
 .cptm-elements-settings__group__single__switch input[type=checkbox]:checked + label::after {
   -webkit-transform: translateX(14px);
           transform: translateX(14px);
+}
+.cptm-elements-settings__group__options {
+  position: absolute;
+  width: 100%;
+  top: 30px;
+  left: 0;
+  z-index: 1;
 }
 .cptm-elements-settings__group__options .cptm-option-card {
   margin: 0;
@@ -30016,6 +30038,10 @@ input[type=radio]:checked::before {
   padding: 20px;
   border-bottom: 1px solid #E5E7EB;
 }
+.cptm-elements-settings__group .dndrop-draggable-wrapper {
+  position: relative;
+  overflow: visible !important;
+}
 .cptm-elements-settings__group:last-child {
   border-bottom: none;
 }
@@ -30167,6 +30193,13 @@ input[type=radio]:checked::before {
 .cptm-elements-settings__group__single__switch input[type=checkbox]:checked + label::after {
   -webkit-transform: translateX(14px);
           transform: translateX(14px);
+}
+.cptm-elements-settings__group__options {
+  position: absolute;
+  width: 100%;
+  top: 30px;
+  left: 0;
+  z-index: 1;
 }
 .cptm-elements-settings__group__options .cptm-option-card {
   margin: 0;

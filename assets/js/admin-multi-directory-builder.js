@@ -23602,6 +23602,13 @@ function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len 
     document.addEventListener("click", function (e) {
       self.closeInsertWindow();
     });
+    console.log('@mounted', {
+      fieldId: this.fieldId,
+      value: this.value,
+      widgets: this.widgets,
+      cardOptions: this.cardOptions,
+      layout: this.layout
+    });
   },
   created: function created() {
     this.init();
@@ -23765,7 +23772,6 @@ function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len 
     },
     widgetOptionsWindowActiveStatus: function widgetOptionsWindowActiveStatus() {
       var _this = this;
-      console.log('@widgetOptionsWindowActiveStatus', this.widgetOptionsWindow);
       return function (widgetKey) {
         if (!widgetKey || _this.widgetOptionsWindow.widget === '' || _this.widgetOptionsWindow.widget !== widgetKey || typeof _this.active_widgets[widgetKey] === "undefined") {
           return false;
@@ -24477,11 +24483,10 @@ function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len 
       // console.log( 'handleDragleaveOnPlaceholder', where );
     },
     editWidget: function editWidget(key) {
-      console.log('Edit Widget:', {
-        key: key,
-        active: this.active_widgets[key],
-        available: this.available_widgets[key]
-      });
+      if (key === this.widgetOptionsWindow.widget) {
+        this.closeWidgetOptionsWindow();
+        return;
+      }
       if (typeof this.active_widgets[key] === "undefined") {
         return;
       }
@@ -24516,17 +24521,21 @@ function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len 
       vue__WEBPACK_IMPORTED_MODULE_4__["default"].set(this.card_option_widgets[options_window.widget].options, "fields", data);
     },
     updateWidgetOptionsData: function updateWidgetOptionsData(data, options_window) {
-      console.log('@updateWidgetOptionsData', {
-        data: data,
-        options_window: options_window
-      });
       if (typeof this.active_widgets[options_window.widget] === "undefined") {
         return;
       }
       if (typeof this.active_widgets[options_window.widget].options === "undefined") {
         return;
       }
-      vue__WEBPACK_IMPORTED_MODULE_4__["default"].set(this.active_widgets[options_window.widget].options, "fields", data);
+      console.log('@updateWidgetOptionsData', {
+        data: data,
+        options_window: options_window,
+        placeholders: this.placeholders,
+        active_widgets: this.active_widgets,
+        available_widgets: this.available_widgets,
+        widgets: this.widgets
+      });
+      vue__WEBPACK_IMPORTED_MODULE_4__["default"].set(this.widgets[options_window.widget].options, "fields", data);
     },
     closeCardWidgetOptionsWindow: function closeCardWidgetOptionsWindow() {
       this.widgetCardOptionsWindow = this.widgetOptionsWindowDefault;

@@ -267,6 +267,14 @@ export default {
     document.addEventListener("click", function (e) {
       self.closeInsertWindow();
     });
+
+    console.log('@mounted', {
+      fieldId: this.fieldId,
+      value: this.value,
+      widgets: this.widgets,
+      cardOptions: this.cardOptions,
+      layout: this.layout,
+    });
   },
 
   created() {
@@ -438,7 +446,6 @@ export default {
     },
 
     widgetOptionsWindowActiveStatus() {
-      console.log('@widgetOptionsWindowActiveStatus', this.widgetOptionsWindow);
       return (widgetKey) => {
         if (!widgetKey || this.widgetOptionsWindow.widget === '' || this.widgetOptionsWindow.widget !== widgetKey || typeof this.active_widgets[widgetKey] === "undefined") {
           return false;
@@ -1291,11 +1298,10 @@ export default {
     },
 
     editWidget(key) {
-      console.log('Edit Widget:', { 
-        key,
-        active: this.active_widgets[key], 
-        available: this.available_widgets[key]
-      });
+      if (key === this.widgetOptionsWindow.widget) {
+        this.closeWidgetOptionsWindow();
+        return;
+      }
       if (typeof this.active_widgets[key] === "undefined") {
         return;
       }
@@ -1353,7 +1359,6 @@ export default {
     },
 
     updateWidgetOptionsData(data, options_window) {
-      console.log('@updateWidgetOptionsData', { data, options_window });
       if (typeof this.active_widgets[options_window.widget] === "undefined") {
         return;
       }
@@ -1361,8 +1366,16 @@ export default {
       if (typeof this.active_widgets[options_window.widget].options === "undefined") {
         return;
       }
+      console.log('@updateWidgetOptionsData', { 
+        data, 
+        options_window, 
+        placeholders: this.placeholders,
+        active_widgets: this.active_widgets,
+        available_widgets: this.available_widgets,
+        widgets: this.widgets,
+      });
 
-      Vue.set(this.active_widgets[options_window.widget].options, "fields", data);
+      Vue.set(this.widgets[options_window.widget].options, "fields", data);
     },
 
     closeCardWidgetOptionsWindow() {
