@@ -288,13 +288,13 @@ class Localized_Data {
 	public static function login_data() {
 		$redirection = \ATBDP_Permalink::get_login_redirection_page_link();
 		$redirection_url = $redirection ? $redirection : \ATBDP_Permalink::get_dashboard_page_link();
-		$rand = directorist_get_rand_string( 10 );
-		$redirection_url = strpos( $redirection_url, '?' ) !== false ? $redirection . '&rand=' . $rand : $redirection . '?rand=' . $rand;
+		$current_time = time();
+		$redirection_url = strpos( $redirection_url, '?' ) !== false ? $redirection . '&rand=' . $current_time : $redirection . '?rand=' . $current_time;
 		
 		if( strpos( $redirection_url, '?' ) !== false ) {
-			$redirection_url = $redirection_url . '&rand=' . $rand;
+			$redirection_url = $redirection_url . '&rand=' . $current_time;
 		} else {
-			$redirection_url = $redirection_url . '?rand=' . $rand;
+			$redirection_url = $redirection_url . '?rand=' . $current_time;
 		}
 		
 		$data = [

@@ -4659,7 +4659,3 @@ function directorist_get_listing_gallery_images( $listing_id = 0 ) {
 
 	return $images;
 }
-
-function directorist_get_rand_string( $limit = 5 ) {
-    return substr( md5( uniqid( rand(), true ) ), 0, $limit );
-}
