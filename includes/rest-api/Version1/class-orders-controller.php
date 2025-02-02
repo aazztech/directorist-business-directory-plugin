@@ -93,9 +93,14 @@ class Orders_Controller extends Posts_Controller {
 			return new WP_Error( 'invalid_request', __( 'Monetization disabled.', 'directorist' ), array( 'status' => 400 ) );
 		}
 
-		$customer_id = $request['customer'];
-		if ( ! get_user( $customer_id ) ) {
+		if ( ! empty( $request['customer'] ) && ! get_user( $request['customer'] ) ) {
 			return new WP_Error( 'invalid_customer', __( 'Invalid customer.', 'directorist' ), array( 'status' => 400 ) );
+		}
+
+		if ( empty( $request['customer'] ) ) {
+			$customer_id = get_current_user_id();
+		} else {
+			$customer_id = $request['customer'];
 		}
 
 		$plan_id = $request['plan'];
@@ -111,10 +116,47 @@ class Orders_Controller extends Posts_Controller {
 			$listing_id = 0;
 		}
 
-		// Direct Plan Purchase
-		// Direct purchase of a plan without a listing. So, no need to check for listing id.
-		// Featured listing purchase will have featured=>true
-		// Regular plan purchase will have listing id
+		$order_id = wp_insert_post( array(
+            'post_title'     => sprintf( 'Order of plan #%s', $plan_id ),
+            'post_status'    => 'publish',
+            'post_type'      => 'atbdp_orders',
+            'comment_status' => false,
+			'post_author'    => $customer_id,
+        ) );
+
+		if ( is_wp_error( $order_id ) ) {
+			return new WP_Error( 'invalid_order', __( 'Unable to create order.', 'directorist' ), array( 'status' => 400 ) );
+		}
+
+		$amount = (float) get_directorist_option( 'featured_listing_price' );
+
+		/**
+		 * Filter the order amount before tax calculation
+		 *
+		 * @since v7.4.3
+		 */
+		$amount = round( (float) apply_filters( 'directorist_order_amount_before_tax_calculation', $amount, $order_id, $request->get_params() ), 2 );
+
+		$gateway = sanitize_key( $request['payment_gateway'] );
+		if ( empty( $amount ) ) {
+			$gateway = 'free';
+		}
+		update_post_meta( $order_id, '_payment_gateway', $gateway );
+
+		$amount = apply_filters( 'atbdp_order_amount', $amount, $order_id );
+		update_post_meta( $order_id, '_amount', $amount );
+
+		if ( $listing_id ) {
+			update_post_meta( $order_id, '_listing_id', $listing_id );
+		}
+
+		if ( $request['featured'] ) {
+			update_post_meta( $order_id, '_featured', true );
+		}
+
+		update_post_meta( $order_id, '_payment_status', 'created' );
+
+		do_action( 'atbdp_order_created', $order_id, $listing_id );
 	}
 
 	/**
@@ -419,7 +461,6 @@ class Orders_Controller extends Posts_Controller {
 				'customer'           => array(
 					'description' => __( 'Customer id.', 'directorist' ),
 					'type'        => 'integer',
-					'required'    => true,
 					'context'     => array( 'view', 'edit' ),
 				),
 				'plan'           => array(
@@ -477,6 +518,7 @@ class Orders_Controller extends Posts_Controller {
 					'description' => __( 'Payment gateway.', 'directorist' ),
 					'type'        => 'string',
 					'context'     => array( 'view', 'edit' ),
+					'default'     => 'free',
 				),
 				'transaction_id' => array(
 					'description' => __( 'Transaction id.', 'directorist' ),
