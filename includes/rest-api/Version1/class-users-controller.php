@@ -337,6 +337,10 @@ class Users_Controller extends Abstract_Controller {
 			return new WP_Error( 'directorist_rest_user_email_exists', __( 'A resource is already registered.', 'directorist' ) );
 		}
 
+		if ( ! empty( $request['user_type'] ) && $request['user_type'] === 'guest' ) {
+			$request['password'] = wp_generate_password( 12 );
+		}
+
 		// Create user.
 		$user_data = array(
 			'user_email' => $request['email'],
@@ -371,6 +375,20 @@ class Users_Controller extends Abstract_Controller {
 		$user_data = get_userdata( $user_id );
 		$this->update_user_meta_fields( $user_data, $request );
 		$this->update_additional_fields_for_object( $user_data, $request );
+
+		if ( ! directorist_is_guest_user( $user_id ) ) {
+			// Send registration emails.
+			if ( directorist_is_email_verification_enabled() ) {
+				// Set unverified flag. Once verified this flag will be removed.
+				update_user_meta( $user_id, 'directorist_user_email_unverified', 1 );
+
+				ATBDP()->email->send_user_confirmation_email( get_user_by( 'ID', $user_id ) );
+			} else {
+				ATBDP()->email->custom_wp_new_user_notification_email( $user_id );
+			}
+
+			wp_new_user_notification( $user_id, null, 'admin' ); // send activation to the admin
+		}
 
 		/**
 		 * Fires after a user is created or updated via the REST API.
@@ -570,8 +588,8 @@ class Users_Controller extends Abstract_Controller {
 			'id'             => $id,
 			'date_created'   => directorist_rest_prepare_date_response( $user->user_registered ),
 			'name'           => $user->display_name,
-			'username'       => null, //$user->user_login,
-			'nickname'       => null, //$user->nickname,
+			'username'       => null,                                                               //$user->user_login,
+			'nickname'       => null,                                                               //$user->nickname,
 			'first_name'     => $user->first_name,
 			'last_name'      => $user->last_name,
 			'description'    => $user->description,
@@ -583,7 +601,8 @@ class Users_Controller extends Abstract_Controller {
 			'avatar'         => null,
 			'social_links'   => null,
 			'favorite'       => null,
-			'roles'          => null, //array_values( $user->roles ),
+			'roles'          => null,
+			'user_type'      => get_user_meta( $id, '_user_type', true ),
 			'listings_count' => (int) count_user_posts( $id, ATBDP_POST_TYPE, true ),
 		);
 
@@ -694,6 +713,10 @@ class Users_Controller extends Abstract_Controller {
 			} else {
 				delete_term_meta( $id, 'pro_pic' );
 			}
+		}
+
+		if ( isset( $request['user_type'] ) ) {
+			update_user_meta( $id, '_user_type', sanitize_key( $request['user_type'] ) );
 		}
 	}
 
@@ -927,8 +950,8 @@ class Users_Controller extends Abstract_Controller {
 					'items'       => array(
 						'type' => 'integer',
 					),
-					'context'     => array( 'view' ),
-					'readonly'    => true,
+					'context'  => array( 'view' ),
+					'readonly' => true,
 				),
 				'listings_count' => array(
 					'description' => __( 'Quantity of listings created by the user.', 'directorist' ),
@@ -936,6 +959,12 @@ class Users_Controller extends Abstract_Controller {
 					'default'     => 0,
 					'context'     => array( 'view', 'edit' ),
 					'readonly'    => true,
+				),
+				'user_type' => array(
+					'description' => __( 'User type.', 'directorist' ),
+					'type'        => 'string',
+					'context'     => array( 'view', 'edit' ),
+					'enum'        => array_keys( directorist_get_user_types() ),
 				),
 			),
 		);

@@ -4664,3 +4664,9 @@ function directorist_get_listing_gallery_images( $listing_id = 0 ) {
 
 	return $images;
 }
+
+function directorist_is_guest_user( $user_id = 0 ) {
+	$user_type = get_user_meta( $user_id, '_user_type', true );
+
+	return ( 'guest' === $user_type );
+}
