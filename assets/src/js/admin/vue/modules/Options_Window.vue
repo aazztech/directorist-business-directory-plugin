@@ -103,6 +103,7 @@ export default {
         updateFieldData( value, field_key ) {
             this.local_fields[ field_key ].value = value;
             this.$emit( 'update', this.local_fields );
+            console.log( '@updateFieldData', {value, field_key, local_fields: this.local_fields} );
         }
     },
 }

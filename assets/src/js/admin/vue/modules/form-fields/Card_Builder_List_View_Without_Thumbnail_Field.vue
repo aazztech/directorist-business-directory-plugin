@@ -178,8 +178,8 @@
 
 <script>
 import Vue from "vue";
-import card_builder from './../../mixins/form-fields/card-builder';
 import helpers from '../../mixins/helpers';
+import card_builder from './../../mixins/form-fields/card-builder';
 
 export default {
   name: "card-builder-list-view-without-field",
@@ -492,6 +492,8 @@ export default {
       if (!this.isTruthyObject(this.widgets)) {
         return;
       }
+
+      console.log( '@LISTNOTHUMB init', {widgets: this.widgets, available: this.available_widgets} );
       this.available_widgets = this.widgets;
     },
 

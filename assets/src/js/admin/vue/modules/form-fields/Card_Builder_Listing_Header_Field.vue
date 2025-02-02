@@ -69,7 +69,6 @@
                     getActiveInsertWindowStatus('listings_header_' + index)
                   "
                   :widgetDropable="widgetIsDropable(placeholderItem)"
-                  @insert-widget="insertWidget($event, placeholderItem)"
                   @drag-widget="onDragStartWidget($event, placeholderItem)"
                   @drop-widget="appendWidget($event, placeholderItem)"
                   @dragend-widget="onDragEndWidget()"
@@ -90,25 +89,6 @@
             </div>
           </Draggable>
         </Container>
-      </div>
-
-      <div class="cptm-placeholder-buttons">
-        <template v-for="placeholderKey in Object.keys(placeholdersMap)">
-          <div
-            :key="placeholderKey"
-            class="cptm-preview-placeholder__card__action"
-            v-if="canShowAddPlaceholderButton(placeholderKey)"
-          >
-            <button
-              type="button"
-              class="cptm-preview-placeholder__card__btn"
-              @click="addPlaceholder(placeholderKey)"
-            >
-              <span class="icon fa fa-plus"></span>
-              {{ getAddPlaceholderButtonLabel(placeholderKey) }}
-            </button>
-          </div>
-        </template>
       </div>
     </div>  
 
@@ -267,14 +247,6 @@ export default {
     document.addEventListener("click", function (e) {
       self.closeInsertWindow();
     });
-
-    console.log('@mounted', {
-      fieldId: this.fieldId,
-      value: this.value,
-      widgets: this.widgets,
-      cardOptions: this.cardOptions,
-      layout: this.layout,
-    });
   },
 
   created() {
@@ -284,6 +256,9 @@ export default {
 
   watch: {
     output_data() {
+
+      console.log( '@CHK: output_data', { output_data: this.output_data } );
+
       this.$emit("update", this.output_data);
     },
   },
@@ -637,86 +612,6 @@ export default {
       return document.body;
     },
 
-    canShowAddPlaceholderButton(placeholderKey) {
-      const placeholder = this.placeholdersMap[placeholderKey];
-
-      if (!placeholder.insertByButton) {
-        return false;
-      }
-
-      const findPlaceholder = (placeholderKey, placeholders) => {
-        for (const placeholder of placeholders) {
-          if ("placeholder_item" === placeholder.type) {
-            if (placeholderKey === placeholder.placeholderKey) {
-              return placeholder;
-            }
-            continue;
-          }
-
-          if ("placeholder_group" === placeholder.type) {
-            const targetPlaceholder = findPlaceholder(
-              placeholderKey,
-              placeholder.placeholders
-            );
-
-            if (targetPlaceholder) {
-              return targetPlaceholder;
-            }
-
-            continue;
-          }
-        }
-
-        return null;
-      };
-
-      const targetPlaceholder = findPlaceholder(
-        placeholderKey,
-        this.placeholders
-      );
-      return targetPlaceholder ? false : true;
-    },
-
-    addPlaceholder(placeholderKey) {
-      console.log('@Add Placeholder:', placeholderKey);
-      let placeholder = JSON.parse( JSON.stringify( this.placeholdersMap[placeholderKey] ) );
-
-      if ( ! Array.isArray( placeholder.selectedWidgets ) ) {
-        placeholder.selectedWidgets = [];
-        console.log('No Placeholder Selected Widgets');
-      }
-
-      if (placeholder.selectedWidgets.length) {
-        for (const widgetKey of placeholder.selectedWidgets) {
-          console.log('selectedWidget Key:', widgetKey);
-          if (!this.isTruthyObject(this.theAvailableWidgets[widgetKey])) {
-            continue;
-          }
-
-          Vue.set(this.active_widgets, widgetKey, {
-            ...this.theAvailableWidgets[widgetKey],
-          });
-        }
-      }
-
-      this.placeholders.splice(this.placeholders.length, 0, placeholder);
-    },
-
-    getAddPlaceholderButtonLabel(placeholderKey) {
-      const placeholder = this.placeholdersMap[placeholderKey];
-      const defaultLabel = "Add new placeholder";
-
-      if (!this.isTruthyObject(placeholder.insertButton)) {
-        return defaultLabel;
-      }
-
-      if (!placeholder.insertButton.label) {
-        return defaultLabel;
-      }
-
-      return placeholder.insertButton.label;
-    },
-
     isTruthyObject(obj) {
       if (!obj && typeof obj !== "object" && !Array.isArray(obj)) {
         return false;
@@ -782,6 +677,8 @@ export default {
           }
         }
 
+        console.log( '@CHK: addActiveWidget', { widget, widgets_template } );
+
         Vue.set(this.active_widgets, widget, widgets_template);
       };
 
@@ -811,8 +708,6 @@ export default {
         let targetPlaceholderIndex = destination.length;
 
         destination.splice(targetPlaceholderIndex, 0, newPlaceholder);
-
-        // let widgetIndex = 0;
 
         for (let widget of placeholder.selectedWidgets) {
           if (typeof widget === "undefined") {
@@ -877,6 +772,7 @@ export default {
         newPlaceholders,
         newAllPlaceholders,
         active_widgets: this.active_widgets,
+        widgets: this.widgets,
       } );
       
       this.placeholders = newPlaceholders;
@@ -887,6 +783,8 @@ export default {
       if (!this.isTruthyObject(this.widgets)) {
         return;
       }
+
+      console.log('@CHK: init importWidgets', { widgets: this.widgets, available: this.available_widgets });
 
       this.available_widgets = this.widgets;
     },
@@ -1359,6 +1257,7 @@ export default {
     },
 
     updateWidgetOptionsData(data, options_window) {
+      return;
       if (typeof this.active_widgets[options_window.widget] === "undefined") {
         return;
       }
@@ -1375,7 +1274,8 @@ export default {
         widgets: this.widgets,
       });
 
-      Vue.set(this.widgets[options_window.widget].options, "fields", data);
+      // Vue.set(this.widgets[options_window.widget].options, "fields", data);
+      // Vue.set(this.available_widgets[options_window.widget].options, "fields", data);
     },
 
     closeCardWidgetOptionsWindow() {
@@ -1430,20 +1330,6 @@ export default {
 
         self.active_insert_widget_key = current_item_key;
       }, 0);
-    },
-
-    insertWidget(payload, where) {
-      if (!this.isTruthyObject(this.theAvailableWidgets[payload.key])) {
-        return;
-      }
-
-      Vue.set(this.active_widgets, payload.key, {
-        ...this.theAvailableWidgets[payload.key],
-      });
-
-      Vue.set(where, "selectedWidgets", payload.selected_widgets);
-
-      this.editWidget(payload.key);
     },
 
     closeInsertWindow(widget_insert_window) {
