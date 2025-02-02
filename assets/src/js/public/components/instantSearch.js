@@ -601,6 +601,9 @@ import debounce from '../../global/components/debounce';
                     $(_this).closest('.directorist-instant-search').find( '.atbdp-form-fade' ).removeClass('atbdp-form-fade');
                     window.dispatchEvent(new CustomEvent('directorist-instant-search-reloaded'));
                     window.dispatchEvent(new CustomEvent('directorist-reload-listings-map-archive'));
+
+                    // SearchForm Item in Single Category Location Page Init
+                    singleCategoryLocationInit();
                 }
                 let events = [
                     new CustomEvent('directorist-instant-search-reloaded'),
@@ -1399,6 +1402,26 @@ import debounce from '../../global/components/debounce';
         })
     }
 
+    // Single Location Category Page Search Form Item Disable
+    function singleCategoryLocationInit() {
+        const directoristDataAttributes = document.querySelector('.directorist-archive-contents').getAttribute('data-atts');
+        const { shortcode, location, category } = JSON.parse(directoristDataAttributes);
+
+        if (shortcode === 'directorist_category' && category.trim() !== '') {
+            const categorySelect = document.querySelector('.directorist-search-form .directorist-category-select');
+            if (categorySelect) {
+                categorySelect.closest('.directorist-search-category').classList.add('directorist-search-form__single-category');
+            }
+        }
+        
+        if (shortcode === 'directorist_location' && location.trim() !== '') {
+            const locationSelect = document.querySelector('.directorist-search-form .directorist-location-select');
+            if (locationSelect) {
+                locationSelect.closest('.directorist-search-location').classList.add('directorist-search-form__single-location');
+            }
+        }
+    }
+
     // sidebar on keyup searching
     $('body').on("keyup", ".directorist-instant-search .listing-with-sidebar form", debounce( function(e) {
         if ($(e.target).closest('.directorist-custom-range-slider__value').length > 0) {
@@ -1460,5 +1483,7 @@ import debounce from '../../global/components/debounce';
 
     window.addEventListener('load', function() {
         debounce(initObserver(), 250);
+
+        singleCategoryLocationInit();
     });
 })(jQuery);

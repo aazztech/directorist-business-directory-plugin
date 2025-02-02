@@ -4670,3 +4670,4 @@ function directorist_is_guest_user( $user_id = 0 ) {
 
 	return ( 'guest' === $user_type );
 }
+
