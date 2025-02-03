@@ -7,7 +7,9 @@
 
  use \Directorist\Helper;
 
-if ( ! defined( 'ABSPATH' ) ) exit;
+if (! defined( 'ABSPATH' )) {
+    exit;
+}
 ?>
 
 <section class="directorist-single-listing-header">

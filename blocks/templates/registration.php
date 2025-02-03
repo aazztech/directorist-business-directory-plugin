@@ -92,45 +92,45 @@ extract( $reg_args );
 					<div class="directorist-form-group directorist-mb-15">
 						<label for="password"><?php
 							echo esc_html( $password );
-							echo ( ! empty( $require_password ) ? '<strong class="directorist-form-required">*</strong>' : '' );
+							echo ( empty( $require_password ) ? '' : '<strong class="directorist-form-required">*</strong>' );
 						?></label>
-						<input id="password" class="directorist-form-element" type="password" name="password" value="" <?php echo ( ! empty( $require_password ) ? 'required' : '' ); ?>>
+						<input id="password" class="directorist-form-element" type="password" name="password" value="" <?php echo ( empty( $require_password ) ? '' : 'required' ); ?>>
 					</div>
 				<?php } ?>
 				<?php if ( ! empty( $display_fname ) ) { ?>
 				<div class="directorist-form-group directorist-mb-15">
 					<label for="fname"><?php
 						echo esc_html( $first_name );
-						echo ( ! empty( $require_fname ) ? '<strong class="directorist-form-required">*</strong>' : '' );
+						echo ( empty( $require_fname ) ? '' : '<strong class="directorist-form-required">*</strong>' );
 					?></label>
-					<input id="fname" class="directorist-form-element" type="text" name="fname" value="<?php echo isset( $_REQUEST['fname']) ? esc_attr( sanitize_text_field( wp_unslash( $_REQUEST['fname'] ) ) ) : ''; ?>" <?php echo ( ! empty( $require_fname ) ? 'required' : '' ); ?>>
+					<input id="fname" class="directorist-form-element" type="text" name="fname" value="<?php echo isset( $_REQUEST['fname']) ? esc_attr( sanitize_text_field( wp_unslash( $_REQUEST['fname'] ) ) ) : ''; ?>" <?php echo ( empty( $require_fname ) ? '' : 'required' ); ?>>
 				</div>
 				<?php } ?>
 				<?php if ( ! empty( $display_lname ) ) { ?>
 				<div class="directorist-form-group directorist-mb-15">
 					<label for="lname"><?php
 						echo esc_html( $last_name );
-						echo ( ! empty( $require_lname ) ? '<strong class="directorist-form-required">*</strong>' : '' );
+						echo ( empty( $require_lname ) ? '' : '<strong class="directorist-form-required">*</strong>' );
 					?></label>
-					<input class="directorist-form-element" id="lname" type="text" name="lname" value="<?php echo isset( $_REQUEST['lname']) ? esc_attr( sanitize_text_field( wp_unslash( $_REQUEST['lname'] ) ) ) : ''; ?>" <?php echo ( ! empty( $require_lname ) ? 'required' : '' ); ?>>
+					<input class="directorist-form-element" id="lname" type="text" name="lname" value="<?php echo isset( $_REQUEST['lname']) ? esc_attr( sanitize_text_field( wp_unslash( $_REQUEST['lname'] ) ) ) : ''; ?>" <?php echo ( empty( $require_lname ) ? '' : 'required' ); ?>>
 				</div>
 				<?php } ?>
 				<?php if ( ! empty( $display_website ) ) {  ?>
 					<div class="directorist-form-group directorist-mb-15">
 						<label for="website"><?php
 							echo esc_html( $website );
-							echo ( ! empty( $require_website ) ? '<strong class="directorist-form-required">*</strong>' : '' );
+							echo ( empty( $require_website ) ? '' : '<strong class="directorist-form-required">*</strong>' );
 						?></label>
-						<input id="website" class="directorist-form-element" type="text" name="website" value="<?php echo isset( $_REQUEST['website']) ? esc_url( sanitize_text_field( wp_unslash( $_REQUEST['website'] ) ) ) : ''; ?>" <?php echo ( ! empty( $require_website ) ? 'required' : '' ); ?>>
+						<input id="website" class="directorist-form-element" type="text" name="website" value="<?php echo isset( $_REQUEST['website']) ? esc_url( sanitize_text_field( wp_unslash( $_REQUEST['website'] ) ) ) : ''; ?>" <?php echo ( empty( $require_website ) ? '' : 'required' ); ?>>
 					</div>
 				<?php } ?>
 				<?php if ( ! empty( $display_bio ) ) { ?>
 				<div class="directorist-form-group directorist-mb-15">
 					<label for="bio"><?php
 						echo esc_html( $bio );
-						echo ( ! empty( $require_bio ) ? '<strong class="directorist-form-required">*</strong>' : '' );
+						echo ( empty( $require_bio ) ? '' : '<strong class="directorist-form-required">*</strong>' );
 					?></label>
-					<textarea id="bio" class="directorist-form-element" name="bio" rows="10" <?php echo ( ! empty( $require_bio ) ? 'required' : '' ); ?>><?php echo isset( $_REQUEST['bio']) ? esc_textarea( sanitize_text_field( wp_unslash( $_REQUEST['bio'] ) ) ) : ''; ?></textarea>
+					<textarea id="bio" class="directorist-form-element" name="bio" rows="10" <?php echo ( empty( $require_bio ) ? '' : 'required' ); ?>><?php echo isset( $_REQUEST['bio']) ? esc_textarea( sanitize_text_field( wp_unslash( $_REQUEST['bio'] ) ) ) : ''; ?></textarea>
 				</div>
 				<?php } ?>
 				<?php if ( ! empty( get_directorist_option( 'display_user_type' ) ) ) {

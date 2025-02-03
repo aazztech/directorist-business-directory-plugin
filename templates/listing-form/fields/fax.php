@@ -5,7 +5,9 @@
  * @version 6.7
  */
 
-if ( ! defined( 'ABSPATH' ) ) exit;
+if (! defined( 'ABSPATH' )) {
+    exit;
+}
 ?>
 
 <div class="directorist-form-group directorist-form-fax-field">

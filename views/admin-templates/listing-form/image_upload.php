@@ -7,11 +7,11 @@
 $listing_id            = $listing_form->get_add_listing_id();
 $listing_imgs          = directorist_get_listing_gallery_images( $listing_id );
 $listing_prv_img_id    = directorist_get_listing_preview_image( $listing_id );
-$listing_prv_img       = !empty($listing_prv_img_id) ? atbdp_get_image_source($listing_prv_img_id) : '';
+$listing_prv_img       = empty($listing_prv_img_id) ? '' : atbdp_get_image_source($listing_prv_img_id);
 $display_prv_field     = get_directorist_option('display_prv_field', 1);
 $display_gallery_field = get_directorist_option('display_gallery_field', 1);
 $image_links           = [];                                                                              // define a link placeholder variable
-if( !empty( $listing_imgs ) && is_array( $listing_imgs ) ) {
+if( $listing_imgs !== null && $listing_imgs !== [] && is_array( $listing_imgs ) ) {
     foreach ($listing_imgs as $id) {
         $image_links[$id] = atbdp_get_image_source($id); // store the attachment id and url
     }
@@ -50,7 +50,7 @@ $active_mi_ext = is_multiple_images_active(); // default is no
         <div class="form-group">
             <!-- image container, which can be manipulated with js -->
             <div class="listing-img-container">
-                <?php if (!empty($image_links)) {
+                <?php if ($image_links !== []) {
                     foreach ($image_links as $id => $image_link) { ?>
                         <div class="single_attachment">
                             <input class="listing_image_attachment" name="listing_img[]" type="hidden"
@@ -79,7 +79,7 @@ $active_mi_ext = is_multiple_images_active(); // default is no
                     <?php $gallery_label = get_directorist_option('gallery_label', __('Upload Slider Images', 'directorist'));
                     esc_html_e($gallery_label, 'directorist'); ?>
                 </a>
-                <a id="delete-custom-img" class="btn btn-danger <?php echo (!empty($image_links)) ? '' : 'hidden' ?>"
+                <a id="delete-custom-img" class="btn btn-danger <?php echo ($image_links === []) ? 'hidden' : '' ?>"
                 href="#"> <?php echo esc_html( (1 == $active_mi_ext) ? esc_html__('Remove Images', 'directorist') : esc_html__('Remove Image', 'directorist') ); ?></a>
             </p>
         </div>

@@ -7,7 +7,9 @@
 
 use \Directorist\Helper;
 
-if ( ! defined( 'ABSPATH' ) ) exit;
+if (! defined( 'ABSPATH' )) {
+    exit;
+}
 ?>
 
 <form action="<?php atbdp_search_result_page_link(); ?>" class="directorist-search-form directorist-basic-search">

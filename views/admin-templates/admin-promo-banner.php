@@ -6,21 +6,21 @@
  */
 
 $response_body       = ATBDP_Upgrade::promo_remote_get();
-$display_promo       = ! empty( $response_body->display_promo ) ? $response_body->display_promo : '';
-$promo_version       = ! empty( $response_body->promo_version ) ? $response_body->promo_version : '';
+$display_promo       = empty( $response_body->display_promo ) ? '' : $response_body->display_promo;
+$promo_version       = empty( $response_body->promo_version ) ? '' : $response_body->promo_version;
 $directorist_promo_closed = get_user_meta( get_current_user_id(), '_directorist_promo_closed', true );
 
 if( ! $display_promo || ( $directorist_promo_closed && ( $directorist_promo_closed == $promo_version ) ) ) {
 	return;
 }
 
-$banner_title        = ! empty( $response_body->banner_title ) ? $response_body->banner_title : '';
-$banner_description  = ! empty( $response_body->banner_description ) ? $response_body->banner_description : '';
-$sale_button_text    = ! empty( $response_body->sale_button_text ) ? $response_body->sale_button_text : '';
-$sale_button_link    = ! empty( $response_body->sale_button_link ) ? ATBDP_Upgrade::promo_link( $response_body->sale_button_link ) : '';
-$offer_lists         = ! empty( $response_body->offer_lists ) ? $response_body->offer_lists : [];
-$get_now_button_text = ! empty( $response_body->get_now_button_text ) ? $response_body->get_now_button_text : '';
-$get_now_button_link = ! empty( $response_body->get_now_button_link ) ? ATBDP_Upgrade::promo_link( $response_body->get_now_button_link ) : '';
+$banner_title        = empty( $response_body->banner_title ) ? '' : $response_body->banner_title;
+$banner_description  = empty( $response_body->banner_description ) ? '' : $response_body->banner_description;
+$sale_button_text    = empty( $response_body->sale_button_text ) ? '' : $response_body->sale_button_text;
+$sale_button_link    = empty( $response_body->sale_button_link ) ? '' : ATBDP_Upgrade::promo_link( $response_body->sale_button_link );
+$offer_lists         = empty( $response_body->offer_lists ) ? [] : $response_body->offer_lists;
+$get_now_button_text = empty( $response_body->get_now_button_text ) ? '' : $response_body->get_now_button_text;
+$get_now_button_link = empty( $response_body->get_now_button_link ) ? '' : ATBDP_Upgrade::promo_link( $response_body->get_now_button_link );
 
 $url_args = [
 	'close-directorist-promo-version' => $promo_version,

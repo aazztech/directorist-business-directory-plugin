@@ -7,7 +7,9 @@
 
 use \Directorist\Helper;
 
-if ( ! defined( 'ABSPATH' ) ) exit;
+if (! defined( 'ABSPATH' )) {
+    exit;
+}
 ?>
 
 <div class="directorist-search-contents directorist-contents-wrap" data-atts="<?php echo esc_attr( $searchform->get_atts_data() ); ?>">

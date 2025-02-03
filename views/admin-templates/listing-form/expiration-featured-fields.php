@@ -1,5 +1,7 @@
 <?php
-if (!empty($args['data']) ) extract($args['data']) ;
+if (!empty($args['data'])) {
+    extract($args['data']) ;
+}
 // show the expiration date if never expiration is not set
 // display never expiration checkbox
 // Display featured checkbox
@@ -59,7 +61,7 @@ endif;
     </div>
 <?php }
 
-$listing_types = array();
+$listing_types = [];
 $all_types     = directorist_get_directories();
 ?>
-<input type="hidden" name="listing_status" value="<?php echo esc_attr( ! empty( $listing_status ) ? $listing_status : 'post_status' ); ?>" />
+<input type="hidden" name="listing_status" value="<?php echo esc_attr( empty( $listing_status ) ? 'post_status' : $listing_status ); ?>" />

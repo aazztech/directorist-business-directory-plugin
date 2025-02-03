@@ -5,7 +5,9 @@
  * @version 7.7.0
  */
 
-if ( ! defined( 'ABSPATH' ) ) exit;
+if (! defined( 'ABSPATH' )) {
+    exit;
+}
 ?>
 
 <div class="directorist-search-field directorist-search-field-review directorist-search-form-dropdown directorist-form-group <?php echo esc_attr( $empty_label ); ?>">

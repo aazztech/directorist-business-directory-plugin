@@ -17,7 +17,7 @@ use \Directorist\Helper;
                     // show the user instruction for banking gateway
                     if( isset( $o_metas['_payment_gateway'] ) && 'bank_transfer' == $o_metas['_payment_gateway'][0] && 'created' == $o_metas['_payment_status'][0] ) {
                         $ins = get_directorist_option('bank_transfer_instruction');
-                        $output = !empty($ins) ? '<p class="directorist-payment-instructions">'.ATBDP()->email->replace_in_content($ins, @$order_id, @$o_metas['_listing_id'][0]).'</p>' : '';
+                        $output = empty($ins) ? '' : '<p class="directorist-payment-instructions">'.ATBDP()->email->replace_in_content($ins, @$order_id, @$o_metas['_listing_id'][0]).'</p>';
 						echo wp_kses_post( $output );
                     }
                     ?>
@@ -32,11 +32,11 @@ use \Directorist\Helper;
                             <tbody>
                                 <tr>
                                     <td class="directorist-payment-table__label"><?php esc_html_e( 'Order ID', 'directorist' ); ?></td>
-                                    <td><?php echo (!empty($order_id)) ? esc_html( $order_id ) : ''; ?></td>
+                                    <td><?php echo (empty($order_id)) ? '' : esc_html( $order_id ); ?></td>
                                 </tr>
                                 <tr>
                                     <td class="directorist-payment-table__label"><?php esc_html_e( 'Date', 'directorist' ); ?></td>
-                                    <td><?php echo !empty($order) ? esc_html( get_the_time( get_option( 'date_format' ), $order_id ) ) : ''; ?></td>
+                                    <td><?php echo empty($order) ? '' : esc_html( get_the_time( get_option( 'date_format' ), $order_id ) ); ?></td>
                                 </tr>
                                 <tr>
                                     <td class="directorist-payment-table__label"><?php esc_html_e( 'Transaction ID', 'directorist' ); ?></td>
@@ -46,12 +46,12 @@ use \Directorist\Helper;
                                     <td class="directorist-payment-table__label"><?php esc_html_e( 'Payment Method', 'directorist' ); ?></td>
                                     <td>
                                         <?php
-                                        $gateway = !empty($o_metas['_payment_gateway'][0]) ? $o_metas['_payment_gateway'][0] : 'unknown';
+                                        $gateway = empty($o_metas['_payment_gateway'][0]) ? 'unknown' : $o_metas['_payment_gateway'][0];
                                         if( 'free' == $gateway ) {
                                             esc_html_e( 'Free Listing', 'directorist' );
                                         } else {
-                                            $gw_title = get_directorist_option("{$gateway}_title");
-                                            echo ! empty( $gw_title ) ? esc_html( $gw_title ) : esc_html( $gateway );
+                                            $gw_title = get_directorist_option($gateway . '_title');
+                                            echo empty( $gw_title ) ? esc_html( $gateway ) : esc_html( $gw_title );
                                         }
                                         ?>
                                     </td>
@@ -151,7 +151,7 @@ use \Directorist\Helper;
                                     <td class="directorist-payment-table__title"><?php esc_html_e( 'Total amount', 'directorist' ); ?></td>
                                     <td>
                                         <?php
-                                        $grand_total = !empty( $discount ) ? atbdp_format_payment_amount( $total - $discount ) : atbdp_format_payment_amount( $total );
+                                        $grand_total = empty( $discount ) ? atbdp_format_payment_amount( $total ) : atbdp_format_payment_amount( $total - $discount );
                                         $output = $before . atbdp_format_payment_amount( $grand_total ) . $after ;
                                         ?>
                                         <?php echo wp_kses_post( $output ); ?>

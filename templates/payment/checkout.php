@@ -39,50 +39,73 @@ use \Directorist\Helper;
                             $selected_product = 0;
 
                             foreach ( $form_data as $key => $option ) {
-                                if ( 'header' == $option['type'] ) { ?><?php } else { /* Display other type of item here */ ?>
+                                if ('header' != $option['type']) {
+                                    /* Display other type of item here */
+                                    ?>
                                     <tr>
                                         <td colspan="2" class="">
-                                            <?php
-                                                /* display proper type of checkbox/radio etc */
-                                                $atts = [
-                                                    'id'              => $option['name'] . '_' . $key,
-                                                    'name'            => $option['name'],
-                                                    'value'           => $option['price'],
-                                                    'class'           => 'atbdp-checkout-price-item atbdp_checkout_item_field',
-                                                    'data-price-type' => 'addition',
-                                                    'checked'         => isset( $option['selected'] ) ? checked( 1, $option['selected'], false ) : '',
-                                                ];
-                                                ?>
+                                            <?php 
+                                    /* display proper type of checkbox/radio etc */
+                                    $atts = [
+                                        'id'              => $option['name'] . '_' . $key,
+                                        'name'            => $option['name'],
+                                        'value'           => $option['price'],
+                                        'class'           => 'atbdp-checkout-price-item atbdp_checkout_item_field',
+                                        'data-price-type' => 'addition',
+                                        'checked'         => isset( $option['selected'] ) ? checked( 1, $option['selected'], false ) : '',
+                                    ];
+                                    ?>
 
-                                                <input type='hidden' id="<?php echo esc_attr( $atts['id'] ); ?>" name="<?php echo esc_attr( $atts['name'] ); ?>" class="<?php echo esc_attr( $atts['class'] ); ?>" value="<?php echo esc_attr( $atts['value'] ); ?>" data-price-type="<?php echo esc_attr( $atts['data-price-type'] ); ?>" <?php echo esc_attr( $atts['checked'] ); ?>/>
+                                                <input type='hidden' id="<?php 
+                                    echo esc_attr( $atts['id'] );
+                                    ?>" name="<?php 
+                                    echo esc_attr( $atts['name'] );
+                                    ?>" class="<?php 
+                                    echo esc_attr( $atts['class'] );
+                                    ?>" value="<?php 
+                                    echo esc_attr( $atts['value'] );
+                                    ?>" data-price-type="<?php 
+                                    echo esc_attr( $atts['data-price-type'] );
+                                    ?>" <?php 
+                                    echo esc_attr( $atts['checked'] );
+                                    ?>/>
 
-                                                <?php
-                                                // Add the price and product
-                                                if ( is_numeric( $atts['value'] ) && $option['selected'] && 'addition' === $atts['data-price-type'] ) {
-                                                    $price = ( preg_match( '/[.]/', $atts['value'] ) ) ? ( float ) $atts['value'] : ( int ) $atts['value'];
-                                                    $subtotal += $price;
-                                                    $selected_product++;
-                                                }
-                                            ?>
-                                            <?php
-                                            if ( ! empty( $option['title'] ) ) {
-                                                printf( '<label for="%s"></label>', esc_attr( $atts['id'] ) );
-                                            }
-                                            ?>
-                                            <span class="directorist-summery-label"> <?php echo esc_html( $option['title'] ) ?> </span>
-                                            <?php if ( ! empty( $option['desc'] ) ) echo '<p class="directorist-summery-label-description">'. esc_html($option['desc']) . '</p>'; ?>
+                                                <?php 
+                                    // Add the price and product
+                                    if ( is_numeric( $atts['value'] ) && $option['selected'] && 'addition' === $atts['data-price-type'] ) {
+                                        $price = ( preg_match( '/[.]/', $atts['value'] ) ) ? ( float ) $atts['value'] : ( int ) $atts['value'];
+                                        $subtotal += $price;
+                                        $selected_product++;
+                                    }
+                                    ?>
+                                            <?php 
+                                    if ( ! empty( $option['title'] ) ) {
+                                        printf( '<label for="%s"></label>', esc_attr( $atts['id'] ) );
+                                    }
+                                    ?>
+                                            <span class="directorist-summery-label"> <?php 
+                                    echo esc_html( $option['title'] ) ?>
+                                    ?> </span>
+                                            <?php 
+                                    if (! empty( $option['desc'] )) {
+                                        echo '<p class="directorist-summery-label-description">'. esc_html($option['desc']) . '</p>';
+                                    }
+                                    ?>
                                         </td>
                                         <td class="directorist-text-right">
                                             <span class="directorist-summery-amount">
-                                            <?php if (!empty($option['price'])) {
-                                                $output = $before. atbdp_format_payment_amount($option['price']) . $after;
-                                                echo wp_kses_post( $output );
-                                                do_action('atbdp_checkout_after_total_price', $form_data);
-                                            } ?>
+                                            <?php 
+                                    if (!empty($option['price'])) {
+                                        $output = $before. atbdp_format_payment_amount($option['price']) . $after;
+                                        echo wp_kses_post( $output );
+                                        do_action('atbdp_checkout_after_total_price', $form_data);
+                                    }
+                                    ?>
                                             </span>
                                         </td>
                                     </tr>
-                                <?php }
+                                <?php 
+                                }
                             }
 
                             /**
@@ -150,11 +173,7 @@ use \Directorist\Helper;
                 $url = ATBDP_Permalink::get_dashboard_page_link();
             }
 
-            if (!empty($monitization && $featured_enabled)){
-                $url = add_query_arg('listing_status', $new_l_status,  ATBDP_Permalink::get_dashboard_page_link().'?listing_id='.$listing_id );
-            } else{
-                $url = add_query_arg('listing_status', $new_l_status,  ATBDP_Permalink::get_dashboard_page_link().'?listing_id='.$listing_id );
-            }
+            $url = add_query_arg('listing_status', $new_l_status,  ATBDP_Permalink::get_dashboard_page_link().'?listing_id='.$listing_id );
             ?>
             <input type="hidden" id="listing_id" name="listing_id" value="<?php echo esc_attr( $listing_id ); ?>"/>
             <div class="directorist-payment-action directorist-flex directorist-justify-content-between" id="atbdp_pay_notpay_btn">

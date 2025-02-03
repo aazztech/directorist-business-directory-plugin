@@ -5,7 +5,9 @@
  * @version 7.0.5.6
  */
 
-if ( ! defined( 'ABSPATH' ) ) exit;
+if (! defined( 'ABSPATH' )) {
+    exit;
+}
 ?>
 
 <div class="directorist-advanced-filter__action directorist-flex directorist-align-center directorist-justify-content-between flex-wrap">

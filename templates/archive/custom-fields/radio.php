@@ -5,7 +5,9 @@
  * @version 8.0
  */
 
-if ( ! defined( 'ABSPATH' ) ) exit;
+if (! defined( 'ABSPATH' )) {
+    exit;
+}
 ?>
 
-<<?php echo tag_escape( $before ? $before : 'div' ); ?> class="directorist-listing-card-radio"><?php directorist_icon( $icon ); ?><?php $listings->print_label( $label ); ?><?php echo esc_html( $value ); ?></<?php echo tag_escape( $after ? $after : 'div' ); ?>>
+<<?php echo tag_escape( $before ?: 'div' ); ?> class="directorist-listing-card-radio"><?php directorist_icon( $icon ); ?><?php $listings->print_label( $label ); ?><?php echo esc_html( $value ); ?></<?php echo tag_escape( $after ?: 'div' ); ?>>

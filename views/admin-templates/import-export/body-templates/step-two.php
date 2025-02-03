@@ -12,7 +12,7 @@ $file_id         = isset( $_GET['file_id'] ) ? absint( wp_unslash( $_GET['file_i
 $delimiter       = isset( $_GET['delimiter'] ) ? sanitize_text_field( wp_unslash( $_GET['delimiter'] ) ) : ',';
 $update_existing = isset( $_GET['update_existing'] ) ? sanitize_text_field( wp_unslash( $_GET['update_existing'] ) ) : false;
 
-$file = ( ! empty( $file_id ) ) ? get_attached_file( $file_id ) : '';
+$file = ( empty( $file_id ) ) ? '' : get_attached_file( $file_id );
 
 $posts = csv_get_data( $file, true, $delimiter );
 $total = count( $posts );
@@ -27,12 +27,7 @@ function csv_from_builder( $data = [] ) {
 	if ( ! is_array( $data ) || count( $data ) < 1 ) {
 		return false;
 	}
-
-	if (  empty( $data[0]['directory_type'] ) ) {
-		return false;
-	}
-
-	return true;
+    return !empty($data[0]['directory_type']);
 }
 
 ?>
@@ -65,7 +60,7 @@ function csv_from_builder( $data = [] ) {
 									<?php
 									foreach( directory_types() as $term ) {
 										$default = get_term_meta( $term->term_id, '_default', true ); ?>
-											<option <?php echo !empty( $default ) ? 'selected' : ''; ?> value="<?php echo esc_attr( $term->term_id); ?>"><?php echo esc_attr( $term->name ); ?></option>
+											<option <?php echo empty( $default ) ? '' : 'selected'; ?> value="<?php echo esc_attr( $term->term_id); ?>"><?php echo esc_attr( $term->name ); ?></option>
 									<?php } ?>
 								</select>
 							<?php }
@@ -100,7 +95,7 @@ function csv_from_builder( $data = [] ) {
 					?></p>
 			</header>
 			<section>
-				<span class="importer-notice"><?php esc_html_e('Please don\'t reload the page', 'directorist')?></span>
+				<span class="importer-notice"><?php esc_html_e("Please don't reload the page", 'directorist')?></span>
 				<div class="directorist-importer-wrapper">
 					<progress class="directorist-importer-progress" max="100" value="0"></progress>
 					<span class="directorist-importer-length"></span>

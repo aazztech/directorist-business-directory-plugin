@@ -1,7 +1,7 @@
 <?php
 use Directorist\Helper;
 
-$atts = wp_parse_args( $attributes, array(
+$atts = wp_parse_args( $attributes, [
 	'user_role'            => get_directorist_option( 'display_user_type', false ) ? 'yes' : 'no',
 	'author_role_label'    => __( 'I am an author', 'directorist' ),
 	'user_role_label'      => __( 'I am a user', 'directorist' ),
@@ -46,7 +46,7 @@ $atts = wp_parse_args( $attributes, array(
 	'recovery_password_email_placeholder' => get_directorist_option( 'recpass_placeholder', __( 'eg. mail@example.com', 'directorist' ) ),
 	'recovery_password_button_label'      => get_directorist_option( 'recpass_button', __( 'Get New Password', 'directorist' ) ),
 	'user_type'                           => ''
-) );
+] );
 
 $args = [
 	'log_username'              => $atts['signin_username_label'],

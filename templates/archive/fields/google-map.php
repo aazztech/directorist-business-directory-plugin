@@ -90,18 +90,21 @@
 				<?php if ( ! empty( $ls_data['address'] ) || ! empty( $ls_data['phone'] )  ) { ?>
 					<div class="map-listing-card-single__content__info">
 						<?php
-							if ( ! empty( $ls_data['address'] ) ) {
-								if ( ! empty( $display_address_map ) ) { ?>
+							if (!empty( $ls_data['address'] ) && ! empty( $display_address_map )) {
+                            ?>
 									<div class='directorist-info-item map-listing-card-single__content__address'>
-										<?php directorist_icon( 'fas fa-map-marker-alt' ); ?>
+										<?php 
+                            directorist_icon( 'fas fa-map-marker-alt' );
+                            ?>
 										<div class="map-listing-card-single__content__location">
-											<?php echo $ls_data['listings']->get_the_location() ?>
+											<?php 
+                            echo $ls_data['listings']->get_the_location() ?>
+
+                            ?>
 										</div>
 									</div>
-									<?php
-								}
-
-							}
+									<?php 
+                        }
 
 							if ( ! empty( $ls_data['phone'] ) && ! empty( $display_phone_map ) ) { ?>
 								<div class='directorist-info-item map-listing-card-single__content__phone'>

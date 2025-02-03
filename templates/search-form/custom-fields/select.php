@@ -5,7 +5,9 @@
  * @version 7.5.4
  */
 
-if ( ! defined( 'ABSPATH' ) ) exit;
+if (! defined( 'ABSPATH' )) {
+    exit;
+}
 ?>
 
 <div class="directorist-search-field directorist-form-group">
@@ -16,9 +18,9 @@ if ( ! defined( 'ABSPATH' ) ) exit;
 			<label class="directorist-search-field__label"><?php echo esc_attr( $data['label'] ); ?></label>
 		<?php endif; ?>
 
-		<select name='custom_field[<?php echo esc_attr( $data['field_key'] ); ?>]' <?php echo ! empty( $data['required'] ) ? 'required="required"' : ''; ?> data-isSearch="true" data-placeholder="<?php echo esc_html( ! empty( $data['placeholder'] ) ? $data['placeholder'] : __( 'Select', 'directorist' ) )?>">
+		<select name='custom_field[<?php echo esc_attr( $data['field_key'] ); ?>]' <?php echo empty( $data['required'] ) ? '' : 'required="required"'; ?> data-isSearch="true" data-placeholder="<?php echo esc_html( empty( $data['placeholder'] ) ? __( 'Select', 'directorist' ) : $data['placeholder'] )?>">
 
-			<option value=""><?php echo esc_html( ! empty( $data['placeholder'] ) ? $data['placeholder'] : __( 'Select', 'directorist' ) )?></option>
+			<option value=""><?php echo esc_html( empty( $data['placeholder'] ) ? __( 'Select', 'directorist' ) : $data['placeholder'] )?></option>
 
 			<?php
 			if( $data['options']['options'] ) {

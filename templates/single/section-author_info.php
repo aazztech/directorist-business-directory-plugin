@@ -7,13 +7,15 @@
 
 use \Directorist\Helper;
 
-if ( ! defined( 'ABSPATH' ) ) exit;
+if (! defined( 'ABSPATH' )) {
+    exit;
+}
 
 $id         = $listing->id;
 $author_id  = $listing->author_id;
 $u_pro_pic  = get_user_meta($author_id, 'pro_pic', true);
-$u_pro_pic  = !empty($u_pro_pic) ? wp_get_attachment_image_src($u_pro_pic, 'thumbnail') : '';
-$author_img = !empty($u_pro_pic) ? $u_pro_pic[0] : '';
+$u_pro_pic  = empty($u_pro_pic) ? '' : wp_get_attachment_image_src($u_pro_pic, 'thumbnail');
+$author_img = empty($u_pro_pic) ? '' : $u_pro_pic[0];
 $avatar_img = get_avatar($author_id, 32);
 ?>
 

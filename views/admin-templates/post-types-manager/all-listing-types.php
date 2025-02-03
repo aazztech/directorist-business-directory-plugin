@@ -109,7 +109,7 @@
                 ?>
                 <div class="directorist_builder__content__right">
                     <div class="directorist-total-types">
-                        <?php esc_html_e( 'All Directories','directorist' ); ?><span class="directorist_count">(<?php echo esc_attr( ! empty( $all_items ) ? $all_items : 0 ); ?>)</span>
+                        <?php esc_html_e( 'All Directories','directorist' ); ?><span class="directorist_count">(<?php echo esc_attr( empty( $all_items ) ? 0 : $all_items ); ?>)</span>
                     </div>
                     <div class="directorist_table">
                         <div class="directorist_table-header">
@@ -131,17 +131,17 @@
                             ?>
                             <div class="directorist_table-row directory-type-row" data-term-id="<?php echo esc_attr( $listing_type->term_id ); ?>">
                                 <div class="directorist_title">
-                                    <a  href="<?php echo esc_url( ! empty( $edit_link ) ? $edit_link : '#' ); ?>">
-                                        <?php echo esc_html( ! empty( $listing_type->name ) ? $listing_type->name : '-' ); ?>
+                                    <a  href="<?php echo esc_url( empty( $edit_link ) ? '#' : $edit_link ); ?>">
+                                        <?php echo esc_html( empty( $listing_type->name ) ? '-' : $listing_type->name ); ?>
                                         <?php if( $default ) { ?>
                                         <span class="directorist_badge"><?php esc_html_e( 'Default', 'directorist' ); ?></span>
                                         <?php } ?>
                                     </a>
-                                    <div class="directorist_listing-id">ID: #<?php echo esc_attr( ! empty( $listing_type->term_id ) ? $listing_type->term_id : '' ); ?></div>
+                                    <div class="directorist_listing-id">ID: #<?php echo esc_attr( empty( $listing_type->term_id ) ? '' : $listing_type->term_id ); ?></div>
                                 </div>
                                 <div class="directorist-type-slug">
                                     <div class="directorist-type-slug-content directorist-row-tooltip" data-tooltip="Click here to rename the slug." data-flow="bottom">
-                                        <span class=" directorist_listing-slug-text directorist-slug-text-<?php echo esc_attr( $listing_type->term_id ); ?>" data-value="<?php echo esc_attr( ! empty( $listing_type->slug ) ? $listing_type->slug : '-' ); ?>" contenteditable="false"  data-type-id="<?php echo absint( $listing_type->term_id ); ?>">
+                                        <span class=" directorist_listing-slug-text directorist-slug-text-<?php echo esc_attr( $listing_type->term_id ); ?>" data-value="<?php echo esc_attr( empty( $listing_type->slug ) ? '-' : $listing_type->slug ); ?>" contenteditable="false"  data-type-id="<?php echo absint( $listing_type->term_id ); ?>">
                                             <?php echo esc_html( html_entity_decode( $listing_type->slug ) ); ?>
                                         </span>
                                     </div>
@@ -155,7 +155,7 @@
                                 </div>
                                 <div class="directorist-type-actions">
                                     <div class="directorist_listing-actions">
-                                        <a href="<?php echo esc_url( ! empty( $edit_link ) ? $edit_link : '#' ); ?>" class="directorist_btn directorist_btn-primary">
+                                        <a href="<?php echo esc_url( empty( $edit_link ) ? '#' : $edit_link ); ?>" class="directorist_btn directorist_btn-primary">
                                         <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 14 14" fill="none">
                                                 <g clip-path="url(#clip0_5013_877)">
                                                         <path fill-rule="evenodd" clip-rule="evenodd" d="M10.0875 0.754228C10.3153 0.526423 10.6847 0.526423 10.9125 0.754228L13.2458 3.08756C13.4736 3.31537 13.4736 3.68471 13.2458 3.91252C13.018 4.14033 12.6487 4.14033 12.4208 3.91252L10.0875 1.57919C9.85971 1.35138 9.85971 0.982034 10.0875 0.754228ZM8.4796 2.49701C8.65534 2.43991 8.84464 2.43991 9.02038 2.49701C9.15609 2.5411 9.25444 2.61434 9.31923 2.66934C9.37514 2.71681 9.43379 2.77551 9.48291 2.82466C9.48613 2.82789 9.48932 2.83107 9.49245 2.83421L11.1754 4.51714C11.2245 4.56625 11.2832 4.6249 11.3307 4.68081C11.3857 4.7456 11.4589 4.84395 11.503 4.97965C11.5601 5.15539 11.5601 5.34469 11.503 5.52043C11.4589 5.65613 11.3857 5.75448 11.3307 5.81928C11.2832 5.8752 11.2245 5.93385 11.1754 5.98297L5.138 12.0203C5.1306 12.0277 5.12327 12.0351 5.11599 12.0423C5.00709 12.1514 4.91099 12.2476 4.79963 12.3287C4.70164 12.4001 4.59649 12.4612 4.48588 12.5108C4.36019 12.5672 4.22896 12.603 4.08027 12.6434C4.07034 12.6461 4.06032 12.6488 4.05023 12.6516L1.32014 13.3962C1.11819 13.4512 0.902202 13.3939 0.754181 13.2459C0.60616 13.0978 0.548802 12.8818 0.603881 12.6799L1.34845 9.94981C1.3512 9.93971 1.35393 9.9297 1.35663 9.91976C1.39709 9.77107 1.43279 9.63984 1.48922 9.51415C1.53888 9.40354 1.5999 9.2984 1.67129 9.20041C1.75243 9.08905 1.84865 8.99294 1.95768 8.88405C1.96496 8.87677 1.97231 8.86944 1.97971 8.86203L8.00753 2.83421C8.01067 2.83108 8.01384 2.82789 8.01707 2.82467C8.06618 2.77552 8.12484 2.71682 8.18076 2.66935C8.24555 2.61434 8.3439 2.5411 8.4796 2.49701ZM8.74999 3.74167L2.80467 9.68699C2.66171 9.82995 2.63489 9.85906 2.61423 9.88741C2.59043 9.92008 2.57009 9.95513 2.55354 9.992C2.53917 10.024 2.5272 10.0617 2.47401 10.2568L1.99804 12.002L3.74326 11.526C3.93831 11.4728 3.97603 11.4609 4.00804 11.4465C4.0449 11.4299 4.07995 11.4096 4.11262 11.3858C4.14098 11.3651 4.17008 11.3383 4.31304 11.1954L10.2584 5.25004L8.74999 3.74167Z" fill="currentColor"/>
@@ -227,7 +227,7 @@
 
                 <div class="cptm-modal-body cptm-center-content cptm-content-wide cptm-create-directory-modal__body">
                     <div class="cptm-create-directory-modal__action">
-                        <a href="<?php echo admin_url( 'admin.php?page=templatiq' ) ?>" class="cptm-create-directory-modal__action__single <?php echo ! is_plugin_active( 'templatiq/templatiq.php' ) ? 'directorist_directory_template_library' : ''; ?>">
+                        <a href="<?php echo admin_url( 'admin.php?page=templatiq' ) ?>" class="cptm-create-directory-modal__action__single <?php echo is_plugin_active( 'templatiq/templatiq.php' ) ? '' : 'directorist_directory_template_library'; ?>">
                             <span class="modal-btn-icon create-template">
                                 <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
                                     <g clip-path="url(#clip0_5814_6155)">

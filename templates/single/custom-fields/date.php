@@ -5,7 +5,9 @@
  * @version 7.10.0
  */
 
-if ( ! defined( 'ABSPATH' ) ) exit;
+if (! defined( 'ABSPATH' )) {
+    exit;
+}
 ?>
 
 <div class="directorist-single-info directorist-single-info-date">

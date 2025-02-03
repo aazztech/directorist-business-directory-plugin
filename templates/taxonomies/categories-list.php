@@ -10,7 +10,7 @@ use \Directorist\Helper;
 $columns = floor( 12 / $taxonomy->columns );
 
 if ( '5' == $taxonomy->columns ) {
-	$columns = $columns . '-5';
+	$columns .= '-5';
 }
 
 $taxonomy->atts['type'] = 'category';

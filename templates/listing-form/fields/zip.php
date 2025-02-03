@@ -5,7 +5,9 @@
  * @version 7.0.5.3
  */
 
-if ( ! defined( 'ABSPATH' ) ) exit;
+if (! defined( 'ABSPATH' )) {
+    exit;
+}
 ?>
 
 <div class="directorist-form-group directorist-form-zip-field">

@@ -13,8 +13,8 @@ if ( atbdp_is_page( 'add_listing' ) && get_directorist_option( 'guest_listings' 
 	return;
 }
 
-$user_type = ! empty( $atts['user_type'] ) ? $atts['user_type'] : '';
-$user_type = ! empty( $_REQUEST['user_type'] ) ? $_REQUEST['user_type'] : $user_type;
+$user_type = empty( $atts['user_type'] ) ? '' : $atts['user_type'];
+$user_type = empty( $_REQUEST['user_type'] ) ? $user_type : $_REQUEST['user_type'];
 ?>
 
 <div class="directorist-account-block-authentication-modal">
@@ -35,7 +35,7 @@ $user_type = ! empty( $_REQUEST['user_type'] ) ? $_REQUEST['user_type'] : $user_
 
 				<div class="modal-body">
 
-					<?php include_once 'login.php';?>
+					<?php include_once __DIR__ . '/login.php';?>
 
 				</div>
 
@@ -61,7 +61,7 @@ $user_type = ! empty( $_REQUEST['user_type'] ) ? $_REQUEST['user_type'] : $user_
 
 				<div class="modal-body">
 
-					<?php include_once 'registration.php';?>
+					<?php include_once __DIR__ . '/registration.php';?>
 
 				</div>
 

@@ -13,18 +13,14 @@ if ( ! defined( 'ABSPATH' ) ) {
 class Block_Templates_Controller {
 
 	/**
-	 * Holds the path for the directory where the block templates will be kept.
-	 *
-	 * @var string
-	 */
-	private $templates_directory;
+     * Holds the path for the directory where the block templates will be kept.
+     */
+    private string $templates_directory;
 
 	/**
-	 * Holds the path for the directory where the block template parts will be kept.
-	 *
-	 * @var string
-	 */
-	private $template_parts_directory;
+     * Holds the path for the directory where the block template parts will be kept.
+     */
+    private string $template_parts_directory;
 
 	/**
 	 * Directory name of the block template directory.
@@ -53,9 +49,9 @@ class Block_Templates_Controller {
 	 * Initialization method.
 	 */
 	protected function init() {
-		add_action( 'template_redirect', array( $this, 'render_block_template' ) );
-		add_filter( 'pre_get_block_file_template', array( $this, 'maybe_return_blocks_template' ), 10, 3 );
-		add_filter( 'get_block_templates', array( $this, 'add_block_templates' ), 10, 3 );
+		add_action( 'template_redirect', [ $this, 'render_block_template' ] );
+		add_filter( 'pre_get_block_file_template', [ $this, 'maybe_return_blocks_template' ], 10, 3 );
+		add_filter( 'get_block_templates', [ $this, 'add_block_templates' ], 10, 3 );
 	}
 
 	/**
@@ -80,14 +76,16 @@ class Block_Templates_Controller {
 		) {
 			return $template;
 		}
+
 		$template_name_parts = explode( '//', $id );
 		if ( count( $template_name_parts ) < 2 ) {
 			return $template;
 		}
+
 		list( , $slug ) = $template_name_parts;
 
 		// Remove the filter at this point because if we don't then this function will infinite loop.
-		remove_filter( 'pre_get_block_file_template', array( $this, 'maybe_return_blocks_template' ), 10, 3 );
+		remove_filter( 'pre_get_block_file_template', [ $this, 'maybe_return_blocks_template' ], 10, 3 );
 
 		// Check if the theme has a saved version of this template before falling back to the directorist one. Please note how
 		// the slug has not been modified at this point, we're still using the default one passed to this hook.
@@ -96,20 +94,20 @@ class Block_Templates_Controller {
 			get_block_template( $id, $template_type );
 
 		if ( null !== $maybe_template ) {
-			add_filter( 'pre_get_block_file_template', array( $this, 'maybe_return_blocks_template' ), 10, 3 );
+			add_filter( 'pre_get_block_file_template', [ $this, 'maybe_return_blocks_template' ], 10, 3 );
 			return $maybe_template;
 		}
 
 		// Theme-based template didn't exist, try switching the theme to directorist and try again. This function has
 		// been unhooked so won't run again.
-		add_filter( 'get_block_file_template', array( $this, 'get_single_block_template' ), 10, 3 );
+		add_filter( 'get_block_file_template', [ $this, 'get_single_block_template' ], 10, 3 );
 		$maybe_template = function_exists( 'gutenberg_get_block_template' ) ?
 			gutenberg_get_block_template( Block_Template_Utils::PLUGIN_SLUG . '//' . $slug, $template_type ) :
 			get_block_template( Block_Template_Utils::PLUGIN_SLUG . '//' . $slug, $template_type );
 
 		// Re-hook this function, it was only unhooked to stop recursion.
-		add_filter( 'pre_get_block_file_template', array( $this, 'maybe_return_blocks_template' ), 10, 3 );
-		remove_filter( 'get_block_file_template', array( $this, 'get_single_block_template' ), 10, 3 );
+		add_filter( 'pre_get_block_file_template', [ $this, 'maybe_return_blocks_template' ], 10, 3 );
+		remove_filter( 'get_block_file_template', [ $this, 'get_single_block_template' ], 10, 3 );
 		if ( null !== $maybe_template ) {
 			return $maybe_template;
 		}
@@ -140,6 +138,7 @@ class Block_Templates_Controller {
 		if ( count( $template_name_parts ) < 2 ) {
 			return $template;
 		}
+
 		list( , $slug ) = $template_name_parts;
 
 		// If this blocks template doesn't exist then we should just skip the function and let Gutenberg handle it.
@@ -147,8 +146,8 @@ class Block_Templates_Controller {
 			return $template;
 		}
 
-		$available_templates = $this->get_block_templates( array( $slug ), $template_type );
-		return ( is_array( $available_templates ) && count( $available_templates ) > 0 )
+		$available_templates = $this->get_block_templates( [ $slug ], $template_type );
+		return ( is_array( $available_templates ) && $available_templates !== [] )
 			? Block_Template_Utils::gutenberg_build_template_result_from_file( $available_templates[0], $available_templates[0]->type )
 			: $template;
 	}
@@ -166,8 +165,8 @@ class Block_Templates_Controller {
 			return $query_result;
 		}
 
-		$post_type      = isset( $query['post_type'] ) ? $query['post_type'] : '';
-		$slugs          = isset( $query['slug__in'] ) ? $query['slug__in'] : array();
+		$post_type      = $query['post_type'] ?? '';
+		$slugs          = $query['slug__in'] ?? [];
 		$template_files = $this->get_block_templates( $slugs, $template_type );
 
 		// @todo: Add apply_filters to _gutenberg_get_template_files() in Gutenberg to prevent duplication of logic.
@@ -177,7 +176,7 @@ class Block_Templates_Controller {
 			if (
 				array_filter(
 					$query_result,
-					static function( $query_result_template ) use ( $template_file ) {
+					static function( $query_result_template ) use ( $template_file ): bool {
 						return $query_result_template->slug === $template_file->slug &&
 								$query_result_template->theme === $template_file->theme;
 					}
@@ -206,11 +205,7 @@ class Block_Templates_Controller {
 				continue;
 			}
 
-			$is_not_custom   = false === array_search(
-				wp_get_theme()->get_stylesheet() . '//' . $template_file->slug,
-				array_column( $query_result, 'id' ),
-				true
-			);
+			$is_not_custom   = !in_array(wp_get_theme()->get_stylesheet() . '//' . $template_file->slug, array_column( $query_result, 'id' ), true);
 			$fits_slug_query =
 				! isset( $query['slug__in'] ) || in_array( $template_file->slug, $query['slug__in'], true );
 			$fits_area_query =
@@ -221,8 +216,7 @@ class Block_Templates_Controller {
 			}
 		}
 
-		$query_result = $this->remove_theme_templates_with_custom_alternative( $query_result );
-		return $query_result;
+		return $this->remove_theme_templates_with_custom_alternative( $query_result );
 	}
 
 	/**
@@ -242,7 +236,7 @@ class Block_Templates_Controller {
 			array_values(
 				array_filter(
 					$templates,
-					static function( $template ) {
+					static function( $template ): bool {
 						// This template has been customised and saved as a post.
 						return 'custom' === $template->source;
 					}
@@ -257,7 +251,7 @@ class Block_Templates_Controller {
 		return array_values(
 			array_filter(
 				$templates,
-				static function( $template ) use ( $customised_template_slugs ) {
+				static function( $template ) use ( $customised_template_slugs ): bool {
 					// This template has been customised and saved as a post, so return it.
 					return ! ( 'theme' === $template->source && in_array( $template->slug, $customised_template_slugs, true ) );
 				}
@@ -273,21 +267,21 @@ class Block_Templates_Controller {
 	 *
 	 * @return int[]|\WP_Post[] An array of found templates.
 	 */
-	public function get_block_templates_from_db( $slugs = array(), $template_type = 'wp_template' ) {
-		$check_query_args = array(
+	public function get_block_templates_from_db( $slugs = [], $template_type = 'wp_template' ): array {
+		$check_query_args = [
 			'post_type'      => $template_type,
 			'posts_per_page' => -1,
 			'no_found_rows'  => true,
-			'tax_query'      => array( // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_tax_query
-				array(
+			'tax_query'      => [ // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_tax_query
+				[
 					'taxonomy' => 'wp_theme',
 					'field'    => 'name',
-					'terms'    => array( Block_Template_Utils::PLUGIN_SLUG, get_stylesheet() ),
-				),
-			),
-		);
+					'terms'    => [ Block_Template_Utils::PLUGIN_SLUG, get_stylesheet() ],
+				],
+			],
+		];
 
-		if ( is_array( $slugs ) && count( $slugs ) > 0 ) {
+		if ( is_array( $slugs ) && $slugs !== [] ) {
 			$check_query_args['post_name__in'] = $slugs;
 		}
 
@@ -312,23 +306,19 @@ class Block_Templates_Controller {
 	 *
 	 * @return array Templates from the Directorist blocks plugin directory.
 	 */
-	public function get_block_templates_from_directorist( $slugs, $already_found_templates, $template_type = 'wp_template' ) {
+	public function get_block_templates_from_directorist( $slugs, $already_found_templates, $template_type = 'wp_template' ): array {
 		$directory      = $this->get_templates_directory( $template_type );
 		$template_files = Block_Template_Utils::gutenberg_get_template_paths( $directory );
-		$templates      = array();
+		$templates      = [];
 
-		if ( 'wp_template_part' === $template_type ) {
-			$dir_name = self::TEMPLATE_PARTS_DIR_NAME;
-		} else {
-			$dir_name = self::TEMPLATES_DIR_NAME;
-		}
+		$dir_name = 'wp_template_part' === $template_type ? self::TEMPLATE_PARTS_DIR_NAME : self::TEMPLATES_DIR_NAME;
 
 		foreach ( $template_files as $template_file ) {
 			$template_slug = Block_Template_Utils::generate_template_slug_from_path( $template_file, $dir_name );
 			$template_slug = str_replace( 'listing', ATBDP_POST_TYPE, $template_slug );
 
 			// This template does not have a slug we're looking for. Skip it.
-			if ( is_array( $slugs ) && count( $slugs ) > 0 && ! in_array( $template_slug, $slugs, true ) ) {
+			if ( is_array( $slugs ) && $slugs !== [] && ! in_array( $template_slug, $slugs, true ) ) {
 				continue;
 			}
 
@@ -336,15 +326,13 @@ class Block_Templates_Controller {
 			// database) then we should not overwrite it with the one from the filesystem.
 			if (
 				Block_Template_Utils::theme_has_template( $template_slug ) ||
-				count(
-					array_filter(
+				array_filter(
 						$already_found_templates,
-						static function ( $template ) use ( $template_slug ) {
+						static function ( $template ) use ( $template_slug ): bool {
 							$template_obj = (object) $template; //phpcs:ignore WordPress.CodeAnalysis.AssignmentInCondition.Found
 							return $template_obj->slug === $template_slug;
 						}
-					)
-				) > 0 ) {
+					) !== [] ) {
 				continue;
 			}
 
@@ -357,14 +345,12 @@ class Block_Templates_Controller {
 	}
 
 	/**
-	 * Get and build the block template objects from the block template files.
-	 *
-	 * @param array $slugs An array of slugs to retrieve templates for.
-	 * @param array $template_type wp_template or wp_template_part.
-	 *
-	 * @return array
-	 */
-	public function get_block_templates( $slugs = array(), $template_type = 'wp_template' ) {
+     * Get and build the block template objects from the block template files.
+     *
+     * @param array $slugs An array of slugs to retrieve templates for.
+     * @param array $template_type wp_template or wp_template_part.
+     */
+    public function get_block_templates( $slugs = [], $template_type = 'wp_template' ): array {
 		$templates_from_db          = $this->get_block_templates_from_db( $slugs, $template_type );
 		$templates_from_directorist = $this->get_block_templates_from_directorist( $slugs, $templates_from_db, $template_type );
 
@@ -372,16 +358,15 @@ class Block_Templates_Controller {
 	}
 
 	/**
-	 * Gets the directory where templates of a specific template type can be found.
-	 *
-	 * @param array $template_type wp_template or wp_template_part.
-	 *
-	 * @return string
-	 */
-	protected function get_templates_directory( $template_type = 'wp_template' ) {
+     * Gets the directory where templates of a specific template type can be found.
+     *
+     * @param array $template_type wp_template or wp_template_part.
+     */
+    protected function get_templates_directory( $template_type = 'wp_template' ): string {
 		if ( 'wp_template_part' === $template_type ) {
 			return $this->template_parts_directory;
 		}
+
 		return $this->templates_directory;
 	}
 
@@ -393,21 +378,22 @@ class Block_Templates_Controller {
 	 *
 	 * @return boolean
 	 */
-	public function block_template_is_available( $template_name, $template_type = 'wp_template' ) {
+	public function block_template_is_available( ?string $template_name, $template_type = 'wp_template' ) {
 		if ( ! $template_name ) {
 			return false;
 		}
+
 		$directory = $this->get_templates_directory( $template_type ) . '/' . $template_name . '.html';
 
 		return is_readable(
 			$directory
-		) || $this->get_block_templates( array( $template_name ), $template_type );
+		) || $this->get_block_templates( [ $template_name ], $template_type );
 	}
 
 	/**
 	 * Renders the default block template from Directorist Blocks if no theme templates exist.
 	 */
-	public function render_block_template() {
+	public function render_block_template(): void {
 		if ( is_embed() || ! Block_Template_Utils::supports_block_templates() ) {
 			return;
 		}

@@ -5,7 +5,9 @@
  * @version 7.3.1
  */
 
-if ( ! defined( 'ABSPATH' ) ) exit;
+if (! defined( 'ABSPATH' )) {
+    exit;
+}
 
 $address_data = $listing->get_address( $data );
 $address = ( is_string( $address_data ) ) ? $address_data : '';

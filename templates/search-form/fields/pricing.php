@@ -5,12 +5,14 @@
  * @version 8.0
  */
 
-if ( ! defined( 'ABSPATH' ) ) exit;
+if (! defined( 'ABSPATH' )) {
+    exit;
+}
 
 $ptype           = $searchform->get_pricing_type();
-$max_placeholder = !empty( $data['price_range_max_placeholder'] ) ? $data['price_range_max_placeholder'] : '';
-$min_placeholder = !empty( $data['price_range_min_placeholder'] ) ? $data['price_range_min_placeholder'] : '';
-$label           = ! empty( $data['label'] ) ? $data['label'] : __( 'Pricing', 'directorist' );
+$max_placeholder = empty( $data['price_range_max_placeholder'] ) ? '' : $data['price_range_max_placeholder'];
+$min_placeholder = empty( $data['price_range_min_placeholder'] ) ? '' : $data['price_range_min_placeholder'];
+$label           = empty( $data['label'] ) ? __( 'Pricing', 'directorist' ) : $data['label'];
 ?>
 
 <div class="directorist-search-field directorist-search-form-dropdown directorist-form-group <?php echo esc_attr( $empty_label ); ?>">

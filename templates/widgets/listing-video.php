@@ -7,8 +7,10 @@
 
 use \Directorist\Helper;
 
-if ( ! defined( 'ABSPATH' ) ) exit;
-$videourl   = ! empty( $videourl ) ? Helper::parse_video( $videourl ) : '';
+if (! defined( 'ABSPATH' )) {
+    exit;
+}
+$videourl   = empty( $videourl ) ? '' : Helper::parse_video( $videourl );
 ?>
 
 <div class="directorist-card__body directorist-widget__video">
