@@ -155,6 +155,8 @@ class Directorist_Account {
 			'author_role_label'         => $atts['author_role_label'],
 			'user_role_label'           => $atts['user_role_label'],
 			'active_form'               => $active_form,
+			'display_rememberme'        => get_directorist_option( 'display_rememberme' ),
+			'log_rememberme'			=> get_directorist_option( 'log_rememberme' ),
 		];
 
 		return Helper::get_template_contents( 'account/login-registration-form', $args );
