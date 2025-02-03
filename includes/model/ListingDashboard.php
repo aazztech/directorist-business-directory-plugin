@@ -112,7 +112,7 @@ class Directorist_Listing_Dashboard {
 		return $this->current_listings_query;
 	}
 
-	public function get_listing_price_html() {
+	public function get_listing_price_html(): ?string {
 		$id = get_the_ID();
 		$price = get_post_meta( $id, '_price', true );
 		$price_range = get_post_meta( $id, '_price_range', true );

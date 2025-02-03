@@ -278,7 +278,7 @@ class Comment {
 		return ( '' === $comment_type || 'comment' === $comment_type );
 	}
 
-	public static function on_comment_post( $comment_id, $comment_approved, $comment_data ): void {
+	public static function on_comment_post( $comment_id, $comment_approved, array $comment_data ): void {
 		$post_id = isset( $_POST['comment_post_ID'] ) ? absint( $_POST['comment_post_ID'] ) : 0; // WPCS: input var ok, CSRF ok.
 
 		if ( $post_id && ATBDP_POST_TYPE === get_post_type( $post_id ) ) {

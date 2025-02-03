@@ -535,7 +535,7 @@ class Directorist_Single_Listing {
 
 		// Get the gallery images
 		$listing_img  = directorist_get_listing_gallery_images( $listing_id );
-		$listing_imgs = empty( $listing_img ) ? ( [] ) : (! is_array( $listing_img ) ? [ $listing_img ] : $listing_img);
+		$listing_imgs = $listing_img === null || $listing_img === [] ? ( [] ) : (is_array( $listing_img ) ? $listing_img : [ $listing_img ]);
 		$image_links  = []; // define a link placeholder variable
 
 		foreach ( $listing_imgs as $img_id ) {

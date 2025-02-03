@@ -110,16 +110,14 @@ class Client {
 
     /**
      * Initialize insights class
-     *
-     * @return Directorist\Appsero\Insights
      */
-    public function insights() {
+    public function insights(): \Directorist\Appsero\Insights {
         if ( ! class_exists( __NAMESPACE__ . '\Insights' ) ) {
             require_once __DIR__ . '/Insights.php';
         }
 
         // if already instantiated, return the cached one
-        if ( $this->insights ) {
+        if ( $this->insights instanceof \Directorist\Appsero\Insights ) {
             return $this->insights;
         }
 
@@ -130,16 +128,14 @@ class Client {
 
     /**
      * Initialize plugin/theme updater
-     *
-     * @return Directorist\Appsero\Updater
      */
-    public function updater() {
+    public function updater(): \Directorist\Appsero\Updater {
         if ( ! class_exists( __NAMESPACE__ . '\Updater' ) ) {
             require_once __DIR__ . '/Updater.php';
         }
 
         // if already instantiated, return the cached one
-        if ( $this->updater ) {
+        if ( $this->updater instanceof \Directorist\Appsero\Updater ) {
             return $this->updater;
         }
 
@@ -150,16 +146,14 @@ class Client {
 
     /**
      * Initialize license checker
-     *
-     * @return Directorist\Appsero\License
      */
-    public function license() {
+    public function license(): \Directorist\Appsero\License {
         if ( ! class_exists( __NAMESPACE__ . '\License' ) ) {
             require_once __DIR__ . '/License.php';
         }
 
         // if already instantiated, return the cached one
-        if ( $this->license ) {
+        if ( $this->license instanceof \Directorist\Appsero\License ) {
             return $this->license;
         }
 

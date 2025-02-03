@@ -13,7 +13,7 @@ class View_Count_Field extends Number_Field {
 
 	public $type = 'view_count';
 
-	public function sanitize( $posted_data ) {
+	public function sanitize( $posted_data ): float {
 		return absint( $this->get_value( $posted_data ) );
 	}
 }

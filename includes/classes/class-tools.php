@@ -196,7 +196,7 @@
                             foreach ( $terms as $term ) {
 								$term_id = $this->get_or_create_term_id( $term, $taxonomy );
 
-								if ( empty( $term_id ) ) {
+								if ( $term_id === null || $term_id === 0 ) {
 									continue;
 								}
 

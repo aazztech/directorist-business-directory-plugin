@@ -452,7 +452,7 @@ class Listings_Controller extends Posts_Controller {
 			];
 		}
 
-		if ( ! empty( $meta_query ) ) {
+		if ( $meta_query !== [] ) {
 			$meta_query[]['relation'] = 'AND';
 			$args['meta_query'] = $meta_query;
 		}
@@ -602,7 +602,7 @@ class Listings_Controller extends Posts_Controller {
 
 		// Add gallery images.
 		$gallery_images = directorist_get_listing_gallery_images( $listing->ID );
-		if ( ! empty( $gallery_images ) || is_array( $gallery_images ) ) {
+		if ( $gallery_images !== null && $gallery_images !== [] || is_array( $gallery_images ) ) {
 			$attachment_ids = array_merge( $attachment_ids, $gallery_images );
 		}
 
@@ -763,10 +763,10 @@ class Listings_Controller extends Posts_Controller {
 					$base_data['featured'] = (bool) get_post_meta( $listing->ID, '_featured', true );
 					break;
 				case 'new':
-					$base_data['new'] = (bool) Helper::is_new( $listing->ID );
+					$base_data['new'] = Helper::is_new( $listing->ID );
 					break;
 				case 'popular':
-					$base_data['popular'] = (bool) Helper::is_popular( $listing->ID );
+					$base_data['popular'] = Helper::is_popular( $listing->ID );
 					break;
 				case 'status':
 					// TODO: Status has been migrated, remove related code.

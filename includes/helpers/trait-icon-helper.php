@@ -90,13 +90,11 @@ trait Icon_Helper {
 	}
 
 	/**
-	 * LineAwesome 1.3.0
-	 *
-	 * @param string $icon
-	 *
-	 * @return string
-	 */
-	private static function get_line_awesome_file( $icon ) {
+     * LineAwesome 1.3.0
+     *
+     * @param string $icon
+     */
+    private static function get_line_awesome_file( $icon ): string {
 		list( $prefix, $name ) = array_pad( explode( ' ', $icon ), 2, '' );
 		
 		if ( ! $name ) { 

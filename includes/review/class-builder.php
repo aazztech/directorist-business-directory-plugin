@@ -21,7 +21,7 @@ class Builder {
 	protected $rating_type;
 	private static ?\Directorist\Review\Builder $instance 	= null;
 
-	public static function get( $data ) {
+	public static function get( $data ): \Directorist\Review\Builder {
 		if ( is_null( self::$instance ) ) {
 			self::$instance = new self( $data );
 		}
@@ -109,11 +109,11 @@ class Builder {
 	}
 
 	public function is_cookies_consent_active(): bool {
-		return (bool) $this->cookies_consent;
+		return $this->cookies_consent;
 	}
 
 	public function is_gdpr_consent(): bool {
-		return (bool) $this->gdpr_consent;
+		return $this->gdpr_consent;
 	}
 
 	public function gdpr_consent_label() {

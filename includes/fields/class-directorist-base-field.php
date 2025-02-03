@@ -33,7 +33,7 @@ class Base_Field {
 		return isset( $this->props[ $name ] );
 	}
 
-	public function get_props() {
+	public function get_props(): array {
 		return $this->props;
 	}
 
@@ -83,14 +83,14 @@ class Base_Field {
 	}
 
 	public function has_error(): bool {
-		return ( ! empty( $this->get_error() ) );
+		return ( !in_array($this->get_error(), ['', '0'], true) );
 	}
 
 	public function get_value( array $posted_data ) {
 		return directorist_get_var( $posted_data[ $this->get_key() ] );
 	}
 
-	public function is_value_empty( $posted_data ): bool {
+	public function is_value_empty( array $posted_data ): bool {
 		$value = $this->get_value( $posted_data );
 		return ( is_null( $value ) || ( is_string( $value ) && $value === '' ) || ( $value === [] ) );
 	}
@@ -99,7 +99,7 @@ class Base_Field {
 		return true;
 	}
 
-	public function sanitize( $posted_data ) {
+	public function sanitize( array $posted_data ) {
 		return directorist_clean( $this->get_value( $posted_data ) );
 	}
 }

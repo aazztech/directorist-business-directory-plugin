@@ -835,7 +835,7 @@ final class Directorist_Base
 	 *
 	 * @deprecated Use parse_video() for video parsing.
 	 */
-	public function atbdp_parse_videos( $url ) {
+	public function atbdp_parse_videos( $url ): string {
 		_deprecated_function( __METHOD__, '7.8.0', 'Directorist\Helper::parse_video()' );
 
 		return \Directorist\Helper::parse_video( $url );
@@ -890,7 +890,7 @@ final class Directorist_Base
  * @since 1.0
  * @return object|Directorist_Base The one true Directorist_Base Instance.
  */
-function ATBDP()
+function ATBDP(): \Directorist_Base
 {
 	return Directorist_Base::instance();
 }

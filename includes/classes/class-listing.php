@@ -337,7 +337,7 @@ if (!class_exists('ATBDP_Listing')):
                 global $wp_query;
                 $post_type = get_query_var('post_type');
                 $s = get_query_var('s');
-                $post_type = (empty($post_type)) ? (!empty($query->post_type) ? $query->post_type : 'any') : ($post_type);
+                $post_type = (empty($post_type)) ? (empty($query->post_type) ? 'any' : $query->post_type) : ($post_type);
 
                 if ($query->is_search() && $post_type == ATBDP_POST_TYPE) {
                     /*@TODO; make the number of items to show dynamic using setting panel*/

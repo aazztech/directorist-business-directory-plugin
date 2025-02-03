@@ -18,7 +18,10 @@ class Directorist_Listing_Form {
 
 	public $add_listing_id;
 	public $add_listing_post;
-	public $current_listing_type;
+	/**
+     * @var int
+     */
+    public $current_listing_type;
 
 	private function __construct( $id ) {
 
@@ -337,7 +340,7 @@ class Directorist_Listing_Form {
 		return $listing_info;
 	}
 
-	public function add_listing_location_fields() {
+	public function add_listing_location_fields(): ?string {
 		$terms = get_the_terms( $this->add_listing_id, ATBDP_LOCATION );
 		$ids   = [];
 		if ( ! empty( $terms ) ) {
@@ -389,7 +392,7 @@ class Directorist_Listing_Form {
 		return directorist_get_object_terms( $this->add_listing_id, ATBDP_TAGS, 'term_id' );
 	}
 
-	public function add_listing_cat_fields() {
+	public function add_listing_cat_fields(): ?string {
 		$p_id     = $this->add_listing_id;
 		$fm_plan  = get_post_meta( $p_id, '_fm_plans', true );
 		$plan_cat = is_fee_manager_active() ? is_plan_allowed_category( $fm_plan ) : [];
@@ -535,7 +538,7 @@ class Directorist_Listing_Form {
 		$value             		= get_post_meta( $this->get_add_listing_id(), '_directory_type', true );
 		$current_directory_type = $this->get_current_listing_type();
 		$default_directory 		= default_directory_type();
-		$directory_type         = empty( $current_directory_type ) ? $default_directory : $current_directory_type;
+		$directory_type         = $current_directory_type === 0 ? $default_directory : $current_directory_type;
 		$current_type      		= empty( $value ) ? $directory_type : $value;
 		printf( '<input type="hidden" name="directory_type" value="%s">', esc_attr( $current_type ) );
 	}
@@ -750,7 +753,7 @@ class Directorist_Listing_Form {
 		if ( $listing_type_count == 1 ) {
 			$type = array_key_first( $listing_types );
 		}
-		elseif( ! empty( $get_listing_type ) ) {
+		elseif( $get_listing_type !== 0 ) {
 			$type = $get_listing_type;
 		}
 		else {
@@ -870,7 +873,7 @@ class Directorist_Listing_Form {
 			// if only one directory
 			$type = $this->get_current_listing_type();
 
-			if ( $type ) {
+			if ( $type !== 0 ) {
 				$args['form_data']        = $this->build_form_data( $type );
 				$args['enable_sidebar']   = (bool) get_directorist_type_option( $type, 'enable_sidebar', 1 );
 				$args['single_directory'] = $type;

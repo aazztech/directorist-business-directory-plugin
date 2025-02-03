@@ -264,7 +264,7 @@ function directorist_get_directories( array $args = [] ) {
 	return get_terms( $args );
 }
 
-function directorist_get_directories_for_template( array $args = [] ) {
+function directorist_get_directories_for_template( array $args = [] ): array {
 	$directories = directorist_get_directories( $args );
 
 	if ( is_wp_error( $directories ) ) {

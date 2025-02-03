@@ -77,11 +77,10 @@ class License {
      *
      * If someone wants to override the default generated key.
      *
-     * @param string $key
      *
      * @since 1.3.0
      */
-    public function set_option_key( $key ): self {
+    public function set_option_key( string $key ): self {
         $this->option_key = $key;
 
         return $this;
@@ -136,7 +135,7 @@ class License {
      *
      * @return array
      */
-    protected function send_request( $license_key, $route ) {
+    protected function send_request( $license_key, string $route ) {
         $params = [
             'license_key' => $license_key,
             'url'         => esc_url( home_url() ),
@@ -359,7 +358,7 @@ class License {
     /**
      * Check this is a valid license
      */
-    public function is_valid() {
+    public function is_valid(): bool {
         if ( null !== $this->is_valid_license ) {
             return $this->is_valid_license;
         }

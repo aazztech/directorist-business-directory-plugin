@@ -24,7 +24,7 @@ class Helper {
 	public static function get_directory_type_term_data( $post_id = '', string $term_key = '' ) {
 		$post_id        = ( empty( $post_id ) ) ? get_the_ID() : $post_id;
 		$directory_type = directorist_get_listing_directory( $post_id );
-		$directory_type = ( empty( $directory_type ) ) ? default_directory_type() : $directory_type;
+		$directory_type = ( $directory_type === 0 ) ? default_directory_type() : $directory_type;
 
 		return get_term_meta( $directory_type, $term_key, true );
 	}
@@ -494,7 +494,7 @@ class Helper {
 		return $default_preview;
 	}
 
-	public static function is_review_enabled() {
+	public static function is_review_enabled(): bool {
 		return directorist_is_review_enabled();
 	}
 

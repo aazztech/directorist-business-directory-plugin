@@ -1444,7 +1444,10 @@ if ( ! class_exists( 'ATBDP_Extensions' ) ) {
 		}
 
 		// install_file_from_subscriptions
-		public function install_file_from_subscriptions( array $args = [] ) {
+        /**
+         * @return mixed[]
+         */
+        public function install_file_from_subscriptions( array $args = [] ): array {
 			$default = [
 				'item_key' => '',
 				'type' => '',
@@ -1535,7 +1538,7 @@ if ( ! class_exists( 'ATBDP_Extensions' ) ) {
 		}
 
 		// handle_plugin_download_request
-		public function handle_file_download_request() {
+		public function handle_file_download_request(): ?array {
 			$status        = [ 'success' => true ];
 
 			if ( ! directorist_verify_nonce( 'nonce', 'atbdp_nonce_action_js' ) ) {
@@ -2165,7 +2168,10 @@ if ( ! class_exists( 'ATBDP_Extensions' ) ) {
 		}
 
 		// get_extensions_promo_list
-		public function get_extensions_promo_list( array $args = [] ) {
+        /**
+         * @return mixed[]
+         */
+        public function get_extensions_promo_list( array $args = [] ): array {
 			$installed_extensions      = ( empty( $args['installed_extensions'] ) ) ? [] : $args['installed_extensions'];
 			$installed_extensions_keys = $this->get_sanitized_extensions_keys( $installed_extensions );
 
@@ -2175,9 +2181,9 @@ if ( ! class_exists( 'ATBDP_Extensions' ) ) {
 			// Filter extensions available in subscriptions
 			$promo_extensions = $this->get_active_extensions();
 
-			if ( ! empty( $promo_extensions ) && is_array( $installed_extensions_keys ) ) {
+			if ( $promo_extensions !== [] && is_array( $installed_extensions_keys ) ) {
 
-				foreach ( $promo_extensions as $_extension_base => $_extension_args ) {
+				foreach ( array_keys($promo_extensions) as $_extension_base ) {
 					$extension_base_alias = static::get_extension_alias_key($_extension_base);
 					$ext_key              = preg_replace( '/(directorist-)/', '', $_extension_base );
 					$ext_alias_key        = preg_replace( '/(directorist-)/', '', $extension_base_alias );
@@ -2347,7 +2353,10 @@ if ( ! class_exists( 'ATBDP_Extensions' ) ) {
 		}
 
 		// get_themes_promo_list
-		public function get_themes_promo_list( array $args = [] ) {
+        /**
+         * @return mixed[]
+         */
+        public function get_themes_promo_list( array $args = [] ): array {
 			$installed_theme_list  = ( empty( $args['installed_theme_list'] ) ) ? [] : $args['installed_theme_list'];
 			$installed_themes_keys = $this->get_sanitized_themes_keys( $installed_theme_list );
 
@@ -2357,9 +2366,7 @@ if ( ! class_exists( 'ATBDP_Extensions' ) ) {
 			// Filter all active themes
 			$themes_promo_list = $this->get_active_themes();
 
-			if ( ! empty( $themes_promo_list ) ) {
-
-				foreach ( $themes_promo_list as $_theme_base => $_extension_args ) {
+			foreach ( array_keys($themes_promo_list) as $_theme_base ) {
 
 					// Exclude Installed Themes
 					if ( in_array( $_theme_base, $installed_themes_keys ) ) {
@@ -2371,7 +2378,6 @@ if ( ! class_exists( 'ATBDP_Extensions' ) ) {
 						unset( $themes_promo_list[ $_theme_base ] );
 					}
 				}
-			}
 
 			return $themes_promo_list;
 		}

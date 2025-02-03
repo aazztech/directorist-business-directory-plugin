@@ -410,7 +410,7 @@ if (!function_exists('attc_letter_to_number')):
      * @since 1.0.0
      *
      */
-    function attc_letter_to_number($column)
+    function attc_letter_to_number($column): int
     {
         $column = strtoupper($column);
         $count = strlen($column);
@@ -763,7 +763,7 @@ function directorist_icon( $icon, $echo = true, $class = '' ): ?string {
 
 	$icon_src = \Directorist\Helper::get_icon_src( $icon );
 
-    if ( !$icon_src ) {
+    if ( $icon_src === '' || $icon_src === '0' ) {
         return null;
     }
 
@@ -1748,7 +1748,7 @@ function directorist_clean_post( $var )
  * @since    4.0
  *
  */
-function the_atbdp_favourites_link( $post_id = 0 ) {
+function the_atbdp_favourites_link( $post_id = 0 ): ?string {
     if ( $post_id == 0 ) {
         global $post;
         $post_id = $post->ID;
@@ -1820,7 +1820,7 @@ if (!function_exists('new_badge')) {
  * @since    4.0.0
  *
  */
-function atbdp_image_cropping($attachmentId, $width, $height, $crop = true, $quality = 100)
+function atbdp_image_cropping($attachmentId, $width, $height, $crop = true, $quality = 100): array
 {
     $resizer = new Atbdp_Image_resizer($attachmentId);
 
@@ -2106,7 +2106,7 @@ function atbdp_get_current_url(): string
         $current_url .= ":" . $server_port;
     }
 
-    return $current_url . empty( $_SERVER["REQUEST_URI"] ) ? '' : directorist_clean( wp_unslash( $_SERVER["REQUEST_URI"] ) );
+    return $current_url . empty( $_SERVER["REQUEST_URI"] ) !== '' ? '' : directorist_clean( wp_unslash( $_SERVER["REQUEST_URI"] ) );
 
 }
 
@@ -2443,7 +2443,7 @@ function atbdp_get_listing_attachment_ids( $listing_id ): array {
 
     $gallery_images = directorist_get_listing_gallery_images( $listing_id );
 
-	if ( empty( $gallery_images ) ) {
+	if ( $gallery_images === null || $gallery_images === [] ) {
 		return $attachment_ids;
 	}
 

@@ -268,11 +268,9 @@ if ( ! class_exists( 'ATBDP_SEO' ) ) :
                     // Get Term SEO desc
                     $meta = get_option('wpseo_taxonomy_meta');
 
-                    if (array_key_exists('at_biz_dir-category', $meta) && array_key_exists($term->term_id, $meta['at_biz_dir-category'])) {
+                    if (array_key_exists('at_biz_dir-category', $meta) && array_key_exists($term->term_id, $meta['at_biz_dir-category']) && array_key_exists('wpseo_desc', $meta['at_biz_dir-category'][$term->term_id])) {
 
-                        if (array_key_exists('wpseo_desc', $meta['at_biz_dir-category'][$term->term_id])) {
-                            $desc_template = $meta['at_biz_dir-category'][$term->term_id]['wpseo_desc'];
-                        }
+                        $desc_template = $meta['at_biz_dir-category'][$term->term_id]['wpseo_desc'];
                     }
                 }
             }
@@ -295,11 +293,9 @@ if ( ! class_exists( 'ATBDP_SEO' ) ) :
                     // Get Term SEO desc
                     $meta = get_option('wpseo_taxonomy_meta');
 
-                    if (array_key_exists('at_biz_dir-location', $meta) && array_key_exists($term->term_id, $meta['at_biz_dir-location'])) {
+                    if (array_key_exists('at_biz_dir-location', $meta) && array_key_exists($term->term_id, $meta['at_biz_dir-location']) && array_key_exists('wpseo_desc', $meta['at_biz_dir-location'][$term->term_id])) {
 
-                        if (array_key_exists('wpseo_desc', $meta['at_biz_dir-location'][$term->term_id])) {
-                            $desc_template = $meta['at_biz_dir-location'][$term->term_id]['wpseo_desc'];
-                        }
+                        $desc_template = $meta['at_biz_dir-location'][$term->term_id]['wpseo_desc'];
                     }
                 }
             }
@@ -322,11 +318,9 @@ if ( ! class_exists( 'ATBDP_SEO' ) ) :
                     // Get Term SEO desc
                     $meta = get_option('wpseo_taxonomy_meta');
 
-                    if (array_key_exists('at_biz_dir-tags', $meta) && array_key_exists($term->term_id, $meta['at_biz_dir-tags'])) {
+                    if (array_key_exists('at_biz_dir-tags', $meta) && array_key_exists($term->term_id, $meta['at_biz_dir-tags']) && array_key_exists('wpseo_desc', $meta['at_biz_dir-tags'][$term->term_id])) {
 
-                        if (array_key_exists('wpseo_desc', $meta['at_biz_dir-tags'][$term->term_id])) {
-                            $desc_template = $meta['at_biz_dir-tags'][$term->term_id]['wpseo_desc'];
-                        }
+                        $desc_template = $meta['at_biz_dir-tags'][$term->term_id]['wpseo_desc'];
                     }
                 }
             }
@@ -618,7 +612,7 @@ if ( ! class_exists( 'ATBDP_SEO' ) ) :
 			$current_directorist_page = self::get_directorist_current_page();
 
 			// Do not add meta data of current page is not a Directorist page
-			if ( empty( $current_directorist_page ) ) {
+			if ( $current_directorist_page === '' || $current_directorist_page === '0' ) {
 				return;
 			}
 

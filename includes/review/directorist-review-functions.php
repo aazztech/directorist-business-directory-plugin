@@ -52,10 +52,8 @@ function directorist_get_review_per_page() {
  *
  * @param int $listing_id
  * @param int $round_precision
- *
- * @return float|int
  */
-function directorist_get_listing_rating( $listing_id, $round_precision = 1 ) {
+function directorist_get_listing_rating( $listing_id, $round_precision = 1 ): float {
 	return \Directorist\Review\Listing_Review_Meta::get_rating( $listing_id, $round_precision );
 }
 

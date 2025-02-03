@@ -6,7 +6,10 @@ use Directorist\Helper;
 
 trait Multi_Directory_Helper {
 
-    public static function add_directory( array $args = [] ) {
+    /**
+     * @return mixed[]
+     */
+    public static function add_directory( array $args = [] ): array {
         $default = [
             'term_id'        => 0,
             'directory_name' => '',

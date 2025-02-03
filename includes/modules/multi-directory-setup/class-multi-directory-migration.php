@@ -228,11 +228,9 @@ class Multi_Directory_Migration {
             ];
         }
 
-        if( !empty( $this->get_old_custom_fields() ) ){
-                foreach( $this->get_old_custom_fields() as $key => $value ){
-                    $general_group_field_keys[] = $key;
-                    $preset_fields[ $key ] = $value;
-                }
+        foreach( $this->get_old_custom_fields() as $key => $value ){
+            $general_group_field_keys[] = $key;
+            $preset_fields[ $key ] = $value;
         }
 
         $general_group_field_keys[] = 'location';

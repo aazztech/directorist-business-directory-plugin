@@ -217,7 +217,7 @@ class All_Categories extends \WP_Widget {
                     $expired_listings = atbdp_get_expired_listings(ATBDP_CATEGORY, $term->term_id);
                     $number_of_expired = $expired_listings->post_count;
                     $number_of_expired = empty($number_of_expired)?'0':$number_of_expired;
-                    $total = ($count)?($count-$number_of_expired):$count;
+                    $total = ($count !== 0)?($count-$number_of_expired):$count;
                     $html .= '<span class="directorist-taxonomy-list__count"> (' . $total . ') </span>';
                 }
                 if( empty( $settings['immediate_category'] ) && empty( $settings['hide_empty'] ) ) {
@@ -287,7 +287,7 @@ class All_Categories extends \WP_Widget {
                     $expired_listings = atbdp_get_expired_listings(ATBDP_CATEGORY, $term->term_id);
                     $number_of_expired = $expired_listings->post_count;
                     $number_of_expired = empty($number_of_expired)?'0':$number_of_expired;
-                    $total = ($count)?($count-$number_of_expired):$count;
+                    $total = ($count !== 0)?($count-$number_of_expired):$count;
                     $html .= '<span class="directorist-taxonomy-list__count"> (' .
                     $total . ') </span>';
                 }

@@ -53,7 +53,7 @@ class Fields {
 	 *
 	 * @return Base_Field[]
 	 */
-	public static function get_all() {
+	public static function get_all(): array {
 		return self::$fields;
 	}
 

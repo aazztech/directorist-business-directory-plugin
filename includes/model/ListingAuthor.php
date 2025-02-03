@@ -71,11 +71,11 @@ class Directorist_Listing_Author {
 	public function prepare_data() {
 		$this->listing_types        = $this->get_listing_types();
 		$this->current_listing_type = $this->get_current_listing_type();
-		$this->columns              = (int) atbdp_calculate_column( get_directorist_option( 'all_listing_columns', 3 ) );
+		$this->columns              = atbdp_calculate_column( get_directorist_option( 'all_listing_columns', 3 ) );
 
 		$this->id = $this->extract_user_id( get_query_var( 'author_id' ) );
 
-		if ( ! $this->id ) {
+		if ( $this->id === 0 ) {
 			return \ATBDP_Helper::guard( [ 'type' => '404' ] );
 		}
 

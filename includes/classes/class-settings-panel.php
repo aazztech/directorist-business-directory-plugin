@@ -33,7 +33,7 @@ if ( ! class_exists('ATBDP_Settings_Panel') ) {
 
 		public function update_init_options(): void {
 			// Set lazy_load_taxonomy_fields option
-			$enable_lazy_loading = (bool) directorist_has_no_listing();
+			$enable_lazy_loading = directorist_has_no_listing();
 			update_directorist_option( 'lazy_load_taxonomy_fields', $enable_lazy_loading );
 		}
 

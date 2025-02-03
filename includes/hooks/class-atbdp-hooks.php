@@ -2,6 +2,9 @@
 
 if ( ! class_exists( 'ATBDP_Hooks' ) ) :
     class ATBDP_Hooks {
+        /**
+         * @var mixed[]
+         */
         public $hooks = [];
 
         public function __construct() {

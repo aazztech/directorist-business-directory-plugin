@@ -271,7 +271,7 @@ function directorist_bool_to_string( $bool ): string {
 	if ( ! is_bool( $bool ) ) {
 		$bool = directorist_string_to_bool( $bool );
 	}
-	return true === $bool ? 'yes' : 'no';
+	return $bool ? 'yes' : 'no';
 }
 
 

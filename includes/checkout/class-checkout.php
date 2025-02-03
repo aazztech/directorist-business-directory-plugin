@@ -281,7 +281,7 @@ class ATBDP_Checkout
      * @param int $listing_id The Listing ID for which the order has been created.
      * @param array $data The $_POST data basically
      */
-    private function process_payment($amount, $gateway, $order_id, $listing_id, $data = []): void
+    private function process_payment($amount, $gateway, $order_id, $listing_id, array $data = []): void
     {
         /*Process paid listing*/
         if ($amount > 0) {

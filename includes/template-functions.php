@@ -101,7 +101,7 @@ function atbdp_get_widget_template( $template, $args = [] ): void {
     atbdp_get_template( $template, $args );
 }
 
-function atbdp_get_widget_template_path( $template ) {
+function atbdp_get_widget_template_path( $template ): string {
     $template = 'widgets/' . $template;
 
     return atbdp_get_template_path( $template );
@@ -129,7 +129,7 @@ function directorist_get_listing_thumbnail_id( $listing = null ) {
 	}
 
 	$gallery_image_ids = directorist_get_listing_gallery_images( $listing->ID );
-	if ( empty( $gallery_image_ids ) ) {
+	if ( $gallery_image_ids === null || $gallery_image_ids === [] ) {
 		return false;
 	}
 

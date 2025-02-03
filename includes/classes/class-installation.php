@@ -131,12 +131,11 @@ class ATBDP_Installation {
 	}
 
 	/**
-	 * Get list of DB update callbacks.
-	 *
-	 * @since 7.1.0
-	 * @return array
-	 */
-	public static function get_db_update_callbacks() {
+     * Get list of DB update callbacks.
+     *
+     * @since 7.1.0
+     */
+    public static function get_db_update_callbacks(): array {
 		return self::$db_updates;
 	}
 

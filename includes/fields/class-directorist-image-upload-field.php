@@ -26,7 +26,7 @@ class Image_Upload_Field extends Base_Field {
 		];
 	}
 
-	public function validate( $posted_data ) {
+	public function validate( $posted_data ): bool {
 		$files      = $this->get_value( $posted_data );
 		$old_images = $files['old'];
 		$new_images = $files['new'];

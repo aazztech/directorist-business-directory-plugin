@@ -466,12 +466,12 @@ if ( ! class_exists( 'ATBDP_Announcement' ) ) :
 			if ( 'all_user' === $to ) {
 				$users = $this->get_all_user_emails();
 
-				if ( ! empty( $users ) ) {
+				if ( $users !== [] ) {
 					$recipients = $users;
 				}
 
 				// Validate recipient
-				if ( empty( $recipients ) ) {
+				if ( $recipients === [] ) {
 					$status['message'] = __( 'No recipient found', 'directorist' );
 					wp_send_json( $status );
 				}

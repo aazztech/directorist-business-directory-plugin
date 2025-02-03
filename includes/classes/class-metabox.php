@@ -170,20 +170,18 @@ class ATBDP_Metabox {
 		$directory_type         = $term_id ?? default_directory_type();
 		$expiration				= get_term_meta( $directory_type, 'default_expiration', true );
 		$expire_in_days         = empty( $expiration ) ? '90' : $expiration;
-		$f_active               = directorist_is_featured_listing_enabled();
+		directorist_is_featured_listing_enabled();
 		$never_expire           = get_post_meta( $listing_id, '_never_expire', true );
 		$never_expire           = empty( $never_expire ) ? '' : (int) $never_expire;
 
 		$e_d                    = get_post_meta( $listing_id, '_expiry_date', true );
 		$e_d                    = empty( $e_d ) ? calc_listing_expiry_date( '', $expire_in_days, $directory_type ) : $e_d;
 		$expiry_date            = atbdp_parse_mysql_date( $e_d );
-
-		$featured               = get_post_meta( $listing_id, '_featured', true);
-		$listing_type           = get_post_meta( $listing_id, '_listing_type', true);
-		// TODO: Status has been migrated, remove related code.
-		// $listing_status         = get_post_meta( $listing_id, '_listing_status', true);
-		$listing_status         = get_post_status( $listing_id );
-		$default_expire_in_days = empty( $default_expire_in_days ) ? '' : $default_expire_in_days;
+        get_post_meta( $listing_id, '_featured', true);
+        get_post_meta( $listing_id, '_listing_type', true);
+        // TODO: Status has been migrated, remove related code.
+        // $listing_status         = get_post_meta( $listing_id, '_listing_status', true);
+        get_post_status( $listing_id );
 
 		if( ($never_expire === 0 || ($never_expire === '' || $never_expire === '0')) && isset( $expiry_date ) ) : ?>
 				<span id="atbdp-timestamp">

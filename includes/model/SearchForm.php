@@ -15,7 +15,10 @@ class Directorist_Listing_Search_Form {
 	public $options = [];
 	public $type;
 	public $listing_type;
-	public $form_data;
+	/**
+     * @var mixed[]
+     */
+    public $form_data;
 
 	public $atts;
 	public $defaults;
@@ -539,7 +542,7 @@ class Directorist_Listing_Search_Form {
 			$top_categories = $this->top_categories();
 			$title = get_directorist_option( 'popular_cat_title', __( 'Browse by popular categories', 'directorist' ) );
 
-			if ( !empty($top_categories) ) {
+			if ( $top_categories !== [] ) {
 				$args = [
 					'searchform'      => $this,
 					'top_categories'  => $top_categories,
@@ -707,14 +710,14 @@ class Directorist_Listing_Search_Form {
 		}
 	}
 
-	public static function get_selected_category_option_data() {
+	public static function get_selected_category_option_data(): array {
 		$id = ( isset( $_REQUEST['in_cat'] ) ) ? sanitize_text_field( wp_unslash( $_REQUEST['in_cat'] ) ) : '';
 		$id = ( isset( $_REQUEST['cat_id'] ) ) ? sanitize_text_field( wp_unslash( $_REQUEST['cat_id'] ) ) : $id;
 
 		return self::get_taxonomy_select_option_data( $id );
 	}
 
-	public static function get_selected_location_option_data() {
+	public static function get_selected_location_option_data(): array {
 		$id = ( isset( $_REQUEST['in_loc'] ) ) ? sanitize_text_field( wp_unslash( $_REQUEST['in_loc'] ) ) : '';
 		$id = ( isset( $_REQUEST['loc_id'] ) ) ? sanitize_text_field( wp_unslash( $_REQUEST['loc_id'] ) ) : $id;
 

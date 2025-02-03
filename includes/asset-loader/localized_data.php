@@ -36,13 +36,13 @@ class Localized_Data {
 		];
 	}
 
-	private static function search_listing_localized_data() {
+	private static function search_listing_localized_data(): array {
 		return self::get_search_script_data([
 			'directory_type_id' => get_post_meta( '_directory_type', get_the_ID(), true ),
 		]);
 	}
 
-	private static function search_form_localized_data() {
+	private static function search_form_localized_data(): array {
 		$directory_type_id = $args['directory_type_id'] ?? '';
 		return self::get_search_script_data([
 			'directory_type_id' => $directory_type_id,
@@ -50,7 +50,7 @@ class Localized_Data {
 		]);
 	}
 
-	private static function directorist_options_data() {
+	private static function directorist_options_data(): array {
 		return self::get_option_data();
 	}
 

@@ -35,7 +35,7 @@ class ATBDP_Permalink {
 		$directory_slug = '';
 		$directory_id   = directorist_get_listing_directory( $post_id );
 
-        if ( $directory_id ) {
+        if ( $directory_id !== 0 ) {
             $directory_term = get_term( $directory_id, ATBDP_DIRECTORY_TYPE );
             $directory_slug = $directory_term ? $directory_term->slug : '';
         }
