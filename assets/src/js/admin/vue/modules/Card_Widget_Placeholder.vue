@@ -123,6 +123,10 @@ export default {
     },
   },
 
+  mounted() {
+    // console.log('@Placeholder mounted', { selectedWidgets: this.selectedWidgets });
+  }, 
+
   computed: {
     canAddMore() {
       if ( this.maxWidget < 1 ) {
