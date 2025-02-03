@@ -32,9 +32,8 @@ class Atbdp_Image_resizer
      * @param int     $height
      * @param boolean $crop
      * @param int     $quality
-     * @return array
      */
-    public function resize($width, $height, $crop = true, $quality = 100)
+    public function resize($width, $height, $crop = true, $quality = 100): array
     {
         global $wpdb;
 
@@ -43,12 +42,12 @@ class Atbdp_Image_resizer
         
         // Bail if we don't have an attachment URL
         if ( ! $attachmentUrl ) {
-            return array('url' => $this->attachmentId, 'width' => $width, 'height' => $height);
+            return ['url' => $this->attachmentId, 'width' => $width, 'height' => $height];
         }
 
         // Get the image file path
         $filePath = parse_url($attachmentUrl);
-        $filePath = ! empty( $_SERVER['DOCUMENT_ROOT'] ) ? directorist_clean( wp_unslash( $_SERVER['DOCUMENT_ROOT'] ) ) . $filePath['path'] : '';
+        $filePath = empty( $_SERVER['DOCUMENT_ROOT'] ) ? '' : directorist_clean( wp_unslash( $_SERVER['DOCUMENT_ROOT'] ) ) . $filePath['path'];
 
         // Additional handling for multisite
         if (is_multisite()) {
@@ -84,7 +83,7 @@ class Atbdp_Image_resizer
 
             // Bail if we encounter a WP_Error
             if (is_wp_error($editor)) {
-                return array('url' => $attachmentUrl, 'width' => $width, 'height' => $height);
+                return ['url' => $attachmentUrl, 'width' => $width, 'height' => $height];
             }
 
             // Set the quality
@@ -109,8 +108,7 @@ class Atbdp_Image_resizer
                 if ($cmpX > $cmpY) {
                     $srcW = round($origWidth / $cmpX * $cmpY);
                     $srcX = round(($origWidth - ($origWidth / $cmpX * $cmpY)) / 2);
-                }
-                else if ($cmpY > $cmpX) {
+                } elseif ($cmpY > $cmpX) {
                     $srcH = round($origHeight / $cmpY * $cmpX);
                     $srcY = round(($origHeight - ($origHeight / $cmpY * $cmpX)) / 2);
                 }
@@ -141,21 +139,21 @@ class Atbdp_Image_resizer
             }
 
             // Create the image array
-            $resizedImage = array(
+            $resizedImage = [
                 'url'    => $resizedUrl,
                 'width'  => $resizedWidth,
                 'height' => $resizedHeight,
                 'type'   => $resizedType
-            );
+            ];
 
         }
         else {
-            $resizedImage = array(
+            $resizedImage = [
                 'url'    => str_replace(basename($attachmentUrl), basename($destFileName), $attachmentUrl),
                 'width'  => $destWidth,
                 'height' => $destHeight,
                 'type'   => $ext
-            );
+            ];
         }
 
         // And we're done!

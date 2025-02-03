@@ -6,12 +6,12 @@ defined('WP_UNINSTALL_PLUGIN') || exit;
 
 global $wpdb;
 
-include_once("directorist-base.php");
+include_once(__DIR__ . "/directorist-base.php");
 
 // Clear schedules
 wp_clear_scheduled_hook('directorist_hourly_scheduled_events');
 
-function directorist_uninstall() {
+function directorist_uninstall(): void {
     global $wpdb;
 
     // Delete selected pages
@@ -61,7 +61,7 @@ function directorist_uninstall() {
     $wpdb->query("DELETE FROM $wpdb->usermeta WHERE meta_key = 'pro_pic';");
 
     // Delete all the Plugin Options
-    $atbdp_settings = array(
+    $atbdp_settings = [
         "{$wpdb->prefix}atbdp_review_db_version",
         'atbdp_option',
         'widget_bdpl_widget',
@@ -84,7 +84,7 @@ function directorist_uninstall() {
         'atbdp_roles_version',
         'at_biz_dir-location_children',
         'at_biz_dir-category_children',
-    );
+    ];
 
     foreach ($atbdp_settings as $settings) {
         delete_option($settings);

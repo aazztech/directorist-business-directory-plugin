@@ -13,7 +13,7 @@ class Url_Field extends Base_Field {
 
 	public $type = 'url';
 
-	public function validate( $posted_data ) {
+	public function validate( $posted_data ): bool {
 		$value = $this->sanitize( $posted_data );
 
 		if ( ! wp_http_validate_url( $value ) ) {

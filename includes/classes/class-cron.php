@@ -21,19 +21,19 @@ if ( ! class_exists( 'ATBDP_Cron' ) ) :
 
 		public function __construct() {
 			// init wp schedule
-			add_action( 'wp', array( $this, 'atbdp_custom_schedule_cron' ) );
-			add_action( 'directorist_hourly_scheduled_events', array( $this, 'atbdp_schedule_tasks' ) );
+			add_action( 'wp', [ $this, 'atbdp_custom_schedule_cron' ] );
+			add_action( 'directorist_hourly_scheduled_events', [ $this, 'atbdp_schedule_tasks' ] );
 			// schedule task run after every 5 minutes || use bellow line for debug
 			// add_action('init', array($this, 'atbdp_schedule_tasks'));
-			add_filter( 'cron_schedules', array( $this, 'atbdp_cron_init' ) );
+			add_filter( 'cron_schedules', [ $this, 'atbdp_cron_init' ] );
 
-			add_action( 'edit_post', array( $this, 'update_atbdp_schedule_tasks' ), 10, 2 );
+			add_action( 'edit_post', [ $this, 'update_atbdp_schedule_tasks' ], 10, 2 );
 
-			add_action( 'directorist_cleanup_temporary_uploads', array( $this, 'cleanup_temporary_uploads' ) );
+			add_action( 'directorist_cleanup_temporary_uploads', [ $this, 'cleanup_temporary_uploads' ] );
 		}
 
 		// update_atbdp_schedule_tasks
-		function update_atbdp_schedule_tasks( $post_id, $post ) {
+		function update_atbdp_schedule_tasks( $post_id, $post ): void {
 
 			if ( ! is_admin() || ATBDP_POST_TYPE !== get_post_type( $post_id ) ) {
 				return;
@@ -47,13 +47,13 @@ if ( ! class_exists( 'ATBDP_Cron' ) ) :
 		 * @since 5.0.1
 		 */
 
-		public function atbdp_cron_init( $schedules ) {
+		public function atbdp_cron_init( array $schedules ): array {
 			$schedules['atbdp_listing_manage'] = apply_filters(
 				'atbdp_cron_setup_args',
-				array(
+				[
 					'interval' => 1800,
 					'display'  => __( 'Every 30 minutes', 'directorist' ),
-				)
+				]
 			);
 
 			return $schedules;
@@ -63,7 +63,7 @@ if ( ! class_exists( 'ATBDP_Cron' ) ) :
 		 * @since 5.0.1
 		 */
 		// the actual function
-		public function atbdp_schedule_tasks() {
+		public function atbdp_schedule_tasks(): void {
 			// see if fires via email notification
 			$this->update_renewal_status(); // we will send about to expire notification here
 			$this->update_expired_status();  // we will send expired notification here
@@ -83,7 +83,7 @@ if ( ! class_exists( 'ATBDP_Cron' ) ) :
 		/**
 		 * @since 5.0.1
 		 */
-		public function atbdp_custom_schedule_cron() {
+		public function atbdp_custom_schedule_cron(): void {
 			if ( ! wp_next_scheduled( 'directorist_hourly_scheduled_events' ) ) {
 				wp_schedule_event( time(), 'atbdp_listing_manage', 'directorist_hourly_scheduled_events' );
 			}
@@ -99,23 +99,23 @@ if ( ! class_exists( 'ATBDP_Cron' ) ) :
 		  * @since 6.6.6
 		  */
 
-		private function featured_listing_followup() {
+		private function featured_listing_followup(): void {
 			if ( directorist_is_monetization_enabled() && directorist_is_featured_listing_enabled() ) {
 				$featured_days = get_directorist_option( 'featured_listing_time', 30 );
 				// Define the query
-				$args = array(
+				$args = [
 					'post_type'      => ATBDP_POST_TYPE,
 					'posts_per_page' => -1,
 					'post_status'    => 'publish',
 					'cache_results'  => false,
 					'nopaging'       => true,
-					'meta_query'     => array(
-						array(
+					'meta_query'     => [
+						[
 							'key'   => '_featured',
 							'value' => 1,
-						),
-					),
-				);
+						],
+					],
+				];
 
 				$listings = new WP_Query( $args );
 
@@ -136,22 +136,22 @@ if ( ! class_exists( 'ATBDP_Cron' ) ) :
 		}
 
 		private function get_order_by_listing( $listing_id ) {
-			$args = array(
+			$args = [
 				'post_type'      => ATBDP_ORDER_POST_TYPE,
 				'posts_per_page' => 1,
 				'post_status'    => 'publish',
-				'meta_query'     => array(
+				'meta_query'     => [
 					'relation' => 'AND',
-					array(
+					[
 						'key'   => '_listing_id',
 						'value' => $listing_id,
-					),
-					array(
+					],
+					[
 						'key'   => '_payment_status',
 						'value' => 'completed',
-					),
-				),
-			);
+					],
+				],
+			];
 
 			$listings = new WP_Query( $args );
 
@@ -168,38 +168,38 @@ if ( ! class_exists( 'ATBDP_Cron' ) ) :
 		 * @since    3.1.0
 		 * @access   private
 		 */
-		private function update_renewal_status() {
+		private function update_renewal_status(): void {
 			$renew_email_threshold = get_directorist_option( 'email_to_expire_day' ); // before how many days of expiration, a renewal message should be sent
 			if ( $renew_email_threshold > 0 ) {
 				$renew_email_threshold_date = date( 'Y-m-d H:i:s', strtotime( "+{$renew_email_threshold} days" ) );
 
 				// Define the query
-				$args = array(
+				$args = [
 					'post_type'      => ATBDP_POST_TYPE,
 					'posts_per_page' => -1,
 					'post_status'    => 'publish',
 					'cache_results'  => false,
 					'nopaging'       => true,
-					'meta_query'     => array(
+					'meta_query'     => [
 						'relation'   => 'AND',
-						'renewal_status' => array(
+						'renewal_status' => [
 							'key' => '_listing_status',
 							'value' => 'renewal',
 							'compare' => '!=',
-						),
-						'never_expire' => array(
+						],
+						'never_expire' => [
 							'key'     => '_never_expire',
 							'compare' => 'NOT EXISTS',
-						),
-						'expiry_date' => array(
+						],
+						'expiry_date' => [
 							'key'     => '_expiry_date',
 							'value'   => $renew_email_threshold_date,
 							'compare' => '<=',
 							// _expiry_date > $renew_email_threshold_date,     '2018-04-15 09:24:00' < '2018-04-09 12:57:27'. eg. expiry date can not be greater than renewal threshold because threshold is the future date. expiration date should be equal to future date or less.
 							'type'    => 'DATETIME',
-						),
-					),
-				);
+						],
+					],
+				];
 
 				$listings = new WP_Query( $args ); // get all the post that has post_status only and update their status and fire an email
 
@@ -220,46 +220,46 @@ if ( ! class_exists( 'ATBDP_Cron' ) ) :
 		 * @since    3.1.0
 		 * @access   private
 		 */
-		private function update_expired_status() {
+		private function update_expired_status(): void {
 			$email_renewal_day = (int) get_directorist_option( 'email_renewal_day' );
 			$delete_in_days    = (int) get_directorist_option( 'delete_expired_listings_after' );
-			$del_exp_l         = get_directorist_option( 'delete_expired_listing' );
+			get_directorist_option( 'delete_expired_listing' );
 			// add renewal reminder days to deletion thresholds
 			$delete_threshold = directorist_can_user_renew_listings() ? ( $email_renewal_day +  $delete_in_days ) : $delete_in_days;
 
 			// Define the query
-			$args = array(
+			$args = [
 				'post_type'      => ATBDP_POST_TYPE,
 				'posts_per_page' => -1,
 				'cache_results'  => false,
 				'nopaging'       => true,
 				'post_status'    => 'publish', // get expired post with published status
-				'meta_query'     => array(
+				'meta_query'     => [
 					'relation'   => 'AND',
-					'never_expire' => array(
+					'never_expire' => [
 						'key'     => '_never_expire',
 						'compare' => 'NOT EXISTS',
-					),
-					'expiry_date' => array(
+					],
+					'expiry_date' => [
 						'key'     => '_expiry_date',
 						'value'   => current_time( 'mysql' ),
 						'compare' => '<=',                    // eg. expire date 6 <= current date 7 will return the post
 						'type'    => 'DATETIME',
-					),
-				),
-			);
+					],
+				],
+			];
 
 			$listings = new WP_Query( apply_filters( 'directorist_update_listings_expired_status_query_arguments ', $args ) );
 
 			if ( $listings->have_posts() ) {
 				foreach ( $listings->posts as $listing ) {
 					// prepare the post meta data
-					$meta_input = array(
+					$meta_input = [
 						// TODO: Status has been migrated, remove related code.
 						'_listing_status'        => 'expired',
 						'_featured'              => 0,
 						'_renewal_reminder_sent' => 0,
-					);
+					];
 					
 					// if deletion threshold is set then add deletion date
 					if ( $delete_threshold > 0 ) {
@@ -269,11 +269,11 @@ if ( ! class_exists( 'ATBDP_Cron' ) ) :
 					}
 
 					wp_update_post(
-						array(
+						[
 							'ID'          => $listing->ID,
 							'post_status' => 'expired',      // update the status to private so that we do not run this func a second time
 							'meta_input'  => $metas,         // insert all meta data once to reduce update meta query
-						)
+						]
 					);
 					// Hook for developers
 					do_action( 'atbdp_listing_expired', $listing->ID );
@@ -287,7 +287,7 @@ if ( ! class_exists( 'ATBDP_Cron' ) ) :
 		 * @since    3.1.0
 		 * @access   private
 		 */
-		private function update_expired_listing_status() {
+		private function update_expired_listing_status(): void {
 			// TODO: Status has been migrated, remove related code.
 			// // Define the query
 			// $args                         = array(
@@ -334,39 +334,39 @@ if ( ! class_exists( 'ATBDP_Cron' ) ) :
 			// 			}
 			// 		}
 
-			$args = array(
+			$args = [
 				'post_type'      => ATBDP_POST_TYPE,
 				'posts_per_page' => -1,
 				'post_status'    => 'expired',
 				'cache_results'  => false,
 				'nopaging'       => true,
-				'meta_query' => array(
+				'meta_query' => [
 					'relation' => 'OR',
-					'never_expire' => array(
+					'never_expire' => [
 						'key'     => '_never_expire',
 						'compare' => 'EXISTS',
-					),
-					'expiry_date' => array(
+					],
+					'expiry_date' => [
 						'key'     => '_expiry_date',
 						'value'   => current_time( 'mysql' ),
 						'compare' => '>',                     // eg. expire date 6 <= current date 7 will return the post
 						'type'    => 'DATETIME',
-					),
-				)
-			);
+					],
+				]
+			];
 
 			$listings = new WP_Query( $args );
 
 			if ( $listings->have_posts() ) {
 				foreach ( $listings->posts as $listing ) {
-					wp_update_post( array(
+					wp_update_post( [
 						'ID'          => $listing->ID,
 						'post_status' => 'publish',
-						'meta_input'  => array(
+						'meta_input'  => [
 							'_listing_status'        => 'post_status',
 							'_renewal_reminder_sent' => 0,
-						),
-					) );
+						],
+					] );
 					do_action( 'atbdp_after_renewal', $listing->ID );
 				}
 			}
@@ -378,34 +378,34 @@ if ( ! class_exists( 'ATBDP_Cron' ) ) :
 		 * @since    3.1.0
 		 * @access   private
 		 */
-		private function send_renewal_reminders() {
+		private function send_renewal_reminders(): void {
 			$email_renewal_day = (int) get_directorist_option( 'email_renewal_day' );
 
 			if ( $email_renewal_day > 0 ) {
 				// Define the query
-				$args = array(
+				$args = [
 					'post_type'      => ATBDP_POST_TYPE,
 					'posts_per_page' => -1,
 					'cache_results'  => false,
 					'nopaging'       => true,
 					'post_status'    => 'expired',
-					'meta_query'     => array(
+					'meta_query'     => [
 						'relation'   => 'AND',
 						// TODO: Status has been migrated, remove related code.
 						// array(
 						// 	'key'   => '_listing_status',
 						// 	'value' => 'expired',
 						// ),
-						'never_expire' => array(
+						'never_expire' => [
 							'key'     => '_never_expire',
 							'compare' => 'NOT EXISTS',
-						),
-						'renewal_reminder_sent' => array(
+						],
+						'renewal_reminder_sent' => [
 							'key'   => '_renewal_reminder_sent',
 							'value' => 0,
-						),
-					),
-				);
+						],
+					],
+				];
 
 				$listings = new WP_Query( $args );
 
@@ -433,36 +433,36 @@ if ( ! class_exists( 'ATBDP_Cron' ) ) :
 		 * @since    3.1.0
 		 * @access   private
 		 */
-		private function delete_expired_listings() {
+		private function delete_expired_listings(): void {
 
 			$del_mode = get_directorist_option( 'delete_expired_listing_permanently', false ); // force_delete | trash
-			$force    = ! empty( $del_mode ) ? true : false; // for now we are just focusing on Force Delete or Not. later we may consider more
+			$force    = ! empty( $del_mode ); // for now we are just focusing on Force Delete or Not. later we may consider more
 			// Define the query
-			$args = array(
+			$args = [
 				'post_type'      => ATBDP_POST_TYPE,
 				'posts_per_page' => -1,
 				'cache_results'  => false,
 				'nopaging'       => true,
 				'post_status'    => 'expired',
-				'meta_query'     => array(
+				'meta_query'     => [
 					'relation'   => 'AND',
 					// TODO: Status has been migrated, remove related code.
 					// array(
 					// 	'key'   => '_listing_status',
 					// 	'value' => 'expired',
 					// ),
-					'never_expire' => array(
+					'never_expire' => [
 						'key'     => '_never_expire',
 						'compare' => 'NOT EXISTS',
-					),
-					'deletion_date' => array(
+					],
+					'deletion_date' => [
 						'key'     => '_deletion_date',
 						'value'   => current_time( 'mysql' ),
 						'compare' => '<',
 						'type'    => 'DATETIME',
-					),
-				),
-			);
+					],
+				],
+			];
 
 			$listings = new WP_Query( $args );
 
@@ -479,7 +479,7 @@ if ( ! class_exists( 'ATBDP_Cron' ) ) :
 			}
 		}
 
-		public function cleanup_temporary_uploads() {
+		public function cleanup_temporary_uploads(): void {
 			directorist_delete_temporary_upload_dirs();
 
 			if ( ! wp_next_scheduled( 'directorist_cleanup_temporary_uploads' ) ) {

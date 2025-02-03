@@ -24,12 +24,11 @@ class Directorist_DateTime extends DateTime {
 	protected $utc_offset = 0;
 
 	/**
-	 * Output an ISO 8601 date string in local (WordPress) timezone.
-	 *
-	 * @since  3.0.0
-	 * @return string
-	 */
-	public function __toString() {
+     * Output an ISO 8601 date string in local (WordPress) timezone.
+     *
+     * @since  3.0.0
+     */
+    public function __toString(): string {
 		return $this->format( DATE_ATOM );
 	}
 
@@ -38,26 +37,23 @@ class Directorist_DateTime extends DateTime {
 	 *
 	 * @param int $offset Offset.
 	 */
-	public function set_utc_offset( $offset ) {
+	public function set_utc_offset( $offset ): void {
 		$this->utc_offset = intval( $offset );
 	}
 
 	/**
-	 * Get UTC offset if set, or default to the DateTime object's offset.
-	 *
-	 * @return int
-	 */
-	#[\ReturnTypeWillChange]
+     * Get UTC offset if set, or default to the DateTime object's offset.
+     */
+    #[\ReturnTypeWillChange]
 	public function getOffset() : int {
-		return $this->utc_offset ? $this->utc_offset : parent::getOffset();
+		return $this->utc_offset ?: parent::getOffset();
 	}
 
 	/**
-	 * Set timezone.
-	 *
-	 * @param DateTimeZone $timezone DateTimeZone instance.
-	 * @return DateTime
-	 */
+   * Set timezone.
+   *
+   * @param DateTimeZone $timezone DateTimeZone instance.
+   */
   #[\ReturnTypeWillChange]
 	public function setTimezone( $timezone ) : DateTime {
 		$this->utc_offset = 0;
@@ -85,13 +81,12 @@ class Directorist_DateTime extends DateTime {
 	}
 
 	/**
-	 * Format a date based on the offset timestamp.
-	 *
-	 * @since  3.0.0
-	 * @param  string $format Date format.
-	 * @return string
-	 */
-	public function date( $format ) {
+     * Format a date based on the offset timestamp.
+     *
+     * @since  3.0.0
+     * @param  string $format Date format.
+     */
+    public function date( $format ): string {
 		return gmdate( $format, $this->getOffsetTimestamp() );
 	}
 

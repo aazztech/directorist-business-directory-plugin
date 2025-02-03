@@ -5,7 +5,7 @@ if ( ! class_exists( 'ATBDP_Announcement' ) ) :
 
 		public function __construct() {
 			// Cteate announcement post type
-			add_action( 'init', array( $this, 'create_announcement_post_type' ) );
+			add_action( 'init', [ $this, 'create_announcement_post_type' ] );
 
 			// Legacy template
 			// add_action( 'atbdp_tab_after_favorite_listings', [ $this, 'add_dashboard_nav_link' ] );
@@ -15,17 +15,17 @@ if ( ! class_exists( 'ATBDP_Announcement' ) ) :
 			// add_action( 'directorist_tab_after_favorite_listings', [ $this, 'non_legacy_add_dashboard_nav_link' ] );
 			// add_action( 'directorist_tab_content_after_favorite', [ $this, 'non_legacy_add_dashboard_nav_content' ] );
 
-			add_action( 'atbdp_schedule_task', array( $this, 'delete_expaired_announcements' ) );
+			add_action( 'atbdp_schedule_task', [ $this, 'delete_expaired_announcements' ] );
 
 			// Handle ajax
-			add_action( 'wp_ajax_atbdp_send_announcement', array( $this, 'send_announcement' ) );
-			add_action( 'wp_ajax_atbdp_close_announcement', array( $this, 'close_announcement' ) );
-			add_action( 'wp_ajax_atbdp_get_new_announcement_count', array( $this, 'response_new_announcement_count' ) );
-			add_action( 'wp_ajax_atbdp_clear_seen_announcements', array( $this, 'clear_seen_announcements' ) );
+			add_action( 'wp_ajax_atbdp_send_announcement', [ $this, 'send_announcement' ] );
+			add_action( 'wp_ajax_atbdp_close_announcement', [ $this, 'close_announcement' ] );
+			add_action( 'wp_ajax_atbdp_get_new_announcement_count', [ $this, 'response_new_announcement_count' ] );
+			add_action( 'wp_ajax_atbdp_clear_seen_announcements', [ $this, 'clear_seen_announcements' ] );
 
 		}
 
-		public function non_legacy_add_dashboard_nav_link() {
+		public function non_legacy_add_dashboard_nav_link(): void {
 			$announcement_tab      = get_directorist_option( 'announcement_tab', 'directorist' );
 			$announcement_tab_text = get_directorist_option( 'announcement_tab_text', __( 'Announcements', 'directorist' ) );
 			if ( empty( $announcement_tab ) ) {
@@ -42,7 +42,7 @@ if ( ! class_exists( 'ATBDP_Announcement' ) ) :
 			<li class="directorist-tab__nav__item">
 				<a href="#" class="directorist-booking-nav-link directorist-tab__nav__link" target="announcement">
 					<span class="directorist_menuItem-text">
-						<span class="directorist_menuItem-icon"><?php directorist_icon( 'las la-bullhorn' ); ?></span><?php echo wp_kses( $nav_label, array( 'span' => array( 'class' => array() ) ) ); ?>
+						<span class="directorist_menuItem-icon"><?php directorist_icon( 'las la-bullhorn' ); ?></span><?php echo wp_kses( $nav_label, [ 'span' => [ 'class' => [] ] ] ); ?>
 					</span>
 				</a>
 			</li>
@@ -51,30 +51,28 @@ if ( ! class_exists( 'ATBDP_Announcement' ) ) :
 
 		// get_announcement_querys
 		public static function get_announcement_query_data() {
-			$announcements = new WP_Query(
-				array(
+			return new WP_Query(
+				[
 					'post_type'      => 'listing-announcement',
 					'posts_per_page' => 20,
-					'meta_query'     => array(
+					'meta_query'     => [
 						'relation' => 'AND',
-						array(
+						[
 							'key'     => '_exp_date',
 							'value'   => date( 'Y-m-d' ),
 							'compare' => '>',
-						),
-						array(
+						],
+						[
 							'key'     => '_closed',
 							'value'   => '1',
 							'compare' => '!=',
-						),
-					),
-				)
+						],
+					],
+				]
 			);
-
-			return $announcements;
 		}
 
-		public function non_legacy_add_dashboard_nav_content() {
+		public function non_legacy_add_dashboard_nav_content(): void {
 			$announcements = self::get_announcement_query_data();
 
 			// directorist_console_log([
@@ -97,12 +95,10 @@ if ( ! class_exists( 'ATBDP_Announcement' ) ) :
 
 							// Check recepent restriction
 							$recipient = get_post_meta( get_the_ID(), '_recepents', true );
-							if ( ! empty( $recipient ) && is_array( $recipient ) ) {
-								if ( ! in_array( $current_user_email, $recipient ) ) {
-									$skipped_post_count++;
-									continue;
-								}
-							}
+							if (! empty( $recipient ) && is_array($recipient) && ! in_array( $current_user_email, $recipient )) {
+                                $skipped_post_count++;
+                                continue;
+                            }
 							?>
 						<div class="atbdp-announcement <?php echo 'update-announcement-status announcement-item announcement-id-' . get_the_ID(); ?>" data-post-id="<?php the_id(); ?>">
 							<div class="atbdp-announcement__date">
@@ -140,40 +136,40 @@ if ( ! class_exists( 'ATBDP_Announcement' ) ) :
 		}
 
 		// response_new_announcement_count
-		public function response_new_announcement_count() {
+		public function response_new_announcement_count(): void {
 			$new_announcements = $this->get_new_announcement_count();
 			wp_send_json(
-				array(
+				[
 					'success'                => true,
 					'total_new_announcement' => $new_announcements,
-				)
+				]
 			);
 		}
 
 		// clear_seen_announcements
-		public function clear_seen_announcements() {
+		public function clear_seen_announcements(): void {
 			$new_announcements = new WP_Query(
-				array(
+				[
 					'post_type'      => 'listing-announcement',
 					'posts_per_page' => -1,
-					'meta_query'     => array(
-						array(
+					'meta_query'     => [
+						[
 							'key'     => '_exp_date',
 							'value'   => date( 'Y-m-d' ),
 							'compare' => '>',
-						),
-						array(
+						],
+						[
 							'key'     => '_closed',
 							'value'   => '1',
 							'compare' => '!=',
-						),
-						array(
+						],
+						[
 							'key'     => '_seen',
 							'value'   => '1',
 							'compare' => '!=',
-						),
-					),
-				)
+						],
+					],
+				]
 			);
 
 			$current_user_email = get_the_author_meta( 'user_email', get_current_user_id() );
@@ -183,10 +179,8 @@ if ( ! class_exists( 'ATBDP_Announcement' ) ) :
 					$new_announcements->the_post();
 					// Check recepent restriction
 					$recipient = get_post_meta( get_the_ID(), '_recepents', true );
-					if ( ! empty( $recipient ) && is_array( $recipient ) ) {
-						if ( ! in_array( $current_user_email, $recipient ) ) {
-							continue;
-						}
+					if ( ! empty( $recipient ) && is_array($recipient) && ! in_array( $current_user_email, $recipient ) ) {
+						continue;
 					}
 
 					update_post_meta( get_the_ID(), '_seen', true );
@@ -194,33 +188,33 @@ if ( ! class_exists( 'ATBDP_Announcement' ) ) :
 				wp_reset_postdata();
 			}
 
-			wp_send_json( array( 'success' => true ) );
+			wp_send_json( [ 'success' => true ] );
 		}
 
 		// get_new_announcement_count
-		public function get_new_announcement_count() {
+		public function get_new_announcement_count(): int {
 			$new_announcements = new WP_Query(
-				array(
+				[
 					'post_type'      => 'listing-announcement',
 					'posts_per_page' => -1,
-					'meta_query'     => array(
-						array(
+					'meta_query'     => [
+						[
 							'key'     => '_exp_date',
 							'value'   => date( 'Y-m-d' ),
 							'compare' => '>',
-						),
-						array(
+						],
+						[
 							'key'     => '_closed',
 							'value'   => '1',
 							'compare' => '!=',
-						),
-						array(
+						],
+						[
 							'key'     => '_seen',
 							'value'   => '1',
 							'compare' => '!=',
-						),
-					),
-				)
+						],
+					],
+				]
 			);
 
 			$total_posts        = count( $new_announcements->posts );
@@ -232,35 +226,31 @@ if ( ! class_exists( 'ATBDP_Announcement' ) ) :
 					$new_announcements->the_post();
 					// Check recepent restriction
 					$recipient = get_post_meta( get_the_ID(), '_recepents', true );
-					if ( ! empty( $recipient ) && is_array( $recipient ) ) {
-						if ( ! in_array( $current_user_email, $recipient ) ) {
-							$skipped_post_count++;
-							continue;
-						}
-					}
+					if (! empty( $recipient ) && is_array($recipient) && ! in_array( $current_user_email, $recipient )) {
+                        $skipped_post_count++;
+                        continue;
+                    }
 				}
 				wp_reset_postdata();
 			}
 
-			$new_posts = $total_posts - $skipped_post_count;
-
-			return $new_posts;
+			return $total_posts - $skipped_post_count;
 		}
 
 		// delete_expaired_announcements
-		public function delete_expaired_announcements() {
+		public function delete_expaired_announcements(): void {
 			$expaired_announcements = new WP_Query(
-				array(
+				[
 					'post_type'      => 'listing-announcement',
 					'posts_per_page' => -1,
-					'meta_query'     => array(
-						array(
+					'meta_query'     => [
+						[
 							'key'     => '_exp_date',
 							'value'   => date( 'Y-m-d' ),
 							'compare' => '<=',
-						),
-					),
-				)
+						],
+					],
+				]
 			);
 
 			if ( ! $expaired_announcements->have_posts() ) {
@@ -273,7 +263,7 @@ if ( ! class_exists( 'ATBDP_Announcement' ) ) :
 		}
 
 		// add_dashboard_nav_link
-		public function add_dashboard_nav_link() {
+		public function add_dashboard_nav_link(): void {
 			$announcement_tab      = get_directorist_option( 'announcement_tab', 'directorist' );
 			$announcement_tab_text = get_directorist_option( 'announcement_tab_text', __( 'Announcements', 'directorist' ) );
 			if ( empty( $announcement_tab ) ) {
@@ -290,14 +280,14 @@ if ( ! class_exists( 'ATBDP_Announcement' ) ) :
 			<li class="atbdp_tab_nav--content-link">
 				<a href="" class="atbdp_all_booking_nav-link atbd-dash-nav-dropdown atbd_tn_link" target="announcement">
 					<span class="directorist_menuItem-text">
-						<span class="directorist_menuItem-icon"><?php directorist_icon( 'las la-bullhorn' ); ?></span><?php echo wp_kses( $nav_label, array( 'span' => array( 'class' => array() ) ) ); ?>
+						<span class="directorist_menuItem-icon"><?php directorist_icon( 'las la-bullhorn' ); ?></span><?php echo wp_kses( $nav_label, [ 'span' => [ 'class' => [] ] ] ); ?>
 					</span>
 				</a>
 			</li>
 			<?php
 		}
 
-		public function add_dashboard_nav_content() {
+		public function add_dashboard_nav_content(): void {
 			$announcements      = self::get_announcement_query_data();
 			$total_posts        = count( $announcements->posts );
 			$skipped_post_count = 0;
@@ -314,12 +304,10 @@ if ( ! class_exists( 'ATBDP_Announcement' ) ) :
 
 							// Check recepent restriction
 							$recipient = get_post_meta( get_the_ID(), '_recepents', true );
-							if ( ! empty( $recipient ) && is_array( $recipient ) ) {
-								if ( ! in_array( $current_user_email, $recipient ) ) {
-									$skipped_post_count++;
-									continue;
-								}
-							}
+							if (! empty( $recipient ) && is_array($recipient) && ! in_array( $current_user_email, $recipient )) {
+                                $skipped_post_count++;
+                                continue;
+                            }
 							?>
 						<div class="atbdp-announcement <?php echo 'update-announcement-status announcement-item announcement-id-' . get_the_ID(); ?>" data-post-id="<?php the_id(); ?>">
 							<div class="atbdp-announcement__date">
@@ -356,17 +344,20 @@ if ( ! class_exists( 'ATBDP_Announcement' ) ) :
 			<?php
 		}
 
-		private function get_all_user_emails() {
-			$result = array();
+		/**
+         * @return mixed[]
+         */
+        private function get_all_user_emails(): array {
+			$result = [];
 			$number = 300;
 
 			// Initiate first query
-			$args = array(
+			$args = [
 				'role__not_in' => 'Administrator',
 				'fields'       => 'user_email',
 				'paged'        => 1,
 				'number'       => $number,
-			);
+			];
 
 			$query  = new WP_User_Query( $args );
 			$users  = (array) $query->get_results();
@@ -382,12 +373,12 @@ if ( ! class_exists( 'ATBDP_Announcement' ) ) :
 
 			// Run subsequent queries
 			for ( $i = 2; $i <= $number_of_loops ; $i++ ) {
-				$args = array(
+				$args = [
 					'role__not_in' => 'Administrator',
 					'fields'       => 'user_email',
 					'paged'        => $i,
 					'number'       => $number,
-				);
+				];
 				$query  = new WP_User_Query( $args );
 				$users  = (array) $query->get_results();
 				$result = array_merge( $users, $result );
@@ -397,7 +388,7 @@ if ( ! class_exists( 'ATBDP_Announcement' ) ) :
 		}
 
 		// send_announcement
-		public function send_announcement() {
+		public function send_announcement(): void {
 			$nonce         = isset( $_POST['nonce'] ) ? wp_unslash( $_POST['nonce'] ) : ''; // @codingStandardsIgnoreLine.WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
 			$to            = isset( $_POST['to'] ) ? sanitize_text_field( wp_unslash( $_POST['to'] ) ) : 'all_user';
 			$recipient     = isset( $_POST['recipient'] ) ? sanitize_text_field( wp_unslash( $_POST['recipient'] ) ) : '';
@@ -406,10 +397,10 @@ if ( ! class_exists( 'ATBDP_Announcement' ) ) :
 			$expiration    = isset( $_POST['expiration'] ) ? intval( $_POST['expiration'] ) : 0;
 			$send_to_email = isset( $_POST['send_to_email'] ) ? boolval( $_POST['send_to_email'] ) : true;
 
-			$status = array(
+			$status = [
 				'success' => false,
 				'message' => __( 'Sorry, something went wrong, please try again', 'directorist' ),
-			);
+			];
 
 			if ( ! wp_verify_nonce( $nonce, directorist_get_nonce_key() ) ) {
 				$status['message'] = __( 'Invalid request', 'directorist' );
@@ -441,12 +432,12 @@ if ( ! class_exists( 'ATBDP_Announcement' ) ) :
 
 			// Save the post
 			$announcement = wp_insert_post(
-				array(
+				[
 					'post_type'    => 'listing-announcement',
 					'post_title'   => $subject,
 					'post_content' => $message,
 					'post_status'  => 'publish',
-				)
+				]
 			);
 
 			if ( is_wp_error( $announcement ) ) {
@@ -456,7 +447,7 @@ if ( ! class_exists( 'ATBDP_Announcement' ) ) :
 
 			$status['announcement'] = $announcement;
 
-			$recipients = array();
+			$recipients = [];
 
 			// Get Recipient
 			if ( 'selected_user' === $to ) {
@@ -466,7 +457,7 @@ if ( ! class_exists( 'ATBDP_Announcement' ) ) :
 				$recipients = array_unique( $recipients );
 
 				// Validate recipient
-				if ( empty( $recipients ) ) {
+				if ( $recipients === [] ) {
 					$status['message'] = __( 'No recipient found', 'directorist' );
 					wp_send_json( $status );
 				}
@@ -497,7 +488,7 @@ if ( ! class_exists( 'ATBDP_Announcement' ) ) :
 			update_post_meta( $announcement, '_closed', false );
 			update_post_meta( $announcement, '_seen', false );
 
-			if ( empty( $expiration ) ) {
+			if ( $expiration === 0 ) {
 				$expiration = 365;
 			}
 
@@ -549,8 +540,8 @@ if ( ! class_exists( 'ATBDP_Announcement' ) ) :
 		}
 
 		// close_announcement
-		public function close_announcement() {
-			$status = array( 'success' => false );
+		public function close_announcement(): void {
+			$status = [ 'success' => false ];
 
 			if ( ! directorist_verify_nonce( 'nonce' ) ) {
 				$status['message'] = __( 'Sorry, something went wrong, please try again', 'directorist' );
@@ -574,14 +565,14 @@ if ( ! class_exists( 'ATBDP_Announcement' ) ) :
 		}
 
 		// create_announcement_post_type
-		public function create_announcement_post_type() {
+		public function create_announcement_post_type(): void {
 			register_post_type(
 				'listing-announcement',
-				array(
+				[
 					'label'  => 'Announcement',
 					'labels' => 'Announcements',
 					'public' => false,
-				)
+				]
 			);
 		}
 	}

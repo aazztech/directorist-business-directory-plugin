@@ -17,16 +17,16 @@ class Comment_Form_Processor {
 
 	const AJAX_ACTION = 'directorist_process_comment_form';
 
-	public static function init() {
-		add_action( 'wp_ajax_' . self::AJAX_ACTION , array( __CLASS__, 'process' ) );
-		add_action( 'wp_ajax_nopriv_' . self::AJAX_ACTION, array( __CLASS__, 'process' ) );
+	public static function init(): void {
+		add_action( 'wp_ajax_' . self::AJAX_ACTION , [ self::class, 'process' ] );
+		add_action( 'wp_ajax_nopriv_' . self::AJAX_ACTION, [ self::class, 'process' ] );
 	}
 
-	public static function process() {
+	public static function process(): void {
 		try {
-			$nonce      = ! empty( $_POST['directorist_comment_nonce'] ) ? sanitize_key( $_POST['directorist_comment_nonce'] ) : '';
-			$post_id    = ! empty( $_POST['post_id'] ) ? absint( $_POST['post_id'] ) : 0;
-			$comment_id = ! empty( $_POST['comment_id'] ) ? absint( $_POST['comment_id'] ) : 0;
+			$nonce      = empty( $_POST['directorist_comment_nonce'] ) ? '' : sanitize_key( $_POST['directorist_comment_nonce'] );
+			$post_id    = empty( $_POST['post_id'] ) ? 0 : absint( $_POST['post_id'] );
+			$comment_id = empty( $_POST['comment_id'] ) ? 0 : absint( $_POST['comment_id'] );
 
 			if ( ! wp_verify_nonce( $nonce, self::AJAX_ACTION ) ) {
 				throw new Exception( __( 'Invalid request.', 'directorist' ), 400 );
@@ -60,7 +60,7 @@ class Comment_Form_Processor {
 			}
 
 			if ( $is_review ) {
-				$rating = ! empty( $_POST['rating'] ) ? directorist_clean( wp_unslash( $_POST['rating'] ) ) : '';
+				$rating = empty( $_POST['rating'] ) ? '' : directorist_clean( wp_unslash( $_POST['rating'] ) );
 				if ( empty( $rating ) ) {
 					throw new Exception( __( 'Please share review rating.', 'directorist' ) );
 				}
@@ -68,7 +68,7 @@ class Comment_Form_Processor {
 
 			$comment_content = isset( $_POST['comment'] ) ? trim( sanitize_textarea_field( wp_unslash( $_POST['comment'] ) ) ) : '';
 
-			if ( empty( $comment_content ) ) {
+			if ( $comment_content === '' || $comment_content === '0' ) {
 				if ( $is_review ) {
 					$text = __( 'To submit your review, please describe your rating.', 'directorist' );
 				} else {
@@ -78,12 +78,12 @@ class Comment_Form_Processor {
 				throw new Exception( $text );
 			}
 
-			$comment_data = array(
+			$comment_data = [
 				'comment_ID'      => $comment->comment_ID,
 				'comment_post_ID' => $comment->comment_post_ID,
 				'comment_type'    => $comment->comment_type,
 				'comment_content' => $comment_content
-			);
+			];
 
 			$updated_comment = wp_update_comment( $comment_data, true );
 			if ( is_wp_error( $updated_comment ) ) {
@@ -117,10 +117,10 @@ class Comment_Form_Processor {
 		} catch ( Exception $e ) {
 			$html = sprintf( '<div class="directorist-alert directorist-alert-danger">%s</div>', $e->getMessage() );
 
-			wp_send_json_error( array(
+			wp_send_json_error( [
 				'error' => $e->getMessage(),
 				'html'  => $html,
-			) );
+			] );
 		}
 	}
 }

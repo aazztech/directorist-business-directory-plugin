@@ -28,29 +28,29 @@ class Listings_Actions_Controller extends Abstract_Controller {
 	/**
 	 * Register the routes for listings actions.
 	 */
-	public function register_routes() {
+	public function register_routes(): void {
 		register_rest_route(
 			$this->namespace,
 			'/' . $this->rest_base,
-			array(
-				array(
+			[
+				[
 					'methods'             => WP_REST_Server::CREATABLE,
-					'callback'            => array( $this, 'create_item' ),
-					'permission_callback' => array( $this, 'create_item_permissions_check' ),
+					'callback'            => [ $this, 'create_item' ],
+					'permission_callback' => [ $this, 'create_item_permissions_check' ],
 					'args'                => array_merge(
 						$this->get_endpoint_args_for_item_schema( WP_REST_Server::CREATABLE ),
-						array(
-							'id' => array(
+						[
+							'id' => [
 								'type'        => 'string',
 								'description' => __( 'Action identifier.', 'directorist' ),
-								'enum'        => array( 'report', 'contact' ),
+								'enum'        => [ 'report', 'contact' ],
 								'required'    => true,
-							),
-						)
+							],
+						]
 					),
-				),
-				'schema' => array( $this, 'get_public_item_schema' ),
-			)
+				],
+				'schema' => [ $this, 'get_public_item_schema' ],
+			]
 		);
 	}
 
@@ -67,7 +67,7 @@ class Listings_Actions_Controller extends Abstract_Controller {
 		}
 
 		if ( ! $permissions ) {
-			return new WP_Error( 'directorist_rest_cannot_create', __( 'Sorry, you are not allowed to execute action.', 'directorist' ), array( 'status' => rest_authorization_required_code() ) );
+			return new WP_Error( 'directorist_rest_cannot_create', __( 'Sorry, you are not allowed to execute action.', 'directorist' ), [ 'status' => rest_authorization_required_code() ] );
 		}
 
 		return true;
@@ -82,7 +82,7 @@ class Listings_Actions_Controller extends Abstract_Controller {
 	 */
 	protected function check_permissions( $request, $context = 'read' ) {
 		if ( $request['id'] === 'report' && ! current_user_can( 'read' ) ) {
-			return new WP_Error( 'directorist_rest_listing_actions_unauthorized', __( 'Not authorized to execute this action.', 'directorist' ), array( 'status' => rest_authorization_required_code() ) );
+			return new WP_Error( 'directorist_rest_listing_actions_unauthorized', __( 'Not authorized to execute this action.', 'directorist' ), [ 'status' => rest_authorization_required_code() ] );
 		}
 
 		return true;
@@ -137,9 +137,7 @@ class Listings_Actions_Controller extends Abstract_Controller {
 
 		do_action( 'directorist_rest_after_query', 'create_listing_action_item', $request, $listing_id );
 
-		$response = apply_filters( 'directorist_rest_response', $response, 'create_listing_action_item', $request, $request['id'] );
-
-		return $response;
+		return apply_filters( 'directorist_rest_response', $response, 'create_listing_action_item', $request, $request['id'] );
 	}
 
 	/**
@@ -151,7 +149,7 @@ class Listings_Actions_Controller extends Abstract_Controller {
 	 * @return WP_REST_Response
 	 */
 	public function prepare_item_for_response( $data, $request ) {
-		$context = ! empty( $request['context'] ) ? $request['context'] : 'view';
+		$context = empty( $request['context'] ) ? 'view' : $request['context'];
 		$schema = $this->get_item_schema();
 
 		$data = array_intersect_key( $request->get_params(), $schema['properties'] );
@@ -179,34 +177,34 @@ class Listings_Actions_Controller extends Abstract_Controller {
 	 * @return array
 	 */
 	public function get_item_schema() {
-		$schema = array(
+		$schema = [
 			'$schema'    => 'http://json-schema.org/draft-04/schema#',
 			'title'      => 'listings-actions',
 			'type'       => 'object',
-			'properties' => array(
-				'id' => array(
+			'properties' => [
+				'id' => [
 					'description' => __( 'Action name.', 'directorist' ),
 					'type'        => 'string',
-					'context'     => array( 'view', 'edit' ),
-				),
-				'name' => array(
+					'context'     => [ 'view', 'edit' ],
+				],
+				'name' => [
 					'description' => __( 'Action initiator name.', 'directorist' ),
 					'type'        => 'string',
-					'context'     => array( 'view', 'edit' ),
-				),
-				'email' => array(
+					'context'     => [ 'view', 'edit' ],
+				],
+				'email' => [
 					'description' => __( 'Action email.', 'directorist' ),
 					'type'        => 'string',
 					'format'      => 'email',
-					'context'     => array( 'view', 'edit' ),
-				),
-				'message' => array(
+					'context'     => [ 'view', 'edit' ],
+				],
+				'message' => [
 					'description' => __( 'Action message.', 'directorist' ),
 					'type'        => 'string',
-					'context'     => array( 'view', 'edit' ),
-				),
-			)
-		);
+					'context'     => [ 'view', 'edit' ],
+				],
+			]
+		];
 
 		return $this->add_additional_fields_schema( $schema );
 	}
@@ -223,7 +221,7 @@ class Listings_Actions_Controller extends Abstract_Controller {
 		$listing_title = get_the_title( $post_id );
 		$listing_url   = get_permalink( $post_id );
 
-		$placeholders = array(
+		$placeholders = [
 			'{site_name}'     => $site_name,
 			'{site_link}'     => sprintf( '<a href="%s">%s</a>', $site_url, $site_name ),
 			'{site_url}'      => sprintf( '<a href="%s">%s</a>', $site_url, $site_url ),
@@ -233,10 +231,10 @@ class Listings_Actions_Controller extends Abstract_Controller {
 			'{sender_name}'   => $user->display_name,
 			'{sender_email}'  => $user->user_email,
 			'{message}'       => $message
-		);
+		];
 		$send_email = get_directorist_option( 'admin_email_lists' );
 
-		$to = !empty($send_email) ? $send_email : get_bloginfo('admin_email');
+		$to = empty($send_email) ? get_bloginfo('admin_email') : $send_email;
 
 		$subject = __('{site_name} Report Abuse via "{listing_title}"', 'directorist');
 		$subject = strtr($subject, $placeholders);
@@ -273,9 +271,9 @@ class Listings_Actions_Controller extends Abstract_Controller {
 		$contact_email_subject = get_directorist_option('email_sub_listing_contact_email');
 		$contact_email_body    = get_directorist_option('email_tmpl_listing_contact_email');
 		$contact_recipient 	   = get_user_meta( $post_author_id, 'directorist_contact_owner_recipient', true );
-		$user_email            = ! empty( $contact_recipient ) ? $contact_recipient : 'author';
+		$user_email            = empty( $contact_recipient ) ? 'author' : $contact_recipient;
 
-		$placeholders = array(
+		$placeholders = [
 			'==NAME=='          => $user->display_name,
 			'==USERNAME=='      => $user->user_login,
 			'==SITE_NAME=='     => $site_name,
@@ -289,12 +287,8 @@ class Listings_Actions_Controller extends Abstract_Controller {
 			'==MESSAGE=='       => $message,
 			'==TODAY=='         => date_i18n($date_format, $current_time),
 			'==NOW=='           => date_i18n($date_format . ' ' . $time_format, $current_time)
-		);
-		if ('listing_email' == $user_email) {
-			$to = $listing_email;
-		} else {
-			$to = $user->user_email;
-		}
+		];
+		$to = 'listing_email' == $user_email ? $listing_email : $user->user_email;
 		$subject = strtr($contact_email_subject, $placeholders);
 		$message = strtr($contact_email_body, $placeholders);
 		$message = nl2br($message);

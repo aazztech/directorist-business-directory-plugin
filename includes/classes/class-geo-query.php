@@ -10,10 +10,10 @@ if ( ! class_exists( 'ATBDP_GJSGeoQuery' ) ) {
 		}
 
 		private function __construct() {
-			add_filter( 'posts_fields', array( $this, 'posts_fields' ), 10, 2 );
-			add_filter( 'posts_join', array( $this, 'posts_join' ), 10, 2 );
-			add_filter( 'posts_where', array( $this, 'posts_where' ), 10, 2 );
-			add_filter( 'posts_orderby', array( $this, 'posts_orderby' ), 10, 2 );
+			add_filter( 'posts_fields', [ $this, 'posts_fields' ], 10, 2 );
+			add_filter( 'posts_join', [ $this, 'posts_join' ], 10, 2 );
+			add_filter( 'posts_where', [ $this, 'posts_where' ], 10, 2 );
+			add_filter( 'posts_orderby', [ $this, 'posts_orderby' ], 10, 2 );
 		}
 
 		// add a calculated "distance" parameter to the sql query, using a haversine formula
@@ -30,12 +30,12 @@ if ( ! class_exists( 'ATBDP_GJSGeoQuery' ) ) {
 			return $sql;
 		}
 
-		public function posts_join( $sql, $query ) {
+		public function posts_join( string $sql, $query ): string {
 			global $wpdb;
 			$atbdp_geo_query = $query->get( 'atbdp_geo_query' );
 			if ( $atbdp_geo_query ) {
 
-				if ( $sql ) {
+				if ( $sql !== '' && $sql !== '0' ) {
 					$sql .= ' ';
 				}
 				$sql .= 'INNER JOIN ' . $wpdb->prefix . 'postmeta AS atbdp_geo_query_lat ON ( ' . $wpdb->prefix . 'posts.ID = atbdp_geo_query_lat.post_id ) ';
@@ -50,12 +50,12 @@ if ( ! class_exists( 'ATBDP_GJSGeoQuery' ) ) {
 			$atbdp_geo_query = $query->get( 'atbdp_geo_query' );
 		
 			if ( $atbdp_geo_query ) {
-				$lat_field = ! empty( $atbdp_geo_query['lat_field'] ) ? $atbdp_geo_query['lat_field'] : 'latitude';
-				$lng_field = ! empty( $atbdp_geo_query['lng_field'] ) ? $atbdp_geo_query['lng_field'] : 'longitude';
+				$lat_field = empty( $atbdp_geo_query['lat_field'] ) ? 'latitude' : $atbdp_geo_query['lat_field'];
+				$lng_field = empty( $atbdp_geo_query['lng_field'] ) ? 'longitude' : $atbdp_geo_query['lng_field'];
 		
 				// Use the distance range from the query arguments
-				$min_distance = isset( $atbdp_geo_query['min_distance'] ) ? $atbdp_geo_query['min_distance'] : 0;
-				$max_distance = isset( $atbdp_geo_query['max_distance'] ) ? $atbdp_geo_query['max_distance'] : 100;
+				$min_distance = $atbdp_geo_query['min_distance'] ?? 0;
+				$max_distance = $atbdp_geo_query['max_distance'] ?? 100;
 		
 				if ( $sql ) {
 					$sql .= ' AND ';
@@ -88,7 +88,7 @@ if ( ! class_exists( 'ATBDP_GJSGeoQuery' ) ) {
 			return $sql;
 		}
 
-		public static function the_distance( $post_obj = null, $round = false ) {
+		public static function the_distance( $post_obj = null, $round = false ): void {
 			echo esc_html( self::get_the_distance( $post_obj, $round ) );
 		}
 
@@ -114,7 +114,7 @@ if ( ! class_exists( 'ATBDP_GJSGeoQuery' ) ) {
 				$units = strtolower( $atbdp_geo_query['units'] );
 			}
 			$radius = 3959;
-			if ( in_array( $units, array( 'km', 'kilometers' ) ) ) {
+			if ( in_array( $units, [ 'km', 'kilometers' ] ) ) {
 				$radius = 6371;
 			}
 			$lat_field = 'atbdp_geo_query_lat.meta_value';
@@ -132,15 +132,14 @@ if ( ! class_exists( 'ATBDP_GJSGeoQuery' ) ) {
 			$haversine .= 'cos( radians( ' . $lng_field . ' ) - radians(%f) ) + ';
 			$haversine .= 'sin( radians(%f) ) * sin( radians( ' . $lat_field . ' ) ) ) ';
 			$haversine .= ')';
-			$haversine  = $wpdb->prepare( $haversine, array( $lat, $lng, $lat ) );
-			return $haversine;
+			return $wpdb->prepare( $haversine, [ $lat, $lng, $lat ] );
 		}
 	}
 	ATBDP_GJSGeoQuery::Instance();
 }
 
 if ( ! function_exists( 'atbdp_the_distance' ) ) {
-	function atbdp_the_distance( $post_obj = null, $round = false ) {
+	function atbdp_the_distance( $post_obj = null, $round = false ): void {
 		ATBDP_GJSGeoQuery::the_distance( $post_obj, $round );
 	}
 }

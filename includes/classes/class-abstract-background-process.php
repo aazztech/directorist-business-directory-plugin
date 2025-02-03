@@ -28,7 +28,8 @@ if ( ! class_exists( 'WP_Background_Process', false ) ) {
  */
 abstract class Background_Process extends \WP_Background_Process {
 
-	/**
+	public $cron_interval;
+    /**
 	 * Is queue empty.
 	 *
 	 * @return bool
@@ -48,7 +49,7 @@ abstract class Background_Process extends \WP_Background_Process {
 
 		$count = $wpdb->get_var( $wpdb->prepare( 'SELECT COUNT(*) FROM ' . esc_sql( $table ) . ' WHERE ' . esc_sql( $column ) . ' LIKE %s', $key ) );
 
-		return ! ( $count > 0 );
+		return $count <= 0;
 	}
 
 	/**
@@ -142,12 +143,7 @@ abstract class Background_Process extends \WP_Background_Process {
 	 * @return int
 	 */
 	protected function get_memory_limit() {
-		if ( function_exists( 'ini_get' ) ) {
-			$memory_limit = ini_get( 'memory_limit' );
-		} else {
-			// Sensible default.
-			$memory_limit = '128M';
-		}
+		$memory_limit = function_exists( 'ini_get' ) ? ini_get( 'memory_limit' ) : '128M';
 
 		if ( ! $memory_limit || -1 === intval( $memory_limit ) ) {
 			// Unlimited, set to 32GB.
@@ -171,11 +167,11 @@ abstract class Background_Process extends \WP_Background_Process {
 		}
 
 		// Adds every 5 minutes to the existing schedules.
-		$schedules[ $this->identifier . '_cron_interval' ] = array(
+		$schedules[ $this->identifier . '_cron_interval' ] = [
 			'interval' => MINUTE_IN_SECONDS * $interval,
 			/* translators: %d: interval */
 			'display'  => sprintf( __( 'Every %d minutes', 'directorist' ), $interval ),
-		);
+		];
 
 		return $schedules;
 	}
@@ -208,7 +204,7 @@ abstract class Background_Process extends \WP_Background_Process {
 	 *
 	 * Stop processing queue items, clear cronjob and delete all batches.
 	 */
-	public function kill_process() {
+	public function kill_process(): void {
 		if ( ! $this->is_queue_empty() ) {
 			$this->delete_all_batches();
 			wp_clear_scheduled_hook( $this->cron_hook_identifier );

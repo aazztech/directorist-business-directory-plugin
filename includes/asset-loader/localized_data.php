@@ -5,11 +5,13 @@
 
 namespace Directorist\Asset_Loader;
 
-if ( ! defined( 'ABSPATH' ) ) exit;
+if (! defined( 'ABSPATH' )) {
+    exit;
+}
 
 class Localized_Data {
 
-	public static function load_localized_data() {
+	public static function load_localized_data(): void {
 		// Load in frontend and backend
 		wp_localize_script( 'jquery', 'directorist', self::public_data() );
 
@@ -20,23 +22,18 @@ class Localized_Data {
 	}
 
 	public static function public_data() {
-		$data = self::get_listings_data() + self::directorist_options_data() + self::login_data() + self::search_form_localized_data() + self::search_listing_localized_data() + self::search_listing_data();
-
-		return $data;
+		return self::get_listings_data() + self::directorist_options_data() + self::login_data() + self::search_form_localized_data() + self::search_listing_localized_data() + self::search_listing_data();
 	}
 
 	public static function admin_data() {
-		$data = self::get_admin_script_data() + self::directorist_options_data() + self::get_listings_data() + self::admin_ajax_localized_data();
-
-		return $data;
+		return self::get_admin_script_data() + self::directorist_options_data() + self::get_listings_data() + self::admin_ajax_localized_data();
 	}
 
-	private static function search_listing_data() {
-		$data = [
+	private static function search_listing_data(): array {
+		return [
 			'ajaxnonce' => wp_create_nonce('bdas_ajax_nonce'),
 			'ajax_url' => admin_url('admin-ajax.php'),
 		];
-		return $data;
 	}
 
 	private static function search_listing_localized_data() {
@@ -46,28 +43,27 @@ class Localized_Data {
 	}
 
 	private static function search_form_localized_data() {
-		$directory_type_id = ( isset( $args['directory_type_id'] ) ) ? $args['directory_type_id'] : '';
-		$data = self::get_search_script_data([
+		$directory_type_id = $args['directory_type_id'] ?? '';
+		return self::get_search_script_data([
 			'directory_type_id' => $directory_type_id,
 			'search_max_radius_distance' => apply_filters( 'directorist_search_max_radius_distance', get_directorist_option( 'search_max_radius_distance', 1000 ) )
 		]);
-		return $data;
 	}
 
 	private static function directorist_options_data() {
 		return self::get_option_data();
 	}
 
-	private static function admin_ajax_localized_data() {
+	private static function admin_ajax_localized_data(): array {
 		return [ 'ajax_url' => admin_url('admin-ajax.php') ];
 	}
 
-	public static function get_listings_data() {
+	public static function get_listings_data(): array {
 		// listings data
 		$review_approval = get_directorist_option( 'review_approval_text', __( 'Your review has been received. It requires admin approval to publish.', 'directorist' ) );
 		$enable_reviewer_content = get_directorist_option( 'enable_reviewer_content', 1 );
 
-		$data = array(
+		return [
 			'nonce'                       		=> wp_create_nonce( 'atbdp_nonce_action_js' ),
 			'directorist_nonce'           		=> wp_create_nonce( directorist_get_nonce_key() ),
 			'ajax_nonce'                  		=> wp_create_nonce( 'bdas_ajax_nonce' ),
@@ -117,20 +113,18 @@ class Localized_Data {
 			'add_listing_url'             		=> \ATBDP_Permalink::get_add_listing_page_link(),
 			'enabled_multi_directory'     		=> directorist_is_multi_directory_enabled(),
 			'site_name'					  		=> get_bloginfo( 'name' ),
-		);
-
-		return $data;
+		];
 	}
 
-	public static function get_add_listings_data() {
+	public static function get_add_listings_data(): array {
 
 		$listing_id           = 0;
-		$current_url          = ( ! empty( $_SERVER['REQUEST_URI'] ) ) ? sanitize_text_field( wp_unslash( $_SERVER['REQUEST_URI'] ) ) : '';
+		$current_url          = ( empty( $_SERVER['REQUEST_URI'] ) ) ? '' : sanitize_text_field( wp_unslash( $_SERVER['REQUEST_URI'] ) );
 		$current_listing_type = isset( $_GET['directory_type'] ) ? sanitize_text_field( wp_unslash( $_GET['directory_type'] ) ) : directorist_get_listing_directory( $listing_id );
 
 		if( ! empty( $current_listing_type ) && ! is_numeric( $current_listing_type ) ) {
 			$term = get_term_by( 'slug', $current_listing_type, ATBDP_TYPE );
-			$current_listing_type = ! empty( $term ) ? $term->term_id : '';
+			$current_listing_type = empty( $term ) ? '' : $term->term_id;
 		}
 
 		if (  ( strpos( $current_url, '/edit/' ) !== false ) && ( $pagenow = 'at_biz_dir' ) ) {
@@ -140,13 +134,13 @@ class Localized_Data {
 		}
 
 		$submission_form  = get_term_meta( $current_listing_type, 'submission_form_fields', true );
-		$new_tag          = !empty( $submission_form['fields']['tag']['allow_new'] ) ? $submission_form['fields']['tag']['allow_new'] : '';
-		$new_loc          = !empty( $submission_form['fields']['location']['create_new_loc'] ) ? $submission_form['fields']['location']['create_new_loc'] : '';
-		$new_cat          = !empty( $submission_form['fields']['category']['create_new_cat'] ) ? $submission_form['fields']['category']['create_new_cat'] : '';
-		$max_loc_creation = !empty( $submission_form['fields']['location']['max_location_creation'] ) ? $submission_form['fields']['location']['max_location_creation'] : '';
+		$new_tag          = empty( $submission_form['fields']['tag']['allow_new'] ) ? '' : $submission_form['fields']['tag']['allow_new'];
+		$new_loc          = empty( $submission_form['fields']['location']['create_new_loc'] ) ? '' : $submission_form['fields']['location']['create_new_loc'];
+		$new_cat          = empty( $submission_form['fields']['category']['create_new_cat'] ) ? '' : $submission_form['fields']['category']['create_new_cat'];
+		$max_loc_creation = empty( $submission_form['fields']['location']['max_location_creation'] ) ? '' : $submission_form['fields']['location']['max_location_creation'];
 		// Internationalization text for javascript file especially add-listing.js
 
-		$i18n_text = array(
+		$i18n_text = [
 			'see_more_text'			  => __( 'See More', 'directorist' ),
 			'see_less_text'			  => __( 'See Less', 'directorist' ),
 			'confirmation_text'       => __( 'Are you sure', 'directorist' ),
@@ -158,10 +152,10 @@ class Localized_Data {
 			'max_location_msg'        => sprintf( __('You can only use %s', 'directorist'), $max_loc_creation ),
 			'submission_wait_msg'     => esc_html__( 'Please wait, your submission is being processed.', 'directorist' ),
 			'image_uploading_msg'     => esc_html__( 'Please wait, your selected images being uploaded.', 'directorist' )
-		);
+		];
 
 		//get listing is if the screen in edit listing
-		$data = array(
+		$data = [
 			'nonce'           => wp_create_nonce( 'atbdp_nonce_action_js' ),
 			'ajaxurl'         => admin_url( 'admin-ajax.php' ),
 			'nonceName'       => 'atbdp_nonce_js',
@@ -179,14 +173,14 @@ class Localized_Data {
 			'create_new_loc'  => $new_loc,
 			'create_new_cat'  => $new_cat,
 			'image_notice'    => __( 'Sorry! You have crossed the maximum image limit', 'directorist' ),
-		);
+		];
 
 
 		return $data;
 	}
 
-	public static function get_admin_script_data() {
-		$i18n_text = array(
+	public static function get_admin_script_data(): array {
+		$i18n_text = [
 			'confirmation_text'       => __( 'Are you sure', 'directorist' ),
 			'ask_conf_sl_lnk_del_txt' => __( 'Do you really want to remove this Social Link!', 'directorist' ),
 			'confirm_delete'          => __( 'Yes, Delete it!', 'directorist' ),
@@ -198,7 +192,7 @@ class Localized_Data {
 			'select_prv_img'          => __( 'Select Preview Image', 'directorist' ),
 			'insert_prv_img'          => __( 'Insert Preview Image', 'directorist' ),
 			'add_listing_url'         => \ATBDP_Permalink::get_add_listing_page_link(),
-		);
+		];
 
 		$icon_picker_labels = [
             'changeIconButtonLabel'        => __( 'Change Icon', 'directorist' ),
@@ -214,7 +208,7 @@ class Localized_Data {
 		];
 
 		// is MI extension enabled and active?
-		$data = array(
+		$data = [
 			'nonce'                => wp_create_nonce( 'atbdp_nonce_action_js' ),
 			'ajaxurl'              => admin_url( 'admin-ajax.php' ),
 			'import_page_link'     => admin_url( 'edit.php?post_type=at_biz_dir&page=tools' ),
@@ -225,14 +219,14 @@ class Localized_Data {
 			'i18n_text'            => $i18n_text,
 			'icon_type'            => 'la',
 			'icon_picker_labels'   => $icon_picker_labels,
-		);
+		];
 
 
 
 		return $data;
 	}
 
-	public static function get_search_script_data( $args = [] ) {
+	public static function get_search_script_data( $args = [] ): array {
 		$directory_type = ( is_array( $args ) && isset( $args['directory_type_id'] ) ) ? $args['directory_type_id'] : default_directory_type();
 		$directory_type_term_data = [
 			'submission_form_fields' => get_term_meta( $directory_type, 'submission_form_fields', true ),
@@ -240,54 +234,44 @@ class Localized_Data {
 		];
 
 		/*Internationalization*/
-		$category_placeholder    = ( isset( $directory_type_term_data['submission_form_fields']['fields']['category']['placeholder'] ) ) ? $directory_type_term_data['submission_form_fields']['fields']['category']['placeholder'] : __( 'Select a category', 'directorist' );
-		$location_placeholder    = ( isset( $directory_type_term_data['submission_form_fields']['fields']['location']['placeholder'] ) ) ? $directory_type_term_data['submission_form_fields']['fields']['location']['placeholder'] : __( 'Select a location', 'directorist' );
+		$category_placeholder    = $directory_type_term_data['submission_form_fields']['fields']['category']['placeholder'] ?? __( 'Select a category', 'directorist' );
+		$location_placeholder    = $directory_type_term_data['submission_form_fields']['fields']['location']['placeholder'] ?? __( 'Select a location', 'directorist' );
 		$select_listing_map      = get_directorist_option( 'select_listing_map', 'google' );
 		$radius_search_unit      = get_directorist_option( 'radius_search_unit', 'miles' );
 		$default_radius_distance = get_directorist_option( 'search_default_radius_distance', 0 );
-
-		if ( 'kilometers' == $radius_search_unit ) {
-			$miles = __( ' Kilometers', 'directorist' );
-		} else {
-			$miles = __( ' Miles', 'directorist' );
-		}
-
-		$data = array(
-			'i18n_text'   => array(
-				'category_selection' => ! empty( $category_placeholder ) ? $category_placeholder : __( 'Select a category', 'directorist' ),
-				'location_selection' => ! empty( $location_placeholder ) ? $location_placeholder : __( 'Select a location', 'directorist' ),
+        $miles = 'kilometers' == $radius_search_unit ? __( ' Kilometers', 'directorist' ) : __( ' Miles', 'directorist' );
+		return [
+			'i18n_text'   => [
+				'category_selection' => empty( $category_placeholder ) ? __( 'Select a category', 'directorist' ) : $category_placeholder,
+				'location_selection' => empty( $location_placeholder ) ? __( 'Select a location', 'directorist' ) : $location_placeholder,
 				'show_more'          => __( 'Show More', 'directorist' ),
 				'show_less'          => __( 'Show Less', 'directorist' ),
 				'added_favourite'    => __( 'Added to favorite', 'directorist' ),
 				'please_login'       => __( 'Please login first', 'directorist' ),
 				'select_listing_map' => $select_listing_map,
-				'Miles'              => !empty( $_GET['miles'] ) ? absint( $_GET['miles'] ) : $miles,
-			),
+				'Miles'              => empty( $_GET['miles'] ) ? $miles : absint( $_GET['miles'] ),
+			],
 			'args'                     => $args,
 			'directory_type'           => $directory_type,
 			'default_directory_type'   => directorist_get_default_directory( 'slug' ),
 			'directory_type_term_data' => $directory_type_term_data,
 			'ajax_url'                 => admin_url( 'admin-ajax.php' ),
-			'miles'                    => !empty( $_GET['miles'] ) ? absint( $_GET['miles'] ) : $miles,
+			'miles'                    => empty( $_GET['miles'] ) ? $miles : absint( $_GET['miles'] ),
 			'default_val'              => $default_radius_distance,
 			'countryRestriction'       => get_directorist_option( 'country_restriction' ),
 			'restricted_countries'     => get_directorist_option( 'restricted_countries' ),
 			'use_def_lat_long'         => get_directorist_option( 'use_def_lat_long' ),
-		);
-		return $data;
+		];
 	}
 
-	public static function get_option_data() {
-		$options = [];
+	public static function get_option_data(): array
+    {
+        return ['script_debugging' => get_directorist_option( 'script_debugging', DIRECTORIST_LOAD_MIN_FILES, true )];
+    }
 
-		$options['script_debugging'] = get_directorist_option( 'script_debugging', DIRECTORIST_LOAD_MIN_FILES, true );
-
-		return $options;
-	}
-
-	public static function login_data() {
+	public static function login_data(): array {
 		$redirection = \ATBDP_Permalink::get_login_redirection_page_link();
-		$redirection_url = $redirection ? $redirection : \ATBDP_Permalink::get_dashboard_page_link();
+		$redirection_url = $redirection ?: \ATBDP_Permalink::get_dashboard_page_link();
 		$current_time = time();
 		$redirection_url = strpos( $redirection_url, '?' ) !== false ? $redirection . '&rand=' . $current_time : $redirection . '?rand=' . $current_time;
 		
@@ -296,14 +280,12 @@ class Localized_Data {
 		} else {
 			$redirection_url = $redirection_url . '?rand=' . $current_time;
 		}
-		
-		$data = [
+		return [
 			'ajax_url'            => admin_url( 'admin-ajax.php' ),
 			'redirect_url'        => $redirection_url,
 			'loading_message'     => esc_html__( 'Sending user info, please wait...', 'directorist' ),
 			'login_error_message' => esc_html__( 'Wrong username or password.', 'directorist' ),
 		];
-		return $data;
 	}
 
 }

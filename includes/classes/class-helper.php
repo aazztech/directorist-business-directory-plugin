@@ -8,15 +8,15 @@ if ( ! class_exists( 'ATBDP_Helper' ) ) :
 
 	class ATBDP_Helper {
 
-		private $__nonce_action = 'atbdp_nonce_action';
-		private $__nonce_name   = 'atbdp_nonce';
+		public $nonce_action;
+		public $nonce_name;
 
 		public function __construct() {
-			add_action( 'init', array( $this, 'check_req_php_version' ), 100 );
+			add_action( 'init', [ $this, 'check_req_php_version' ], 100 );
 		}
 
 		// get_default_slider
-		public static function get_default_slider( $args ) {
+		public static function get_default_slider( $args ): string {
 			$gallery_image = '';
 			/*
 			 $args = array(
@@ -33,7 +33,7 @@ if ( ! class_exists( 'ATBDP_Helper' ) ) :
 				); */
 
 			if ( ! empty( $args['image_links'] ) && $args['plan_slider'] ) {
-				if ( ! empty( $args['listing_prv_img'] && $args['display_prv_image'] ) ) {
+				if ( $args['listing_prv_img'] && $args['display_prv_image'] ) {
 					if ( ! empty( $args['gallery_cropping'] ) ) {
 						$listing_prv_imgurl = atbdp_image_cropping(
 							$args['listing_prv_img'],
@@ -51,7 +51,7 @@ if ( ! class_exists( 'ATBDP_Helper' ) ) :
 				$gallery_image .= '<div class="atbd_big_gallery">';
 				$gallery_image .= '<div class="atbd_directory_gallery">';
 				foreach ( $args['image_links'] as $image_link ) {
-					$image_link = ! empty( $image_link ) ? $image_link : '';
+					$image_link = empty( $image_link ) ? '' : $image_link;
 					$gallery_image .= '<div class="single_image">';
 					$gallery_image .= '<img src="' . esc_url( $image_link ) . '" alt=" ' . esc_html( $args['p_title'] ) . '">';
 					$gallery_image .= '</div>';
@@ -62,12 +62,12 @@ if ( ! class_exists( 'ATBDP_Helper' ) ) :
 					$gallery_image .= '<span class="next fa fa-angle-right"></span>';
 				}
 				$gallery_image .= '</div>';
-				$image_links_thumbnails = ! empty( $args['image_links_thumbnails'] ) ? $args['image_links_thumbnails'] : array();
-				$listing_prv_img        = ! empty( $args['listing_prv_img'] ) ? $args['listing_prv_img'] : '';
+				$image_links_thumbnails = empty( $args['image_links_thumbnails'] ) ? [] : $args['image_links_thumbnails'];
+				$listing_prv_img        = empty( $args['listing_prv_img'] ) ? '' : $args['listing_prv_img'];
 				if ( ! empty( $args['display_thumbnail_img'] ) && ( 1 != count( $image_links_thumbnails ) || ( ! empty( $listing_prv_img ) && ! empty( $display_prv_image ) ) ) ) {
 					$gallery_image .= '<div class="atbd_directory_image_thumbnail">';
-					$listing_prv_imgurl_thumb = ! empty( $listing_prv_img ) ? atbdp_get_image_source( $listing_prv_img, 'thumbnail' ) : '';
-					if ( ! empty( $listing_prv_imgurl_thumb && ! empty( $args['display_prv_image'] ) ) ) {
+					$listing_prv_imgurl_thumb = empty( $listing_prv_img ) ? '' : atbdp_get_image_source( $listing_prv_img, 'thumbnail' );
+					if ( $listing_prv_imgurl_thumb && ! empty( $args['display_prv_image'] ) ) {
 						array_unshift( $image_links_thumbnails, $listing_prv_imgurl_thumb );
 					}
 					foreach ( $image_links_thumbnails as $image_links_thumbnail ) {
@@ -83,7 +83,7 @@ if ( ! class_exists( 'ATBDP_Helper' ) ) :
 				$gallery_image .= '</div>';
 			} elseif ( ! empty( $args['display_prv_image'] ) ) {
 				$default_image     = get_directorist_option( 'default_preview_image', DIRECTORIST_ASSETS . 'images/grid.jpg' );
-				$listing_prv_image = ! empty( $listing_prv_img ) ? esc_url( $listing_prv_imgurl ) : $default_image;
+				$listing_prv_image = empty( $listing_prv_img ) ? $default_image : esc_url( $listing_prv_imgurl );
 				$gallery_image .= '<div class="single_image">';
 				$gallery_image .= '<img src="' . $listing_prv_image . '"
                                      alt="' . esc_html( $args['p_title'] ) . '">';
@@ -94,15 +94,15 @@ if ( ! class_exists( 'ATBDP_Helper' ) ) :
 		}
 
 		// atbdp_thumbnail_card
-		public static function atbdp_thumbnail_card( $img_src = '', $_args = array() ) {
+		public static function atbdp_thumbnail_card( $img_src = '', $_args = [] ): ?string {
 			$args = apply_filters( 'atbdp_preview_image_args', $_args );
 
 			// Default
 			$is_blur           = get_directorist_option( 'prv_background_type', 'blur' );
-			$is_blur           = ( 'blur' === $is_blur ? true : false );
+			$is_blur           = ( 'blur' === $is_blur );
 			$alt               = esc_html( get_the_title() );
 			$container_size_by = get_directorist_option( 'prv_container_size_by', 'px' );
-			$by_ratio          = ( 'px' === $container_size_by ) ? false : true;
+			$by_ratio          = 'px' !== $container_size_by;
 			$image_size        = get_directorist_option( 'way_to_show_preview', 'cover' ); // contain / full / cover
 			$ratio_width       = get_directorist_option( 'crop_width', 360 );
 			$ratio_height      = get_directorist_option( 'crop_height', 300 );
@@ -204,12 +204,10 @@ if ( ! class_exists( 'ATBDP_Helper' ) ) :
 
 			// Card Contain
 			$card_contain_wrap  = "<div class='atbd-thumbnail-card card-contain' style='$style'>";
-			$card_back__img     = "<img src='$image' class='atbd-thumbnail-card-back-img'/>";
 			$image_contain_html = $card_contain_wrap . $blur_bg . $front_wrap_html . '</div>';
 
 			// Card Cover
 			$card_cover_wrap  = "<div class='atbd-thumbnail-card card-cover' style='$style'>";
-			$card_back__img   = "<img src='$image' class='atbd-thumbnail-card-back-img'/>";
 			$image_cover_html = $card_cover_wrap . $front_wrap_html . '</div>';
 
 			// Card Full
@@ -231,32 +229,26 @@ if ( ! class_exists( 'ATBDP_Helper' ) ) :
 
 			echo wp_kses(
 				$the_html,
-				array(
-					'div' => array(
-						'class' => array(),
-						'style' => array(),
-					),
-					'img' => array(
-						'src' => array(),
-						'alt' => array(),
-						'class' => array(),
-					)
-				)
+				[
+					'div' => [
+						'class' => [],
+						'style' => [],
+					],
+					'img' => [
+						'src' => [],
+						'alt' => [],
+						'class' => [],
+					]
+				]
 			);
+            return null;
 		}
 
-		public function check_req_php_version() {
-			if ( version_compare( PHP_VERSION, '5.4', '<' ) ) {
-				add_action( 'admin_notices', array( $this, 'notice' ), 100 );
+		public function check_req_php_version(): void
+        {
+        }
 
-				// deactivate the plugin because required php version is less.
-				add_action( 'admin_init', array( $this, 'deactivate_self' ), 100 );
-
-				return;
-			}
-		}
-
-		public function notice() {
+		public function notice(): void {
 			if ( isset( $_GET['activate'] ) ) {
 				unset( $_GET['activate'] );
 			}
@@ -267,7 +259,7 @@ if ( ! class_exists( 'ATBDP_Helper' ) ) :
 			<?php
 		}
 
-		public function deactivate_self() {
+		public function deactivate_self(): void {
 			deactivate_plugins( ATBDP_BASE );
 		}
 
@@ -276,10 +268,10 @@ if ( ! class_exists( 'ATBDP_Helper' ) ) :
 			// else check provided nonce and action
 			if ( empty( $nonce ) || empty( $action ) ) {
 				$nonce_name   = $this->nonce_name();
-				$nonce        =  ! empty( ${$method[ $nonce_name ]} ) ? ${$method[ $nonce_name ]} : null;
+				$nonce        =  empty( ${$method[ $nonce_name ]} ) ? null : ${$method[ $nonce_name ]};
 				$nonce_action = $this->nonce_action();
 			} else {
-				$nonce        = ( ! empty( $_REQUEST[ $nonce ] ) ) ? sanitize_text_field( wp_unslash( $_REQUEST[ $nonce ] ) ) : null;
+				$nonce        = ( empty( $_REQUEST[ $nonce ] ) ) ? null : sanitize_text_field( wp_unslash( $_REQUEST[ $nonce ] ) );
 				$nonce_action = $action;
 			}
 
@@ -294,8 +286,8 @@ if ( ! class_exists( 'ATBDP_Helper' ) ) :
 			return $this->nonce_name;
 		}
 
-		public function social_links() {
-			$s = array(
+		public function social_links(): array {
+			$s = [
 				'facebook'       => __( 'Facebook', 'directorist' ),
 				'twitter'        => __( 'X', 'directorist' ),
 				'linkedin'       => __( 'LinkedIn', 'directorist' ),
@@ -313,7 +305,7 @@ if ( ! class_exists( 'ATBDP_Helper' ) ) :
 				'behance'        => __( 'Behance', 'directorist' ),
 				'soundcloud'     => __( 'SoundCloud', 'directorist' ),
 				'stack-overflow' => __( 'StackOverFLow', 'directorist' ),
-			);
+			];
 			asort( $s );
 
 			return $s;
@@ -321,33 +313,28 @@ if ( ! class_exists( 'ATBDP_Helper' ) ) :
 
 		public static function getFreshIcon( $id ) {
 			$icon = $id;
-			switch ( $id ) {
-				case 'youtube':
-					$icon = 'youtube-play';
-					break;
-			}
+			if ($id === 'youtube') {
+                $icon = 'youtube-play';
+            }
 
 			return $icon;
 		}
 
 		// format_date
-		public static function format_date( $timestamp ) {
+		public static function format_date( $timestamp ): string {
 			$date_format = get_option( 'date_format' );
-			$date        = date( $date_format, strtotime( $timestamp ) );
 
-			return $date;
+			return date( $date_format, strtotime( $timestamp ) );
 		}
 
 		/**
-		 * Darken or lighten a given hex color and return it.
-		 *
-		 * @param string    $hex Hex color code to be darken or lighten
-		 * @param int       $percent The number of percent of darkness or brightness
-		 * @param bool|true $darken Lighten the color if set to false, otherwise, darken it. Default is true.
-		 *
-		 * @return string
-		 */
-		public function adjust_brightness( $hex, $percent, $darken = true ) {
+         * Darken or lighten a given hex color and return it.
+         *
+         * @param string    $hex Hex color code to be darken or lighten
+         * @param int       $percent The number of percent of darkness or brightness
+         * @param bool|true $darken Lighten the color if set to false, otherwise, darken it. Default is true.
+         */
+        public function adjust_brightness( $hex, $percent, $darken = true ): string {
 			// determine if we want to lighten or draken the color. Negative -255 means darken, positive integer means lighten
 			$brightness = $darken ? -255 : 255;
 			$steps      = $percent * $brightness / 100;
@@ -376,25 +363,25 @@ if ( ! class_exists( 'ATBDP_Helper' ) ) :
 		 *
 		 * @return array List of allowed tags in a content
 		 */
-		public function allowed_html() {
-			return array(
-				'i'      => array(
-					'class' => array(),
-				),
-				'strong' => array(
-					'class' => array(),
-				),
-				'em'     => array(
-					'class' => array(),
-				),
-				'a'      => array(
-					'class'  => array(),
-					'href'   => array(),
-					'title'  => array(),
-					'target' => array(),
-				),
+		public function allowed_html(): array {
+			return [
+				'i'      => [
+					'class' => [],
+				],
+				'strong' => [
+					'class' => [],
+				],
+				'em'     => [
+					'class' => [],
+				],
+				'a'      => [
+					'class'  => [],
+					'href'   => [],
+					'title'  => [],
+					'target' => [],
+				],
 
-			);
+			];
 		}
 
 		/**
@@ -409,7 +396,7 @@ if ( ! class_exists( 'ATBDP_Helper' ) ) :
 			// @TODO: look into this deeply later : http://www.insertcart.com/numeric-pagination-wordpress-using-php/
 			$largeNumber = 999999999; // we need a large number here
 			$links       = paginate_links(
-				array(
+				[
 					'base'      => str_replace( $largeNumber, '%#%', esc_url( get_pagenum_link( $largeNumber ) ) ),
 					'format'    => '?paged=%#%',
 					'current'   => max( 1, $paged ),
@@ -417,15 +404,15 @@ if ( ! class_exists( 'ATBDP_Helper' ) ) :
 					'prev_text' => __( '&laquo; Prev', 'directorist' ),
 					'next_text' => __( 'Next &raquo;', 'directorist' ),
 					'type'      => 'list',
-				)
+				]
 			);
 
 			return $links;
 		}
 
-		public static function show_login_message( $message = '' ) {
+		public static function show_login_message( $message = '' ): void {
 
-			$t = ! empty( $message ) ? $message : '';
+			$t = empty( $message ) ? '' : $message;
 			$t = apply_filters( 'atbdp_unauthorized_access_message', $t );
 			?>
 			<div class="notice_wrapper">
@@ -435,14 +422,14 @@ if ( ! class_exists( 'ATBDP_Helper' ) ) :
 		}
 
 		/**
-		 * It converts a mysql datetime string to human readable relative time
-		 *
-		 * @param string $mysql_date Mysql Datetime string eg. 2018-5-11 17:02:26
-		 * @param bool   $echo [optional] If $echo is true then print the value else return the value. default is true.
-		 * @param string $suffix [optional] Suffix to be added to the related time. Default is ' ago.' .
-		 * @return string|void It returns the relative time from a mysql datetime string
-		 */
-		public function mysql_to_human_time( $mysql_date, $echo = true, $suffix = ' ago.' ) {
+         * It converts a mysql datetime string to human readable relative time
+         *
+         * @param string $mysql_date Mysql Datetime string eg. 2018-5-11 17:02:26
+         * @param bool   $echo [optional] If $echo is true then print the value else return the value. default is true.
+         * @param string $suffix [optional] Suffix to be added to the related time. Default is ' ago.' .
+         * @return string|null It returns the relative time from a mysql datetime string
+         */
+        public function mysql_to_human_time( $mysql_date, $echo = true, string $suffix = ' ago.' ): ?string {
 			$date = DateTime::createFromFormat( 'Y-m-d H:i:s', $mysql_date );
 			$time = human_time_diff( $date->getTimestamp() ) . $suffix;
 			if ( ! $echo ) {
@@ -450,6 +437,7 @@ if ( ! class_exists( 'ATBDP_Helper' ) ) :
 			}
 
 			echo esc_html( $time );
+            return null;
 		}
 
 		/**
@@ -458,7 +446,7 @@ if ( ! class_exists( 'ATBDP_Helper' ) ) :
 		 * @param WP_Term $cat Listing Category Object
 		 * @param WP_Term $loc Listing Location Object
 		 */
-		public function output_listings_taxonomy_info( $cat, $loc ) {
+		public function output_listings_taxonomy_info( $cat, $loc ): void {
 			if ( ! empty( $cat ) || ! empty( $loc ) ) {
 				?>
 				<div class="general_info">
@@ -502,7 +490,7 @@ if ( ! class_exists( 'ATBDP_Helper' ) ) :
 		 *
 		 * @param int $id [optional] Listing ID
 		 */
-		public function listing_read_more_link( $id = null ) {
+		public function listing_read_more_link( $id = null ): void {
 			if ( empty( $id ) ) {
 				global $post;
 				$id = $post->ID;
@@ -518,7 +506,7 @@ if ( ! class_exists( 'ATBDP_Helper' ) ) :
 		}
 
 		// sanitize_html
-		public static function sanitize_html( string $subject = '', string $return_type = 'echo' ) {
+		public static function sanitize_html( string $subject = '', string $return_type = 'echo' ): ?string {
 			$subject = stripslashes( $subject );
 
 			if ( 'return' === $return_type ) {
@@ -526,12 +514,13 @@ if ( ! class_exists( 'ATBDP_Helper' ) ) :
 			}
 
 			echo esc_html( $subject );
+            return null;
 		}
 
 		// guard
-		public static function guard( array $args = array() ) {
-			$type           = ( ! empty( $args['type'] ) ) ? $args['type'] : 'auth';
-			$login_redirect = ( ! empty( $args['login_redirect'] ) ) ? $args['login_redirect'] : false;
+		public static function guard( array $args = [] ) {
+			$type           = ( empty( $args['type'] ) ) ? 'auth' : $args['type'];
+			$login_redirect = ( empty( $args['login_redirect'] ) ) ? false : $args['login_redirect'];
 
 			if ( 'auth' === $type && ! is_user_logged_in() && ! $login_redirect ) {
 				ob_start();
@@ -589,6 +578,7 @@ if ( ! class_exists( 'ATBDP_Helper' ) ) :
 			}
 
 			echo esc_attr( $tel );
+            return null;
 		}
 
 		/**
@@ -597,10 +587,10 @@ if ( ! class_exists( 'ATBDP_Helper' ) ) :
 		 * @param array $cats [optional] the array of Listing Category Objects
 		 * @param array $locs [optional] the array of Listing Location Objects
 		 */
-		public function output_listings_all_taxonomy_info( $cats = array(), $locs = array() ) {
+		public function output_listings_all_taxonomy_info( $cats = [], $locs = [] ): void {
 			// get terms from db if not provided
-			$cats = ! empty( $cats ) ? $cats : get_the_terms( null, ATBDP_CATEGORY );
-			$locs = ! empty( $locs ) ? $locs : get_the_terms( null, ATBDP_LOCATION );
+			$cats = empty( $cats ) ? get_the_terms( null, ATBDP_CATEGORY ) : $cats;
+			$locs = empty( $locs ) ? get_the_terms( null, ATBDP_LOCATION ) : $locs;
 
 			if ( ! empty( $cats ) || ! empty( $locs ) ) {
 				?>

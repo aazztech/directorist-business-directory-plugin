@@ -13,10 +13,10 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 class Builder_Screen {
 
-	public static function init() {
-		add_filter( 'directorist/builder/config', [ __CLASS__, 'register_config' ] );
-		add_filter( 'directorist/builder/fields', [ __CLASS__, 'register_fields' ] );
-		add_filter( 'directorist/builder/layouts', [ __CLASS__, 'register_layout' ] );
+	public static function init(): void {
+		add_filter( 'directorist/builder/config', [ self::class, 'register_config' ] );
+		add_filter( 'directorist/builder/fields', [ self::class, 'register_fields' ] );
+		add_filter( 'directorist/builder/layouts', [ self::class, 'register_layout' ] );
 	}
 
 	public static function register_config( $config ) {
@@ -27,12 +27,11 @@ class Builder_Screen {
 		return $layouts;
 	}
 
-	public static function get_fields() {
-		$fields = [];
-		return $fields;
+	public static function get_fields(): array {
+		return [];
 	}
 
-	public static function register_fields( $fields ) {
+	public static function register_fields( $fields ): array {
 		return array_merge( $fields, self::get_fields() );
 	}
 }

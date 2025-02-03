@@ -16,7 +16,7 @@ $custom_field_meta_key_field = apply_filters( 'directorist_custom_field_meta_key
 	]
 ]);
 
-function get_assign_to_field( array $args = [] ) {
+function get_assign_to_field( array $args = [] ): array {
 	$default = [
 		'type' => 'radio',
 		'label' => __('Assign to', 'directorist'),
@@ -36,7 +36,7 @@ function get_assign_to_field( array $args = [] ) {
 	return array_merge( $default, $args );
 }
 
-function get_category_select_field( array $args = [] ) {
+function get_category_select_field( array $args = [] ): array {
 	$default = [
 		'type'    => 'select',
 		'label'   => __('Select Category', 'directorist'),
@@ -47,7 +47,10 @@ function get_category_select_field( array $args = [] ) {
 	return array_merge( $default, $args );
 }
 
-function get_cetagory_options() {
+/**
+ * @return array{id: mixed, value: mixed, label: mixed}[]
+ */
+function get_cetagory_options(): array {
 	$terms = get_terms( [
 		'taxonomy'   => ATBDP_CATEGORY,
 		'hide_empty' => false,
@@ -60,7 +63,7 @@ function get_cetagory_options() {
 		return $options;
 	}
 
-	if ( ! count( $terms ) ) {
+	if ( count( $terms ) === 0 ) {
 		return $options;
 	}
 
@@ -80,7 +83,10 @@ function get_cetagory_options() {
 	return $options;
 }
 
-function get_file_upload_field_options() {
+/**
+ * @return array{label: mixed, value: mixed}[]
+ */
+function get_file_upload_field_options(): array {
 	$options = [
 		[
 			'label' => __( 'All types', 'directorist' ),
@@ -114,7 +120,7 @@ function get_file_upload_field_options() {
 	return $options;
 }
 
-return apply_filters( 'atbdp_form_custom_widgets', array(
+return apply_filters( 'atbdp_form_custom_widgets', [
 	'text' => [
 		'label'   => __( 'Text', 'directorist' ),
 		'icon'    => 'uil uil-text',
@@ -749,4 +755,4 @@ return apply_filters( 'atbdp_form_custom_widgets', array(
 			],
 		]
 	],
-));
+]);

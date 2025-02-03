@@ -7,66 +7,66 @@ if ( ! class_exists( 'ATBDP_Custom_Taxonomy' ) ) :
 
 		public function __construct() {
 
-			add_action( 'init', array( $this, 'add_custom_taxonomy' ), 15 );
-			add_filter( 'manage_' . ATBDP_CATEGORY . '_custom_column', array( $this, 'category_rows' ), 15, 3 );
-			add_filter( 'manage_edit-' . ATBDP_CATEGORY . '_columns', array( $this, 'category_columns' ) );
+			add_action( 'init', [ $this, 'add_custom_taxonomy' ], 15 );
+			add_filter( 'manage_' . ATBDP_CATEGORY . '_custom_column', [ $this, 'category_rows' ], 15, 3 );
+			add_filter( 'manage_edit-' . ATBDP_CATEGORY . '_columns', [ $this, 'category_columns' ] );
 
-			add_filter( 'manage_' . ATBDP_LOCATION . '_custom_column', array( $this, 'location_rows' ), 15, 3 );
-			add_filter( 'manage_edit-' . ATBDP_LOCATION . '_columns', array( $this, 'location_columns' ) );
+			add_filter( 'manage_' . ATBDP_LOCATION . '_custom_column', [ $this, 'location_rows' ], 15, 3 );
+			add_filter( 'manage_edit-' . ATBDP_LOCATION . '_columns', [ $this, 'location_columns' ] );
 			/*show the select box form field to select an icon*/
-			add_action( ATBDP_CATEGORY . '_add_form_fields', array( $this, 'add_category_form_fields' ), 10, 2 );
+			add_action( ATBDP_CATEGORY . '_add_form_fields', [ $this, 'add_category_form_fields' ], 10, 2 );
 			/*create the meta data*/
-			add_action( 'created_' . ATBDP_CATEGORY, array( $this, 'save_add_category_form_fields' ), 10, 2 );
+			add_action( 'created_' . ATBDP_CATEGORY, [ $this, 'save_add_category_form_fields' ], 10, 2 );
 
 			/*Updating A Term With Meta Data*/
-			add_action( ATBDP_CATEGORY . '_edit_form_fields', array( $this, 'edit_category_form_fields' ), 10, 2 );
+			add_action( ATBDP_CATEGORY . '_edit_form_fields', [ $this, 'edit_category_form_fields' ], 10, 2 );
 			// update or save the meta data of the term
-			add_action( 'edited_' . ATBDP_CATEGORY, array( $this, 'save_edit_category_form_fields' ), 10, 2 );
+			add_action( 'edited_' . ATBDP_CATEGORY, [ $this, 'save_edit_category_form_fields' ], 10, 2 );
 			/*make the columns sortable */
-			add_filter( 'manage_edit-' . ATBDP_CATEGORY . '_sortable_columns', array( $this, 'add_category_icon_column_sortable' ) );
-			add_filter( 'manage_edit-' . ATBDP_LOCATION . '_sortable_columns', array( $this, 'add_location_icon_column_sortable' ) );
+			add_filter( 'manage_edit-' . ATBDP_CATEGORY . '_sortable_columns', [ $this, 'add_category_icon_column_sortable' ] );
+			add_filter( 'manage_edit-' . ATBDP_LOCATION . '_sortable_columns', [ $this, 'add_location_icon_column_sortable' ] );
 
 			// Modify the view link of the category tax
-			add_filter( ATBDP_CATEGORY . '_row_actions', array( $this, 'edit_taxonomy_view_link' ), 10, 2 );
+			add_filter( ATBDP_CATEGORY . '_row_actions', [ $this, 'edit_taxonomy_view_link' ], 10, 2 );
 			// Modify the view link of the category tax
-			add_filter( ATBDP_LOCATION . '_row_actions', array( $this, 'edit_taxonomy_view_link' ), 10, 2 );
+			add_filter( ATBDP_LOCATION . '_row_actions', [ $this, 'edit_taxonomy_view_link' ], 10, 2 );
 			// to remove custom category metabox form add new listing page
 			// add_action( 'admin_menu', array($this,'remove_custom_taxonomy') );
 
 			/*show the select box form field to select an icon*/
-			add_action( ATBDP_LOCATION . '_add_form_fields', array( $this, 'add_location_form_fields' ), 10, 2 );
+			add_action( ATBDP_LOCATION . '_add_form_fields', [ $this, 'add_location_form_fields' ], 10, 2 );
 			/*create the meta data*/
-			add_action( 'created_' . ATBDP_LOCATION, array( $this, 'save_add_location_form_fields' ), 10, 2 );
+			add_action( 'created_' . ATBDP_LOCATION, [ $this, 'save_add_location_form_fields' ], 10, 2 );
 			/*Updating A Term With Meta Data*/
-			add_action( ATBDP_LOCATION . '_edit_form_fields', array( $this, 'edit_location_form_fields' ), 10, 2 );
+			add_action( ATBDP_LOCATION . '_edit_form_fields', [ $this, 'edit_location_form_fields' ], 10, 2 );
 			// update or save the meta data of the term
-			add_action( 'edited_' . ATBDP_LOCATION, array( $this, 'save_edit_location_form_fields' ), 10, 2 );
+			add_action( 'edited_' . ATBDP_LOCATION, [ $this, 'save_edit_location_form_fields' ], 10, 2 );
 
 			// Modify the view link of the category tax
-			add_filter( ATBDP_LOCATION . '_row_actions', array( $this, 'edit_taxonomy_view_link' ), 10, 2 );
+			add_filter( ATBDP_LOCATION . '_row_actions', [ $this, 'edit_taxonomy_view_link' ], 10, 2 );
 
-			add_filter( 'term_link', array( $this, 'taxonomy_redirect_page' ), 10, 3 );
-			add_action( 'template_redirect', array( $this, 'atbdp_template_redirect' ) );
+			add_filter( 'term_link', [ $this, 'taxonomy_redirect_page' ], 10, 3 );
+			add_action( 'template_redirect', [ $this, 'atbdp_template_redirect' ] );
 
-			add_action( 'wp_loaded', array( $this, 'directorist_bulk_term_update' ) );
+			add_action( 'wp_loaded', [ $this, 'directorist_bulk_term_update' ] );
 
 		}
 
 
-		public function directorist_bulk_term_update() {
+		public function directorist_bulk_term_update(): void {
 			if ( get_option( 'directorist_bulk_term_update_v7_0_3_2' ) ) {
 				return;
 			}
 
-			$terms = array( ATBDP_CATEGORY, ATBDP_LOCATION );
+			$terms = [ ATBDP_CATEGORY, ATBDP_LOCATION ];
 			foreach ( $terms as $term ) {
 				$term_data = get_terms(
-					array(
+					[
 						'taxonomy'   => $term,
 						'hide_empty' => false,
 						'orderby'    => 'date',
 						'order'      => 'DSCE',
-					)
+					]
 				);
 				if ( ! empty( $term_data ) ) {
 					foreach ( $term_data as $data ) {
@@ -77,26 +77,24 @@ if ( ! class_exists( 'ATBDP_Custom_Taxonomy' ) ) :
 
 						if ( ! empty( $results ) ) {
 
-							if ( is_array( $old_data ) ) {
-								foreach ( $old_data as $single_data ) {
+							if (is_array( $old_data )) {
+                                foreach ( $old_data as $single_data ) {
 
 									if ( ! is_numeric( $single_data ) ) {
 										$term_with_directory_slug = get_term_by( 'slug', $single_data, 'atbdp_listing_types' );
 										$id                       = $term_with_directory_slug->term_id;
-										update_term_meta( $data->term_id, '_directory_type', array( $id ) );
+										update_term_meta( $data->term_id, '_directory_type', [ $id ] );
 									}
 								}
-							} else {
-								if ( ! is_numeric( $old_data ) ) {
-									$term_with_directory_slug = get_term_by( 'slug', $old_data, 'atbdp_listing_types' );
-									$id                       = $term_with_directory_slug->term_id;
-									update_term_meta( $data->term_id, '_directory_type', array( $id ) );
-								} else {
-									update_term_meta( $data->term_id, '_directory_type', array( $old_data ) );
+                            } elseif (! is_numeric( $old_data )) {
+                                $term_with_directory_slug = get_term_by( 'slug', $old_data, 'atbdp_listing_types' );
+                                $id                       = $term_with_directory_slug->term_id;
+                                update_term_meta( $data->term_id, '_directory_type', [ $id ] );
+                            } else {
+									update_term_meta( $data->term_id, '_directory_type', [ $old_data ] );
 								}
-							}
 						} else {
-							update_term_meta( $data->term_id, '_directory_type', array( default_directory_type() ) );
+							update_term_meta( $data->term_id, '_directory_type', [ default_directory_type() ] );
 						}
 					}
 				}
@@ -105,19 +103,14 @@ if ( ! class_exists( 'ATBDP_Custom_Taxonomy' ) ) :
 		}
 
 
-		public function atbdp_template_redirect() {
+		public function atbdp_template_redirect(): void {
 			$redirect_url = '';
 
-			if ( ! is_feed() ) {
-
-				// If Categories Page
-				if ( is_tax( ATBDP_CATEGORY ) ) {
-
-					$term         = get_queried_object();
-					$redirect_url = ATBDP_Permalink::atbdp_get_category_page( $term );
-
-				}
-			}
+			// If Categories Page
+            if (!is_feed() && is_tax( ATBDP_CATEGORY )) {
+                $term         = get_queried_object();
+                $redirect_url = ATBDP_Permalink::atbdp_get_category_page( $term );
+            }
 
 			// Redirect
 			if ( ! empty( $redirect_url ) ) {
@@ -163,7 +156,7 @@ if ( ! class_exists( 'ATBDP_Custom_Taxonomy' ) ) :
 			return $url;
 		}
 
-		public function edit_taxonomy_view_link( $actions, $tag ) {
+		public function edit_taxonomy_view_link( array $actions, $tag ): array {
 			// change the view link of ATBDP_Category
 			if ( ATBDP_CATEGORY == $tag->taxonomy ) {
 				if ( $actions['view'] ) {
@@ -190,14 +183,14 @@ if ( ! class_exists( 'ATBDP_Custom_Taxonomy' ) ) :
 			return $actions;
 		}
 
-		public function add_category_icon_column_sortable( $sortable ) {
+		public function add_category_icon_column_sortable( array $sortable ): array {
 			$sortable['ID']                            = __( 'ID', 'directorist' );
 			$sortable['atbdp_category_icon']           = 'atbdp_category_icon';
 			$sortable['atbdp_category_directory_type'] = 'atbdp_category_directory_type';
 			return $sortable;
 		}
 
-		public function add_location_icon_column_sortable( $sortable ) {
+		public function add_location_icon_column_sortable( array $sortable ): array {
 			$sortable['atbdp_location_directory_type'] = 'atbdp_location_directory_type';
 			return $sortable;
 		}
@@ -208,17 +201,17 @@ if ( ! class_exists( 'ATBDP_Custom_Taxonomy' ) ) :
 		 * @param int $term_id Term id
 		 * @param int $tt_id Taxonomy ID
 		 */
-		public function save_edit_category_form_fields( $term_id, $tt_id ) {
+		public function save_edit_category_form_fields( $term_id, $tt_id ): void {
 			if ( ! directorist_verify_nonce() ) {
 				return;
 			}
 
-			$directory_type = ! empty( $_POST['directory_type'] ) ? array_map( 'absint', (array) wp_unslash( $_POST['directory_type'] ) ) : array();
-			$icon           = ! empty( $_POST['category_icon'] ) ? sanitize_text_field( wp_unslash( $_POST['category_icon'] ) ) : '';
-			$image          = ! empty( $_POST['image'] ) ? absint( wp_unslash( $_POST['image'] ) ) : 0;
+			$directory_type = empty( $_POST['directory_type'] ) ? [] : array_map( 'absint', (array) wp_unslash( $_POST['directory_type'] ) );
+			$icon           = empty( $_POST['category_icon'] ) ? '' : sanitize_text_field( wp_unslash( $_POST['category_icon'] ) );
+			$image          = empty( $_POST['image'] ) ? 0 : absint( wp_unslash( $_POST['image'] ) );
 
-			if ( empty( $directory_type ) ) {
-				$directory_type = array( $this->default_listing_type() );
+			if ( $directory_type === [] ) {
+				$directory_type = [ $this->default_listing_type() ];
 			}
 
 			update_term_meta( $term_id, '_directory_type', $directory_type );
@@ -238,7 +231,7 @@ if ( ! class_exists( 'ATBDP_Custom_Taxonomy' ) ) :
 		 * @param int $term_id Term id
 		 * @param int $tt_id Taxonomy ID
 		 */
-		public function save_edit_location_form_fields( $term_id, $tt_id ) {
+		public function save_edit_location_form_fields( $term_id, $tt_id ): void {
 			if ( ! directorist_verify_nonce() ) {
 				return;
 			}
@@ -247,7 +240,7 @@ if ( ! class_exists( 'ATBDP_Custom_Taxonomy' ) ) :
 			if ( ! $default_listing_type && ! empty( $_POST['directory_type'] ) ) {
 				update_term_meta( $term_id, '_directory_type', array_map( 'absint', (array) wp_unslash( $_POST['directory_type'] ) ) );
 			} else {
-				update_term_meta( $term_id, '_directory_type', array( $default_listing_type ) );
+				update_term_meta( $term_id, '_directory_type', [ $default_listing_type ] );
 			}
 			// UPDATED location IMAGE
 			if ( isset( $_POST['image'] ) && '' !== $_POST['image'] ) {
@@ -257,7 +250,7 @@ if ( ! class_exists( 'ATBDP_Custom_Taxonomy' ) ) :
 			}
 		}
 
-		public function edit_category_form_fields( $term, $taxonomy ) {
+		public function edit_category_form_fields( $term, $taxonomy ): void {
 			// get current group
 			$icon_name                = get_term_meta( $term->term_id, 'category_icon', true );
 			$selected_directory_types = (array) get_term_meta( $term->term_id, '_directory_type', true );
@@ -320,11 +313,11 @@ if ( ! class_exists( 'ATBDP_Custom_Taxonomy' ) ) :
 			wp_nonce_field( directorist_get_nonce_key(), 'directorist_nonce' );
 		}
 
-		public function edit_location_form_fields( $term, $taxonomy ) {
+		public function edit_location_form_fields( $term, $taxonomy ): void {
 			// get current cat image
 			$image_id             = get_term_meta( $term->term_id, 'image', true );
 			$directory_type       = get_term_meta( $term->term_id, '_directory_type', true );
-			$value                = ! empty( $directory_type ) ? $directory_type : array();
+			$value                = empty( $directory_type ) ? [] : $directory_type;
 			$image_src            = ( $image_id ) ? wp_get_attachment_url( (int) $image_id ) : '';
 			$directory_types      = directorist_get_directories();
 			$default_listing_type = $this->default_listing_type();
@@ -373,7 +366,7 @@ if ( ! class_exists( 'ATBDP_Custom_Taxonomy' ) ) :
 			wp_nonce_field( directorist_get_nonce_key(), 'directorist_nonce' );
 		}
 
-		public function save_add_category_form_fields( $term_id, $tt_id ) {
+		public function save_add_category_form_fields( $term_id, $tt_id ): void {
 			if ( ! directorist_verify_nonce() ) {
 				return;
 			}
@@ -383,10 +376,10 @@ if ( ! class_exists( 'ATBDP_Custom_Taxonomy' ) ) :
 				$directory_types = array_map( 'absint', (array) wp_unslash( $_POST['directory_type'] ) );
 				add_term_meta( $term_id, '_directory_type', $directory_types, true );
 			} else {
-				add_term_meta( $term_id, '_directory_type', array( $default_listing_type ), true );
+				add_term_meta( $term_id, '_directory_type', [ $default_listing_type ], true );
 			}
 
-			$icon = ! empty( $_POST['category_icon'] ) ? sanitize_text_field( wp_unslash( $_POST['category_icon'] ) ) : '';
+			$icon = empty( $_POST['category_icon'] ) ? '' : sanitize_text_field( wp_unslash( $_POST['category_icon'] ) );
 			add_term_meta( $term_id, 'category_icon', $icon, true );
 
 			if ( isset( $_POST['image'] ) && '' !== $_POST['image'] ) {
@@ -394,7 +387,7 @@ if ( ! class_exists( 'ATBDP_Custom_Taxonomy' ) ) :
 			}
 		}
 
-		public function save_add_location_form_fields( $term_id, $tt_id ) {
+		public function save_add_location_form_fields( $term_id, $tt_id ): void {
 			if ( ! directorist_verify_nonce() ) {
 				return;
 			}
@@ -407,11 +400,11 @@ if ( ! class_exists( 'ATBDP_Custom_Taxonomy' ) ) :
 			if ( ! $default_listing_type && ! empty( $_POST['directory_type'] ) ) {
 				add_term_meta( $term_id, '_directory_type', array_map( 'absint', (array) wp_unslash( $_POST['directory_type'] ) ), true );
 			} else {
-				add_term_meta( $term_id, '_directory_type', array( $default_listing_type ), true );
+				add_term_meta( $term_id, '_directory_type', [ $default_listing_type ], true );
 			}
 		}
 
-		public function add_category_form_fields( $taxonomy ) {
+		public function add_category_form_fields( $taxonomy ): void {
 			$directory_types      = directorist_get_directories();
 			$default_listing_type = $this->default_listing_type();
 			if ( ! $default_listing_type ) {
@@ -452,7 +445,7 @@ if ( ! class_exists( 'ATBDP_Custom_Taxonomy' ) ) :
 			wp_nonce_field( directorist_get_nonce_key(), 'directorist_nonce' );
 		}
 
-		public function add_location_form_fields( $taxonomy ) {
+		public function add_location_form_fields( $taxonomy ): void {
 			$directory_types      = directorist_get_directories();
 			$default_listing_type = $this->default_listing_type();
 			if ( ! $default_listing_type ) {
@@ -488,14 +481,14 @@ if ( ! class_exists( 'ATBDP_Custom_Taxonomy' ) ) :
 			wp_nonce_field( directorist_get_nonce_key(), 'directorist_nonce' );
 		}
 
-		public function add_custom_taxonomy() {
+		public function add_custom_taxonomy(): void {
 			$this->register_category();
 			$this->register_location();
 			$this->register_tag();
 		}
 
 		protected function register_location() {
-			$labels = array(
+			$labels = [
 				'name'              => _x( 'Listing Locations', 'Location general name', 'directorist' ),
 				'singular_name'     => _x( 'Listing Location', 'Location singular name', 'directorist' ),
 				'search_items'      => __( 'Search Location', 'directorist' ),
@@ -507,9 +500,9 @@ if ( ! class_exists( 'ATBDP_Custom_Taxonomy' ) ) :
 				'add_new_item'      => __( 'Add New Location', 'directorist' ),
 				'new_item_name'     => __( 'New Location Name', 'directorist' ),
 				'menu_name'         => __( 'Locations', 'directorist' ),
-			);
+			];
 
-			$args = array(
+			$args = [
 				'hierarchical'      => true,
 				'show_in_rest'      => true,
 				'labels'            => $labels,
@@ -518,23 +511,21 @@ if ( ! class_exists( 'ATBDP_Custom_Taxonomy' ) ) :
 				'query_var'         => true,
 				'public'            => true,
 				'show_in_nav_menus' => true,
-				'capabilities'      => array(
+				'capabilities'      => [
 					'assign_terms' => get_post_type_object( ATBDP_POST_TYPE )->cap->publish_posts,
-				),
-			);
+				],
+			];
 
 			$slug = ATBDP_LOCATION;
-			if ( ! empty( $slug ) ) {
-				$args['rewrite'] = array(
+			$args['rewrite'] = [
 					'slug' => $slug,
-				);
-			}
+				];
 
 			register_taxonomy( ATBDP_LOCATION, ATBDP_POST_TYPE, $args );
 		}
 
 		protected function register_category() {
-			$labels = array(
+			$labels = [
 				'name'              => _x( 'Listing Categories', 'Category general name', 'directorist' ),
 				'singular_name'     => _x( 'Listing Category', 'Category singular name', 'directorist' ),
 				'search_items'      => __( 'Search category', 'directorist' ),
@@ -546,9 +537,9 @@ if ( ! class_exists( 'ATBDP_Custom_Taxonomy' ) ) :
 				'add_new_item'      => __( 'Add New category', 'directorist' ),
 				'new_item_name'     => __( 'New category Name', 'directorist' ),
 				'menu_name'         => __( 'Categories', 'directorist' ),
-			);
+			];
 
-			$args = array(
+			$args = [
 				'hierarchical'      => true,
 				'labels'            => $labels,
 				'show_ui'           => true,
@@ -556,23 +547,21 @@ if ( ! class_exists( 'ATBDP_Custom_Taxonomy' ) ) :
 				'query_var'         => true,
 				'public'            => true,
 				'show_in_nav_menus' => true,
-				'capabilities'      => array(
+				'capabilities'      => [
 					'assign_terms' => get_post_type_object( ATBDP_POST_TYPE )->cap->publish_posts,
-				),
-			);
+				],
+			];
 
 			$slug = ATBDP_CATEGORY;
-			if ( ! empty( $slug ) ) {
-				$args['rewrite'] = array(
+			$args['rewrite'] = [
 					'slug' => $slug,
-				);
-			}
+				];
 
 			register_taxonomy( ATBDP_CATEGORY, ATBDP_POST_TYPE, $args );
 		}
 
 		protected function register_tag() {
-			$labels = array(
+			$labels = [
 				'name'              => _x( 'Listing Tags', 'Tag general name', 'directorist' ),
 				'singular_name'     => _x( 'Listing Tag', 'Tag singular name', 'directorist' ),
 				'search_items'      => __( 'Search tag', 'directorist' ),
@@ -584,9 +573,9 @@ if ( ! class_exists( 'ATBDP_Custom_Taxonomy' ) ) :
 				'add_new_item'      => __( 'Add New tag', 'directorist' ),
 				'new_item_name'     => __( 'New tag Name', 'directorist' ),
 				'menu_name'         => __( 'Tags', 'directorist' ),
-			);
+			];
 
-			$args       = array(
+			$args       = [
 				'hierarchical'      => false,
 				'labels'            => $labels,
 				'show_ui'           => true,
@@ -594,23 +583,21 @@ if ( ! class_exists( 'ATBDP_Custom_Taxonomy' ) ) :
 				'query_var'         => true,
 				'public'            => true,
 				'show_in_nav_menus' => true,
-				'capabilities'      => array(
+				'capabilities'      => [
 					'assign_terms' => get_post_type_object( ATBDP_POST_TYPE )->cap->publish_posts,
-				),
-			);
+				],
+			];
 
 			// get the rewrite slug from the user settings, if exist use it.
 			$slug = ATBDP_TAGS;
-			if ( ! empty( $slug ) ) {
-				$args2['rewrite'] = array(
+			$args2['rewrite'] = [
 					'slug' => $slug,
-				);
-			}
+				];
 
 			register_taxonomy( ATBDP_TAGS, ATBDP_POST_TYPE, $args );
 		}
 
-		public function category_columns( $original_columns ) {
+		public function category_columns( $original_columns ): array {
 			$new_columns = $original_columns;
 			array_splice( $new_columns, 1 ); // in this way we could place our columns on the first place after the first checkbox.
 
@@ -624,7 +611,7 @@ if ( ! class_exists( 'ATBDP_Custom_Taxonomy' ) ) :
 			return array_merge( $new_columns, $original_columns );
 		}
 
-		public function location_columns( $original_columns ) {
+		public function location_columns( $original_columns ): array {
 			$new_columns = $original_columns;
 			array_splice( $new_columns, 2 ); // in this way we could place our columns on the first place after the first checkbox.
 
@@ -647,8 +634,8 @@ if ( ! class_exists( 'ATBDP_Custom_Taxonomy' ) ) :
 		public function category_rows( $empty_string, $column_name, $term_id ) {
 			$icon           = get_term_meta( $term_id, 'category_icon', true );
 			$directory_type = get_term_meta( $term_id, '_directory_type', true );
-			$directory_type = ! empty( $directory_type ) ? $directory_type : array();
-			$directory_type = is_array( $directory_type ) ? $directory_type : array( $directory_type );
+			$directory_type = empty( $directory_type ) ? [] : $directory_type;
+			$directory_type = is_array( $directory_type ) ? $directory_type : [ $directory_type ];
 
 			/*
 			 $icon_type = array();
@@ -668,23 +655,21 @@ if ( ! class_exists( 'ATBDP_Custom_Taxonomy' ) ) :
 			}
 			if ( $column_name == 'atbdp_category_icon' ) {
 
-				return ! empty( $icon ) ? "<i class='{$icon}'></i>" : ' ';
+				return empty( $icon ) ? ' ' : "<i class='{$icon}'></i>";
 			}
 
-			if ( $column_name == 'atbdp_category_directory_type' ) {
-				if ( $directory_type ) {
-					$listing_type = array();
-					foreach ( $directory_type as $type ) {
+			if ($column_name == 'atbdp_category_directory_type' && $directory_type) {
+                $listing_type = [];
+                foreach ( $directory_type as $type ) {
 						if ( is_numeric( $type ) ) {
 							$get_type       = get_term_by( 'term_id', $type, ATBDP_TYPE );
-							$listing_type[] = ! empty( $get_type ) ? $get_type->slug : '';
+							$listing_type[] = empty( $get_type ) ? '' : $get_type->slug;
 						} else {
 							$listing_type[] = $type;
 						}
 					}
-					return implode( ', ', $listing_type );
-				}
-			}
+                return implode( ', ', $listing_type );
+            }
 
 			return $empty_string;
 		}
@@ -692,47 +677,42 @@ if ( ! class_exists( 'ATBDP_Custom_Taxonomy' ) ) :
 		public function location_rows( $empty_string, $column_name, $term_id ) {
 			$directory_type = get_term_meta( $term_id, '_directory_type', true );
 
-			if ( $column_name == 'atbdp_location_directory_type' ) {
-
-				if ( $directory_type && is_array( $directory_type ) ) {
-
-					$listing_type = array();
-					foreach ( $directory_type as $type ) {
+			if ($column_name == 'atbdp_location_directory_type' && ($directory_type && is_array( $directory_type ))) {
+                $listing_type = [];
+                foreach ( $directory_type as $type ) {
 
 						if ( is_numeric( $type ) ) {
 							$get_type       = get_term_by( 'term_id', $type, ATBDP_TYPE );
-							$listing_type[] = ! empty( $get_type ) ? $get_type->slug : '';
+							$listing_type[] = empty( $get_type ) ? '' : $get_type->slug;
 						} else {
 
 							$listing_type[] = $type;
 
 						}
 					}
-
-					return implode( ', ', $listing_type );
-				}
-			}
+                return implode( ', ', $listing_type );
+            }
 
 			return $empty_string;
 		}
 
 
-		public function display_terms_of_post( $post_id, $term_name = 'category' ) {
+		public function display_terms_of_post( $post_id, $term_name = 'category' ): void {
 			global $post;
 			$terms = get_the_terms( $post_id, $term_name );
 
 			/* If terms were found. */
 			if ( ! empty( $terms ) ) {
 
-				$out = array();
+				$out = [];
 
 				/* Loop through each term, linking to the 'edit posts' page for the specific term. */
 				foreach ( $terms as $term ) :
 					$term_url = add_query_arg(
-						array(
+						[
 							'post_type' => $post->post_type,
 							$term_name  => $term->slug,
-						),
+						],
 						'edit.php'
 					);
 
@@ -795,10 +775,10 @@ if ( ! class_exists( 'ATBDP_Custom_Taxonomy' ) ) :
 				foreach ( $locations as $location ) {
 					// get the children (if any) of the current $location
 					$children = get_categories(
-						array(
+						[
 							'taxonomy' => $taxonomy,
 							'parent'   => $location->term_id,
-						)
+						]
 					);
 
 					if ( count( $children ) == 0 ) {
@@ -839,6 +819,7 @@ if ( ! class_exists( 'ATBDP_Custom_Taxonomy' ) ) :
 			if ( ! directorist_is_multi_directory_enabled() || ( 1 == count( $this->get_listing_types() ) ) ) {
 				return $this->get_current_listing_type();
 			}
+            return null;
 		}
 	}
 endif;

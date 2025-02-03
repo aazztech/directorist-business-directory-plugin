@@ -14,35 +14,31 @@ if ( ! defined( 'ABSPATH' ) ) {
 class Asset_Loader {
 
 	/**
-	 * Initialize
-	 *
-	 * @return void
-	 */
-	public static function init() {
+     * Initialize
+     */
+    public static function init(): void {
 		// Frontend scripts
-		add_action( 'wp_enqueue_scripts', array( __CLASS__, 'register_scripts' ) );
-		add_action( 'wp_enqueue_scripts', array( __CLASS__, 'enqueue_styles' ), 12 );
-		add_action( 'wp_enqueue_scripts', array( __CLASS__, 'enqueue_single_listing_scripts' ), 12 );
-		add_action( 'wp_enqueue_scripts', array( __CLASS__, 'localized_data' ), 15 );
+		add_action( 'wp_enqueue_scripts', [ self::class, 'register_scripts' ] );
+		add_action( 'wp_enqueue_scripts', [ self::class, 'enqueue_styles' ], 12 );
+		add_action( 'wp_enqueue_scripts', [ self::class, 'enqueue_single_listing_scripts' ], 12 );
+		add_action( 'wp_enqueue_scripts', [ self::class, 'localized_data' ], 15 );
 
-		add_action( 'enqueue_block_assets', array( __CLASS__, 'register_scripts' ) );
-		add_action( 'enqueue_block_assets', array( __CLASS__, 'localized_data' ), 15 );
+		add_action( 'enqueue_block_assets', [ self::class, 'register_scripts' ] );
+		add_action( 'enqueue_block_assets', [ self::class, 'localized_data' ], 15 );
 
 		// Admin Scripts
-		add_action( 'admin_enqueue_scripts', array( __CLASS__, 'register_scripts' ) );
-		add_action( 'admin_enqueue_scripts', array( __CLASS__, 'admin_scripts' ), 12 );
-		add_action( 'admin_enqueue_scripts', array( __CLASS__, 'localized_data' ), 15 );
+		add_action( 'admin_enqueue_scripts', [ self::class, 'register_scripts' ] );
+		add_action( 'admin_enqueue_scripts', [ self::class, 'admin_scripts' ], 12 );
+		add_action( 'admin_enqueue_scripts', [ self::class, 'localized_data' ], 15 );
 
 		// Enqueue conditional scripts depending on loaded template
-		add_action( 'before_directorist_template_loaded', array( __CLASS__, 'load_template_scripts' ) );
+		add_action( 'before_directorist_template_loaded', [ self::class, 'load_template_scripts' ] );
 	}
 
 	/**
-	 * Enqueue all styles to all pages.
-	 *
-	 * @return void
-	 */
-	public static function enqueue_styles() {
+     * Enqueue all styles to all pages.
+     */
+    public static function enqueue_styles(): void {
 		// Map CSS
 		self::enqueue_map_styles();
 
@@ -61,11 +57,9 @@ class Asset_Loader {
 	}
 
 	/**
-	 * Enqueue scripts in Single listing page.
-	 *
-	 * @return void
-	 */
-	public static function enqueue_single_listing_scripts() {
+     * Enqueue scripts in Single listing page.
+     */
+    public static function enqueue_single_listing_scripts(): void {
 		if ( ! is_singular( ATBDP_POST_TYPE ) ) {
 			return;
 		}
@@ -81,13 +75,11 @@ class Asset_Loader {
 	}
 
 	/**
-	 * Enqueue conditional scripts depending on loaded template.
-	 *
-	 * @param string $template
-	 *
-	 * @return void
-	 */
-	public static function load_template_scripts( $template ) {
+     * Enqueue conditional scripts depending on loaded template.
+     *
+     * @param string $template
+     */
+    public static function load_template_scripts( $template ): void {
 
 		if ( Helper::is_widget_template( $template ) && ! wp_script_is( 'directorist-widgets' ) ) {
 			wp_enqueue_script( 'directorist-widgets' );
@@ -185,8 +177,8 @@ class Asset_Loader {
 
 			case 'search-form/custom-fields/color_picker':
 			case 'listing-form/custom-fields/color_picker':
-				wp_enqueue_script( 'iris', admin_url( 'js/iris.min.js' ), array( 'jquery-ui-draggable', 'jquery-ui-slider', 'jquery-touch-punch' ), Helper::get_script_version() );
-				wp_enqueue_script( 'wp-color-picker', admin_url( 'js/color-picker.min.js' ), array( 'iris', 'wp-i18n' ), Helper::get_script_version() );
+				wp_enqueue_script( 'iris', admin_url( 'js/iris.min.js' ), [ 'jquery-ui-draggable', 'jquery-ui-slider', 'jquery-touch-punch' ], Helper::get_script_version() );
+				wp_enqueue_script( 'wp-color-picker', admin_url( 'js/color-picker.min.js' ), [ 'iris', 'wp-i18n' ], Helper::get_script_version() );
 				break;
 
 			case 'listing-form/fields/address':
@@ -208,9 +200,6 @@ class Asset_Loader {
 				break;
 
 			case 'single/slider':
-				wp_enqueue_script( 'directorist-swiper' );
-				wp_enqueue_script( 'directorist-listing-slider' );
-				break;
 
 			case 'single/section-related_listings':
 				wp_enqueue_script( 'directorist-swiper' );
@@ -232,11 +221,9 @@ class Asset_Loader {
 	}
 
 	/**
-	 * Enqueue conditional admin scripts depending on current admin screen.
-	 *
-	 * @return void
-	 */
-	public static function admin_scripts() {
+     * Enqueue conditional admin scripts depending on current admin screen.
+     */
+    public static function admin_scripts(): void {
 
 		if ( Helper::is_admin_page( 'builder-archive' ) ) {
 			wp_enqueue_style( 'directorist-unicons' );
@@ -302,8 +289,8 @@ class Asset_Loader {
 			wp_enqueue_script( 'directorist-add-listing' );
 			wp_enqueue_media();
 
-			wp_enqueue_script( 'iris', admin_url( 'js/iris.min.js' ), array( 'jquery-ui-draggable', 'jquery-ui-slider', 'jquery-touch-punch' ), Helper::get_script_version() );
-			wp_enqueue_script( 'wp-color-picker', admin_url( 'js/color-picker.min.js' ), array( 'iris', 'wp-i18n' ), Helper::get_script_version() );
+			wp_enqueue_script( 'iris', admin_url( 'js/iris.min.js' ), [ 'jquery-ui-draggable', 'jquery-ui-slider', 'jquery-touch-punch' ], Helper::get_script_version() );
+			wp_enqueue_script( 'wp-color-picker', admin_url( 'js/color-picker.min.js' ), [ 'iris', 'wp-i18n' ], Helper::get_script_version() );
 
 			self::enqueue_map_styles();
 
@@ -315,7 +302,7 @@ class Asset_Loader {
 		}
 	}
 
-	public static function register_scripts() {
+	public static function register_scripts(): void {
 		Helper::register_all_scripts( Scripts::get_all_scripts() );
 
 		// Inline styles
@@ -324,27 +311,27 @@ class Asset_Loader {
 		}
 	}
 
-	public static function localized_data() {
+	public static function localized_data(): void {
 		Localized_Data::load_localized_data();
 	}
 
 	/**
 	 * @todo apply icon condition
 	 */
-	public static function enqueue_icon_styles() {
+	public static function enqueue_icon_styles(): void {
 		wp_enqueue_style( 'directorist-line-awesome' );
 		wp_enqueue_style( 'directorist-font-awesome' );
 		wp_enqueue_style( 'directorist-unicons' );
 	}
 
-	public static function enqueue_map_styles() {
+	public static function enqueue_map_styles(): void {
 		if ( Helper::map_type() === 'openstreet' ) {
 			wp_enqueue_style( 'directorist-openstreet-map-leaflet' );
 			wp_enqueue_style( 'directorist-openstreet-map-openstreet' );
 		}
 	}
 
-	public static function enqueue_map_scripts() {
+	public static function enqueue_map_scripts(): void {
 		if ( Helper::map_type() === 'openstreet' ) {
 			wp_enqueue_script( 'directorist-openstreet-map' );
 		} elseif ( Helper::map_type() === 'google' ) {

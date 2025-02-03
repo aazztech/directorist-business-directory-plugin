@@ -80,24 +80,18 @@ class Client {
 
     /**
      * The Object of Insights Class
-     *
-     * @var object
      */
-    private $insights;
+    private ?\Directorist\Appsero\Insights $insights = null;
 
     /**
      * The Object of Updater Class
-     *
-     * @var object
      */
-    private $updater;
+    private ?\Directorist\Appsero\Updater $updater = null;
 
     /**
      * The Object of License Class
-     *
-     * @var object
      */
-    private $license;
+    private ?\Directorist\Appsero\License $license = null;
 
     /**
      * Initialize the class
@@ -220,11 +214,10 @@ class Client {
      * Send request to remote endpoint
      *
      * @param array  $params
-     * @param string $route
      *
      * @return array|WP_Error array of results including HTTP headers or WP_Error if the request failed
      */
-    public function send_request( $params, $route, $blocking = false ) {
+    public function send_request( $params, string $route, $blocking = false ) {
         $url = $this->endpoint() . $route;
 
         $headers = [
@@ -232,7 +225,7 @@ class Client {
             'Accept'     => 'application/json',
         ];
 
-        $response = wp_remote_post(
+        return wp_remote_post(
             $url,
             [
                 'method'      => 'POST',
@@ -245,8 +238,6 @@ class Client {
                 'cookies'     => [],
             ]
         );
-
-        return $response;
     }
 
     /**
@@ -264,7 +255,7 @@ class Client {
      * Translate function _e()
      */
     // phpcs:ignore
-    public function _etrans( $text ) {
+    public function _etrans( $text ): void {
         call_user_func( '_e', $text, $this->textdomain );
     }
 
@@ -279,7 +270,7 @@ class Client {
     /**
      * Set project textdomain
      */
-    public function set_textdomain( $textdomain ) {
+    public function set_textdomain( $textdomain ): void {
         $this->textdomain = $textdomain;
     }
 }

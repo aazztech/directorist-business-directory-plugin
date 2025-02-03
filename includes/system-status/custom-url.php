@@ -5,12 +5,12 @@
 class ATBDP_Custom_Url
 {
     public function __construct() {
-		add_action( 'wp_ajax_generate_url', array( $this, 'generate_url' ) );
-		add_action( 'wp_ajax_revoke_url', array( $this, 'revoke_url' ) );
-		add_action( 'template_redirect', array( $this, 'view_debug_info' ), 1 );
+		add_action( 'wp_ajax_generate_url', [ $this, 'generate_url' ] );
+		add_action( 'wp_ajax_revoke_url', [ $this, 'revoke_url' ] );
+		add_action( 'template_redirect', [ $this, 'view_debug_info' ], 1 );
     }
 
-    public function generate_url() {
+    public function generate_url(): void {
 		if ( ! directorist_verify_nonce( '_nonce', '_generate_custom_url' ) ) {
 			wp_send_json_error( __( 'Invalid request', 'directorist' ),  400 );
 		}
@@ -24,20 +24,20 @@ class ATBDP_Custom_Url
 		set_transient( 'system_info_remote_token', $token, DAY_IN_SECONDS * 3 );
 
 		wp_send_json_success(
-			array(
+			[
 				'url'     => $this->get_token_url( $token ),
 				'message' => __( 'Secret URL has been created.', 'directorist' ),
-			)
+			]
 		);
     }
 
 	public function get_token_url( $token ) {
-		return add_query_arg( array(
+		return add_query_arg( [
 			'directorist_debug_token' => wp_hash( $token, 'nonce' ),
-		), home_url( '/' ) );
+		], home_url( '/' ) );
 	}
 
-    public function revoke_url() {
+    public function revoke_url(): void {
 		if ( ! directorist_verify_nonce( '_nonce', '_revoke_custom_url' ) ) {
 			wp_send_json_error( __( 'Invalid request', 'directorist' ),  400 );
 		}
@@ -50,7 +50,7 @@ class ATBDP_Custom_Url
 		wp_send_json_success( __( 'Secret URL has been revoked.', 'directorist' ) );
     }
 
-    public function view_debug_info() {
+    public function view_debug_info(): void {
 		if ( empty( $_GET['directorist_debug_token'] ) ) {
 			return;
 		}
@@ -80,7 +80,7 @@ class ATBDP_Custom_Url
 		return ob_get_clean();
 	}
 
-    public function custom_link() {
+    public function custom_link(): void {
 		$url = '';
 		if ( get_transient( 'system_info_remote_token' ) ) {
 			$url = $this->get_token_url( get_transient( 'system_info_remote_token' ) );
@@ -100,7 +100,7 @@ class ATBDP_Custom_Url
 						<form action="#">
 							<div class="atbds_form-row">
 								<input type="url" id="system-info-url" onclick="this.focus();this.select()" value="<?php echo esc_url( $url ); ?>">
-								<a class="button-secondary" href="<?php echo esc_url( $url ? $url : '#' ); ?>" target="_blank" id="system-info-url-text-link" style="display: <?php echo $url ? 'display-inline' : 'none'; ?>"><?php esc_html_e( 'View', 'directorist' ); ?></a>
+								<a class="button-secondary" href="<?php echo esc_url( $url ?: '#' ); ?>" target="_blank" id="system-info-url-text-link" style="display: <?php echo $url ? 'display-inline' : 'none'; ?>"><?php esc_html_e( 'View', 'directorist' ); ?></a>
 							</div>
 							<div class="atbds_form-row">
 								<div class="atbds_buttonGroup">

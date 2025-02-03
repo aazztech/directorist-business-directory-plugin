@@ -11,37 +11,29 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 /**
  * Check guest review enable status.
- *
- * @return bool
  */
-function directorist_is_guest_review_enabled() {
+function directorist_is_guest_review_enabled(): bool {
 	return (bool) get_directorist_option( 'guest_review', 0 );
 }
 
 /**
  * Check review enable status.
- *
- * @return bool
  */
-function directorist_is_review_enabled() {
+function directorist_is_review_enabled(): bool {
 	return (bool) get_directorist_option( 'enable_review', 1 );
 }
 
 /**
  * Check owner review status.
- *
- * @return void
  */
-function directorist_is_owner_review_enabled() {
+function directorist_is_owner_review_enabled(): bool {
 	return (bool) get_directorist_option( 'enable_owner_review', true );
 }
 
 /**
  * Check review immediate approval status.
- *
- * @return bool
  */
-function directorist_is_immediate_review_approve_enabled() {
+function directorist_is_immediate_review_approve_enabled(): bool {
 	return (bool) get_directorist_option( 'approve_immediately', 1 );
 }
 
@@ -80,10 +72,8 @@ function directorist_get_listing_review_count( $listing_id ) {
 
 /**
  * Listing rating meta field key.
- *
- * @return string
  */
-function directorist_get_rating_field_meta_key() {
+function directorist_get_rating_field_meta_key(): string {
 	return \Directorist\Review\Listing_Review_Meta::FIELD_AVG_RATING;
 }
 
@@ -96,24 +86,24 @@ function directorist_get_rating_field_meta_key() {
  *
  * @return void
  */
-function directorist_get_comment_edit_link( $args = array(), $comment = null, $post = null ) {
-    $defaults = array(
+function directorist_get_comment_edit_link( $args = [], $comment = null, $post = null ) {
+    $defaults = [
         'edit_text'    => __( 'Edit', 'directorist' ),
         'edit_of_text' => __( 'Edit %s', 'directorist' ),
         'max_depth'    => 0,
         'depth'        => 0,
-    );
+    ];
 
     $args = wp_parse_args( $args, $defaults );
 
     $comment = get_comment( $comment );
 
     if ( empty( $comment ) ) {
-        return;
+        return null;
     }
 
 	if ( ! current_user_can( 'edit_comment', $comment->comment_ID ) ) {
-		return;
+		return null;
 	}
 
     if ( empty( $post ) ) {
@@ -127,11 +117,11 @@ function directorist_get_comment_edit_link( $args = array(), $comment = null, $p
     }
 
 	$comment_type = ( $comment->comment_type === 'review' ? __( 'review', 'directorist' ) : __( 'comment', 'directorist' ) );
-	$data_attributes = array(
+	$data_attributes = [
 		'commentid' => $comment->comment_ID,
 		'postid'    => $post->ID,
 		'editof'    => sprintf( $args['edit_of_text'], $comment_type ),
-	);
+	];
 
 	$data_attribute_string = '';
 
@@ -160,17 +150,16 @@ function directorist_get_comment_edit_link( $args = array(), $comment = null, $p
  * @return string
  */
 function directorist_get_comment_form_ajax_url( $type = 'add' ) {
-	return \Directorist\Review\Comment_Form_Renderer::get_ajax_url( $type );
+	return \Directorist\Review\Comment_Form_Renderer::get_ajax_url();
 }
 
 /**
  * Check if user already shared a review.
  *
- * @param string $user_email
  * @param int $post_id.
  * @return bool
  */
-function directorist_user_review_exists( $user_email, $post_id ) {
+function directorist_user_review_exists( string $user_email, $post_id ) {
 	if ( ! is_email( $user_email ) ) {
 		return false;
 	}
@@ -205,10 +194,8 @@ function directorist_user_review_exists( $user_email, $post_id ) {
 
 /**
  * Check if reply is enabled for review.
- *
- * @return bool
  */
-function directorist_is_review_reply_enabled() {
+function directorist_is_review_reply_enabled(): bool {
 	return (bool) get_directorist_option( 'review_enable_reply', false );
 }
 
@@ -217,10 +204,8 @@ function directorist_is_review_reply_enabled() {
  *
  * @since 7.1.1
  * @param int $listing_id
- *
- * @return bool
  */
-function directorist_can_owner_review( $listing_id = null ) {
+function directorist_can_owner_review( $listing_id = null ): bool {
 	return ( directorist_is_owner_review_enabled() && directorist_is_current_user_listing_author( $listing_id ) );
 }
 
@@ -228,10 +213,8 @@ function directorist_can_owner_review( $listing_id = null ) {
  * Check if guest can review.
  *
  * @since 7.1.1
- *
- * @return bool
  */
-function directorist_can_guest_review() {
+function directorist_can_guest_review(): bool {
 	return ( directorist_is_guest_review_enabled() && ! is_user_logged_in() );
 }
 
@@ -263,16 +246,11 @@ function directorist_can_current_user_review( $listing_id = null ) {
 	if ( directorist_is_current_user_listing_author( $listing_id ) && ! directorist_is_owner_review_enabled() ) {
 		return false;
 	}
-
-	// Current user already reviewed so return.
-	if ( directorist_user_review_exists( wp_get_current_user()->user_email, $listing_id ) ) {
-		return false;
-	}
-
-	return true;
+    // Current user already reviewed so return.
+    return !directorist_user_review_exists(wp_get_current_user()->user_email, $listing_id);
 }
 
-function directorist_is_review_gdpr_consent_enabled() {
+function directorist_is_review_gdpr_consent_enabled(): bool {
 	return (bool) get_directorist_option( 'enable_gdpr_consent', false );
 }
 
@@ -280,18 +258,18 @@ function directorist_get_review_gdpr_consent_label() {
 	$label = get_directorist_option( 'gdpr_consent_label', '' );
 
 	return preg_replace(
-		array(
+		[
 			'/\[privacy_policy\]/',
 			'/\[\/privacy_policy\]/',
 			'/\[terms_conditions\]/',
 			'/\[\/terms_conditions\]/',
-		),
-		array(
+		],
+		[
 			'<a target="_blank" href="' . esc_url( ATBDP_Permalink::get_privacy_policy_page_url() ) . '">',
 			'</a>',
 			'<a target="_blank" href="' . esc_url( ATBDP_Permalink::get_terms_and_conditions_page_url() ) . '">',
 			'</a>'
-		),
+		],
 		$label
 	);
 }

@@ -43,14 +43,6 @@ if ( ! class_exists( 'ATBDP_Database' ) ) :
 		public $primary_key;
 
 		/**
-		 * Get things started
-		 *
-		 * @access  public
-		 * @since   1.0
-		 */
-		public function __construct() {}
-
-		/**
 		 * Whitelist of columns
 		 *
 		 * @access  public
@@ -58,7 +50,7 @@ if ( ! class_exists( 'ATBDP_Database' ) ) :
 		 * @return  array
 		 */
 		public function get_columns() {
-			return array();
+			return [];
 		}
 
 		/**
@@ -69,7 +61,7 @@ if ( ! class_exists( 'ATBDP_Database' ) ) :
 		 * @return  array
 		 */
 		public function get_column_defaults() {
-			return array();
+			return [];
 		}
 
 		/**
@@ -154,7 +146,7 @@ if ( ! class_exists( 'ATBDP_Database' ) ) :
 		 * @since   1.0
 		 * @return  int
 		 */
-		public function insert( $data, $type = '' ) {
+		public function insert( $data, string $type = '' ) {
 			global $wpdb;
 
 			// Set default values
@@ -190,7 +182,7 @@ if ( ! class_exists( 'ATBDP_Database' ) ) :
 		 * @since   1.0
 		 * @return  bool
 		 */
-		public function update( $row_id, $data = array(), $where = '' ) {
+		public function update( $row_id, $data = [], $where = '' ) {
 
 			global $wpdb;
 
@@ -217,12 +209,7 @@ if ( ! class_exists( 'ATBDP_Database' ) ) :
 			// Reorder $column_formats to match the order of columns given in $data
 			$data_keys = array_keys( $data );
 			$column_formats = array_merge( array_flip( $data_keys ), $column_formats );
-
-			if ( false === $wpdb->update( $this->table_name, $data, array( $where => $row_id ), $column_formats ) ) {
-				return false;
-			}
-
-			return true;
+            return false !== $wpdb->update( $this->table_name, $data, [ $where => $row_id ], $column_formats );
 		}
 
 		/**
@@ -242,12 +229,7 @@ if ( ! class_exists( 'ATBDP_Database' ) ) :
 			if ( empty( $row_id ) ) {
 				return false;
 			}
-
-			if ( false === $wpdb->query( $wpdb->prepare( "DELETE FROM $this->table_name WHERE $this->primary_key = %d", $row_id ) ) ) {
-				return false;
-			}
-
-			return true;
+            return false !== $wpdb->query( $wpdb->prepare( "DELETE FROM $this->table_name WHERE $this->primary_key = %d", $row_id ) );
 		}
 
 		/**

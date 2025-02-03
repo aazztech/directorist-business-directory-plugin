@@ -12,18 +12,18 @@ class Image_Upload_Field extends Base_Field {
 
 	public $type = 'image_upload';
 
-	public function get_value( $posted_data ) {
+	public function get_value( $posted_data ): ?array {
 		if ( empty( $posted_data[ $this->get_key() ] ) && empty( $posted_data[ $this->get_key() . '_old' ] ) ) {
 			return null;
 		}
 
-		$new_images = (array) directorist_get_var( $posted_data[ $this->get_key() ], array() );
-		$old_images = (array) directorist_get_var( $posted_data[ $this->get_key() . '_old' ], array() );
+		$new_images = (array) directorist_get_var( $posted_data[ $this->get_key() ], [] );
+		$old_images = (array) directorist_get_var( $posted_data[ $this->get_key() . '_old' ], [] );
 
-		return array(
+		return [
 			'new' => array_filter( $new_images ),
 			'old' => array_filter( wp_parse_id_list( $old_images ) ),
-		);
+		];
 	}
 
 	public function validate( $posted_data ) {
@@ -91,12 +91,7 @@ class Image_Upload_Field extends Base_Field {
 				break;
 			}
 		}
-
-		if ( $this->has_error() ) {
-			return false;
-		}
-
-		return true;
+        return !$this->has_error();
 	}
 
 	public function get_total_upload_limit() {

@@ -42,7 +42,7 @@ class Locations_Controller extends Terms_Controller {
 	 * @return WP_REST_Response
 	 */
 	public function prepare_item_for_response( $item, $request ) {
-		$data = array(
+		$data = [
 			'id'          => (int) $item->term_id,
 			'name'        => $item->name,
 			'slug'        => $item->slug,
@@ -51,7 +51,7 @@ class Locations_Controller extends Terms_Controller {
 			'image'       => null,
 			'directory'   => null,
 			'count'       => (int) $item->count,
-		);
+		];
 
 		// Location directory type.
 		if ( directorist_is_multi_directory_enabled() ) {
@@ -64,7 +64,7 @@ class Locations_Controller extends Terms_Controller {
 		// Location image.
 		$image_id = get_term_meta( $item->term_id, 'image', true );
 		if ( $image_id && ! empty( $attachment = get_post( $image_id ) ) ) {
-			$data['image'] = array(
+			$data['image'] = [
 				'id'                => (int) $image_id,
 				'date_created'      => directorist_rest_prepare_date_response( $attachment->post_date ),
 				'date_created_gmt'  => directorist_rest_prepare_date_response( $attachment->post_date_gmt ),
@@ -73,10 +73,10 @@ class Locations_Controller extends Terms_Controller {
 				'src'               => wp_get_attachment_url( $image_id ),
 				'name'              => get_the_title( $attachment ),
 				'alt'               => get_post_meta( $image_id, '_wp_attachment_image_alt', true ),
-			);
+			];
 		}
 
-		$context = ! empty( $request['context'] ) ? $request['context'] : 'view';
+		$context = empty( $request['context'] ) ? 'view' : $request['context'];
 		$data    = $this->add_additional_fields_to_object( $data, $request );
 		$data    = $this->filter_response_by_context( $data, $context );
 
@@ -102,117 +102,117 @@ class Locations_Controller extends Terms_Controller {
 	 * @return array
 	 */
 	public function get_item_schema() {
-		$schema = array(
+		$schema = [
 			'$schema'    => 'http://json-schema.org/draft-04/schema#',
 			'title'      => $this->taxonomy,
 			'type'       => 'object',
-			'properties' => array(
-				'id'          => array(
+			'properties' => [
+				'id'          => [
 					'description' => __( 'Unique identifier for the resource.', 'directorist' ),
 					'type'        => 'integer',
-					'context'     => array( 'view', 'edit' ),
+					'context'     => [ 'view', 'edit' ],
 					'readonly'    => true,
-				),
-				'name'        => array(
+				],
+				'name'        => [
 					'description' => __( 'Location name.', 'directorist' ),
 					'type'        => 'string',
-					'context'     => array( 'view', 'edit' ),
-					'arg_options' => array(
+					'context'     => [ 'view', 'edit' ],
+					'arg_options' => [
 						'sanitize_callback' => 'sanitize_text_field',
-					),
-				),
-				'slug'        => array(
+					],
+				],
+				'slug'        => [
 					'description' => __( 'An alphanumeric identifier for the resource unique to its type.', 'directorist' ),
 					'type'        => 'string',
-					'context'     => array( 'view', 'edit' ),
-					'arg_options' => array(
+					'context'     => [ 'view', 'edit' ],
+					'arg_options' => [
 						'sanitize_callback' => 'sanitize_title',
-					),
-				),
-				'parent'      => array(
+					],
+				],
+				'parent'      => [
 					'description' => __( 'The ID for the parent of the resource.', 'directorist' ),
 					'type'        => 'integer',
-					'context'     => array( 'view', 'edit' ),
-				),
-				'description' => array(
+					'context'     => [ 'view', 'edit' ],
+				],
+				'description' => [
 					'description' => __( 'HTML description of the resource.', 'directorist' ),
 					'type'        => 'string',
-					'context'     => array( 'view', 'edit' ),
-					'arg_options' => array(
+					'context'     => [ 'view', 'edit' ],
+					'arg_options' => [
 						'sanitize_callback' => 'wp_filter_post_kses',
-					),
-				),
-				'image'       => array(
+					],
+				],
+				'image'       => [
 					'description' => __( 'Image data.', 'directorist' ),
 					'type'        => 'object',
-					'context'     => array( 'view', 'edit' ),
-					'properties'  => array(
-						'id'                => array(
+					'context'     => [ 'view', 'edit' ],
+					'properties'  => [
+						'id'                => [
 							'description' => __( 'Image ID.', 'directorist' ),
 							'type'        => 'integer',
-							'context'     => array( 'view', 'edit' ),
-						),
-						'date_created'      => array(
+							'context'     => [ 'view', 'edit' ],
+						],
+						'date_created'      => [
 							'description' => __( "The date the image was created, in the site's timezone.", 'directorist' ),
 							'type'        => 'date-time',
-							'context'     => array( 'view', 'edit' ),
+							'context'     => [ 'view', 'edit' ],
 							'readonly'    => true,
-						),
-						'date_created_gmt'  => array(
+						],
+						'date_created_gmt'  => [
 							'description' => __( 'The date the image was created, as GMT.', 'directorist' ),
 							'type'        => 'date-time',
-							'context'     => array( 'view', 'edit' ),
+							'context'     => [ 'view', 'edit' ],
 							'readonly'    => true,
-						),
-						'date_modified'     => array(
+						],
+						'date_modified'     => [
 							'description' => __( "The date the image was last modified, in the site's timezone.", 'directorist' ),
 							'type'        => 'date-time',
-							'context'     => array( 'view', 'edit' ),
+							'context'     => [ 'view', 'edit' ],
 							'readonly'    => true,
-						),
-						'date_modified_gmt' => array(
+						],
+						'date_modified_gmt' => [
 							'description' => __( 'The date the image was last modified, as GMT.', 'directorist' ),
 							'type'        => 'date-time',
-							'context'     => array( 'view', 'edit' ),
+							'context'     => [ 'view', 'edit' ],
 							'readonly'    => true,
-						),
-						'src'               => array(
+						],
+						'src'               => [
 							'description' => __( 'Image URL.', 'directorist' ),
 							'type'        => 'string',
 							'format'      => 'uri',
-							'context'     => array( 'view', 'edit' ),
-						),
-						'name'              => array(
+							'context'     => [ 'view', 'edit' ],
+						],
+						'name'              => [
 							'description' => __( 'Image name.', 'directorist' ),
 							'type'        => 'string',
-							'context'     => array( 'view', 'edit' ),
-						),
-						'alt'               => array(
+							'context'     => [ 'view', 'edit' ],
+						],
+						'alt'               => [
 							'description' => __( 'Image alternative text.', 'directorist' ),
 							'type'        => 'string',
-							'context'     => array( 'view', 'edit' ),
-						),
-					),
-				),
-				'directory' => array(
+							'context'     => [ 'view', 'edit' ],
+						],
+					],
+				],
+				'directory' => [
 					'description' => __( 'Directory type ids for this resource.', 'directorist' ),
 					'type'        => 'array',
-					'items' => array(
+					'items' => [
 						'type'   => 'integer',
-					),
-					'context'     => array( 'view', 'edit' ),
-					'arg_options' => array(
+					],
+					'context'     => [ 'view', 'edit' ],
+					'arg_options' => [
 						'sanitize_callback' => 'wp_parse_id_list',
-					),
-				),
-				'count'       => array(
+					],
+				],
+				'count'       => [
 					'description' => __( 'Number of published listings for the resource.', 'directorist' ),
 					'type'        => 'integer',
-					'context'     => array( 'view', 'edit' ),
+					'context'     => [ 'view', 'edit' ],
 					'readonly'    => true,
-				),
-			),
-		);
+				],
+			],
+		];
 
 		return $this->add_additional_fields_schema( $schema );
 	}
@@ -235,34 +235,34 @@ class Locations_Controller extends Terms_Controller {
 				return new WP_Error(
 					'directorist_rest_invalid_directory_request',
 					__( 'Multi directory is disabled.', 'directorist' ),
-					array( 'status' => 400 )
+					[ 'status' => 400 ]
 				);
 			}
 
 			$directory_ids = $request['directory'];
-			$directory     = get_terms( array(
+			$directory     = get_terms( [
 				'include'                => $directory_ids,
 				'taxonomy'               => ATBDP_TYPE,
 				'update_term_meta_cache' => false,
 				'hide_empty'             => false,
-			) );
+			] );
 
 			if ( is_wp_error( $directory ) || empty( $directory ) ) {
 				return new WP_Error(
 					'directorist_rest_invalid_directory_ids',
 					__( 'Directory do not exist.', 'directorist' ),
-					array( 'status' => 400 )
+					[ 'status' => 400 ]
 				);
 			}
 
-			$_valid_directory     = wp_list_filter( $directory, array( 'taxonomy' => ATBDP_TYPE ) );
+			$_valid_directory     = wp_list_filter( $directory, [ 'taxonomy' => ATBDP_TYPE ] );
 			$_valid_directory_ids = wp_list_pluck( $_valid_directory, 'term_id' );
 
 			if ( count( $directory_ids ) !== count( $_valid_directory_ids ) ) {
 				return new WP_Error(
 					'directorist_rest_invalid_directory_ids',
 					__( 'Invalid directory id.', 'directorist' ),
-					array( 'status' => 400 )
+					[ 'status' => 400 ]
 				);
 			}
 
@@ -295,10 +295,10 @@ class Locations_Controller extends Terms_Controller {
 				// Set the image title.
 				if ( ! empty( $request['image']['name'] ) ) {
 					wp_update_post(
-						array(
+						[
 							'ID'         => $image_id,
 							'post_title' => directorist_clean( $request['image']['name'] ),
-						)
+						]
 					);
 				}
 			} else {
@@ -318,14 +318,14 @@ class Locations_Controller extends Terms_Controller {
 		$params = parent::get_collection_params();
 
 		if ( directorist_is_multi_directory_enabled() ) {
-			$params['directory'] = array(
+			$params['directory'] = [
 				'description' => __( 'Limit result set to specific directory type ids.', 'directorist' ),
 				'type'        => 'array',
-				'items'       => array(
+				'items'       => [
 					'type' => 'integer',
-				),
+				],
 				'validate_callback' => 'rest_validate_request_arg',
-			);
+			];
 		}
 
 		return $params;

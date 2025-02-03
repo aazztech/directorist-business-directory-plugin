@@ -20,7 +20,7 @@ if ( ! class_exists( 'ATBDP_Cache_Helper' ) ) :
 		 * @return string transient version based on time(), 10 digits.
 		 */
 
-		public static function get_transient_version( $group, $refresh = false ) {
+		public static function get_transient_version( string $group, $refresh = false ) {
 			$transient_name  = $group . '-transient-version';
 			$transient_value = get_transient( $transient_name );
 
@@ -37,25 +37,24 @@ if ( ! class_exists( 'ATBDP_Cache_Helper' ) ) :
 		}
 
 		// get_transient_name
-		public static function get_transient_name( $prefix = '', $args = '' ) {
+		public static function get_transient_name( $prefix = '', $args = '' ): string {
 			$args = ( is_array( $args ) ) ? wp_json_encode( $args ) : $args;
-			$name = "{$prefix}_" . md5( $args );
 
-			return $name;
+			return "{$prefix}_" . md5( $args );
 		}
 
 		// get_the_transient
-		public static function get_the_transient( $args = array() ) {
-			$defaults = array(
+		public static function get_the_transient( $args = [] ) {
+			$defaults = [
 				'group'      => '',
 				'name'       => '',
 				'query_args' => '',
-				'data'       => array(),
+				'data'       => [],
 				'update'     => false,
 				'expiration' => 0,
 				'cache'      => true,
 				'value'      => null,
-			);
+			];
 			$args     = array_merge( $defaults, $args );
 
 			$enable_cahce  = get_directorist_option( 'atbdp_enable_cache', true );
@@ -68,8 +67,8 @@ if ( ! class_exists( 'ATBDP_Cache_Helper' ) ) :
 			$transient_version = self::get_transient_version( $args['group'], $args['update'] );
 			$transient_value   = $args['cache'] ? get_transient( $transient_name ) : false;
 
-			$has_transient         = isset( $transient_value['value'], $transient_value['version'] ) ? true : false;
-			$transient_not_updated = ( $has_transient && $transient_value['version'] === $transient_version ) ? true : false;
+			$has_transient         = isset( $transient_value['value'], $transient_value['version'] );
+			$transient_not_updated = $has_transient && $transient_value['version'] === $transient_version;
 
 			if ( $has_transient && $transient_not_updated ) {
 				$value = $transient_value['value'];
@@ -88,10 +87,10 @@ if ( ! class_exists( 'ATBDP_Cache_Helper' ) ) :
 				}
 
 				if ( $args['cache'] ) {
-					$transient_value = array(
+					$transient_value = [
 						'version' => $transient_version,
 						'value'   => $value,
-					);
+					];
 
 					set_transient( $transient_name, $transient_value, $args['expiration'] );
 				}
@@ -101,9 +100,9 @@ if ( ! class_exists( 'ATBDP_Cache_Helper' ) ) :
 		}
 
 		// reset_cache
-		public static function reset_cache() {
-			add_action( 'save_post', array( __CLASS__, 'reset_query_cache' ), 10, 3 );
-			add_action( 'delete_post', array( __CLASS__, 'reset_query_cache' ) );
+		public static function reset_cache(): void {
+			add_action( 'save_post', [ self::class, 'reset_query_cache' ], 10, 3 );
+			add_action( 'delete_post', [ self::class, 'reset_query_cache' ] );
 
 			// add_action( 'created_' . ATBDP_CATEGORY, array( __CLASS__, 'reset_category_cache' ), 10, 2 );
 			// add_action( 'delete_' . ATBDP_CATEGORY, array( __CLASS__, 'reset_category_cache' ), 10, 2 );
@@ -116,7 +115,7 @@ if ( ! class_exists( 'ATBDP_Cache_Helper' ) ) :
 		}
 
 		// reset_query_cache
-		public static function reset_query_cache( $post_ID = 0, $post = null, $update = true ) {
+		public static function reset_query_cache( $post_ID = 0, $post = null, $update = true ): void {
 
 			if ( empty( $post_ID ) && empty( $post ) ) {
 				return; }
@@ -147,31 +146,18 @@ if ( ! class_exists( 'ATBDP_Cache_Helper' ) ) :
 		}
 
 		// reset_category_cache
-		public static function reset_category_cache( int $term_id, int $tt_id ) {
+		public static function reset_category_cache( int $term_id, int $tt_id ): void {
 			self::get_transient_version( 'atbdp_category_terms', true );
 		}
 
 		// reset_location_cache
-		public static function reset_location_cache( int $term_id, int $tt_id ) {
+		public static function reset_location_cache( int $term_id, int $tt_id ): void {
 			self::get_transient_version( 'atbdp_location_terms', true );
 		}
 
 		// reset_tag_cache
-		public static function reset_tag_cache( int $term_id, int $tt_id ) {
+		public static function reset_tag_cache( int $term_id, int $tt_id ): void {
 			self::get_transient_version( 'atbdp_tag_terms', true );
-		}
-
-		// log
-		private static function log( array $log = array() ) {
-			$title   = ( ! empty( $log['title'] ) ) ? $log['title'] : '';
-			$content = ( ! empty( $log['content'] ) ) ? $log['content'] : '';
-
-			wp_insert_post(
-				array(
-					'post_title'   => 'Cache Alert | ' . $title,
-					'post_content' => $content,
-				)
-			);
 		}
 	}
 endif;

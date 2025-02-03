@@ -13,14 +13,14 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 class Email {
 
-	public static function init() {
-		add_action( 'comment_post', [ __CLASS__, 'notify_owner' ] );
-		add_action( 'comment_post', [ __CLASS__, 'notify_admin' ] );
+	public static function init(): void {
+		add_action( 'comment_post', [ self::class, 'notify_owner' ] );
+		add_action( 'comment_post', [ self::class, 'notify_admin' ] );
 
-		add_action( 'comment_post', [ __CLASS__, 'maybe_disable_default_email' ], 0 );
+		add_action( 'comment_post', [ self::class, 'maybe_disable_default_email' ], 0 );
 	}
 
-	public static function maybe_disable_default_email() {
+	public static function maybe_disable_default_email(): void {
 		$post_id = isset( $_POST['comment_post_ID'] ) ? absint( $_POST['comment_post_ID'] ) : 0; // @codingStandardsIgnoreLine.
 
 		if ( $post_id && ATBDP_POST_TYPE === get_post_type( $post_id ) ) {
@@ -62,7 +62,7 @@ class Email {
 		$listing_title = get_the_title( $post->ID );
 		$listing_url   = get_permalink( $post->ID );
 
-		$placeholders = array(
+		$placeholders = [
 			'{site_name}'     => $site_name,
 			'{site_link}'     => sprintf( '<a href="%s">%s</a>', $site_url, $site_name ),
 			'{site_url}'      => sprintf( '<a href="%s">%s</a>', $site_url, $site_url ),
@@ -72,7 +72,7 @@ class Email {
 			'{sender_name}'   => empty( $review->comment_author ) ? $review->comment_author_email : $review->comment_author,
 			'{sender_email}'  => $review->comment_author_email,
 			'{message}'       => $review->comment_content,
-		);
+		];
 
 		$subject = __( '[{site_name}] New review at "{listing_title}"', 'directorist' );
 		$subject = strtr( $subject, $placeholders );
@@ -98,7 +98,7 @@ class Email {
 
 		$post          = get_post( $review->comment_post_ID );
 		$site_name     = get_bloginfo( 'name' );
-		$site_url      = get_bloginfo( 'url' );
+		get_bloginfo( 'url' );
 		$listing_title = get_the_title( $post->ID );
 		$listing_url   = get_the_permalink( $post->ID );
 		$listing_url   = sprintf( '<a href="%s">%s</a>', $listing_url, $listing_url );

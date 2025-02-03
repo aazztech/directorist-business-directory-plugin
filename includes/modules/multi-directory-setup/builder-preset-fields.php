@@ -6,7 +6,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-return apply_filters( 'atbdp_form_preset_widgets', array(
+return apply_filters( 'atbdp_form_preset_widgets', [
 	'title' => [
 		'label'    => __( 'Title', 'directorist' ),
 		'icon'     => 'las la-text-height',
@@ -955,4 +955,4 @@ return apply_filters( 'atbdp_form_preset_widgets', array(
 			],
 		],
 	],
-));
+]);

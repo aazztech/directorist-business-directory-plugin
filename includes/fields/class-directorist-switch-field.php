@@ -13,7 +13,7 @@ class Switch_Field extends Base_Field {
 
 	public $type = 'switch';
 
-	public function sanitize( $posted_data ) {
+	public function sanitize( $posted_data ): bool {
 		return (bool) $this->get_value( $posted_data );
 	}
 }

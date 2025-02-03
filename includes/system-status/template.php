@@ -1,7 +1,7 @@
 <?php
     $warnings      = directorist_warnings();
     $_count        = count( $warnings );
-    $warning_count = ! empty( $_count ) ? '<span class="directorist-badge directorist-badge-warning">' . $_count . '</span>' : '';
+    $warning_count = $_count === 0 ? '' : '<span class="directorist-badge directorist-badge-warning">' . $_count . '</span>';
 ?>
 <section class="atbds_wrapper">
     <div class="row">

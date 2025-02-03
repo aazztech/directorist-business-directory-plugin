@@ -12,7 +12,10 @@
  */
 abstract class WP_Async_Request {
 
-	/**
+	public $query_args;
+    public $query_url;
+    public $post_args;
+    /**
 	 * Prefix
 	 *
 	 * (default value: 'wp')
@@ -38,7 +41,7 @@ abstract class WP_Async_Request {
 	 * @var mixed
 	 * @access protected
 	 */
-	protected $identifier;
+	protected string $identifier;
 
 	/**
 	 * Data
@@ -48,7 +51,7 @@ abstract class WP_Async_Request {
 	 * @var array
 	 * @access protected
 	 */
-	protected $data = array();
+	protected $data = [];
 
 	/**
 	 * Initiate new async request
@@ -56,8 +59,8 @@ abstract class WP_Async_Request {
 	public function __construct() {
 		$this->identifier = $this->prefix . '_' . $this->action;
 
-		add_action( 'wp_ajax_' . $this->identifier, array( $this, 'maybe_handle' ) );
-		add_action( 'wp_ajax_nopriv_' . $this->identifier, array( $this, 'maybe_handle' ) );
+		add_action( 'wp_ajax_' . $this->identifier, [ $this, 'maybe_handle' ] );
+		add_action( 'wp_ajax_nopriv_' . $this->identifier, [ $this, 'maybe_handle' ] );
 	}
 
 	/**
@@ -95,10 +98,10 @@ abstract class WP_Async_Request {
 			return $this->query_args;
 		}
 
-		$args = array(
+		$args = [
 			'action' => $this->identifier,
 			'nonce'  => wp_create_nonce( $this->identifier ),
-		);
+		];
 
 		/**
 		 * Filters the post arguments used during an async request.
@@ -138,13 +141,13 @@ abstract class WP_Async_Request {
 			return $this->post_args;
 		}
 
-		$args = array(
+		$args = [
 			'timeout'   => 0.01,
 			'blocking'  => false,
 			'body'      => $this->data,
 			'cookies'   => $_COOKIE,
 			'sslverify' => apply_filters( 'https_local_ssl_verify', false ),
-		);
+		];
 
 		/**
 		 * Filters the post arguments used during an async request.
@@ -159,7 +162,7 @@ abstract class WP_Async_Request {
 	 *
 	 * Check for correct nonce and pass to handler.
 	 */
-	public function maybe_handle() {
+	public function maybe_handle(): void {
 		// Don't lock up other requests while processing
 		session_write_close();
 

@@ -13,18 +13,16 @@ class Base_Field {
 
 	public $type = 'base';
 
-	protected $props = array();
+	protected array $props;
 
-	protected $errors = array();
+	protected $errors = [];
 
-	public function __construct( array $props = array() ) {
+	public function __construct( array $props = [] ) {
 		$this->props = $props;
 	}
 
 	public function __get( $name ) {
-		if ( isset( $this->props[ $name ] ) ) {
-			return $this->props[ $name ];
-		}
+		return $this->props[ $name ] ?? null;
 	}
 
 	public function __set( $name, $value ) {
@@ -56,16 +54,13 @@ class Base_Field {
 	}
 
 	public function is_preset() : bool {
-		return ( bool ) ( $this->widget_group === 'preset' );
+		return $this->widget_group === 'preset';
 	}
 
-	public function is_category_only() {
-		if ( $this->is_preset() || empty( $this->__get( 'assign_to' ) ) || $this->__get( 'assign_to' ) === 'form' ) {
-			return false;
-		}
-
-		return true;
-	}
+	public function is_category_only(): bool
+    {
+        return !($this->is_preset() || empty( $this->__get( 'assign_to' ) ) || $this->__get( 'assign_to' ) === 'form');
+    }
 
 	public function get_assigned_category() {
 		if ( ! $this->is_category_only() || empty( $this->__get( 'category' ) ) ) {
@@ -75,32 +70,32 @@ class Base_Field {
 		return absint( $this->__get( 'category' ) );
 	}
 
-	public function add_error( $message = '' ) {
+	public function add_error( $message = '' ): void {
 		if ( ! isset( $this->errors[ $this->get_internal_key() ] ) ) {
-			$this->errors[ $this->get_internal_key() ] = array();
+			$this->errors[ $this->get_internal_key() ] = [];
 		}
 
 		$this->errors[ $this->get_internal_key() ][] = $message;
 	}
 
-	public function get_error() {
+	public function get_error(): string {
 		return isset( $this->errors[ $this->get_internal_key() ] ) ? implode( ' ', $this->errors[ $this->get_internal_key() ] ) : '';
 	}
 
-	public function has_error() {
+	public function has_error(): bool {
 		return ( ! empty( $this->get_error() ) );
 	}
 
-	public function get_value( $posted_data ) {
+	public function get_value( array $posted_data ) {
 		return directorist_get_var( $posted_data[ $this->get_key() ] );
 	}
 
-	public function is_value_empty( $posted_data ) {
+	public function is_value_empty( $posted_data ): bool {
 		$value = $this->get_value( $posted_data );
-		return ( is_null( $value ) || ( is_string( $value ) && $value === '' ) || ( is_array( $value ) && empty( $value ) ) );
+		return ( is_null( $value ) || ( is_string( $value ) && $value === '' ) || ( $value === [] ) );
 	}
 
-	public function validate( $posted_data ) {
+	public function validate( $posted_data ): bool {
 		return true;
 	}
 

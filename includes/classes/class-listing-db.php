@@ -20,7 +20,7 @@ class ATBDP_Listing_DB {
 
     public function __construct ()
     {
-        add_action( 'before_delete_post', array( $this, 'atbdp_delete_attachment' ) );
+        add_action( 'before_delete_post', [ $this, 'atbdp_delete_attachment' ] );
     }
 
     /**
@@ -28,41 +28,31 @@ class ATBDP_Listing_DB {
      * @since 6.4.1
      *
      */
-    public function atbdp_delete_attachment($id){
+    public function atbdp_delete_attachment($id): void{
 
         if( 'at_biz_dir' === get_post_type( $id ) ){
             $listing_img = directorist_get_listing_gallery_images( $id );
-            $listing_img = !empty($listing_img) ? $listing_img : array();
+            $listing_img = $listing_img === null || $listing_img === [] ? [] : $listing_img;
             $listing_prv_img = directorist_get_listing_preview_image( $id );
 
-            if ( is_array( $listing_img ) ) {
-                array_unshift($listing_img, $listing_prv_img);
-            }
+            array_unshift($listing_img, $listing_prv_img);
 
-            if ( ! empty( $listing_img ) ) {
-                foreach ( $listing_img as $image ) {
-                    wp_delete_attachment( $image, true );
-                }
+            foreach ( $listing_img as $image ) {
+                wp_delete_attachment( $image, true );
             }
         }
     }
 
     /**
      * Unused method
-	 *
-     * @return bool
      */
-    public function all_listing() {
+    public function all_listing(): bool {
 		_deprecated_function( __METHOD__, '7.4.3' );
         return false;
     }
 
     public function get_listing_order_by_featured()
     {
-        $args = array(
-            'post_type' => ATBDP_POST_TYPE,
-            'post_per_page'=>-1
-        );
     }
 
     /**
@@ -77,14 +67,14 @@ class ATBDP_Listing_DB {
 
         //for pagination
         $paged = atbdp_get_paged_num();
-        $args  = array(
-            'author'         => ! empty( $user_id ) ? absint( $user_id ) : get_current_user_id(),
+        $args  = [
+            'author'         => empty( $user_id ) ? get_current_user_id() : absint( $user_id ),
             'post_type'      => ATBDP_POST_TYPE,
             'posts_per_page' => (int) $listingS_per_page,
             'order'          => 'DESC',
             'orderby'        => 'date',
-            'post_status'    => array( 'publish', 'pending', 'private', 'draft' ),
-        );
+            'post_status'    => [ 'publish', 'pending', 'private', 'draft' ],
+        ];
         if( ! empty( $pagination) ) {
             $args['paged'] = $paged;
         }else{
@@ -99,7 +89,7 @@ class ATBDP_Listing_DB {
      * @param int $id The ID of the listing that should be deleted
      * @return bool It returns true on success and false on failure
      */
-    public function delete_listing_by_id($id)
+    public function delete_listing_by_id($id): bool
     {
 
         $deleted = wp_delete_post(absint($id), true); // i

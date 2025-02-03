@@ -8,21 +8,21 @@ if ( !class_exists('ATBDP_Rewrite') ):
  */
 class ATBDP_Rewrite {
 
-	protected $pages = array();
+	protected $pages = [];
 
 	public function __construct() {
 		// add the rewrite rules to the init hook
-		add_action( 'init', array( $this, 'add_write_rules' ) );
+		add_action( 'init', [ $this, 'add_write_rules' ] );
 
 		$flush_rewrite_rules_on_demand = apply_filters( 'directorist_flush_rewrite_rules_on_demand', false );
 
 		if ( $flush_rewrite_rules_on_demand ) {
-			add_action( 'wp_loaded', array( $this, 'flush_rewrite_rules_on_demand' ) );
+			add_action( 'wp_loaded', [ $this, 'flush_rewrite_rules_on_demand' ] );
 		}
-		add_action( 'directorist_setup_wizard_page_created', array( $this, 'flush_rewrite_rules_on_demand' ) );
-		add_action( 'directorist_setup_wizard_payment_page_created', array( $this, 'flush_rewrite_rules_on_demand' ) );
-		add_action( 'directorist_setup_wizard_completed', array( $this, 'flush_rewrite_rules_on_demand' ) );
-		add_action( 'directorist_options_updated', array( $this, 'flush_rewrite_rules_on_demand' ) );
+		add_action( 'directorist_setup_wizard_page_created', [ $this, 'flush_rewrite_rules_on_demand' ] );
+		add_action( 'directorist_setup_wizard_payment_page_created', [ $this, 'flush_rewrite_rules_on_demand' ] );
+		add_action( 'directorist_setup_wizard_completed', [ $this, 'flush_rewrite_rules_on_demand' ] );
+		add_action( 'directorist_options_updated', [ $this, 'flush_rewrite_rules_on_demand' ] );
 	}
 
 	protected function get_pages() {
@@ -30,7 +30,7 @@ class ATBDP_Rewrite {
 			return $this->pages;
 		}
 
-		$pages = array(
+		$pages = [
 			'all_listing_page',
 			'author_profile_page',
 			'checkout_page',
@@ -39,7 +39,7 @@ class ATBDP_Rewrite {
 			'single_category_page',
 			'single_location_page',
 			'single_tag_page',
-		);
+		];
 
 		foreach ( $pages as $page_option_key ) {
 			$this->pages[ $page_option_key ] = (int) get_directorist_option( $page_option_key );
@@ -48,7 +48,7 @@ class ATBDP_Rewrite {
 		return $this->pages;
 	}
 
-	protected function get_page_ids() {
+	protected function get_page_ids(): array {
 		return array_unique( array_values( $this->get_pages() ) );
 	}
 
@@ -66,10 +66,10 @@ class ATBDP_Rewrite {
 		return apply_filters( 'directorist_rewrite_get_page_slug', $slug, $page_id, $default_slug );
 	}
 
-	public function add_write_rules() {
-		$cached_pages = get_pages( array(
+	public function add_write_rules(): void {
+		$cached_pages = get_pages( [
 			'include' => $this->get_page_ids()
-		) );
+		] );
 
 		$page_id = $this->get_page_id( 'all_listing_page' );
 		if ( $page_id ) {
@@ -162,8 +162,8 @@ class ATBDP_Rewrite {
 		// otherwise, get_query_var() would return and empty string even if the 'atbdp_action' var is available in the query string.
 		//
 		add_rewrite_tag( '%atbdp_action%', '([^/]+)' );
-		add_rewrite_tag( '%atbdp_order_id%', '([0-9]{1,})' );
-		add_rewrite_tag( '%atbdp_listing_id%', '([0-9]{1,})' );
+		add_rewrite_tag( '%atbdp_order_id%', '(\d{1,})' );
+		add_rewrite_tag( '%atbdp_listing_id%', '(\d{1,})' );
 		add_rewrite_tag( '%author_id%', '([^/]+)' );
 		add_rewrite_tag( '%directory-type%', '([^/]+)' );
 		add_rewrite_tag( '%atbdp_category%', '([^/]+)' );
@@ -177,14 +177,14 @@ class ATBDP_Rewrite {
 	 * @since    3.1.2
 	 * @access   public
 	 */
-	public function flush_rewrite_rules_on_demand() {
+	public function flush_rewrite_rules_on_demand(): void {
 
 		$rewrite_rules = get_option( 'rewrite_rules' );
 
 		if( $rewrite_rules ) {
 
 			global $wp_rewrite;
-			$rewrite_rules_array = array();
+			$rewrite_rules_array = [];
 			foreach( $rewrite_rules as $rule => $rewrite ) {
 				$rewrite_rules_array[$rule]['rewrite'] = $rewrite;
 			}
@@ -200,7 +200,7 @@ class ATBDP_Rewrite {
 				}
 			}
 
-			if( true === $missing_rules ) {
+			if( $missing_rules ) {
 				flush_rewrite_rules();
 			}
 

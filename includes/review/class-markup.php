@@ -35,16 +35,10 @@ class Markup {
 
 	private static function convert_to_num( $input ) {
 		
-		$numericValue = 0;
-		if ( strpos( $input, '.' ) !== false ) {
-			$numericValue = floatval( $input );
-		} else {
-			$numericValue = intval( $input );
-		}
-		return $numericValue;
+		return strpos( $input, '.' ) !== false ? floatval( $input ) : intval( $input );
 	}
 
-	public static function get_rating_stars( $rating = 0, $base_rating = 5 ) {
+	public static function get_rating_stars( $rating = 0, $base_rating = 5 ): string {
 		$rating = max( 0, min( $base_rating, $rating ) );
 
 		$empty_star = '';
@@ -63,7 +57,7 @@ class Markup {
 		return $full_star . $empty_star;
 	}
 
-	public static function show_rating_stars( $rating = 0, $base_rating = 5 ) {
+	public static function show_rating_stars( $rating = 0, $base_rating = 5 ): void {
 		echo wp_kses_post( self::get_rating_stars( $rating, $base_rating ) );
 	}
 }

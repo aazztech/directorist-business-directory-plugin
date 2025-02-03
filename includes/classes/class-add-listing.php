@@ -23,7 +23,7 @@ if ( ! class_exists( 'ATBDP_Add_Listing' ) ) :
 	 */
 	class ATBDP_Add_Listing {
 
-		protected static $selected_categories = null;
+		protected static $selected_categories;
 
 		/**
 		 * Nonce name.
@@ -44,43 +44,43 @@ if ( ! class_exists( 'ATBDP_Add_Listing' ) ) :
 		 */
 		public function __construct() {
 			// show the attachment of the current users only.
-			add_filter( 'ajax_query_attachments_args', array( $this, 'show_current_user_attachments' ) );
-			add_action( 'parse_query', array( $this, 'parse_query' ) ); // do stuff likes adding, editing, renewing, favorite etc in this hook.
-			add_action( 'wp_ajax_add_listing_action', array( $this, 'atbdp_submit_listing' ) );
-			add_action( 'wp_ajax_nopriv_add_listing_action', array( $this, 'atbdp_submit_listing' ) );
+			add_filter( 'ajax_query_attachments_args', [ $this, 'show_current_user_attachments' ] );
+			add_action( 'parse_query', [ $this, 'parse_query' ] ); // do stuff likes adding, editing, renewing, favorite etc in this hook.
+			add_action( 'wp_ajax_add_listing_action', [ $this, 'atbdp_submit_listing' ] );
+			add_action( 'wp_ajax_nopriv_add_listing_action', [ $this, 'atbdp_submit_listing' ] );
 
-			add_action( 'wp_ajax_directorist_upload_listing_image', array( __CLASS__, 'upload_listing_image' ) );
-			add_action( 'wp_ajax_nopriv_directorist_upload_listing_image', array( __CLASS__, 'upload_listing_image' ) );
+			add_action( 'wp_ajax_directorist_upload_listing_image', [ self::class, 'upload_listing_image' ] );
+			add_action( 'wp_ajax_nopriv_directorist_upload_listing_image', [ self::class, 'upload_listing_image' ] );
 		}
 
-		public static function upload_listing_image() {
+		public static function upload_listing_image(): void {
 			try {
 				if ( ! directorist_verify_nonce() ) {
 					throw new Exception( __( 'Invalid request.', 'directorist' ), 400 );
 				}
 
-				$image = ! empty( $_FILES['image'] ) ? directorist_clean( $_FILES['image'] ) : array();
+				$image = empty( $_FILES['image'] ) ? [] : directorist_clean( $_FILES['image'] );
 
 				if ( empty( $image ) ) {
 					return;
 				}
 
 				// Set temporary upload directory.
-				add_filter( 'upload_dir', array( __CLASS__, 'set_temporary_upload_dir' ) );
+				add_filter( 'upload_dir', [ self::class, 'set_temporary_upload_dir' ] );
 
 				// handle file upload
 				$status = wp_handle_upload(
 					$image,
-					array(
+					[
 						'test_form' => true,
 						'test_type' => true,
 						'action'    => 'directorist_upload_listing_image',
 						'mimes'     => directorist_get_mime_types( 'image' ),
-					)
+					]
 				);
 
 				// Restore to default upload directory.
-				remove_filter( 'upload_dir', array( __CLASS__, 'set_temporary_upload_dir' ) );
+				remove_filter( 'upload_dir', [ self::class, 'set_temporary_upload_dir' ] );
 
 				if ( ! empty( $status['error'] ) ) {
 					throw new Exception( sprintf( '%s - (%s)', $status['error'], $image['name'] ), 500 );
@@ -99,32 +99,12 @@ if ( ! class_exists( 'ATBDP_Add_Listing' ) ) :
 			}
 		}
 
-		public static function set_temporary_upload_dir( $upload ) {
+		public static function set_temporary_upload_dir( array $upload ): array {
 			$upload['subdir'] = '/directorist_temp_uploads/' . date( 'nj' );
 			$upload['path']   = $upload['basedir'] . $upload['subdir'];
 			$upload['url']    = $upload['baseurl'] . $upload['subdir'];
 
 			return $upload;
-		}
-
-		/**
-		 * Not sure what this function does.
-		 *
-		 * @deprecated 7.3.1
-		 * @param  array  $array
-		 * @param  string $name
-		 *
-		 * @return mixed
-		 */
-		private function atbdp_get_file_attachment_id( $array, $name ) {
-			$id = null;
-			foreach ( $array as $item ) {
-				if ( $item['name'] === $name ) {
-					$id = $item['id'];
-					break;
-				}
-			}
-			return $id;
 		}
 
 
@@ -182,20 +162,16 @@ if ( ! class_exists( 'ATBDP_Add_Listing' ) ) :
 				}
 
 				// When invalid directory is selected fallback to default directory.
-				if ( ! $directory ) {
-					$directory_id = (int) directorist_get_default_directory();
-				} else {
-					$directory_id = (int) $directory->term_id;
-				}
+				$directory_id = $directory ? (int) $directory->term_id : (int) directorist_get_default_directory();
 
 				$posted_data['directory_id'] = $directory_id;
 
 				$error         = new \WP_Error();
-				$taxonomy_data = array();
-				$meta_data     = array();
-				$listing_data  = array(
+				$taxonomy_data = [];
+				$meta_data     = [];
+				$listing_data  = [
 					'post_type' => ATBDP_POST_TYPE,
-				);
+				];
 
 				// Cache categories to check assigned categories in custom fields.
 				$category_field = directorist_get_listing_form_category_field( $directory_id );
@@ -295,10 +271,10 @@ if ( ! class_exists( 'ATBDP_Add_Listing' ) ) :
 				// }
 
 				if ( $error->has_errors() ) {
-					return wp_send_json( apply_filters( 'atbdp_listing_form_submission_info', array(
+					return wp_send_json( apply_filters( 'atbdp_listing_form_submission_info', [
 						'error'     => true,
 						'error_msg' => implode( '<br>', $error->get_error_messages() ),
-					) ) );
+					] ) );
 				}
 
 				// Terms & conditions and privacy policy have been merged in v8.
@@ -358,24 +334,16 @@ if ( ! class_exists( 'ATBDP_Add_Listing' ) ) :
 					do_action( 'atbdp_listing_updated', $listing_id );
 
 				} else {
-					if ( $preview_enable ) {
-						$listing_data['post_status'] = 'private';
-					} else {
-						$listing_data['post_status'] = $listing_create_status;
-					}
-
-					$listing_id = wp_insert_post( $listing_data );
-
-					if ( is_wp_error( $listing_id ) ) {
+                    $listing_data['post_status'] = $preview_enable ? 'private' : $listing_create_status;
+                    $listing_id = wp_insert_post( $listing_data );
+                    if ( is_wp_error( $listing_id ) ) {
 						throw new Exception( $listing_id->get_error_message() );
 					}
-
-					directorist_set_listing_directory( $listing_id, $directory_id );
-
-					do_action( 'atbdp_listing_inserted', $listing_id ); // for sending email notification
-
-					// Every post with the published status should contain all the post meta keys so that we can include them in query.
-					if ( 'publish' === $listing_create_status || 'pending' === $listing_create_status ) {
+                    directorist_set_listing_directory( $listing_id, $directory_id );
+                    do_action( 'atbdp_listing_inserted', $listing_id );
+                    // for sending email notification
+                    // Every post with the published status should contain all the post meta keys so that we can include them in query.
+                    if ( 'publish' === $listing_create_status || 'pending' === $listing_create_status ) {
 						if ( $default_expiration <= 0 ) {
 							update_post_meta( $listing_id, '_never_expire', 1 );
 						} else {
@@ -393,17 +361,16 @@ if ( ! class_exists( 'ATBDP_Add_Listing' ) ) :
 						 * */
 						do_action( 'atbdp_before_processing_listing_frontend', $listing_id );
 					}
-
-					if ( 'publish' === $listing_create_status ) {
+                    if ( 'publish' === $listing_create_status ) {
 						do_action( 'atbdp_listing_published', $listing_id );// for sending email notification
 					}
-				}
+                }
 
 				do_action( 'atbdp_after_created_listing', $listing_id );
 
-				$data = array(
+				$data = [
 					'id' => $listing_id
-				);
+				];
 
 				// handling media files
 				self::upload_images( $listing_id, $posted_data );
@@ -421,16 +388,16 @@ if ( ! class_exists( 'ATBDP_Add_Listing' ) ) :
 
 				if ( $should_monetize && ! is_fee_manager_active() ) {
 					$payment_status            = Helper::get_listing_payment_status( $listing_id );
-					$rejectable_payment_status = array( 'failed', 'cancelled', 'refunded' );
+					$rejectable_payment_status = [ 'failed', 'cancelled', 'refunded' ];
 
 					if ( empty( $payment_status ) || in_array( $payment_status, $rejectable_payment_status, true ) ) {
 						$data['redirect_url'] = ATBDP_Permalink::get_checkout_page_link( $listing_id );
 						$data['need_payment'] = true;
 
-						wp_update_post( array(
+						wp_update_post( [
 							'ID'          => $listing_id,
 							'post_status' => 'pending',
-						) );
+						] );
 					}
 				}
 
@@ -465,15 +432,16 @@ if ( ! class_exists( 'ATBDP_Add_Listing' ) ) :
 				wp_send_json( apply_filters( 'atbdp_listing_form_submission_info', $data ) );
 
 			} catch (Exception $e ) {
-				return wp_send_json( array(
+				return wp_send_json( [
 					'error'     => true,
 					'error_msg' => $e->getMessage(),
-				), $e->getCode() );
+				], $e->getCode() );
 			}
+            return null;
 		}
 
-		public static function reset_listing_taxonomy( $listing_id, $taxonomy_data = array() ) {
-			$taxonomies = array( ATBDP_LOCATION, ATBDP_CATEGORY, ATBDP_TAGS );
+		public static function reset_listing_taxonomy( $listing_id, array $taxonomy_data = [] ): void {
+			$taxonomies = [ ATBDP_LOCATION, ATBDP_CATEGORY, ATBDP_TAGS ];
 
 			foreach ( $taxonomies as $taxonomy ) {
 				if ( isset( $taxonomy_data[ $taxonomy ] ) && empty( $taxonomy_data[ $taxonomy ] ) ) {
@@ -486,14 +454,14 @@ if ( ! class_exists( 'ATBDP_Add_Listing' ) ) :
 			return current_user_can( get_post_type_object( ATBDP_POST_TYPE )->cap->edit_posts );
 		}
 
-		public static function filter_empty_meta_data( $meta_data ) {
-			return array_filter( $meta_data, static function( $value, $key ) {
+		public static function filter_empty_meta_data( $meta_data ): ?array {
+			return array_filter( $meta_data, static function( $value, $key ): bool {
 				if ( $key === '_hide_contact_owner' && ! $value ) {
 					return false;
 				}
 
 				if ( is_array( $value ) ) {
-					return ! empty( $value );
+					return $value !== [];
 				}
 
 				if ( is_null( $value ) ) {
@@ -503,12 +471,7 @@ if ( ! class_exists( 'ATBDP_Add_Listing' ) ) :
 				if ( is_string( $value ) && $value === '' ) {
 					return false;
 				}
-
-				if ( is_numeric( $value ) && $value == 0 ) {
-					return false;
-				}
-
-				return true;
+                return !(is_numeric( $value ) && $value == 0);
 			}, ARRAY_FILTER_USE_BOTH );
 		}
 
@@ -517,7 +480,7 @@ if ( ! class_exists( 'ATBDP_Add_Listing' ) ) :
 			// return ( $field->is_admin_only() && ! current_user_can( get_post_type_object( ATBDP_POST_TYPE )->cap->edit_others_posts ) );
 		}
 
-		public static function upload_images( $listing_id, $posted_data ) {
+		public static function upload_images( $listing_id, array $posted_data ): void {
 			$image_upload_field = directorist_get_listing_form_field( $posted_data['directory_id'], 'image_upload' );
 
 			if ( empty( $image_upload_field ) ) {
@@ -549,7 +512,7 @@ if ( ! class_exists( 'ATBDP_Add_Listing' ) ) :
 				$temp_dir                      = $upload_dir['basedir'] . '/directorist_temp_uploads/' . date( 'nj' ) . '/';
 				$target_dir                    = trailingslashit( $upload_dir['path'] );
 				$uploaded_images               = $old_images;
-				$background_processable_images = array();
+				$background_processable_images = [];
 
 				foreach ( $new_images as $image ) {
 					if ( empty( $image ) ) {
@@ -572,19 +535,17 @@ if ( ! class_exists( 'ATBDP_Add_Listing' ) ) :
 					$name = wp_basename( $image, ".{$mime['ext']}" );
 
 					// Construct the attachment array.
-					$attachment = array(
+					$attachment = [
 						'post_mime_type' => $mime['type'],
 						'guid'           => trailingslashit( $upload_dir['url'] ) . $image,
 						'post_parent'    => $listing_id,
 						'post_title'     => sanitize_text_field( $name ),
-					);
+					];
 
 					$attachment_id = wp_insert_attachment( $attachment, $target_dir . $image, $listing_id, false );
 
 					if ( is_wp_error( $attachment_id ) ) {
 						throw new Exception( $attachment_id->get_error_message() );
-
-						continue;
 					}
 
 					$background_processable_images[ $attachment_id ] = $target_dir . $image;
@@ -598,7 +559,7 @@ if ( ! class_exists( 'ATBDP_Add_Listing' ) ) :
 
 					unset( $uploaded_images[0] );
 
-					if ( count( $uploaded_images ) ) {
+					if ( count( $uploaded_images ) > 0 ) {
 						update_post_meta( $listing_id, '_listing_img', $uploaded_images );
 					}
 
@@ -614,21 +575,18 @@ if ( ! class_exists( 'ATBDP_Add_Listing' ) ) :
 
 		protected static function clean_unselected_images( $listing_id, $selected_images ) {
 			$saved_images = atbdp_get_listing_attachment_ids( $listing_id );
-			if ( empty( $saved_images ) ) {
+			if ( $saved_images === [] ) {
 				return;
 			}
 
 			$unselected_images = array_diff( $saved_images, $selected_images );
-			if ( empty( $unselected_images ) ) {
-				return;
-			}
 
 			foreach ( $unselected_images as $unselected_image ) {
 				wp_delete_attachment( $unselected_image, true );
 			}
 		}
 
-		public static function process_map( $field, $posted_data, &$data, $error ) {
+		public static function process_map( $field, $posted_data, array &$data, $error ): void {
 			if ( $field->is_value_empty( $posted_data ) ) {
 				$data['_hide_map']   = '';
 				$data['_manual_lat'] = '';
@@ -652,7 +610,7 @@ if ( ! class_exists( 'ATBDP_Add_Listing' ) ) :
 			$data['_manual_lng'] = $value['manual_lng'];
 		}
 
-		public static function process_pricing( $field, $posted_data, &$data, $error ) {
+		public static function process_pricing( $field, $posted_data, array &$data, $error ): void {
 			if ( $field->is_value_empty( $posted_data ) ) {
 				$data['_atbd_listing_pricing'] = '';
 				$data['_price']                = '';
@@ -682,15 +640,15 @@ if ( ! class_exists( 'ATBDP_Add_Listing' ) ) :
 			}
 		}
 
-		public static function process_locations( $field, $posted_data, &$data, $error ) {
+		public static function process_locations( $field, array $posted_data, array &$data, $error ): void {
 			if ( $field->is_value_empty( $posted_data ) ) {
-				$data[ ATBDP_LOCATION ] = array();
+				$data[ ATBDP_LOCATION ] = [];
 
 				return;
 			}
 
 			$locations    = $field->get_value( $posted_data );
-			$location_ids = array();
+			$location_ids = [];
 			$max_allowed  = (int) $field->max_location_creation;
 
 			foreach ( $locations as $location ) {
@@ -723,7 +681,7 @@ if ( ! class_exists( 'ATBDP_Add_Listing' ) ) :
 					} else {
 						$location_ids[] = (int) $location_added['term_id'];
 
-						update_term_meta( $location_added['term_id'], '_directory_type', array( $posted_data['directory_id'] ) );
+						update_term_meta( $location_added['term_id'], '_directory_type', [ $posted_data['directory_id'] ] );
 					}
 				}
 
@@ -736,22 +694,22 @@ if ( ! class_exists( 'ATBDP_Add_Listing' ) ) :
 				}
 			}
 
-			if ( ! $field->user_can_select_multiple() && ! empty( $location_ids ) ) {
-				$data[ ATBDP_LOCATION ] = array( $location_ids[0] );
+			if ( ! $field->user_can_select_multiple() && $location_ids !== [] ) {
+				$data[ ATBDP_LOCATION ] = [ $location_ids[0] ];
 			} else {
 				$data[ ATBDP_LOCATION ] = $location_ids;
 			}
 		}
 
-		public static function process_categories( $field, $posted_data, &$data, $error ) {
+		public static function process_categories( $field, array $posted_data, array &$data, $error ): void {
 			if ( $field->is_value_empty( $posted_data ) ) {
-				$data[ ATBDP_CATEGORY ] = array();
+				$data[ ATBDP_CATEGORY ] = [];
 
 				return;
 			}
 
 			$categories    = $field->get_value( $posted_data );
-			$category_ids = array();
+			$category_ids = [];
 
 			foreach ( $categories as $category ) {
 
@@ -779,7 +737,7 @@ if ( ! class_exists( 'ATBDP_Add_Listing' ) ) :
 					} else {
 						$category_ids[] = $category_added['term_id'];
 
-						update_term_meta( $category_added['term_id'], '_directory_type', array( $posted_data['directory_id'] ) );
+						update_term_meta( $category_added['term_id'], '_directory_type', [ $posted_data['directory_id'] ] );
 					}
 				}
 
@@ -788,22 +746,22 @@ if ( ! class_exists( 'ATBDP_Add_Listing' ) ) :
 				}
 			}
 
-			if ( ! $field->user_can_select_multiple() && ! empty( $category_ids ) ) {
-				$data[ ATBDP_CATEGORY ] = array( $category_ids[0] );
+			if ( ! $field->user_can_select_multiple() && $category_ids !== [] ) {
+				$data[ ATBDP_CATEGORY ] = [ $category_ids[0] ];
 			} else {
 				$data[ ATBDP_CATEGORY ] = $category_ids;
 			}
 		}
 
-		public static function process_tags( $field, $posted_data, &$data, $error ) {
+		public static function process_tags( $field, $posted_data, array &$data, $error ): void {
 			if ( $field->is_value_empty( $posted_data ) ) {
-				$data[ ATBDP_TAGS ] = array();
+				$data[ ATBDP_TAGS ] = [];
 
 				return;
 			}
 
 			$tags    = $field->get_value( $posted_data );
-			$tag_ids = array();
+			$tag_ids = [];
 
 			foreach ( $tags as $tag ) {
 
@@ -836,22 +794,18 @@ if ( ! class_exists( 'ATBDP_Add_Listing' ) ) :
 				}
 			}
 
-			if ( ! $field->user_can_select_multiple() && ! empty( $tag_ids ) ) {
-				$data[ ATBDP_TAGS ] = array( $tag_ids[0] );
-			} else {
-				$data[ ATBDP_TAGS ] = $tag_ids;
-			}
+			$data[ ATBDP_TAGS ] = ! $field->user_can_select_multiple() && $tag_ids !== [] ? [ $tag_ids[0] ] : $tag_ids;
 		}
 
 		public static function is_field_submission_empty( $field, $posted_data ) {
 			return $field->is_value_empty( $posted_data );
 		}
 
-		public static function should_ignore_category_custom_field( $field ) {
+		public static function should_ignore_category_custom_field( $field ): bool {
 			return ( $field->is_category_only() && ( is_null( self::$selected_categories ) || ! in_array( $field->get_assigned_category(), self::$selected_categories, true ) ) );
 		}
 
-		public static function validate_field( $field, $posted_data ) {
+		public static function validate_field( $field, $posted_data ): array {
 			$should_validate = (bool) apply_filters( 'atbdp_add_listing_form_validation_logic', true, $field->get_props(), $posted_data );
 
 			if ( self::should_ignore_category_custom_field( $field ) ) {
@@ -859,10 +813,10 @@ if ( ! class_exists( 'ATBDP_Add_Listing' ) ) :
 			}
 
 			if ( ! $should_validate ) {
-				return array(
+				return [
 					'is_valid' => true,
 					'message'  => ''
-				);
+				];
 			}
 
 			if ( $field->is_required() && self::is_field_submission_empty( $field, $posted_data ) ) {
@@ -871,24 +825,19 @@ if ( ! class_exists( 'ATBDP_Add_Listing' ) ) :
 				$field->validate( $posted_data );
 			}
 
-			return array(
+			return [
 				'is_valid' => ! $field->has_error(),
 				'message'  => $field->get_error()
-			);
+			];
 		}
 
 		/**
-		 * It sets the author parameter of the attachment query for showing the attachment of the user only.
-		 *
-		 * @param array $query
-		 * @return array
-		 */
-		public function show_current_user_attachments( array $query = array() ) {
+         * It sets the author parameter of the attachment query for showing the attachment of the user only.
+         */
+        public function show_current_user_attachments( array $query = [] ): array {
 			$user_id = get_current_user_id();
-			if ( ! current_user_can( 'delete_pages' ) ) {
-				if ( $user_id ) {
-					$query['author'] = $user_id;
-				}
+			if ( !current_user_can( 'delete_pages' ) && $user_id ) {
+				$query['author'] = $user_id;
 			}
 			return $query;
 		}
@@ -899,7 +848,7 @@ if ( ! class_exists( 'ATBDP_Add_Listing' ) ) :
 		 * @param bool $referrer Optional. Whether to set the referer field for validation. Default true.
 		 * @param bool $echo Optional. Whether to display or return hidden form field. Default true.
 		 */
-		public function show_nonce_field( $referrer = true, $echo = true ) {
+		public function show_nonce_field( $referrer = true, $echo = true ): void {
 			wp_nonce_field( $this->nonce_action, $this->nonce, $referrer, $echo );
 		}
 
@@ -909,9 +858,9 @@ if ( ! class_exists( 'ATBDP_Add_Listing' ) ) :
 		 * @param WP_Query $query
 		 * @since 3.1.0
 		 */
-		public function parse_query( $query ) {
-			$temp_token = ! empty( $_GET['token'] ) ? sanitize_text_field( wp_unslash( $_GET['token'] ) ) : '';
-			$renew_from = ! empty( $_GET['renew_from'] ) ? sanitize_text_field( wp_unslash( $_GET['renew_from'] ) ) : '';
+		public function parse_query( $query ): void {
+			$temp_token = empty( $_GET['token'] ) ? '' : sanitize_text_field( wp_unslash( $_GET['token'] ) );
+			$renew_from = empty( $_GET['renew_from'] ) ? '' : sanitize_text_field( wp_unslash( $_GET['renew_from'] ) );
 
 			if ( empty( $temp_token ) && empty( $renew_from ) ) {
 				return;
@@ -933,13 +882,12 @@ if ( ! class_exists( 'ATBDP_Add_Listing' ) ) :
 		}
 
 		/**
-		 * It renews the given listing
-		 *
-		 * @param $listing_id
-		 * @return mixed
-		 * @since 3.1.0
-		 */
-		private function renew_listing( $listing_id ) {
+         * It renews the given listing
+         *
+         * @param $listing_id
+         * @since 3.1.0
+         */
+        private function renew_listing( $listing_id ): void {
 
 			// Hook for developers
 			do_action( 'atbdp_before_renewal', $listing_id );
@@ -955,12 +903,12 @@ if ( ! class_exists( 'ATBDP_Add_Listing' ) ) :
 			}
 
 			$time       = current_time( 'mysql' );
-			$post_array = array(
+			$post_array = [
 				'ID'            => $listing_id,
 				'post_status'   => 'publish',
 				'post_date'     => $time,
 				'post_date_gmt' => get_gmt_from_date( $time ),
-			);
+			];
 
 			// Updating listing
 			wp_update_post( $post_array );

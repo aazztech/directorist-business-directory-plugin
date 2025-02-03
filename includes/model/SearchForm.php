@@ -5,7 +5,9 @@
 
 namespace Directorist;
 
-if ( ! defined( 'ABSPATH' ) ) exit;
+if (! defined( 'ABSPATH' )) {
+    exit;
+}
 
 class Directorist_Listing_Search_Form {
 
@@ -50,14 +52,14 @@ class Directorist_Listing_Search_Form {
 	public $location_class;
 	public $select_listing_map;
 
-	protected $deferred_data = array();
+	protected $deferred_data = [];
 
-	protected $deferred_props = array(
+	protected $deferred_props = [
 		'categories_fields',
 		'locations_fields',
-	);
+	];
 
-	public function __construct( $type, $directory_id = 0, $atts = array() ) {
+	public function __construct( $type, $directory_id = 0, $atts = [] ) {
 		$this->type = $type;
 		$this->atts = $atts;
 
@@ -69,11 +71,7 @@ class Directorist_Listing_Search_Form {
 			$this->prepare_search_data( $atts );
 		}
 
-		if ( directorist_is_directory( $directory_id ) ) {
-			$this->listing_type = (int) $directory_id;
-		} else {
-			$this->listing_type = $this->get_default_directory();
-		}
+		$this->listing_type = directorist_is_directory( $directory_id ) ? (int) $directory_id : $this->get_default_directory();
 
 		// Search result page
 		if ( $type === 'search_result' || $type === 'instant_search' ) {
@@ -109,19 +107,20 @@ class Directorist_Listing_Search_Form {
 
 			return $this->deferred_data[ $prop ];
 		}
+        return null;
 	}
 
 	// set_default_options
-	public function set_default_options() {
-		$this->options['more_filters_fields']     = get_directorist_option( 'listing_filters_fields', array( 'search_text', 'search_category', 'search_location', 'search_price', 'search_price_range', 'search_rating', 'search_tag', 'search_custom_fields', 'radius_search' ) );
-		$this->options['search_fields']           = get_directorist_option('search_tsc_fields', array('search_text', 'search_category', 'search_location'));
-		$this->options['search_filters']          = get_directorist_option('listings_filters_button', array('search_reset_filters', 'search_apply_filters'));
+	public function set_default_options(): void {
+		$this->options['more_filters_fields']     = get_directorist_option( 'listing_filters_fields', [ 'search_text', 'search_category', 'search_location', 'search_price', 'search_price_range', 'search_rating', 'search_tag', 'search_custom_fields', 'radius_search' ] );
+		$this->options['search_fields']           = get_directorist_option('search_tsc_fields', ['search_text', 'search_category', 'search_location']);
+		$this->options['search_filters']          = get_directorist_option('listings_filters_button', ['search_reset_filters', 'search_apply_filters']);
 		$this->options['search_listing_text']     = get_directorist_option('search_listing_text', __('Search Listing', 'directorist'));
-		$this->options['search_more_filter']      = !empty( get_directorist_option( 'search_more_filter', 1 ) ) ? 'yes' : '';
+		$this->options['search_more_filter']      = empty( get_directorist_option( 'search_more_filter', 1 ) ) ? '' : 'yes';
 		$this->options['search_more_filters']     = get_directorist_option('search_more_filters', __('More Filters', 'directorist'));
-		$this->options['search_button']           = !empty( get_directorist_option( 'search_button', 1 ) ) ? 'yes' : '';
+		$this->options['search_button']           = empty( get_directorist_option( 'search_button', 1 ) ) ? '' : 'yes';
 		$this->options['search_placeholder']      = get_directorist_option('listings_search_text_placeholder', __('What are you looking for?', 'directorist'));
-		$this->options['filters_buttons']         = get_directorist_option( 'listings_filters_button', array( 'reset_button', 'apply_button' ) );
+		$this->options['filters_buttons']         = get_directorist_option( 'listings_filters_button', [ 'reset_button', 'apply_button' ] );
 
 		$this->options['more_filters_button']        	= get_directorist_option( 'listing_filters_button', 1 );
 		$this->options['display_more_filter_icon']   	= get_directorist_option('listing_filters_icon', 1);
@@ -134,9 +133,9 @@ class Directorist_Listing_Search_Form {
 	}
 
 	// update_options_for_search_result_page
-	public function update_options_for_search_result_page() {
-		$this->options['more_filters_fields']     		= get_directorist_option('search_result_filters_fields', array('search_price', 'search_price_range', 'search_rating', 'search_tag', 'search_custom_fields', 'radius_search'));
-		$this->options['search_filters']          		= get_directorist_option('search_result_filters_button', array( 'reset_button', 'apply_button' ), true);
+	public function update_options_for_search_result_page(): void {
+		$this->options['more_filters_fields']     		= get_directorist_option('search_result_filters_fields', ['search_price', 'search_price_range', 'search_rating', 'search_tag', 'search_custom_fields', 'radius_search']);
+		$this->options['search_filters']          		= get_directorist_option('search_result_filters_button', [ 'reset_button', 'apply_button' ], true);
 		$this->options['more_filters_button']     		= get_directorist_option( 'search_result_filters_button_display', 1 );
 		$this->options['reset_filters_text']      		= get_directorist_option('sresult_reset_text', __('Reset Filters', 'directorist'));
 		$this->options['reset_sidebar_filters_text']    = get_directorist_option( 'sresult_sidebar_reset_text', __('Clear All', 'directorist') );
@@ -144,10 +143,10 @@ class Directorist_Listing_Search_Form {
 	}
 
 	// update_options_for_search_form
-	public function update_options_for_search_form() {
-		$this->options['more_filters_fields'] = get_directorist_option('search_more_filters_fields', array( 'search_price', 'search_price_range', 'search_rating', 'search_tag', 'search_custom_fields', 'radius_search'));
+	public function update_options_for_search_form(): void {
+		$this->options['more_filters_fields'] = get_directorist_option('search_more_filters_fields', [ 'search_price', 'search_price_range', 'search_rating', 'search_tag', 'search_custom_fields', 'radius_search']);
 
-		$this->options['search_filters']             = get_directorist_option('search_filters', array('search_reset_filters', 'search_apply_filters'), true );
+		$this->options['search_filters']             = get_directorist_option('search_filters', ['search_reset_filters', 'search_apply_filters'], true );
 		$this->options['more_filters_button']        = get_directorist_option( 'search_more_filter', 1 );
 		$this->options['display_more_filter_icon']   = get_directorist_option('search_more_filter_icon', 1);
 		$this->options['display_search_button_icon'] = get_directorist_option('search_button_icon', 1);
@@ -158,7 +157,7 @@ class Directorist_Listing_Search_Form {
 	}
 
 	// prepare_search_data
-	public function prepare_search_data($atts) {
+	public function prepare_search_data($atts): void {
 		$search_more_filters_fields = $this->options['more_filters_fields'];
 		$search_filters             = $this->options['search_filters'];
 
@@ -172,7 +171,7 @@ class Directorist_Listing_Search_Form {
 			$apply_filters_button = in_array('search_apply_filters', $search_filters) ? 'yes' : '';
 		}
 
-		$this->defaults = array(
+		$this->defaults = [
 			'show_title_subtitle'    		=> 'yes',
 			'search_bar_title'       		=> get_directorist_option('search_title', __("Search here", 'directorist')),
 			'search_bar_sub_title'  		=> get_directorist_option('search_subtitle', __("Find the best match of your interest", 'directorist')),
@@ -189,19 +188,19 @@ class Directorist_Listing_Search_Form {
 			'more_filters_display'   		=> $this->options['open_filter_fields'],
 			'directory_type'         		=> '',
 			'default_directory_type'        => '',
-			'show_popular_category'			=> ! empty( get_directorist_option('show_popular_category', 1 ) ) ? 'yes' : ''
-		);
+			'show_popular_category'			=> empty( get_directorist_option('show_popular_category', 1 ) ) ? '' : 'yes'
+		];
 
 		$this->params = shortcode_atts( $this->defaults, $this->atts );
 
-		$this->show_title_subtitle      = $this->params['show_title_subtitle'] == 'yes' ? true : false;
-		$this->has_search_button        = $this->params['search_button'] == 'yes' ? true : false;
-		$this->has_more_filters_button  = $this->params['more_filters_button'] == 'yes' ? true : false;
-		$this->has_reset_filters_button = $this->params['reset_filters_button'] == 'yes' ? true : false;
-		$this->has_apply_filters_button = $this->params['apply_filters_button'] == 'yes' ? true : false;
-		$this->logged_in_user_only      = $this->params['logged_in_user_only'] == 'yes' ? true : false;
-		$this->show_connector           = !empty( get_directorist_option('show_connector', 1) ) ? true : false;
-		$this->show_popular_category    = ( 'yes' == $this->params['show_popular_category'] ) ? true : false;
+		$this->show_title_subtitle      = $this->params['show_title_subtitle'] == 'yes';
+		$this->has_search_button        = $this->params['search_button'] == 'yes';
+		$this->has_more_filters_button  = $this->params['more_filters_button'] == 'yes';
+		$this->has_reset_filters_button = $this->params['reset_filters_button'] == 'yes';
+		$this->has_apply_filters_button = $this->params['apply_filters_button'] == 'yes';
+		$this->logged_in_user_only      = $this->params['logged_in_user_only'] == 'yes';
+		$this->show_connector           = !empty( get_directorist_option('show_connector', 1) );
+		$this->show_popular_category    = 'yes' == $this->params['show_popular_category'];
 
 		$this->search_bar_title     	= $this->params['search_bar_title'];
 		$this->search_bar_sub_title 	= $this->params['search_bar_sub_title'];
@@ -211,8 +210,8 @@ class Directorist_Listing_Search_Form {
 		$this->apply_filters_text   	= $this->params['apply_filters_text'];
 		$this->more_filters_display 	= $this->params['more_filters_display'];
 		$this->redirect_page_url    	= $this->params['redirect_page_url'];
-		$this->directory_type           = !empty( $this->params['directory_type'] ) ? explode( ',', $this->params['directory_type'] ) : '';
-		$this->default_directory_type   = !empty( $this->params['default_directory_type'] ) ? $this->params['default_directory_type'] : '';
+		$this->directory_type           = empty( $this->params['directory_type'] ) ? '' : explode( ',', $this->params['directory_type'] );
+		$this->default_directory_type   = empty( $this->params['default_directory_type'] ) ? '' : $this->params['default_directory_type'];
 
 		$this->category_id             = '';
 		$this->category_class          = 'search_fields bdas-category-search directorist-category-select';
@@ -223,10 +222,10 @@ class Directorist_Listing_Search_Form {
 		$this->popular_cat_num         = get_directorist_option('popular_cat_num', 10);
 	}
 
-	public function prepare_listing_data() {
-		$filters_buttons                = get_directorist_option( 'listings_filters_button', array( 'reset_button', 'apply_button' ), true );
-		$this->has_reset_filters_button = in_array( 'reset_button', $filters_buttons ) ? true : false;
-		$this->has_apply_filters_button = in_array( 'apply_button', $filters_buttons ) ? true : false;
+	public function prepare_listing_data(): void {
+		$filters_buttons                = get_directorist_option( 'listings_filters_button', [ 'reset_button', 'apply_button' ], true );
+		$this->has_reset_filters_button = in_array( 'reset_button', $filters_buttons );
+		$this->has_apply_filters_button = in_array( 'apply_button', $filters_buttons );
 		$this->reset_filters_text       = get_directorist_option('listings_reset_text', __('Reset Filters', 'directorist'));
 		$this->apply_filters_text       = get_directorist_option( 'listings_apply_text', __( 'Apply Filters', 'directorist' ) );
 
@@ -272,10 +271,10 @@ class Directorist_Listing_Search_Form {
 		}
 
 		if ( $this->directory_type && is_array( $this->directory_type ) ) {
-			$directories = directorist_get_directories( array(
+			$directories = directorist_get_directories( [
 				'fields'     => 'ids',
 				'slug'       => $this->directory_type,
-			) );
+			] );
 
 			if ( ! is_wp_error( $directories ) && ! empty( $directories ) && ! in_array( $default_directory_id, $directories, true ) ) {
 				$default_directory_id = $directories[0];
@@ -285,8 +284,11 @@ class Directorist_Listing_Search_Form {
 		return $default_directory_id;
 	}
 
-	public function build_form_data() {
-		$form_data          = array();
+	/**
+     * @return mixed[]
+     */
+    public function build_form_data(): array {
+		$form_data          = [];
 		$search_form_fields     = get_term_meta( $this->listing_type, 'search_form_fields', true );
 		$submission_form_fields = get_term_meta( $this->listing_type, 'submission_form_fields', true );
 
@@ -301,7 +303,7 @@ class Directorist_Listing_Search_Form {
 				$search_form_fields['fields'][$key]['field_key'] = '';
 				$search_form_fields['fields'][$key]['options'] = [];
 
-				$form_key = isset( $value['original_widget_key'] ) ? $value['original_widget_key'] : '';
+				$form_key = $value['original_widget_key'] ?? '';
 
 				unset( $search_form_fields['fields'][$key]['widget_key'] );
 				unset( $search_form_fields['fields'][$key]['original_widget_key'] );
@@ -322,7 +324,7 @@ class Directorist_Listing_Search_Form {
 		if ( !empty( $search_form_fields['groups'] ) ) {
 			foreach ( $search_form_fields['groups'] as $group ) {
 				$section           = $group;
-				$section['fields'] = array();
+				$section['fields'] = [];
 
 				foreach ( $group['fields'] as $field ) {
 					$search_field = $search_form_fields['fields'][$field];
@@ -339,28 +341,24 @@ class Directorist_Listing_Search_Form {
 		return $form_data;
 	}
 
-	public function is_field_allowed_in_atts( $widget_name ) {
-		$atts = ! empty( $this->atts[ 'filter_' . $widget_name ] ) ? $this->atts[ 'filter_' . $widget_name ] : '';
-
-		if ( 'no' == $atts ){
-			return false;
-		}
-		return true;
+	public function is_field_allowed_in_atts( string $widget_name ): bool {
+		$atts = empty( $this->atts[ 'filter_' . $widget_name ] ) ? '' : $this->atts[ 'filter_' . $widget_name ];
+        return 'no' != $atts;
 	}
 
-	public function buttons_template() {
+	public function buttons_template(): void {
 		if ($this->has_reset_filters_button || $this->has_apply_filters_button) {
-			Helper::get_template( 'search-form/buttons', array('searchform' => $this) );
+			Helper::get_template( 'search-form/buttons', ['searchform' => $this] );
 		}
 	}
 
 	public function range_slider_unit( $data ) {
-		$radius_search_unit = !empty( $data['radius_search_unit'] ) ? $data['radius_search_unit'] : '';
+		$radius_search_unit = empty( $data['radius_search_unit'] ) ? '' : $data['radius_search_unit'];
 		return ( 'kilometers' == $radius_search_unit ) ? __( 'Kilometers', 'directorist' ) : __( 'Miles', 'directorist' );
 	}
 
-	public function range_slider_minValue( $data ){
-		return !empty( $_REQUEST['miles'] ) ? sanitize_text_field( wp_unslash( $_REQUEST['miles'] ) ) : $data['default_radius_distance'];
+	public function range_slider_minValue( array $data ){
+		return empty( $_REQUEST['miles'] ) ? $data['default_radius_distance'] : sanitize_text_field( wp_unslash( $_REQUEST['miles'] ) );
 	}
 
 	public function range_slider_data( $data ) {
@@ -375,16 +373,15 @@ class Directorist_Listing_Search_Form {
 
 	public function get_pricing_type() {
 		$submission_form_fields = get_term_meta( $this->listing_type, 'submission_form_fields', true );
-		$ptype = !empty( $submission_form_fields['fields']['pricing']['pricing_type'] ) ? $submission_form_fields['fields']['pricing']['pricing_type'] : 'both';
-		return $ptype;
+		return empty( $submission_form_fields['fields']['pricing']['pricing_type'] ) ? 'both' : $submission_form_fields['fields']['pricing']['pricing_type'];
 	}
 
 	// custom field assign to category
-	public function assign_to_category(){
+	public function assign_to_category(): array{
 		$submission_form_fields = get_term_meta( $this->listing_type , 'submission_form_fields', true );
 		$category_id = isset( $_REQUEST['cat_id'] ) ? sanitize_text_field( wp_unslash( $_REQUEST['cat_id'] ) ) : '';
-		$custom_field_key = array();
-		$assign_to_cat = array();
+		$custom_field_key = [];
+		$assign_to_cat = [];
 
 		if( $submission_form_fields['fields'] ) {
 			foreach( $submission_form_fields['fields'] as $field ) {
@@ -394,15 +391,13 @@ class Directorist_Listing_Search_Form {
 				}
 			}
 		}
-
-		$category_custom_field = array(
+		return [
 			'custom_field_key'	=> $custom_field_key,
 			'assign_to_cat'		=> $assign_to_cat,
-		);
-		return $category_custom_field;
+		];
 	}
 
-	public function field_template( $field_data ) {
+	public function field_template( $field_data ): void {
 		$key = $field_data['field_key'];
 
 		$field_data['lazy_load'] = get_directorist_option( 'lazy_load_taxonomy_fields', true );
@@ -419,12 +414,12 @@ class Directorist_Listing_Search_Form {
 		}
 
 
-		$args = array(
+		$args = [
 			'searchform' 		=> $this,
 			'data'       		=> $field_data,
 			'value'      		=> $value,
 			'empty_label'  => empty( $field_data['label'] ) ? 'input-has-noLabel' : '',
-		);
+		];
 
 		// if ( $this->is_custom_field( $field_data ) && ( ! in_array( $field_data['field_key'], $this->assign_to_category()['custom_field_key'] ) ) ) {
 		// 	if( ! empty( $field_data['type'] ) && 'number' != $field_data['type'] ) {
@@ -448,14 +443,14 @@ class Directorist_Listing_Search_Form {
 		Helper::get_template( $template, $args );
 	}
 
-	public function is_custom_field( $data ) {
+	public function is_custom_field( array $data ): bool {
 		$fields = [ 'checkbox', 'color_picker', 'date', 'file', 'number', 'radio', 'select', 'text', 'textarea', 'time', 'url' ];
 
 		return in_array( $data['widget_name'], $fields, true );
 	}
 
 	public function get_listing_type_data() {
-		$args = array();
+		$args = [];
 
 		if ( $this->directory_type ) {
 			$args['slug'] = $this->directory_type;
@@ -465,7 +460,7 @@ class Directorist_Listing_Search_Form {
 	}
 
 
-	public function directory_type_nav_template() {
+	public function directory_type_nav_template(): void {
 		if ( count( $this->get_listing_type_data() ) < 2 || ! directorist_is_multi_directory_enabled() ) {
 			return;
 		}
@@ -473,44 +468,47 @@ class Directorist_Listing_Search_Form {
 		Helper::get_template( 'search-form/directory-type-nav', [ 'searchform' => $this ] );
 	}
 
-	public function has_more_filters_icon() {
+	public function has_more_filters_icon(): bool {
 		$more_filters_icon = $this->options['display_more_filter_icon'];
-		return !empty( $more_filters_icon ) ? true : false;
+		return !empty( $more_filters_icon );
 	}
 
-	public function has_search_button_icon() {
+	public function has_search_button_icon(): bool {
 		$search_button_icon = $this->options['display_search_button_icon'];
-		return !empty( $search_button_icon ) ? true : false;
+		return !empty( $search_button_icon );
 	}
 
-	public function get_basic_fields() {
+	public function get_basic_fields(): array {
 		return ! empty( $this->form_data[0]['fields'] ) && is_array( $this->form_data[0]['fields'] )
         ? $this->form_data[0]['fields']
         : [];
 	}
 
-	public function get_advance_fields() {
+	public function get_advance_fields(): array {
 		return ! empty( $this->form_data[1]['fields'] ) && is_array( $this->form_data[1]['fields'] )
         ? $this->form_data[1]['fields']
         : [];
 	}
 
-	public function more_buttons_template() {
+	public function more_buttons_template(): void {
 		Helper::get_template( 'search-form/more-buttons', [ 'searchform' => $this ] );
 	}
 
-	public function advanced_search_form_basic_fields_template() {
-		Helper::get_template( 'search-form/basic-search', array('searchform' => $this) );
+	public function advanced_search_form_basic_fields_template(): void {
+		Helper::get_template( 'search-form/basic-search', ['searchform' => $this] );
 	}
 
-	public function advanced_search_form_fields_template() {
-		Helper::get_template( 'search-form/adv-search', array('searchform' => $this) );
+	public function advanced_search_form_fields_template(): void {
+		Helper::get_template( 'search-form/adv-search', ['searchform' => $this] );
 	}
 
-	public function top_categories() {
+	/**
+     * @return mixed[]
+     */
+    public function top_categories(): array {
 		$top_categories = [];
 
-		$args = array(
+		$args = [
 			'type'          => ATBDP_POST_TYPE,
 			'parent'        => 0,
 			'orderby'       => 'count',
@@ -519,13 +517,13 @@ class Directorist_Listing_Search_Form {
 			'number'        => (int)$this->popular_cat_num,
 			'taxonomy'      => ATBDP_CATEGORY,
 			'no_found_rows' => true,
-		);
+		];
 
 		$cats = get_categories( $args );
 
 		foreach ( $cats as $cat ) {
 			$directory_type 	 = get_term_meta( $cat->term_id, '_directory_type', true );
-			$directory_type 	 = ! empty( $directory_type ) ? $directory_type : array();
+			$directory_type 	 = empty( $directory_type ) ? [] : $directory_type;
 			$listing_type_id     = $this->listing_type;
 
 			if( in_array( $listing_type_id, $directory_type ) ) {
@@ -536,24 +534,24 @@ class Directorist_Listing_Search_Form {
 		return $top_categories;
 	}
 
-	public function top_categories_template() {
+	public function top_categories_template(): void {
 		if ( $this->show_popular_category ) {
 			$top_categories = $this->top_categories();
 			$title = get_directorist_option( 'popular_cat_title', __( 'Browse by popular categories', 'directorist' ) );
 
 			if ( !empty($top_categories) ) {
-				$args = array(
+				$args = [
 					'searchform'      => $this,
 					'top_categories'  => $top_categories,
 					'title'           => $title,
-				);
+				];
 				Helper::get_template( 'search-form/top-cats', $args );
 			}
 		}
 	}
 
-	public function search_category_location_args() {
-		return array(
+	public function search_category_location_args(): array {
+		return [
 			'parent'                       => 0,
 			'term_id'                      => 0,
 			'hide_empty'                   => 0,
@@ -564,10 +562,10 @@ class Directorist_Listing_Search_Form {
 			'pad_counts'                   => true,
 			'immediate_category'           => 0,
 			'active_term_id'               => 0,
-			'ancestors'                    => array(),
+			'ancestors'                    => [],
 			'listing_type'                 => $this->listing_type,
 			'categories_with_custom_field' => array_values( directorist_get_category_custom_field_relations( $this->listing_type ) )
-		);
+		];
 	}
 
 	public function price_value($arg) {
@@ -582,7 +580,7 @@ class Directorist_Listing_Search_Form {
 		return '';
 	}
 
-	public function the_price_range_input($range) {
+	public function the_price_range_input($range): void {
 		$checked = ! empty( $_REQUEST['price_range'] ) && $_REQUEST['price_range'] == $range ? ' checked="checked"' : '';
 		printf('<input type="radio" name="price_range" value="%s"%s>', esc_attr( $range ), esc_attr( $checked ) );
 	}
@@ -596,12 +594,11 @@ class Directorist_Listing_Search_Form {
 	public function render_search_shortcode( $atts = [] ) {
 
 		if ( $this->logged_in_user_only && ! is_user_logged_in() ) {
-			return ATBDP()->helper->guard( array('type' => 'auth') );
+			return ATBDP()->helper->guard( ['type' => 'auth'] );
 		}
 
 		if ($this->redirect_page_url) {
-			$redirect = '<script>window.location="' . esc_url($this->redirect_page_url) . '"</script>';
-			return $redirect;
+			return '<script>window.location="' . esc_url($this->redirect_page_url) . '"</script>';
 		}
 
 		return Helper::get_template_contents( 'search-form-contents', [ 'searchform' => $this ] );
@@ -615,27 +612,26 @@ class Directorist_Listing_Search_Form {
 		return $term_data->slug;
 	}
 
-	public function background_img_style() {
+	public function background_img_style(): bool {
 		_deprecated_function( __METHOD__, '8.0.1' );
 		return true;
 	}
 
-	public function border_class() {
+	public function border_class(): string {
 		$search_border = get_directorist_option( 'search_border', 1 );
 		return empty( $search_border ) ? 'directorist-no-search-border' : 'directorist-with-search-border';
 	}
 
-	public function category_icon_class($cat) {
+	public function category_icon_class($cat): string {
 		$icon = get_cat_icon($cat->term_id);
 		$icon_type = substr($icon, 0, 2);
-		$icon_class = ('la' === $icon_type) ? $icon_type . ' ' . $icon : 'fa ' . $icon;
-		return $icon_class;
+		return ('la' === $icon_type) ? $icon_type . ' ' . $icon : 'fa ' . $icon;
 	}
 
-	public function zip_code_class() {
+	public function zip_code_class(): string {
 		$class 					= 'directorist-form-element';
 		$radius_search 			= $this->build_search_data( 'radius_search' );
-		$radius_search_based_on = ! empty( $radius_search['radius_search_based_on'] ) ? $radius_search['radius_search_based_on'] : 'address';
+		$radius_search_based_on = empty( $radius_search['radius_search_based_on'] ) ? 'address' : $radius_search['radius_search_based_on'];
 
 		if( ! empty( $radius_search ) && 'zip' == $radius_search_based_on ) {
 			$class .= ' zip-radius-search';
@@ -643,58 +639,56 @@ class Directorist_Listing_Search_Form {
 		return $class;
 	}
 
-	public function rating_field_data() {
-		$search_by_rating = ! empty( $_REQUEST['search_by_rating'] ) ? $_REQUEST['search_by_rating'] : array();
+	public function rating_field_data(): array {
+		$search_by_rating = empty( $_REQUEST['search_by_rating'] ) ? [] : $_REQUEST['search_by_rating'];
 
-		$rating_options = array(
-			array(
+		return [
+			[
 				'checked' => ( is_array( $search_by_rating ) && in_array( '5', $search_by_rating, true ) ) ? ' checked' : '',
 				'value'    => '5',
 				'label'    => __( '5 Star', 'directorist' ),
-			),
-			array(
+			],
+			[
 				'checked' => ( is_array( $search_by_rating ) && in_array( '4', $search_by_rating, true ) ) ? ' checked' : '',
 				'value'    => '4',
 				'label'    => __( '4 Star & Up', 'directorist' ),
-			),
-			array(
+			],
+			[
 				'checked' => ( is_array( $search_by_rating ) && in_array( '3', $search_by_rating, true )  ) ? ' checked' : '',
 				'value'    => '3',
 				'label'    => __( '3 Star & Up', 'directorist' ),
-			),
-			array(
+			],
+			[
 				'checked' => ( is_array( $search_by_rating ) && in_array( '2', $search_by_rating, true )  ) ? ' checked' : '',
 				'value'    => '2',
 				'label'    => __( '2 Star & Up', 'directorist' ),
-			),
-			array(
+			],
+			[
 				'checked' => ( is_array( $search_by_rating ) && in_array( '1', $search_by_rating, true )  ) ? ' checked' : '',
 				'value'    => '1',
 				'label'    => __( '1 Star & Up', 'directorist' ),
-			),
-		);
-
-		return $rating_options;
+			],
+		];
 	}
 
 	public function listing_tag_terms($tag_source='all_tags') {
 		$category_slug   = get_query_var( 'atbdp_category' );
 		$category        = get_term_by( 'slug', $category_slug, ATBDP_CATEGORY );
-		$category_id     = ! empty( $category->term_id ) ? $category->term_id : '';
-		$category_select = ! empty( $_REQUEST['in_cat'] ) ? sanitize_text_field( wp_unslash( $_REQUEST['in_cat'] ) ) : $category_id;
+		$category_id     = empty( $category->term_id ) ? '' : $category->term_id;
+		$category_select = empty( $_REQUEST['in_cat'] ) ? $category_id : sanitize_text_field( wp_unslash( $_REQUEST['in_cat'] ) );
 
 		if ( 'all_tags' == $tag_source || empty( $category_select ) ) {
 			$terms = get_terms( ATBDP_TAGS );
 		} else {
-			$tag_args = array(
+			$tag_args = [
 				'post_type' => ATBDP_POST_TYPE,
-				'tax_query' => array(
-					array(
+				'tax_query' => [
+					[
 						'taxonomy' => ATBDP_CATEGORY,
-						'terms'    => ! empty( $_REQUEST['in_cat'] ) ? sanitize_text_field( wp_unslash( $_REQUEST['in_cat'] ) ) : $category_id,
-					),
-				),
-			);
+						'terms'    => empty( $_REQUEST['in_cat'] ) ? $category_id : sanitize_text_field( wp_unslash( $_REQUEST['in_cat'] ) ),
+					],
+				],
+			];
 
 			$tag_posts       = get_posts( $tag_args );
 			if ( ! empty( $tag_posts ) ) {
@@ -702,14 +696,14 @@ class Directorist_Listing_Search_Form {
 					$tag_id[] = $tag_post->ID;
 				}
 			}
-			$tag_id = ! empty( $tag_id ) ? $tag_id : '';
+			$tag_id = $tag_id === [] ? '' : $tag_id;
 			$terms  = wp_get_object_terms( $tag_id, ATBDP_TAGS );
 		}
 
 		if ( ! empty( $terms ) ) {
 			return $terms;
 		} else {
-			return array();
+			return [];
 		}
 	}
 
@@ -727,7 +721,10 @@ class Directorist_Listing_Search_Form {
 		return self::get_taxonomy_select_option_data( $id );
 	}
 
-	public static function get_taxonomy_select_option_data( $id ) {
+	/**
+     * @return mixed[]
+     */
+    public static function get_taxonomy_select_option_data( $id ): array {
 		$item = [ 'id' => '', 'label' => '' ];
 
 		if ( empty( $id ) ) {
@@ -746,11 +743,11 @@ class Directorist_Listing_Search_Form {
 		return $item;
 	}
 
-	public function load_radius_search_scripts( $data ) {
+	public function load_radius_search_scripts( $data ): void {
 		_deprecated_function( __METHOD__, '7.1' );
 	}
 
-	public function load_map_scripts() {
+	public function load_map_scripts(): void {
 		_deprecated_function( __METHOD__, '7.3' );
 	}
 }

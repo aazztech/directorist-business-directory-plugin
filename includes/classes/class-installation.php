@@ -19,12 +19,11 @@ if ( ! class_exists( 'ATBDP_Installation' ) ) :
 class ATBDP_Installation {
 
 	/**
-	 * DB updates and callbacks that need to be run per version.
-	 *
-	 * @since 7.1.0
-	 * @var array
-	 */
-	private static $db_updates = array(
+     * DB updates and callbacks that need to be run per version.
+     *
+     * @since 7.1.0
+     */
+    private static array $db_updates = [
 		'7.1.0' => [
 			'directorist_710_migrate_reviews_table_to_comments_table',
 			'directorist_710_migrate_posts_table_to_comments_table',
@@ -48,22 +47,20 @@ class ATBDP_Installation {
 		'8.0.0' => [
 			'directorist_800_update_db_version',
 		]
-	);
+	];
 
 	/**
-	 * Background update class.
-	 *
-	 * @since 7.1.0
-	 * @var object
-	 */
-	private static $background_updater;
+     * Background update class.
+     *
+     * @since 7.1.0
+     */
+    private static ?\Directorist\Background_Updater $background_updater = null;
 
 	/**
-	 *It installs the required features or options for the plugin to run properly.
-		* @link https://codex.wordpress.org/Function_Reference/register_post_type
-		* @return void
-		*/
-	public static function install() {
+     *It installs the required features or options for the plugin to run properly.
+     * @link https://codex.wordpress.org/Function_Reference/register_post_type
+     */
+    public static function install(): void {
 		require_once ATBDP_CLASS_DIR . 'class-custom-post.php'; // include custom post class
 		require_once ATBDP_CLASS_DIR . 'class-roles.php'; // include custom roles and Caps
 
@@ -92,9 +89,9 @@ class ATBDP_Installation {
 		self::maybe_update_db_version();
 	}
 
-	public static function init() {
-		add_action( 'init', [ __CLASS__, 'init_background_updater' ], 5 );
-		add_action( 'admin_init', [ __CLASS__, 'install_actions' ] );
+	public static function init(): void {
+		add_action( 'init', [ self::class, 'init_background_updater' ], 5 );
+		add_action( 'admin_init', [ self::class, 'install_actions' ] );
 	}
 
 	/**
@@ -102,7 +99,7 @@ class ATBDP_Installation {
 	 *
 	 * @since 7.1.0
 	 */
-	public static function init_background_updater() {
+	public static function init_background_updater(): void {
 		include_once ATBDP_INC_DIR . 'classes/class-background-updater.php';
 		self::$background_updater = new \Directorist\Background_Updater();
 	}
@@ -114,7 +111,7 @@ class ATBDP_Installation {
 	 *
 	 * @since 7.1.0
 	 */
-	public static function install_actions() {
+	public static function install_actions(): void {
 		if ( ! empty( $_GET['do_update_directorist'] ) ) { // WPCS: input var ok.
 			check_admin_referer( 'directorist_db_update', 'directorist_db_update_nonce' );
 			self::update();
@@ -148,7 +145,7 @@ class ATBDP_Installation {
 	 *
 	 * @since 7.1.0
 	 */
-	private static function update() {
+	private static function update(): void {
 		$current_db_version = get_option( 'directorist_db_version' );
 		$update_queued      = false;
 
@@ -172,7 +169,7 @@ class ATBDP_Installation {
 	 * @since 7.1.0
 	 * @param string|null $version New Directorist DB version or null.
 	 */
-	public static function update_db_version( $version = null ) {
+	public static function update_db_version( $version = null ): void {
 		delete_option( 'directorist_db_version' );
 		add_option( 'directorist_db_version', is_null( $version ) ? ATBDP_VERSION : $version );
 	}
@@ -182,7 +179,7 @@ class ATBDP_Installation {
 	 *
 	 * @since 7.1.0
 	 */
-	private static function maybe_update_db_version() {
+	private static function maybe_update_db_version(): void {
 		// Probably new installation, so add current db version.
 		if ( ! get_option( 'directorist_setup_wizard_completed' ) && ! get_option( 'directorist_db_version', null ) ) {
 			self::update_db_version();
@@ -199,12 +196,11 @@ class ATBDP_Installation {
 	}
 
 	/**
-	 * Is a DB update needed?
-	 *
-	 * @since 7.1.0
-	 * @return boolean
-	 */
-	public static function needs_db_update() {
+     * Is a DB update needed?
+     *
+     * @since 7.1.0
+     */
+    public static function needs_db_update(): bool {
 		$current_db_version = get_option( 'directorist_db_version', null );
 		$updates            = self::get_db_update_callbacks();
 

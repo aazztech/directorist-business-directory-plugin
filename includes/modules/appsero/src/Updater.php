@@ -16,14 +16,12 @@ class Updater {
      *
      * @var object
      */
-    protected $client;
+    protected \Directorist\Appsero\Client $client;
 
     /**
      * Cache key
-     *
-     * @var string
      */
-    protected $cache_key;
+    protected string $cache_key;
 
     /**
      * Initialize the class
@@ -44,20 +42,16 @@ class Updater {
 
     /**
      * Set up WordPress filter to hooks to get update.
-     *
-     * @return void
      */
-    public function run_plugin_hooks() {
+    public function run_plugin_hooks(): void {
         add_filter( 'pre_set_site_transient_update_plugins', [ $this, 'check_plugin_update' ] );
         add_filter( 'plugins_api', [ $this, 'plugins_api_filter' ], 10, 3 );
     }
 
     /**
      * Set up WordPress filter to hooks to get update.
-     *
-     * @return void
      */
-    public function run_theme_hooks() {
+    public function run_theme_hooks(): void {
         add_filter( 'pre_set_site_transient_update_themes', [ $this, 'check_theme_update' ] );
     }
 
@@ -138,7 +132,7 @@ class Updater {
     /**
      * Set version info to database
      */
-    private function set_cached_version_info( $value ) {
+    private function set_cached_version_info( $value ): void {
         if ( ! $value ) {
             return;
         }

@@ -10,41 +10,41 @@ if ( ! class_exists( 'ATBDP_Custom_Post' ) ) :
 
 		public function __construct() {
 			// Add the listing post type and taxonomies
-			add_action( 'init', array( $this, 'register_new_post_types' ), 5 );
+			add_action( 'init', [ $this, 'register_new_post_types' ], 5 );
 
 			// add new columns for ATBDP_SHORT_CODE_POST_TYPE
-			add_filter( 'manage_' . ATBDP_POST_TYPE . '_posts_columns', array( $this, 'add_new_listing_columns' ) );
-			add_action( 'manage_' . ATBDP_POST_TYPE . '_posts_custom_column', array( $this, 'manage_listing_columns' ), 10, 2 );
+			add_filter( 'manage_' . ATBDP_POST_TYPE . '_posts_columns', [ $this, 'add_new_listing_columns' ] );
+			add_action( 'manage_' . ATBDP_POST_TYPE . '_posts_custom_column', [ $this, 'manage_listing_columns' ], 10, 2 );
 			/*make column sortable*/
-			add_filter( 'manage_edit-' . ATBDP_POST_TYPE . '_sortable_columns', array( $this, 'make_sortable_column' ), 10, 1 );
-			add_filter( 'post_row_actions', array( $this, 'add_listing_id_row' ), 10, 2 );
+			add_filter( 'manage_edit-' . ATBDP_POST_TYPE . '_sortable_columns', [ $this, 'make_sortable_column' ], 10, 1 );
+			add_filter( 'post_row_actions', [ $this, 'add_listing_id_row' ], 10, 2 );
 
-			add_filter( 'enter_title_here', array( $this, 'change_title_text' ) );
-			add_filter( 'post_row_actions', array( $this, 'add_row_actions_for_quick_view' ), 10, 2 );
-			add_filter( 'load-edit.php', array( $this, 'work_row_actions_for_quick_view' ), 10, 2 );
+			add_filter( 'enter_title_here', [ $this, 'change_title_text' ] );
+			add_filter( 'post_row_actions', [ $this, 'add_row_actions_for_quick_view' ], 10, 2 );
+			add_filter( 'load-edit.php', [ $this, 'work_row_actions_for_quick_view' ], 10, 2 );
 
 			// bulk directory type assign
-			add_action( 'quick_edit_custom_box', array( __CLASS__, 'on_quick_or_bulk_edit_custom_box' ), 10, 2 );
-			add_action( 'save_post', array( __CLASS__, 'on_save_post' ) );
+			add_action( 'quick_edit_custom_box', [ self::class, 'on_quick_or_bulk_edit_custom_box' ], 10, 2 );
+			add_action( 'save_post', [ self::class, 'on_save_post' ] );
 
-			add_action( 'bulk_edit_custom_box', array( __CLASS__, 'on_quick_or_bulk_edit_custom_box' ), 10, 2 );
-			add_action( 'bulk_edit_posts', array( __CLASS__, 'on_bulk_edit_posts' ), 10, 2 );
+			add_action( 'bulk_edit_custom_box', [ self::class, 'on_quick_or_bulk_edit_custom_box' ], 10, 2 );
+			add_action( 'bulk_edit_posts', [ self::class, 'on_bulk_edit_posts' ], 10, 2 );
 
 			// Customize listing slug
 			if ( get_directorist_option( 'single_listing_slug_with_directory_type', false ) ) {
-				add_filter( 'post_type_link', array( $this, 'customize_listing_slug' ), 20, 2 );
+				add_filter( 'post_type_link', [ $this, 'customize_listing_slug' ], 20, 2 );
 				// add_filter( 'post_link', array( $this, 'customize_listing_slug' ), 20, 2 );
 			}
 
-			add_action( 'admin_footer', array( $this, 'quick_edit_scripts' ) );
+			add_action( 'admin_footer', [ $this, 'quick_edit_scripts' ] );
 
-			add_action( 'init', array( $this, 'register_post_status' ) );
+			add_action( 'init', [ $this, 'register_post_status' ] );
 		}
 
-		public function register_post_status() {
+		public function register_post_status(): void {
 			register_post_status(
 				'expired',
-				array(
+				[
 					'label'       => _x( 'Expired', 'post status', 'directorist' ),
 					'protected'   => true,
 					/* translators: %s: Number of expired listings. */
@@ -53,11 +53,11 @@ if ( ! class_exists( 'ATBDP_Custom_Post' ) ) :
 						'Expired <span class="count">(%s)</span>',
 						'directorist'
 					),
-				)
+				]
 			);
 		}
 
-		public function quick_edit_scripts() {
+		public function quick_edit_scripts(): void {
 			global $current_screen;
 
 			if ( ! isset( $current_screen ) || 'edit-at_biz_dir' !== $current_screen->id ) {
@@ -105,8 +105,7 @@ if ( ! class_exists( 'ATBDP_Custom_Post' ) ) :
 
 		// customize_listing_slug
 		public function customize_listing_slug( $post_link, $post ) {
-			$post_link = ATBDP_Permalink::get_listing_permalink( $post->ID, $post_link );
-			return $post_link;
+			return ATBDP_Permalink::get_listing_permalink( $post->ID, $post_link );
 		}
 
 		protected static function save_quick_or_bulk_edit( $listing_id ) {
@@ -114,7 +113,7 @@ if ( ! class_exists( 'ATBDP_Custom_Post' ) ) :
 				return;
 			}
 
-			$directory_id                 = ! empty( $_REQUEST['directorist_directory_type'] ) ? absint( wp_unslash( $_REQUEST['directorist_directory_type'] ) ) : 0;
+			$directory_id                 = empty( $_REQUEST['directorist_directory_type'] ) ? 0 : absint( wp_unslash( $_REQUEST['directorist_directory_type'] ) );
 			$should_update_directory_type = apply_filters( 'directorist_should_update_directory_type', (bool) $directory_id );
 
 			if ( $should_update_directory_type && directorist_is_directory( $directory_id ) ) {
@@ -126,7 +125,7 @@ if ( ! class_exists( 'ATBDP_Custom_Post' ) ) :
 			}
 		}
 
-		public static function on_save_post( $listing_id ) {
+		public static function on_save_post( $listing_id ): void {
 			$action = isset( $_REQUEST['action'] ) ? sanitize_text_field( wp_unslash( $_REQUEST['action'] ) ) : '';
 			if ( $action !== 'inline-save' ) {
 				return;
@@ -141,7 +140,7 @@ if ( ! class_exists( 'ATBDP_Custom_Post' ) ) :
 			self::save_quick_or_bulk_edit( $listing_id );
 		}
 
-		public static function on_bulk_edit_posts( $updated_listings, $shared_post_data ) {
+		public static function on_bulk_edit_posts( $updated_listings, $shared_post_data ): void {
 			$action = isset( $_REQUEST['action'] ) ? sanitize_text_field( wp_unslash( $_REQUEST['action'] ) ) : '';
 			if ( $action !== 'edit' ) {
 				return;
@@ -158,7 +157,7 @@ if ( ! class_exists( 'ATBDP_Custom_Post' ) ) :
 			}
 		}
 
-		public static function on_quick_or_bulk_edit_custom_box( $column_name, $post_type ) {
+		public static function on_quick_or_bulk_edit_custom_box( $column_name, $post_type ): void {
 			if ( ATBDP_POST_TYPE !== $post_type ) {
 				return;
 			}
@@ -197,7 +196,7 @@ if ( ! class_exists( 'ATBDP_Custom_Post' ) ) :
 			<?php endif;
 		}
 
-		public function add_cpt_to_pll( $post_types, $hide ) {
+		public function add_cpt_to_pll( array $post_types, $hide ): array {
 			/*
 			 echo '<pre>';
 			var_dump($post_types);
@@ -214,12 +213,12 @@ if ( ! class_exists( 'ATBDP_Custom_Post' ) ) :
 			return $post_types;
 		}
 
-		public function work_row_actions_for_quick_view() {
-			$nonce     = ! empty( $_REQUEST['_wpnonce'] ) ? wp_unslash( $_REQUEST['_wpnonce'] ) : ''; // @codingStandardsIgnoreLine
-			$update_id = ! empty( $_REQUEST['update_id'] ) ? absint( wp_unslash( $_REQUEST['update_id'] ) ) : 0;
+		public function work_row_actions_for_quick_view(): void {
+			$nonce     = empty( $_REQUEST['_wpnonce'] ) ? '' : wp_unslash( $_REQUEST['_wpnonce'] ); // @codingStandardsIgnoreLine
+			$update_id = empty( $_REQUEST['update_id'] ) ? 0 : absint( wp_unslash( $_REQUEST['update_id'] ) );
 
 			if ( wp_verify_nonce( $nonce, 'quick-publish-action' ) && $update_id && is_admin() ) {
-				$my_post                = array();
+				$my_post                = [];
 				$my_post['ID']          = $update_id;
 				$my_post['post_status'] = 'publish';
 				wp_update_post( $my_post );
@@ -240,7 +239,7 @@ if ( ! class_exists( 'ATBDP_Custom_Post' ) ) :
 		 * @since     1.0.0
 		 * @access   public
 		 */
-		public function add_row_actions_for_quick_view( $actions, $post ) {
+		public function add_row_actions_for_quick_view( array $actions, $post ): array {
 			if ( ATBDP_POST_TYPE !== $post->post_type ) {
 				return $actions;
 			}
@@ -258,7 +257,7 @@ if ( ! class_exists( 'ATBDP_Custom_Post' ) ) :
 		 * This function will register our custom post(s)
 		 * Initiate registrations of post types and taxonomies.
 		 */
-		public function register_new_post_types() {
+		public function register_new_post_types(): void {
 			$this->register_post_type();
 		}
 
@@ -270,7 +269,7 @@ if ( ! class_exists( 'ATBDP_Custom_Post' ) ) :
 		protected function register_post_type() {
 			// Args for ATBDP_POST_TYPE, here any constant may not be available because this function will be called from the
 			// register_activation_hook .
-			$labels = array(
+			$labels = [
 				'menu_name'                => __( 'Directory Listings', 'directorist' ),
 				'name_admin_bar'           => __( 'Listing', 'directorist' ),
 				'name'                     => _x( 'Listings', 'post type general name', 'directorist' ),
@@ -305,20 +304,19 @@ if ( ! class_exists( 'ATBDP_Custom_Post' ) ) :
 				'item_updated'             => __( 'Listing updated.', 'directorist' ),
 				'item_link'                => _x( 'Listing Link', 'navigation link block title', 'directorist' ),
 				'item_link_description'    => _x( 'A link to a listing.', 'navigation link block description', 'directorist' ),
-			);
+			];
 
-			$args = array(
+			$args = [
 				'label'               => __( 'Directory Listing', 'directorist' ),
 				'description'         => __( 'Directory listings', 'directorist' ),
 				'labels'              => $labels,
-				'supports'            => array( 'title', 'editor', 'author' ),
+				'supports'            => [ 'title', 'editor', 'author' ],
 				// 'show_in_rest'         => true,
-				'taxonomies'          => array( ATBDP_CATEGORY, ATBDP_LOCATION, ATBDP_TAGS, ATBDP_DIRECTORY_TYPE ),
+				'taxonomies'          => [ ATBDP_CATEGORY, ATBDP_LOCATION, ATBDP_TAGS, ATBDP_DIRECTORY_TYPE ],
 				'hierarchical'        => false,
 				'public'              => true,
-				'show_ui'             => current_user_can( 'edit_others_at_biz_dirs' ) ? true : false, // show the menu only to the admin
+				'show_ui'             => (bool) current_user_can( 'edit_others_at_biz_dirs' ), // show the menu only to the admin
 				'show_in_menu'        => true,
-				'menu_position'       => 20,
 				'menu_icon'           => DIRECTORIST_ASSETS . 'images/menu_icon.png',
 				'show_in_admin_bar'   => true,
 				'show_in_nav_menus'   => true,
@@ -329,7 +327,7 @@ if ( ! class_exists( 'ATBDP_Custom_Post' ) ) :
 				'capability_type'     => ATBDP_POST_TYPE,
 				'map_meta_cap'        => true, // set this true, otherwise, even admin will not be able to edit this post. WordPress will map cap from edit_post to edit_at_biz_dir etc,
 				'menu_position'       => 5,
-			);
+			];
 
 			$slug = get_directorist_option( 'atbdp_listing_slug', 'directory' );
 
@@ -338,10 +336,10 @@ if ( ! class_exists( 'ATBDP_Custom_Post' ) ) :
 			}
 
 			if ( ! empty( $slug ) ) {
-				$args['rewrite'] = array(
+				$args['rewrite'] = [
 					'slug'       => $slug,
 					'with_front' => false,
-				);
+				];
 			}
 
 			/**
@@ -357,8 +355,8 @@ if ( ! class_exists( 'ATBDP_Custom_Post' ) ) :
 			// flush_rewrite_rules();
 		}
 
-		public function add_new_listing_columns( $columns ) {
-			$columns          = array();
+		public function add_new_listing_columns( array $columns ) {
+			$columns          = [];
 			$columns['cb']    = '<input type="checkbox" />';
 			$columns['title'] = __( 'Name', 'directorist' );
 			if ( directorist_is_multi_directory_enabled() ) {
@@ -387,10 +385,10 @@ if ( ! class_exists( 'ATBDP_Custom_Post' ) ) :
 			return apply_filters( 'atbdp_add_new_listing_column', $columns );
 		}
 
-		public function manage_listing_columns( $column_name, $post_id ) {
+		public function manage_listing_columns( $column_name, $post_id ): void {
 			/*@TODO; Next time we can add image column too. */
 			$date_format = get_option( 'date_format' );
-			$time_format = get_option( 'time_format' );
+			get_option( 'time_format' );
 
 			switch ( $column_name ) {
 				case 'atbdp_location':
@@ -428,10 +426,10 @@ if ( ! class_exists( 'ATBDP_Custom_Post' ) ) :
 					break;
 
 				case 'atbdp_author':
-					$args = array(
+					$args = [
 						'post_type' => get_post_field( 'post_type' ),
 						'author'    => get_post_field( 'post_author' ),
-					);
+					];
 					printf(
 						'<a href="%1$s" title="%2$s">%3$s</a>',
 						esc_url( add_query_arg( $args, 'edit.php' ) ),
@@ -506,7 +504,7 @@ if ( ! class_exists( 'ATBDP_Custom_Post' ) ) :
 			apply_filters( 'atbdp_add_new_listing_column_content', $column_name, $post_id );
 		}
 
-		public function make_sortable_column( $columns ) {
+		public function make_sortable_column( array $columns ): array {
 			$columns['atbdp_author'] = 'author';
 
 			return $columns;
@@ -523,7 +521,7 @@ if ( ! class_exists( 'ATBDP_Custom_Post' ) ) :
 			global $typenow;
 			if ( ATBDP_POST_TYPE == $typenow ) {
 				$title_placeholder = get_directorist_option( 'title_placeholder', __( 'Enter a title', 'directorist' ) );
-				$title             = ! empty( $title_placeholder ) ? esc_attr( $title_placeholder ) : __( 'Enter a title', 'directorist' );
+				$title             = empty( $title_placeholder ) ? __( 'Enter a title', 'directorist' ) : esc_attr( $title_placeholder );
 			}
 
 			return $title;
@@ -541,7 +539,7 @@ if ( ! class_exists( 'ATBDP_Custom_Post' ) ) :
 				return $actions;
 			}
 
-			return array_merge( array( 'ID' => "ID: {$post->ID}" ), $actions );
+			return array_merge( [ 'ID' => "ID: {$post->ID}" ], $actions );
 		}
 	}
 

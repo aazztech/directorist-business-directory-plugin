@@ -1,7 +1,7 @@
 <?php
 $warnings = directorist_warnings();
 $_count   = count( $warnings );
-$warning_count = ! empty( $_count ) ? '( ' . $_count . ' )' : '';
+$warning_count = $_count === 0 ? '' : '( ' . $_count . ' )';
 ?>
 <div class="card atbds_card">
     <div class="card-head">

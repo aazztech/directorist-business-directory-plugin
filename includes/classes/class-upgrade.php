@@ -16,27 +16,29 @@ class ATBDP_Upgrade
 
 	public function __construct()
 	{
-		if ( !is_admin() ) return;
+		if (!is_admin()) {
+            return;
+        }
 
-		add_action('admin_init', array($this, 'configure_notices'));
+		add_action('admin_init', [$this, 'configure_notices']);
 
-		add_action('directorist_search_setting_sections', array($this, 'support_themes_hook'));
+		add_action('directorist_search_setting_sections', [$this, 'support_themes_hook']);
 
-		add_action('admin_notices', array($this, 'upgrade_notice'), 100);
+		add_action('admin_notices', [$this, 'upgrade_notice'], 100);
 
-		add_action('directorist_before_settings_panel_header', array($this, 'promo_banner') );
+		add_action('directorist_before_settings_panel_header', [$this, 'promo_banner'] );
 
-		add_action('directorist_before_all_directory_types', array($this, 'promo_banner') );
+		add_action('directorist_before_all_directory_types', [$this, 'promo_banner'] );
 
 		// add_action('directorist_before_directory_type_edited', array($this, 'promo_banner') );
 
-		add_action( 'admin_notices', array( $this, 'bfcm_notice') );
+		add_action( 'admin_notices', [ $this, 'bfcm_notice'] );
 
 		add_action( 'admin_init', [ $this, 'v8_force_migration' ] );
 
 	}
 
-	public function v8_force_migration() {
+	public function v8_force_migration(): void {
 
 		if( get_option( 'directorist_v8_force_migrated' ) ) {
 			return;
@@ -54,18 +56,18 @@ class ATBDP_Upgrade
 		update_option( 'directorist_v8_force_migrated', true );
 	}
 
-	public function run_v8_migration() {
+	public function run_v8_migration(): void {
 
 		//create account page
 		$options = get_option( 'atbdp_option' );
 		$account = wp_insert_post(
-			array(
+			[
 				'post_title' 	 => 'Sign In',
 				'post_content' 	 => '[directorist_signin_signup]',
 				'post_status' 	 => 'publish',
 				'post_type' 	 => 'page',
 				'comment_status' => 'closed'
-			)
+			]
 		);
 
 		if ( $account ) {
@@ -124,8 +126,8 @@ class ATBDP_Upgrade
 				continue;
 			}
 
-			$description = ! empty( $header_contents['options']['content_settings']['listing_description']['enable'] ) ? $header_contents['options']['content_settings']['listing_description']['enable'] : false;
-			$tagline     = ! empty( $header_contents['options']['content_settings']['listing_title']['enable_tagline'] ) ? $header_contents['options']['content_settings']['listing_title']['enable_tagline'] : false;
+			$description = empty( $header_contents['options']['content_settings']['listing_description']['enable'] ) ? false : $header_contents['options']['content_settings']['listing_description']['enable'];
+			$tagline     = empty( $header_contents['options']['content_settings']['listing_title']['enable_tagline'] ) ? false : $header_contents['options']['content_settings']['listing_title']['enable_tagline'];
 			$contents    = get_term_meta( $directory_type->term_id, 'single_listings_contents', true );
 
 			// Initialize contents if empty
@@ -192,12 +194,12 @@ class ATBDP_Upgrade
 						]
 					];
 
-					array_push( $new_structure, $quick_widget );
+					$new_structure[] = $quick_widget;
 				}
 
 
 				if ( 'thumbnail' === $section_name ) {
-					$footer_thumbnail = ! empty( $widgets[0]['footer_thumbail'] ) ? $widgets[0]['footer_thumbail'] : true;
+					$footer_thumbnail = empty( $widgets[0]['footer_thumbail'] ) ? true : $widgets[0]['footer_thumbail'];
 					$slider_widget = [
 						"type" => "placeholder_item",
 						"placeholderKey" => "slider-placeholder",
@@ -221,7 +223,7 @@ class ATBDP_Upgrade
 						]
 					];
 
-					array_push( $new_structure, $slider_widget );
+					$new_structure[] = $slider_widget;
 				}
 
 				if ( 'quick_info' === $section_name ) {
@@ -249,7 +251,7 @@ class ATBDP_Upgrade
 						]
 					];
 
-					array_push( $new_structure, $title_widget );
+					$new_structure[] = $title_widget;
 
 					$more_widget = [
 						"type" => "placeholder_item",
@@ -257,7 +259,7 @@ class ATBDP_Upgrade
 						"selectedWidgets" => $widgets,
 					];
 
-					array_push( $new_structure, $more_widget );
+					$new_structure[] = $more_widget;
 				}
 
 			}
@@ -269,7 +271,7 @@ class ATBDP_Upgrade
 		}
 	}
 
-	private function search_field_label_migration( $directory_id ) {
+	private function search_field_label_migration( $directory_id ): void {
 		$search_fields = get_term_meta( $directory_id, 'search_form_fields', true );
 		$search_fields = is_array( $search_fields ) ? $search_fields : [];
 		$fields        = isset( $search_fields['fields'] ) && is_array( $search_fields['fields'] ) ? $search_fields['fields'] : [];
@@ -282,12 +284,12 @@ class ATBDP_Upgrade
 			$search_fields['fields'][ $key ] = $field;
 		}
 
-		if ( ! empty( $search_fields ) ) {
+		if ( $search_fields !== [] ) {
 			update_term_meta( $directory_id, 'search_form_fields', $search_fields );
 		}
 	}
 
-	public function support_themes_hook( $data ) {
+	public function support_themes_hook( array $data ): array {
 		$theme = wp_get_theme( is_child_theme() ? get_template() : '' );
 
 		// Check if theme author is 'wpWax'
@@ -309,7 +311,7 @@ class ATBDP_Upgrade
 		return $data;
 	}
 
-	public function is_pro_user() {
+	public function is_pro_user(): bool {
 		$plugin = get_user_meta( get_current_user_id(), '_plugins_available_in_subscriptions', true );
 		$theme  = get_user_meta( get_current_user_id(), '_themes_available_in_subscriptions', true );
 
@@ -320,26 +322,26 @@ class ATBDP_Upgrade
 		}
 	}
 
-	public function promo_banner(){
+	public function promo_banner(): void{
 		if ( self::can_manage_plugins() && ! self::is_pro_user() ) {
 			ATBDP()->load_template( 'admin-templates/admin-promo-banner' );
 		}
 	}
 
-	protected static function can_manage_plugins() {
+	protected static function can_manage_plugins(): bool {
 		return ( current_user_can( 'install_plugins' ) || current_user_can( 'manage_options' ) );
 	}
 
-	public function bfcm_notice() {
+	public function bfcm_notice(): void {
 		if ( ! self::can_manage_plugins() || self::is_pro_user() ) {
 			return;
 		}
 
 		$response_body  = self::promo_remote_get();
-		$display        = ! empty( $response_body->promo_2_display ) ? $response_body->promo_2_display : '';
-		$text           = ! empty( $response_body->promo_2_text ) ? $response_body->promo_2_text : '';
-		$version        = ! empty( $response_body->promo_2_version ) ? $response_body->promo_2_version : '';
-		$link           = ! empty( $response_body->get_now_button_link ) ? self::promo_link( $response_body->get_now_button_link ) : '';
+		$display        = empty( $response_body->promo_2_display ) ? '' : $response_body->promo_2_display;
+		$text           = empty( $response_body->promo_2_text ) ? '' : $response_body->promo_2_text;
+		$version        = empty( $response_body->promo_2_version ) ? '' : $response_body->promo_2_version;
+		$link           = empty( $response_body->get_now_button_link ) ? '' : self::promo_link( $response_body->get_now_button_link );
 
 		$closed_version = get_user_meta( get_current_user_id(), 'directorist_promo2_closed_version', true );
 
@@ -350,10 +352,10 @@ class ATBDP_Upgrade
 		$text = str_replace( '{{link}}', $link, $text );
 
 		$dismiss_url = add_query_arg(
-			array(
+			[
 				'directorist_promo2_closed_version' => $version,
 				'directorist_promo_nonce'          => wp_create_nonce( 'directorist_promo_nonce' ),
-			),
+			],
 			atbdp_get_current_url()
 		);
 
@@ -366,7 +368,7 @@ class ATBDP_Upgrade
 		return API::get_promotion();
 	}
 
-	public function upgrade_notice() {
+	public function upgrade_notice(): void {
 		if ( ! self::can_manage_plugins() ) {
 			return;
 		}
@@ -391,12 +393,12 @@ class ATBDP_Upgrade
 			}
 		}
 
-		if ( ! empty( $outdated_extensions ) ) {
+		if ( $outdated_extensions !== [] ) {
 			$this->v8_extension_upgrade_notice( $outdated_extensions );
 		}
 	}
 
-	public function v8_extension_upgrade_notice( $outdated_extensions = [] ) {
+	public function v8_extension_upgrade_notice( $outdated_extensions = [] ): void {
 		if ( ! self::can_manage_plugins() ) {
 			return;
 		}
@@ -440,7 +442,7 @@ SCRIPT;
 		echo wp_kses_post( $notice ) . $notice_script;
 	}
 
-	public function v8_theme_upgrade_notice( $theme ) {
+	public function v8_theme_upgrade_notice( array $theme ): void {
 		if ( ! self::can_manage_plugins() ) {
 			return;
 		}
@@ -463,7 +465,7 @@ SCRIPT;
 		echo wp_kses_post( $notice );
 	}
 
-	public function configure_notices() {
+	public function configure_notices(): void {
 		if ( ! self::can_manage_plugins() ) {
 			return;
 		}

@@ -15,37 +15,30 @@ class SetupWizard
     public $step   = '';
 
     /** @var array Steps for the setup wizard */
-    public $steps  = array();
-
-    /**
-     * Actions to be executed after the HTTP response has completed
-     *
-     * @var array
-     */
-    private $deferred_actions = array();
+    public $steps  = [];
 
     /**
      * Hook in tabs.
      */
     public function __construct() {
-            add_action( 'admin_menu', array( $this, 'admin_menus' ) );
-            add_action( 'admin_init', array( $this, 'setup_wizard' ), 99 );
-            add_action( 'admin_notices', array( $this, 'render_run_admin_setup_wizard_notice' ) );
-            add_action( 'wp_ajax_directorist_setup_wizard', array( $this, 'directorist_setup_wizard' ) );
-            add_action( 'wp_loaded', array( $this, 'hide_notices' ) );
+            add_action( 'admin_menu', [ $this, 'admin_menus' ] );
+            add_action( 'admin_init', [ $this, 'setup_wizard' ], 99 );
+            add_action( 'admin_notices', [ $this, 'render_run_admin_setup_wizard_notice' ] );
+            add_action( 'wp_ajax_directorist_setup_wizard', [ $this, 'directorist_setup_wizard' ] );
+            add_action( 'wp_loaded', [ $this, 'hide_notices' ] );
     }
 
-    public function directorist_setup_wizard() {
+    public function directorist_setup_wizard(): ?bool {
         if ( ! current_user_can( 'import' ) ) {
-            wp_send_json( array(
+            wp_send_json( [
                 'error' => esc_html__( 'Invalid request!', 'directorist' ),
-            ) );
+            ] );
         }
 
         if ( ! directorist_verify_nonce() ) {
-            wp_send_json( array(
+            wp_send_json( [
                 'error' => esc_html__( 'Invalid nonce!', 'directorist' ),
-            ) );
+            ] );
         }
 
         $counter = $_POST['counter'];
@@ -60,12 +53,12 @@ class SetupWizard
 
         $get_types      = get_transient( 'directory_type' );
 
-        $post_type = ! empty( $get_types[$counter ] ) ? $get_types[$counter ] : '';
+        $post_type = empty( $get_types[$counter ] ) ? '' : $get_types[$counter ];
 
         $response_body  = wp_remote_retrieve_body( $request_directory_types );
         $pre_made_types = json_decode( $response_body, true );
 
-        $is_completed = ( count( $get_types ) <= $counter ) ? true : false;
+        $is_completed = count( $get_types ) <= $counter;
         $task_counter = $counter + 1;
         $percentage    = absint( min( round( ( ( $task_counter ) / count( $get_types ) ) * 100 ), 100 ) );
 
@@ -112,11 +105,7 @@ class SetupWizard
                 'is_json'        => false
             ]);
 
-            if( ! $term['status']['success'] ) {
-                $term_id = $term['status']['term_id'];
-            }else{
-                $term_id = $term['term_id'];
-            }
+            $term_id = $term['status']['success'] ? $term['term_id'] : $term['status']['term_id'];
 
             if( $counter == 0 ) {
                 update_term_meta( $term_id, '_default', true );
@@ -138,9 +127,10 @@ class SetupWizard
         $data['completed']       = $is_completed;
 
         wp_send_json( $data );
+        return null;
     }
 
-    public function render_run_admin_setup_wizard_notice() {
+    public function render_run_admin_setup_wizard_notice(): void {
 
         $setup_wizard = get_option( 'directorist_setup_wizard_completed' );
         $atpdp_setup_wizard = apply_filters( 'atbdp_setup_wizard', true );
@@ -159,7 +149,7 @@ class SetupWizard
     <?php
     }
 
-    public function hide_notices() {
+    public function hide_notices(): void {
         if ( isset( $_GET['directorist-hide-notice'] ) && isset( $_GET['_atbdp_notice_nonce'] ) ) { // WPCS: input var ok, CSRF ok.
 			if ( ! wp_verify_nonce( sanitize_key( wp_unslash( $_GET['_atbdp_notice_nonce'] ) ), 'directorist_hide_notices_nonce' ) ) { // WPCS: input var ok, CSRF ok.
 				wp_die( esc_html__( 'Action failed. Please refresh the page and retry.', 'directorist' ) );
@@ -213,28 +203,30 @@ class SetupWizard
         update_option('atbdp_option', $atbdp_option);
     }
 
-    public static function atbdp_dummy_data_import( $file = '', $type = '' )
+    public static function atbdp_dummy_data_import( $file = '', $type = '' ): array
     {
 
         if ( ! current_user_can( 'import' ) ) {
-            wp_send_json( array(
+            wp_send_json( [
                 'error' => esc_html__( 'Invalid request!', 'directorist' ),
-            ) );
+            ] );
         }
 
         if ( ! directorist_verify_nonce() ) {
-            wp_send_json( array(
+            wp_send_json( [
                 'error' => esc_html__( 'Invalid nonce!', 'directorist' ),
-            ) );
+            ] );
         }
 
-        $data               = array();
-        $listings_url       = array();
+        $data               = [];
+        $listings_url       = [];
         $imported           = 0;
         $failed             = 0;
         $count              = 0;
         $file               = isset($_POST['file']) ? sanitize_text_field( wp_unslash( $_POST['file'] ) ) : $file;
-        $total_length       = isset($_POST['limit']) ? sanitize_text_field( wp_unslash( $_POST['limit'])) : 5;
+        if (isset($_POST['limit'])) {
+            sanitize_text_field( wp_unslash( $_POST['limit']));
+        }
         $position           = isset($_POST['position']) ? sanitize_text_field( wp_unslash( $_POST['position'] ) ) : 0;
 
         $all_posts          = self::read_csv($file);
@@ -243,26 +235,26 @@ class SetupWizard
        
         $limit              = 10;
 
-        $directory_id = ! empty( $type ) ? $type : default_directory_type();
+        $directory_id = empty( $type ) ? default_directory_type() : $type;
 
-        foreach ( $posts as $index => $post ) {
+        foreach ( $posts as $post ) {
                 if ( $count === $limit ) {
 					break;
 				}
 
                 // start importing listings
-                $image = ! empty( $post['listing_img'] ) ? $post['listing_img'] : '';
+                $image = empty( $post['listing_img'] ) ? '' : $post['listing_img'];
 
-                $args = array(
-                    'post_title'   => isset( $post['listing_title'] ) ? $post['listing_title'] : '',
-                    'post_content' => isset( $post['listing_content'] ) ? $post['listing_content'] : '',
+                $args = [
+                    'post_title'   => $post['listing_title'] ?? '',
+                    'post_content' => $post['listing_content'] ?? '',
                     'post_type'    => 'at_biz_dir',
                     'post_status'  => 'publish',
-                );
+                ];
 
                 $post_id = wp_insert_post( $args );
 
-                array_push( $listings_url, get_the_permalink( $post_id ) );
+                $listings_url[] = get_the_permalink( $post_id );
 
 				// No need to process further since it's a failed insertion.
                 if ( is_wp_error( $post_id ) ) {
@@ -366,14 +358,17 @@ class SetupWizard
         return $data;
     }
 
-    public static function read_csv($file){
+    /**
+     * @return array<mixed, array<string, string|null>>
+     */
+    public static function read_csv($file): array{
         $fp = fopen($file, 'r');
         $header = fgetcsv($fp);
 
         // get the rest of the rows
-        $data = array();
+        $data = [];
         while ($row = fgetcsv($fp)) {
-        $arr = array();
+        $arr = [];
         foreach ($header as $i => $col)
             $arr[$col] = $row[$i];
         $data[] = $arr;
@@ -384,7 +379,7 @@ class SetupWizard
     /**
      * Add admin menus/screens.
      */
-    public function admin_menus() {
+    public function admin_menus(): void {
 		add_menu_page(
 			__( 'Directorist Setup Wizard', 'directorist' ),
 			__( 'Setup', 'directorist' ),
@@ -399,7 +394,7 @@ class SetupWizard
     /**
      * Show the setup wizard.
      */
-    public function setup_wizard() {
+    public function setup_wizard(): void {
         if ( empty( $_GET['page'] ) || 'directorist-setup' !== $_GET['page'] ) {
             return;
         }
@@ -415,7 +410,7 @@ class SetupWizard
         $this->enqueue_scripts();
 
         if (!empty($_POST['save_step']) && isset($this->steps[$this->step]['handler'])) { // WPCS: CSRF ok.
-            call_user_func_array($this->steps[$this->step]['handler'], array($this));
+            call_user_func_array($this->steps[$this->step]['handler'], [$this]);
         }
 
         ob_start();
@@ -423,17 +418,17 @@ class SetupWizard
         exit;
     }
 
-    public function enqueue_scripts()
+    public function enqueue_scripts(): void
     {
         wp_enqueue_style('atbdp_setup_select2', DIRECTORIST_VENDOR_CSS . 'select2.min.css', ATBDP_VERSION, true);
-        wp_register_script('directorist-select2', DIRECTORIST_VENDOR_JS . 'select2.min.js', array('jquery'), ATBDP_VERSION, true);
+        wp_register_script('directorist-select2', DIRECTORIST_VENDOR_JS . 'select2.min.js', ['jquery'], ATBDP_VERSION, true);
        
         wp_enqueue_script('directorist-setup');
         wp_enqueue_script('directorist-select2');
         wp_enqueue_script('directorist-geolocation', DIRECTORIST_JS . 'global-geolocation.js');
 
         wp_register_style('directorist-admin-style', DIRECTORIST_CSS . 'admin-main.css', ATBDP_VERSION, true);
-        wp_register_script('directorist-admin-setup-wizard-script', DIRECTORIST_JS . 'admin-setup-wizard.js', array('jquery'), ATBDP_VERSION, true);
+        wp_register_script('directorist-admin-setup-wizard-script', DIRECTORIST_JS . 'admin-setup-wizard.js', ['jquery'], ATBDP_VERSION, true);
 
         wp_enqueue_script('directorist-openstreet-layers', DIRECTORIST_VENDOR_JS . 'openstreet-map/openstreetlayers.js');
         wp_enqueue_script('directorist-openstreet-unpkg-index', DIRECTORIST_VENDOR_JS . 'openstreet-map/unpkg-index.js');
@@ -469,38 +464,38 @@ class SetupWizard
      */
     protected function set_steps()
     {
-        $this->steps = apply_filters('directorist_admin_setup_wizard_steps', array(
-            'introduction' => array(
+        $this->steps = apply_filters('directorist_admin_setup_wizard_steps', [
+            'introduction' => [
                 'name'    =>  __('Introduction', 'directorist'),
-                'view'    => array( $this, 'directorist_setup_introduction' ),
-                'handler' => array( $this, 'directorist_step_intro_save' ),
-            ),
-            'step-one' => array(
+                'view'    => [ $this, 'directorist_setup_introduction' ],
+                'handler' => [ $this, 'directorist_step_intro_save' ],
+            ],
+            'step-one' => [
                 'name'    =>  __('Step One', 'directorist'),
-                'view'    => array( $this, 'directorist_step_one' ),
-                'handler' => array( $this, 'directorist_step_one_save' ),
-            ),
-            'step-two' => array(
+                'view'    => [ $this, 'directorist_step_one' ],
+                'handler' => [ $this, 'directorist_step_one_save' ],
+            ],
+            'step-two' => [
                 'name'    =>  __('Step Two', 'directorist'),
-                'view'    => array( $this, 'directorist_step_two' ),
-                'handler' => array( $this, 'directorist_step_two_save' ),
-            ),
-            'step-three' => array(
+                'view'    => [ $this, 'directorist_step_two' ],
+                'handler' => [ $this, 'directorist_step_two_save' ],
+            ],
+            'step-three' => [
                 'name'    =>  __('Step Three', 'directorist'),
-                'view'    => array( $this, 'directorist_step_three' ),
-                'handler' => array( $this, 'directorist_step_three_save' ),
-            ),
-            'step-four' => array(
+                'view'    => [ $this, 'directorist_step_three' ],
+                'handler' => [ $this, 'directorist_step_three_save' ],
+            ],
+            'step-four' => [
                 'name'    =>  __('Step Four', 'directorist'),
-                'view'    => array( $this, 'directorist_step_four' ),
-            ),
-        ));
+                'view'    => [ $this, 'directorist_step_four' ],
+            ],
+        ]);
     }
 
-    public function get_map_data() {
+    public function get_map_data(): array {
 		
 
-		$data = array(
+		return [
 			'p_id'               => '',
 			//'listing_form'       => $this,
 			'listing_info'       => '',
@@ -516,12 +511,10 @@ class SetupWizard
 			'marker_title'       => __( 'You can drag the marker to your desired place to place a marker', 'directorist' ),
 			'geocode_error_msg'  => __( 'Geocode was not successful for the following reason: ', 'directorist' ),
 			'map_icon'           => directorist_icon( 'fas fa-map-pin', false ),
-		);
-
-		return $data;
+		];
 	}
 
-    public function directorist_step_one() { 
+    public function directorist_step_one(): void { 
         $map_data = $this->get_map_data();
         Directorist\Helper::add_hidden_data_to_dom( 'map_data', $map_data );
         ?>
@@ -561,14 +554,14 @@ class SetupWizard
         <?php
     }
 
-    public function directorist_step_one_save() {
+    public function directorist_step_one_save(): void {
         check_admin_referer('directorist-setup');
 
         $_post_data   = wp_unslash( $_POST );
         $atbdp_option = get_option('atbdp_option');
         
-        $atbdp_option['default_latitude'] = !empty($_post_data['default_latitude']) ? $_post_data['default_latitude'] : '';
-        $atbdp_option['default_longitude'] = !empty($_post_data['default_longitude']) ? $_post_data['default_longitude'] : '';
+        $atbdp_option['default_latitude'] = empty($_post_data['default_latitude']) ? '' : $_post_data['default_latitude'];
+        $atbdp_option['default_longitude'] = empty($_post_data['default_longitude']) ? '' : $_post_data['default_longitude'];
 
         update_option('atbdp_option', $atbdp_option);
 
@@ -581,7 +574,7 @@ class SetupWizard
         exit;
     }
 
-    public function directorist_step_two()
+    public function directorist_step_two(): void
     {
 
     ?>
@@ -628,19 +621,18 @@ class SetupWizard
     /**
      * Save store options.
      */
-    public function directorist_step_two_save()
+    public function directorist_step_two_save(): void
     {
         check_admin_referer('directorist-setup');
 
         $_post_data = wp_unslash( $_POST );
 
         $atbdp_option = get_option('atbdp_option');
-        $pages = !empty( $_post_data['share_essentials'] ) ? $_post_data['share_essentials'] : '';
-        $atbdp_option['map_api_key'] = !empty($_post_data['map_api_key']) ? $_post_data['map_api_key'] : '';
-        $atbdp_option['enable_monetization'] = !empty($_post_data['featured_listing']) ? 1 : false;
-        $atbdp_option['enable_featured_listing'] = !empty($_post_data['featured_listing']) ? $_post_data['featured_listing'] : '';
-        $atbdp_option['featured_listing_price'] = !empty($_post_data['featured_listing_price']) ? $_post_data['featured_listing_price'] : '';
-        $atbdp_option['active_gateways'] = !empty($_post_data['active_gateways']) ? $_post_data['active_gateways'] : array();
+        $atbdp_option['map_api_key'] = empty($_post_data['map_api_key']) ? '' : $_post_data['map_api_key'];
+        $atbdp_option['enable_monetization'] = empty($_post_data['featured_listing']) ? false : 1;
+        $atbdp_option['enable_featured_listing'] = empty($_post_data['featured_listing']) ? '' : $_post_data['featured_listing'];
+        $atbdp_option['featured_listing_price'] = empty($_post_data['featured_listing_price']) ? '' : $_post_data['featured_listing_price'];
+        $atbdp_option['active_gateways'] = empty($_post_data['active_gateways']) ? [] : $_post_data['active_gateways'];
         $atbdp_option['paypal_gateway_title'] = __( 'PayPal', 'directorist-paypal' );
         $atbdp_option['paypal_gateway_description'] = __( 'You can make payment using paypal if you choose this payment gateway.', 'directorist-paypal' );
 
@@ -656,21 +648,6 @@ class SetupWizard
         }
 
         do_action('directorist_admin_setup_wizard_save_step_two');
-
-        $create_pages = [
-            'checkout_page'        => [
-                'post_title'         => 'Checkout',
-                'post_content'       => '[directorist_checkout]',
-            ],
-            'payment_receipt_page' => [
-                'post_title'         => 'Payment Receipt',
-                'post_content'       => '[directorist_payment_receipt]',
-            ],
-            'transaction_failure_page' => [
-                'post_title'         => 'Transaction Failure',
-                'post_content'       => '[directorist_transaction_failure]',
-            ],
-        ];
 
         // if (!empty($atbdp_option['enable_monetization'])) {
         //     foreach ($create_pages as $key => $name) {
@@ -697,7 +674,7 @@ class SetupWizard
         exit;
     }
 
-    public function directorist_step_three()
+    public function directorist_step_three(): void
     {
         
     ?>
@@ -751,18 +728,15 @@ class SetupWizard
     <?php
     }
 
-    public function directorist_step_three_save()
+    public function directorist_step_three_save(): void
     {
         check_admin_referer('directorist-setup');
-
-        $_post_data = wp_unslash($_POST);
-
-        $pages = !empty($_post_data['map']) ? $_post_data['map'] : '';
+        wp_unslash($_POST);
         wp_redirect(esc_url_raw($this->get_next_step_link()));
         exit;
     }
 
-    public function directorist_step_four()
+    public function directorist_step_four(): void
     {
         update_option( 'directorist_setup_wizard_completed', true );
 
@@ -797,7 +771,7 @@ class SetupWizard
     /**
      * Introduction step.
      */
-    public function directorist_setup_introduction()
+    public function directorist_setup_introduction(): void
     {
     ?>
         <div class="directorist-setup-wizard__content">
@@ -898,14 +872,14 @@ class SetupWizard
     <?php
     }
 
-    public function directorist_step_intro_save() {
+    public function directorist_step_intro_save(): void {
         check_admin_referer('directorist-setup');
 
         $_post_data      = wp_unslash( $_POST );
         $expiration_time = 24 * HOUR_IN_SECONDS;
         $atbdp_option    = get_option('atbdp_option');
         
-        $directory_type = ! empty( $_post_data['directory_type'] ) ? $_post_data['directory_type'] : array();
+        $directory_type = empty( $_post_data['directory_type'] ) ? [] : $_post_data['directory_type'];
 
         if( count( $directory_type ) > 1 ) {
             $atbdp_option['enable_multi_directory'] = true;
@@ -913,9 +887,9 @@ class SetupWizard
         }
 
         if( ! empty( $_post_data['other_directory_type'] ) ) {
-            $other_directory_type = array(
+            $other_directory_type = [
                 'other_directory_type' => $_post_data['other_directory_type'],
-            );
+            ];
             ATBDP()->insights->add_extra( $other_directory_type );
         }
        
@@ -955,15 +929,15 @@ class SetupWizard
     /**
      * Setup Wizard Header.
      */
-    public function setup_wizard_header()
+    public function setup_wizard_header(): void
     {
         set_current_screen();
-        $hide = ! isset( $_GET['step'] ) ? 'directorist-setup-wizard-vh' : 'directorist-setup-wizard-vh-none';
+        $hide = isset( $_GET['step'] ) ? 'directorist-setup-wizard-vh-none' : 'directorist-setup-wizard-vh';
         
         $ouput_steps = $this->steps;
         array_shift($ouput_steps);
-        $hide = ! isset( $_GET['step'] ) ? 'atbdp-none' : '';
-        $step = ! empty( $_GET['step'] ) ? $_GET['step'] : '';
+        $hide = isset( $_GET['step'] ) ? '' : 'atbdp-none';
+        $step = empty( $_GET['step'] ) ? '' : $_GET['step'];
         $introduction_step = empty( $step ) || 'step-one' == $step || 'step-two' == $step || 'step-three' == $step ? 'active' : ''; 
         $step_one = ( ! empty( $step ) && ( 'step-one' == $step || 'step-two' == $step || 'step-three' == $step ) ) ? 'active' : '' ; 
         $step_two = ( ! empty( $step ) && ( 'step-two' == $step || 'step-three' == $step ) ) ? 'active' : '' ; 
@@ -1034,17 +1008,17 @@ class SetupWizard
     /**
      * Output the steps.
      */
-    public function setup_wizard_steps()
+    public function setup_wizard_steps(): void
     {
         $ouput_steps = $this->steps;
         array_shift($ouput_steps);
-        $hide = ! isset( $_GET['step'] ) ? 'atbdp-none' : '';
+        $hide = isset( $_GET['step'] ) ? '' : 'atbdp-none';
         ?>
             <!-- <ul class="atbdp-setup-steps <?php echo esc_attr( $hide ); ?>">
             <li class="atbdsw-logo"><img src="<?php echo esc_url(DIRECTORIST_ASSETS . 'images/directorist-logo.svg');?>" alt="Directorist"></li>
                 <?php foreach ($ouput_steps as $step_key => $step) : ?>
                     <li class="<?php
-                        if ($step_key === $this->step && 'step-four' != $step_key ) {
+                        if ($step_key === $this->step && 'step-four' !== $step_key ) {
                             echo 'active';
                         } elseif ( array_search( $this->step, array_keys($this->steps ) ) > array_search( $step_key, array_keys( $this->steps ) ) ) {
                             echo 'done';
@@ -1052,13 +1026,13 @@ class SetupWizard
                             echo 'done';
                         }
                         $number = 1;
-                        if ( 'step-one' == $step_key ) {
+                        if ('step-one' == $step_key) {
                             $number = 1;
-                        } else if ( 'step-two' == $step_key ) {
+                        } elseif ('step-two' == $step_key) {
                             $number = 2;
-                        } else if ( 'step-three' == $step_key ) {
+                        } elseif ('step-three' == $step_key) {
                             $number = 3;
-                        } else if ( 'step-four' == $step_key ) {
+                        } elseif ('step-four' == $step_key) {
                             $number = 4;
                         }
                         ?>"><span class="atbdp-sw-circle"><span><?php echo esc_html( $number ); ?></span> <span class="dashicons dashicons-yes"></span></span><?php echo esc_html( $step['name'] ); ?> </li>
@@ -1070,13 +1044,13 @@ class SetupWizard
     /**
      * Output the content for the current step.
      */
-    public function setup_wizard_content()
+    public function setup_wizard_content(): void
     {
         if ( empty( $this->steps[ $this->step ]['view'] ) ) {
             wp_redirect(esc_url_raw(add_query_arg('step', 'introduction')));
             exit;
         }
-        $introduction_class = ! isset( $_GET['step'] ) ? 'directorist-setup-wizard__introduction' : '';
+        $introduction_class = isset( $_GET['step'] ) ? '' : 'directorist-setup-wizard__introduction';
         echo '<div class="directorist-setup-wizard__step '. esc_attr( $introduction_class ) .'">';
         call_user_func($this->steps[$this->step]['view']);
         echo '</div>';
@@ -1085,7 +1059,7 @@ class SetupWizard
     /**
      * Setup Wizard Footer.
      */
-    public function setup_wizard_footer()
+    public function setup_wizard_footer(): void
     {
         ?>
             <?php if ( 'next_steps' === $this->step ) : ?>

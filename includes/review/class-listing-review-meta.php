@@ -19,30 +19,30 @@ class Listing_Review_Meta {
 
 	const FIELD_REVIEW_COUNT = '_directorist_listing_review_count';
 
-	public static function get_rating_counts( $listing_id ) {
+	public static function get_rating_counts( $listing_id ): array {
 		$counts = get_post_meta( $listing_id, self::FIELD_RATING_COUNTS, true );
-		return ( ! empty( $counts ) && is_array( $counts ) ) ? $counts : array();
+		return ( ! empty( $counts ) && is_array( $counts ) ) ? $counts : [];
 	}
 
-	public static function update_rating_counts( $listing_id, $counts ) {
+	public static function update_rating_counts( $listing_id, $counts ): void {
 		update_post_meta( $listing_id, self::FIELD_RATING_COUNTS, (array) $counts );
 	}
 
-	public static function get_rating( $listing_id, $round_precision = 1 ) {
+	public static function get_rating( $listing_id, $round_precision = 1 ): float {
 		$rating = get_post_meta( $listing_id, self::FIELD_AVG_RATING, true );
-		return round( ( ! empty( $rating ) ? $rating : 0 ), $round_precision );
+		return round( ( empty( $rating ) ? 0 : $rating ), $round_precision );
 	}
 
-	public static function update_rating( $listing_id, $rating ) {
+	public static function update_rating( $listing_id, $rating ): void {
 		update_post_meta( $listing_id, self::FIELD_AVG_RATING, $rating );
 	}
 
 	public static function get_review_count( $listing_id ) {
 		$counts = get_post_meta( $listing_id, self::FIELD_REVIEW_COUNT, true );
-		return ( ! empty( $counts ) ) ? absint( $counts ) : 0;
+		return ( empty( $counts ) ) ? 0 : absint( $counts );
 	}
 
-	public static function update_review_count( $listing_id, $counts ) {
+	public static function update_review_count( $listing_id, $counts ): void {
 		update_post_meta( $listing_id, self::FIELD_REVIEW_COUNT, absint( $counts ) );
 	}
 }

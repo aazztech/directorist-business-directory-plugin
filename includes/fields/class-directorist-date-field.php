@@ -13,7 +13,7 @@ class Date_Field extends Base_Field {
 
 	public $type = 'date';
 
-	public function validate( $posted_data ) {
+	public function validate( $posted_data ): bool {
 		$value = $this->get_value( $posted_data );
 
 		if ( strtotime( $value ) === false ) {

@@ -28,23 +28,20 @@ class ATBDP_Review_Rating {
 	}
 
 	/**
-	 * Get rating html.
-	 *
-	 * @param int $star_number
-	 * @deprecated 7.1.0
-	 *
-	 * @return string
-	 */
-	public function print_static_rating( $star_number = 1 ) {
+     * Get rating html.
+     *
+     * @param int $star_number
+     * @deprecated 7.1.0
+     */
+    public function print_static_rating( $star_number = 1 ): string {
 		$v ='<ul>';
 			for ( $i=1; $i<=5; $i++ ) {
 				$v .= ( $i <= $star_number )
 					? "<li><span class='directorist-rate-active'></span></li>"
 					: "<li><span class='directorist-rate-disable'></span></li>";
 			}
-		$v .= '</ul>';
 
-		return $v;
+		return $v . '</ul>';
 	}
 
 	/**
@@ -79,11 +76,7 @@ class ATBDP_Review_Rating_DB {
 	 * @return int
 	 */
 	public function count( $args ) {
-		if ( is_array( $args ) && ! empty( $args['post_id'] ) ) {
-			$listing_id = absint( $args['post_id'] );
-		} else {
-			$listing_id = get_the_ID();
-		}
+		$listing_id = is_array( $args ) && ! empty( $args['post_id'] ) ? absint( $args['post_id'] ) : get_the_ID();
 
 		return directorist_get_listing_review_count( $listing_id );
 	}
@@ -105,32 +98,28 @@ class ATBDP_Review_Rating_DB {
 			return null;
 		}
 
-		if ( ! in_array( $field, array( 'id', 'post_id', 'by_user_id', 'email' ), true ) ) {
+		if ( ! in_array( $field, [ 'id', 'post_id', 'by_user_id', 'email' ], true ) ) {
 			return false;
 		}
 
-		if ( $field === 'email' && is_email( $value ) ) {
-			$value = sanitize_email( $value );
-		} else {
-			$value = absint( $value );
-		}
+		$value = $field === 'email' && is_email( $value ) ? sanitize_email( $value ) : absint( $value );
 
 		if ( empty( $value ) ) {
 			return false;
 		}
 
-		$args = array(
+		$args = [
 			'post_type' => ATBDP_POST_TYPE,
 			'type'      => 'review',
 			'fields'    => 'ids',
-		);
+		];
 
 		if ( $field === 'email' ) {
 			$args['author_email'] = $value;
 		}
 
 		if ( $field === 'id' ) {
-			$args['comment__in'] = array( $value );
+			$args['comment__in'] = [ $value ];
 		}
 
 		if ( $field === 'by_user_id' ) {
@@ -148,11 +137,11 @@ class ATBDP_Review_Rating_DB {
 			return false;
 		}
 
-		$data = array();
+		$data = [];
 		foreach ( $comments as $comment_id ) {
-			$data[] = (object) array(
+			$data[] = (object) [
 				'rating' => (int) \Directorist\Review\Comment_Meta::get_rating( $comment_id )
-			);
+			];
 		}
 		unset( $comments, $comments_query );
 

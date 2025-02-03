@@ -18,7 +18,7 @@ abstract class Taxonomy_Field extends Base_Field {
 	abstract public function user_can_create() : bool;
 
 	public function user_can_select_multiple() : bool {
-		return (bool) ( $this->__get( 'type' ) === 'multiple' );
+		return $this->__get( 'type' ) === 'multiple';
 	}
 
 	public function get_value( $posted_data ) {
@@ -26,7 +26,7 @@ abstract class Taxonomy_Field extends Base_Field {
 			return null;
 		}
 
-		if ( ! in_array( $this->get_taxonomy(), array( ATBDP_TAGS, ATBDP_LOCATION, ATBDP_CATEGORY ), true ) ) {
+		if ( ! in_array( $this->get_taxonomy(), [ ATBDP_TAGS, ATBDP_LOCATION, ATBDP_CATEGORY ], true ) ) {
 			return null;
 		}
 		
@@ -34,10 +34,9 @@ abstract class Taxonomy_Field extends Base_Field {
 			return null;
 		}
 
-		$terms = (array) directorist_get_var( $posted_data['tax_input'][ $this->get_taxonomy() ], array() );
+		$terms = (array) directorist_get_var( $posted_data['tax_input'][ $this->get_taxonomy() ], [] );
 		$terms = array_map( 'directorist_sanitize_term_item', $terms );
-		$terms = array_filter( $terms );
 
-		return $terms;
+		return array_filter( $terms );
 	}
 }

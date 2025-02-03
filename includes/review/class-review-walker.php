@@ -25,7 +25,7 @@ class Walker extends Walker_Comment {
 	 * @param int    $depth  Optional. Depth of the current comment. Default 0.
 	 * @param array  $args   Optional. Uses 'style' argument for type of HTML list. Default empty array.
 	 */
-	public function start_lvl( &$output, $depth = 0, $args = array() ) {
+	public function start_lvl( &$output, $depth = 0, $args = [] ): void {
 		$GLOBALS['comment_depth'] = $depth + 1; // @codingStandardsIgnoreLine.
 
 		$output .= '<ul class="directorist-review-single__comments">' . "\n";
@@ -42,7 +42,7 @@ class Walker extends Walker_Comment {
 	 * @param array  $args   Optional. Will only append content if style argument value is 'ol' or 'ul'.
 	 *                       Default empty array.
 	 */
-	public function end_lvl( &$output, $depth = 0, $args = array() ) {
+	public function end_lvl( &$output, $depth = 0, $args = [] ): void {
 		$GLOBALS['comment_depth'] = $depth + 1; // @codingStandardsIgnoreLine.
 
 		$output .= "</ul><!-- .directorist-review-single__comments -->\n";
@@ -59,7 +59,7 @@ class Walker extends Walker_Comment {
 	 * @param int        $depth   Optional. Depth of the current comment. Default 0.
 	 * @param array      $args    Optional. An array of arguments. Default empty array.
 	 */
-	public function end_el( &$output, $comment, $depth = 0, $args = array() ) {
+	public function end_el( &$output, $comment, $depth = 0, $args = [] ): void {
 		if ( ! empty( $args['end-callback'] ) ) {
 			ob_start();
 			call_user_func( $args['end-callback'], $comment, $args, $depth );
@@ -81,7 +81,6 @@ class Walker extends Walker_Comment {
 	 */
 	protected function html5_comment( $comment, $depth, $args ) {
 		$commenter          = wp_get_current_commenter();
-		$show_pending_links = ! empty( $commenter['comment_author'] );
 		$has_parent         = (bool) $comment->comment_parent;
 		$rating             = Comment::get_rating( get_comment_ID() );
 		$is_review          = ( $comment->comment_type === 'review' );
@@ -111,13 +110,13 @@ class Walker extends Walker_Comment {
 		$comment_reply_link = get_comment_reply_link(
 			array_merge(
 				$args,
-				array(
+				[
 					/* translators: 1: is the reply icon */
 					'reply_text' => sprintf( esc_html__( '%1$s Reply', 'directorist' ), directorist_icon( 'fas fa-reply', false ) ),
 					'depth'      => $depth,
 					'max_depth'  => $args['max_depth'],
 					'add_below'  => 'div-comment',
-				)
+				]
 			)
 		);
 		?>
@@ -169,11 +168,11 @@ class Walker extends Walker_Comment {
 					$edit_link = directorist_get_comment_edit_link(
 						array_merge(
 							$args,
-							array(
+							[
 								'edit_text' => sprintf( __( '%s Edit', 'directorist' ), directorist_icon( 'fas fa-pencil-alt', false ) ),
 								'depth'      => $depth,
 								'max_depth'  => $args['max_depth']
-							)
+							]
 						)
 					);
 

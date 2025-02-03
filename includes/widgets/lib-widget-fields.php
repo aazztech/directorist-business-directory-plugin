@@ -7,27 +7,29 @@
 
 namespace Directorist\Widgets;
 
-if ( ! defined( 'ABSPATH' ) ) exit;
+if (! defined( 'ABSPATH' )) {
+    exit;
+}
 
 class Widget_Fields {
 
-	public static function init() {
-		add_action( 'admin_footer', [ __CLASS__, 'load_scripts' ] );
+	public static function init(): void {
+		add_action( 'admin_footer', [ self::class, 'load_scripts' ] );
 	}
 
-	public static function create( $fields, $instance, $object ) {
+	public static function create( $fields, array $instance, $object ): void {
 		foreach ( $fields as $key => $field ) {
 			$label   = $field['label'];
-			$desc    = !empty( $field['desc'] ) ? $field['desc'] : false;
+			$desc    = empty( $field['desc'] ) ? false : $field['desc'];
 			$id      = $object->get_field_id( $key );
 			$name    = $object->get_field_name( $key );
 			$value   = $instance[$key];
-			$options = !empty( $field['options'] ) ? $field['options'] : false;
+			$options = empty( $field['options'] ) ? false : $field['options'];
 
-			if ( method_exists( __CLASS__, $field['type'] ) ) {
+			if ( method_exists( self::class, $field['type'] ) ) {
 				echo '<div class="directorist-widget-field">';
 
-				call_user_func( array( __CLASS__, $field['type'] ), $id, $name, $value, $label, $options, $field );
+				call_user_func( [ self::class, $field['type'] ], $id, $name, $value, $label, $options, $field );
 
 				if ( $desc ) {
 					printf( '<div class="desc">%s</div>', wp_kses_post( $desc ) );
@@ -53,9 +55,9 @@ class Widget_Fields {
 	}
 
 	protected static function number( $id, $name, $value, $label, $options, $field ) {
-		$min  = isset( $field['min'] ) ? $field['min'] : 1;
-		$max  = isset( $field['max'] ) ? $field['max'] : '';
-		$step = isset( $field['step'] ) ? $field['step'] : 1;
+		$min  = $field['min'] ?? 1;
+		$max  = $field['max'] ?? '';
+		$step = $field['step'] ?? 1;
 		?>
 		<label for="<?php echo esc_attr( $id ); ?>"><?php echo esc_html( $label ); ?></label>
 		<input class="widefat" type="number" min="<?php echo esc_attr( $min ); ?>" max="<?php echo esc_attr( $max ); ?>" step="<?php echo esc_attr( $step ); ?>" id="<?php echo esc_attr( $id ); ?>" name="<?php echo esc_attr( $name ); ?>" value="<?php echo esc_attr( $value ); ?>" />
@@ -81,7 +83,7 @@ class Widget_Fields {
 		<?php
 	}
 
-	protected static function checkbox( $id, $name, $value, $label, $options, $field ) {
+	protected static function checkbox( $id, $name, $value, $label, $options, array $field ) {
 		?>
 		<input type="checkbox" id="<?php echo esc_attr( $id ); ?>" name="<?php echo esc_attr( $name ); ?>" value="<?php echo esc_attr( $field['value'] ); ?>" <?php checked( $value, $field['value'] ); ?> />
 		<label for="<?php echo esc_attr( $id ); ?>" class="directorist-widget-label-inline"><?php echo esc_html( $label ); ?></label>
@@ -112,7 +114,7 @@ class Widget_Fields {
 		';
 	}
 
-	public static function load_scripts() {
+	public static function load_scripts(): void {
 		global $pagenow;
 
 		if ( $pagenow != 'widgets.php' ) {

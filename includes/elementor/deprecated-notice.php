@@ -40,7 +40,7 @@ class DeprecatedNotice {
 		}
 	}
 
-	public function maybe_show_notice_for_required_plugins() {
+	public function maybe_show_notice_for_required_plugins(): void {
 		global $pagenow;
 
 		if ( 'update.php' === $pagenow ) {
@@ -64,7 +64,7 @@ class DeprecatedNotice {
 		$this->admin_notice_callback_to_install_plugin();
 	}
 
-	public function parent_plugin_invalid_notice() {
+	public function parent_plugin_invalid_notice(): void {
 		?>
         <div class="notice notice-error" style="display: flex; flex-wrap:wrap; justify-content:space-between">
             <p style="display: flex; align-items: center;">
@@ -117,7 +117,7 @@ class DeprecatedNotice {
         </div>
     <?php }
 
-	public function is_plugin_compatible( string $context, ?string $requires_php = null, ?string $requires_wp = null ) {
+	public function is_plugin_compatible( string $context, ?string $requires_php = null, ?string $requires_wp = null ): bool {
 		$can_use_plugin = current_user_can( $context );
 		$compatible_php = is_php_version_compatible( $requires_php );
 		$compatible_wp  = is_wp_version_compatible( $requires_wp );
@@ -125,7 +125,7 @@ class DeprecatedNotice {
 		return $can_use_plugin && $compatible_php && $compatible_wp;
 	}
 
-	public function get_plugin_activation_url( $path ): string {
+	public function get_plugin_activation_url( string $path ): string {
 		return wp_nonce_url( self_admin_url( "plugins.php?action=activate&plugin={$path}&paged=1" ), 'activate-plugin_' . $path );
 	}
 

@@ -41,7 +41,7 @@ trait Multi_Directory_Helper {
         }
 
         $update_directory = self::update_directory([
-            'term_id'        => ( ! $has_term_id ) ? ( int ) $create_directory['term_id'] : ( int ) $args['term_id'],
+            'term_id'        => ( $has_term_id ) ? ( int ) $args['term_id'] : ( int ) $create_directory['term_id'],
             'directory_name' => $args['directory_name'],
             'fields_value'   => $args['fields_value'],
             'is_json'        => $args['is_json'],
@@ -58,7 +58,10 @@ trait Multi_Directory_Helper {
     }
 
     // create_directory
-    public static function create_directory( array $args = [] ) {
+    /**
+     * @return array{success: true, status_log: array{name_is_missing?: array{type: 'error', message: mixed}, term_exists?: array{type: 'error', message: mixed}, term_created: array{type: 'success', message: mixed}}, error_count: (0 | 1 | 2 | 3)}[]|int[]
+     */
+    public static function create_directory( array $args = [] ): array {
         $default = [ 'directory_name' => '' ];
         $args    = array_merge( $default, $args );
 
@@ -95,7 +98,7 @@ trait Multi_Directory_Helper {
         }
 
         // Return status
-        if ( $response['status']['error_count'] ) {
+        if ( $response['status']['error_count'] !== 0 ) {
             $response['status']['success'] = false;
             return $response;
         }
@@ -115,7 +118,7 @@ trait Multi_Directory_Helper {
         }
 
 
-        if ( $response['status']['error_count'] ) {
+        if ( $response['status']['error_count'] !== 0 ) {
             $response['status']['success'] = false;
             return $response;
         }
@@ -133,7 +136,10 @@ trait Multi_Directory_Helper {
     }
 
     // update_directory
-    public static function update_directory( array $args = [] ) {
+    /**
+     * @return mixed[]
+     */
+    public static function update_directory( array $args = [] ): array {
         $default = [
             'directory_name' => '',
             'term_id'        => 0,
@@ -222,8 +228,8 @@ trait Multi_Directory_Helper {
 
         $fields = apply_filters( 'cptm_fields_before_update', $fields );
 
-        $directory_name = ( ! empty( $fields['name'] ) ) ? $fields['name'] : '';
-        $directory_name = ( ! empty( $args['directory_name'] ) ) ? $args['directory_name'] : $directory_name;
+        $directory_name = ( empty( $fields['name'] ) ) ? '' : $fields['name'];
+        $directory_name = ( empty( $args['directory_name'] ) ) ? $directory_name : $args['directory_name'];
         $directory_name = esc_attr( $directory_name );
 
         $response['fields_value']   = $fields;
@@ -246,7 +252,7 @@ trait Multi_Directory_Helper {
         }
 
         // Return status
-        if ( $response['status']['error_count'] ) {
+        if ( $response['status']['error_count'] !== 0 ) {
             $response['status']['success'] = false;
             return $response;
         }

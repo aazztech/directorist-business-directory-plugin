@@ -436,7 +436,7 @@ $atbdp_option       = get_option( 'atbdp_option' );
                                             foreach ( $atbdp_option as $name => $value ) {
                                         ?>
                                                 <tr>
-                                                    <td class="atbds_table-title"><?php echo esc_html( ! empty( $name ) ? $name : '' ); ?>:</td>
+                                                    <td class="atbds_table-title"><?php echo esc_html( empty( $name ) ? '' : $name ); ?>:</td>
                                                     <td class="atbds_table-pointer">
                                                         <span class="atbd_tooltip">
                                                             <span class="atbd_tooltip__text"></span>
@@ -773,7 +773,7 @@ $atbdp_option       = get_option( 'atbdp_option' );
                                                                 <?php
                                                                     $override = $theme['overrides'][ $i ];
                                                                     if ( $override['core_version'] && ( empty( $override['version'] ) || version_compare( $override['version'], $override['core_version'], '<' ) ) ) {
-                                                                        $current_version = $override['version'] ? $override['version'] : '-';
+                                                                        $current_version = $override['version'] ?: '-';
                                                                         $_core_version = sprintf(
                                                                             __( '%1$s version %2$s is out of date. The core version is %3$s', 'directorist' ),
                                                                             '<code>' . esc_html( $override['file'] ) . '</code>',

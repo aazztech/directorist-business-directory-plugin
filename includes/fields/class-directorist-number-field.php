@@ -13,7 +13,7 @@ class Number_Field extends Base_Field {
 
 	public $type = 'number';
 
-	public function validate( $posted_data ) {
+	public function validate( $posted_data ): bool {
 		$value     = $this->get_value( $posted_data );
 		$min_value = $this->__get('min_value');
 		$max_value = $this->__get('max_value');
@@ -34,7 +34,7 @@ class Number_Field extends Base_Field {
 		return true;
 	}
 
-	public function sanitize( $posted_data ) {
+	public function sanitize( $posted_data ): float {
 		return round( (float) $this->get_value( $posted_data ), 2 );
 	}
 }

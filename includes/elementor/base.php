@@ -7,7 +7,9 @@ namespace AazzTech\Directorist\Elementor;
 
 use Elementor\Widget_Base;
 
-if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
+if (! defined( 'ABSPATH' )) {
+    exit;
+} // Exit if accessed directly
 
 class Custom_Widget_Base extends Widget_Base {
 
@@ -15,20 +17,28 @@ class Custom_Widget_Base extends Widget_Base {
 
 	public $az_name;
 	public $az_base;
-	public $az_category;
-	public $az_icon;
-	public $az_texts;
-	public $az_dir;
+	/**
+     * @var string
+     */
+    public $az_category;
+	public $az_icon = 'directorist-el-custom';
+	/**
+     * @var array{single: mixed, checkout: mixed, payment: mixed, transaction: mixed}
+     */
+    public $az_texts;
+	/**
+     * @var string
+     */
+    public $az_dir;
 
 	public function __construct( $data = [], $args = null ) {
 		$this->az_category = $this->az_prefix . '-widgets';
-		$this->az_icon     = 'directorist-el-custom';
-		$this->az_texts    = array(
+		$this->az_texts    = [
 			'single'      => __( 'This widget works only in Single Listing page. It has no additional elementor settings.', 'directorist' ),
 			'checkout'    => __( 'This widget works only in Checkout page. It has no additional elementor settings.', 'directorist' ),
 			'payment'     => __( 'This widget works only in Payment Receipt page. It has no additional elementor settings.', 'directorist' ),
 			'transaction' => __( 'This widget works only in Transaction Failure page. It has no additional elementor settings.', 'directorist' ),
-		);
+		];
 
 		$this->az_dir      = dirname( ( new \ReflectionClass( $this ) )->getFileName() );
 		parent::__construct( $data, $args );
@@ -47,15 +57,15 @@ class Custom_Widget_Base extends Widget_Base {
 	}
 
 	public function get_categories() {
-		return array( $this->az_category );
+		return [ $this->az_category ];
 	}
 
 	// Either Override az_fields() or the default _register_controls()
 	protected function az_fields() {
-		return array();
+		return [];
 	}
 
-	public function az_run_shortcode( $shortcode, $atts = [] ) {
+	public function az_run_shortcode( $shortcode, $atts = [] ): void {
 		$html = '';
 
 		foreach ( $atts as $key => $value ) {

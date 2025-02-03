@@ -28,37 +28,37 @@ if ( ! class_exists( 'ATBDP_Extensions' ) ) {
 	 * Class ATBDP_Extensions
 	 */
 	class ATBDP_Extensions {
-		public static $extensions_aliases = array();
+		public static $extensions_aliases = [];
 
-		public $extensions          = array();
-		public $themes              = array();
-		public $required_extensions = array();
+		public $extensions          = [];
+		public $themes              = [];
+		public $required_extensions = [];
 
 		public function __construct() {
-			add_action( 'admin_menu', array( $this, 'admin_menu' ), 100 );
-			add_action( 'admin_init', array( $this, 'setup_ajax_actions' ) );
+			add_action( 'admin_menu', [ $this, 'admin_menu' ], 100 );
+			add_action( 'admin_init', [ $this, 'setup_ajax_actions' ] );
 
 			if ( ! empty( $_GET['page'] ) && ( 'atbdp-extension' === $_GET['page'] ) ) {
-				add_action( 'admin_init', array( $this, 'initial_setup' ) );
+				add_action( 'admin_init', [ $this, 'initial_setup' ] );
 			}
 		}
 
-		public function setup_ajax_actions() {
+		public function setup_ajax_actions(): void {
 			if ( ! current_user_can( 'manage_options' ) ) {
 				return;
 			}
 
 			// Ajax
-			add_action( 'wp_ajax_atbdp_authenticate_the_customer', array( $this, 'authenticate_the_customer' ) );
-			add_action( 'wp_ajax_atbdp_download_file', array( $this, 'handle_file_download_request' ) );
-			add_action( 'wp_ajax_atbdp_install_file_from_subscriptions', array( $this, 'handle_file_install_request_from_subscriptions' ) );
-			add_action( 'wp_ajax_atbdp_plugins_bulk_action', array( $this, 'plugins_bulk_action' ) );
-			add_action( 'wp_ajax_atbdp_activate_theme', array( $this, 'activate_theme' ) );
-			add_action( 'wp_ajax_atbdp_activate_plugin', array( $this, 'activate_plugin' ) );
-			add_action( 'wp_ajax_atbdp_update_plugins', array( $this, 'handle_plugins_update_request' ) );
-			add_action( 'wp_ajax_atbdp_update_theme', array( $this, 'handle_theme_update_request' ) );
-			add_action( 'wp_ajax_atbdp_refresh_purchase_status', array( $this, 'handle_refresh_purchase_status_request' ) );
-			add_action( 'wp_ajax_atbdp_close_subscriptions_sassion', array( $this, 'handle_close_subscriptions_sassion_request' ) );
+			add_action( 'wp_ajax_atbdp_authenticate_the_customer', [ $this, 'authenticate_the_customer' ] );
+			add_action( 'wp_ajax_atbdp_download_file', [ $this, 'handle_file_download_request' ] );
+			add_action( 'wp_ajax_atbdp_install_file_from_subscriptions', [ $this, 'handle_file_install_request_from_subscriptions' ] );
+			add_action( 'wp_ajax_atbdp_plugins_bulk_action', [ $this, 'plugins_bulk_action' ] );
+			add_action( 'wp_ajax_atbdp_activate_theme', [ $this, 'activate_theme' ] );
+			add_action( 'wp_ajax_atbdp_activate_plugin', [ $this, 'activate_plugin' ] );
+			add_action( 'wp_ajax_atbdp_update_plugins', [ $this, 'handle_plugins_update_request' ] );
+			add_action( 'wp_ajax_atbdp_update_theme', [ $this, 'handle_theme_update_request' ] );
+			add_action( 'wp_ajax_atbdp_refresh_purchase_status', [ $this, 'handle_refresh_purchase_status_request' ] );
+			add_action( 'wp_ajax_atbdp_close_subscriptions_sassion', [ $this, 'handle_close_subscriptions_sassion_request' ] );
 
 			// add_action( 'wp_ajax_atbdp_download_purchased_items', array($this, 'download_purchased_items') );
 
@@ -66,25 +66,25 @@ if ( ! class_exists( 'ATBDP_Extensions' ) ) {
 		}
 
 		// initial_setup
-		public function initial_setup() {
+		public function initial_setup(): void {
 			$this->setup_extensions_alias();
 
 			wp_update_plugins();
 
 			// Apply hook to required extensions
-			$this->required_extensions = apply_filters( 'directorist_required_extensions', array() );
+			$this->required_extensions = apply_filters( 'directorist_required_extensions', [] );
 
 			$this->setup_products_list();
 		}
 
 		// setup_extensions_alias
-		public function setup_extensions_alias() {
+		public function setup_extensions_alias(): void {
 
 			// Latest Key     => Deprecated key
 			// Deprecated key => Latest Key
 			self::$extensions_aliases = apply_filters(
 				'directorist_extensions_aliases',
-				array(
+				[
 					'directorist-listings-with-map'        => 'directorist-listings-map',
 					'directorist-listings-map'             => 'directorist-listings-with-map',
 
@@ -99,13 +99,16 @@ if ( ! class_exists( 'ATBDP_Extensions' ) ) {
 
 					'directorist-faqs'                     => 'directorist-listing-faqs',
 					'directorist-listing-faqs'             => 'directorist-faqs',
-				)
+				]
 			);
 		}
 
 		// get_required_extension_list
-		public function get_required_extension_list() {
-			$required_extensions = array();
+        /**
+         * @return non-empty-list[]
+         */
+        public function get_required_extension_list(): array {
+			$required_extensions = [];
 
 			foreach ( $this->required_extensions as $recommandation ) {
 
@@ -118,14 +121,14 @@ if ( ! class_exists( 'ATBDP_Extensions' ) ) {
 				}
 
 				foreach ( $recommandation['extensions'] as $extension ) {
-					$extension_alias = $this->get_extension_alias_key( $extension );
+					$extension_alias = static::get_extension_alias_key($extension);
 
-					if ( ! ( isset( $this->extensions[ $extension ] ) || isset( $this->extensions[ $extension_alias ] ) ) ) {
+					if ( !isset( $this->extensions[ $extension ] ) && !isset( $this->extensions[ $extension_alias ] ) ) {
 						continue;
 					}
 
 					if ( empty( $required_extensions[ $extension ] ) ) {
-						$required_extensions[ $extension ] = array();
+						$required_extensions[ $extension ] = [];
 					}
 
 					$required_extensions[ $extension ][] = $recommandation['ref'];
@@ -136,26 +139,29 @@ if ( ! class_exists( 'ATBDP_Extensions' ) ) {
 		}
 
 		// prepare_the_final_requred_extension_list
-		public function prepare_the_final_requred_extension_list( array $args = array() ) {
-			$recommandation = array();
+        /**
+         * @return array{ref: mixed, base: mixed, purchased: bool, installed: bool}[]
+         */
+        public function prepare_the_final_requred_extension_list( array $args = [] ): array {
+			$recommandation = [];
 
 			$required_extensions_list = $this->get_required_extension_list();
 			$purchased_extension_list = self::get_purchased_extension_list();
-			$purchased_extensions     = ( ! empty( $purchased_extension_list ) && is_array( $purchased_extension_list ) ) ? array_keys( $purchased_extension_list ) : array();
+			$purchased_extensions     = ( ! empty( $purchased_extension_list ) && is_array( $purchased_extension_list ) ) ? array_keys( $purchased_extension_list ) : [];
 			$plugin_dir_path          = trailingslashit( dirname( ATBDP_DIR ) );
 
 			foreach ( $required_extensions_list as $extension => $recommanded_by ) {
-				$extension_alias = $this->get_extension_alias_key( $extension );
+				$extension_alias = static::get_extension_alias_key($extension);
 
-				if ( $this->has_match_in_active_plugins( array( $extension, $extension_alias ) ) ) {
+				if ( $this->has_match_in_active_plugins( [ $extension, $extension_alias ] ) ) {
 					continue;
 				}
 
-				$is_purchased       = ( in_array( $extension, $purchased_extensions ) ) ? true : false;
-				$is_purchased_alias = ( in_array( $extension_alias, $purchased_extensions ) ) ? true : false;
+				$is_purchased       = in_array( $extension, $purchased_extensions );
+				$is_purchased_alias = in_array( $extension_alias, $purchased_extensions );
 
 				$is_installed = file_exists( $plugin_dir_path . $extension );
-				$is_installed_alias = ( ! empty( $extension_alias ) && file_exists( $plugin_dir_path . $extension_alias ) ) ? true : false;
+				$is_installed_alias = ! empty( $extension_alias ) && file_exists( $plugin_dir_path . $extension_alias );
 
 				$base = "{$extension}/{$extension}.php";
 
@@ -167,11 +173,11 @@ if ( ! class_exists( 'ATBDP_Extensions' ) ) {
 					$base = $this->extensions[ $extension_alias ]['base'];
 				}
 
-				$recommandation[ $extension ]              = array();
+				$recommandation[ $extension ]              = [];
 				$recommandation[ $extension ]['ref']       = $recommanded_by;
 				$recommandation[ $extension ]['base']      = $base;
-				$recommandation[ $extension ]['purchased'] = ( $is_purchased || $is_purchased_alias ) ? true : false;
-				$recommandation[ $extension ]['installed'] = ( $is_installed || $is_installed_alias ) ? true : false;
+				$recommandation[ $extension ]['purchased'] = $is_purchased || $is_purchased_alias;
+				$recommandation[ $extension ]['installed'] = $is_installed || $is_installed_alias;
 			}
 
 			return $recommandation;
@@ -180,7 +186,7 @@ if ( ! class_exists( 'ATBDP_Extensions' ) ) {
 		public function has_match_in_active_plugins( $plugin_name = '' ) {
 			$match_found = false;
 
-			$active_plugins = get_option( 'active_plugins', array() );
+			$active_plugins = get_option( 'active_plugins', [] );
 
 			if ( empty( $plugin_name ) ) {
 				return false;
@@ -201,7 +207,7 @@ if ( ! class_exists( 'ATBDP_Extensions' ) ) {
 
 				if ( is_array( $plugin_name ) ) {
 					foreach ( $plugin_name as $plugin_key ) {
-						if ( is_string( $plugin_key ) && ! empty( $plugin_key ) && false !== strpos( $plugin_path, $plugin_key ) ) {
+						if ( is_string( $plugin_key ) && ($plugin_key !== '' && $plugin_key !== '0') && false !== strpos( $plugin_path, $plugin_key ) ) {
 							return true;
 						}
 					}
@@ -212,7 +218,7 @@ if ( ! class_exists( 'ATBDP_Extensions' ) ) {
 		}
 
 		// get_the_products_list
-		public function setup_products_list() {
+		public function setup_products_list(): void {
 			// Fetch products from the API
 			$products = API::get_products();
 
@@ -226,7 +232,7 @@ if ( ! class_exists( 'ATBDP_Extensions' ) ) {
 		}
 
 		// get_the_products_list
-		public function setup_extension_updater() {
+		public function setup_extension_updater(): void {
 
 			// Include the plugin updater class if not already included
 			if ( ! class_exists( 'EDD_SL_Plugin_Updater' ) ) {
@@ -270,7 +276,7 @@ if ( ! class_exists( 'ATBDP_Extensions' ) ) {
 			}
 		}
 
-		public static function get_default_extensions() {
+		public static function get_default_extensions(): array {
 			return [
                 'directorist-coupon' => [
                     'name'        => 'Coupon',
@@ -504,7 +510,7 @@ if ( ! class_exists( 'ATBDP_Extensions' ) ) {
             ];
 		}
 
-		public static function get_default_themes() {
+		public static function get_default_themes(): array {
 			return [
                 'dlist' => [
                     'name'        => 'DList',
@@ -578,7 +584,7 @@ if ( ! class_exists( 'ATBDP_Extensions' ) ) {
 		// exclude_purchased_extensions
 		public function exclude_purchased_extensions( $extensions ) {
 			$has_subscriptions_sassion = get_user_meta( get_current_user_id(), '_atbdp_has_subscriptions_sassion', true );
-			$is_logged_in              = ( ! empty( $has_subscriptions_sassion ) ) ? true : false;
+			$is_logged_in              = ! empty( $has_subscriptions_sassion );
 
 			if ( ! $is_logged_in ) {
 				return $extensions;
@@ -590,13 +596,13 @@ if ( ! class_exists( 'ATBDP_Extensions' ) ) {
 				return $extensions;
 			}
 
-			$purchased_extensions = ( ! empty( $purchased_products['plugins'] ) ) ? $purchased_products['plugins'] : '';
+			$purchased_extensions = ( empty( $purchased_products['plugins'] ) ) ? '' : $purchased_products['plugins'];
 
 			if ( empty( $purchased_extensions ) ) {
 				return $extensions;
 			}
 
-			$purchased_extensions_keys = ( is_array( $purchased_extensions ) ) ? array_keys( $purchased_extensions ) : array();
+			$purchased_extensions_keys = ( is_array( $purchased_extensions ) ) ? array_keys( $purchased_extensions ) : [];
 			$excluded_extensions       = $extensions;
 
 			foreach ( $excluded_extensions as $extension_key => $extension ) {
@@ -614,7 +620,7 @@ if ( ! class_exists( 'ATBDP_Extensions' ) ) {
 		// exclude_purchased_themes
 		public function exclude_purchased_themes( $themes ) {
 			$has_subscriptions_sassion = get_user_meta( get_current_user_id(), '_atbdp_has_subscriptions_sassion', true );
-			$is_logged_in              = ( ! empty( $has_subscriptions_sassion ) ) ? true : false;
+			$is_logged_in              = ! empty( $has_subscriptions_sassion );
 
 			if ( ! $is_logged_in ) {
 				return $themes;
@@ -626,13 +632,13 @@ if ( ! class_exists( 'ATBDP_Extensions' ) ) {
 				return $themes;
 			}
 
-			$purchased_themes = ( ! empty( $purchased_products['themes'] ) ) ? $purchased_products['themes'] : '';
+			$purchased_themes = ( empty( $purchased_products['themes'] ) ) ? '' : $purchased_products['themes'];
 
 			if ( empty( $purchased_themes ) ) {
 				return $themes;
 			}
 
-			$purchased_themes_keys = is_array( $purchased_themes ) ? array_keys( $purchased_themes ) : array();
+			$purchased_themes_keys = is_array( $purchased_themes ) ? array_keys( $purchased_themes ) : [];
 			$excluded_themes       = $themes;
 
 			foreach ( $excluded_themes as $theme_key => $theme ) {
@@ -648,8 +654,11 @@ if ( ! class_exists( 'ATBDP_Extensions' ) ) {
 		}
 
 		// get_active_extensions
-		public function get_active_extensions() {
-			$active_extensions = array();
+        /**
+         * @return mixed[]
+         */
+        public function get_active_extensions(): array {
+			$active_extensions = [];
 
 			foreach ( $this->extensions as $extension_slug => $extension ) {
 				if ( empty( $extension['active'] ) ) {
@@ -663,8 +672,11 @@ if ( ! class_exists( 'ATBDP_Extensions' ) ) {
 		}
 
 		// get_active_themes
-		public function get_active_themes() {
-			$active_themes = array();
+        /**
+         * @return mixed[]
+         */
+        public function get_active_themes(): array {
+			$active_themes = [];
 
 			foreach ( $this->themes as $theme_slug => $theme ) {
 				if ( empty( $theme['active'] ) ) {
@@ -678,44 +690,47 @@ if ( ! class_exists( 'ATBDP_Extensions' ) ) {
 		}
 
 		// handle_plugins_update_request
-		public function handle_plugins_update_request() {
+		public function handle_plugins_update_request(): void {
 
 			if ( ! directorist_verify_nonce( 'nonce', 'atbdp_nonce_action_js' ) ) {
-				$status            = array();
+				$status            = [];
 				$status['success'] = false;
 				$status['message'] = 'Invalid request';
 
-				wp_send_json( array( 'status' => $status ) );
+				wp_send_json( [ 'status' => $status ] );
 			}
 
 			$plugin_key = ( isset( $_POST['plugin_key'] ) ) ? directorist_clean( wp_unslash( $_POST['plugin_key'] ) ) : '';
-			$status     = $this->update_plugins( array( 'plugin_key' => $plugin_key ) );
+			$status     = $this->update_plugins( [ 'plugin_key' => $plugin_key ] );
 
 			wp_send_json( $status );
 		}
 
 		// update_plugins
-		public function update_plugins( array $args = array() ) {
-			$default = array( 'plugin_key' => '' );
+        /**
+         * @return array{success: bool, updated_plugins: array, update_failed_plugins: array, message?: mixed}[]
+         */
+        public function update_plugins( array $args = [] ): array {
+			$default = [ 'plugin_key' => '' ];
 			$args    = array_merge( $default, $args );
 
-			$status     = array( 'success' => true );
+			$status     = [ 'success' => true ];
 			$plugin_key = $args['plugin_key'];
 
 			$plugin_updates       = get_site_transient( 'update_plugins' );
 			$outdated_plugins     = $plugin_updates->response;
-			$outdated_plugins_key = ( is_array( $outdated_plugins ) ) ? array_keys( $outdated_plugins ) : array();
+			$outdated_plugins_key = ( is_array( $outdated_plugins ) ) ? array_keys( $outdated_plugins ) : [];
 
-			if ( empty( $outdated_plugins_key ) ) {
+			if ( $outdated_plugins_key === [] ) {
 				$status['message'] = __( 'All plugins are up to date', 'directorist' );
 
-				return array( 'status' => $status );
+				return [ 'status' => $status ];
 			}
 
 			if ( ! empty( $plugin_key ) && ! in_array( $plugin_key, $outdated_plugins_key ) ) {
 				$status['message'] = __( 'The plugin is up to date', 'directorist' );
 
-				return array( 'status' => $status );
+				return [ 'status' => $status ];
 			}
 
 			$plugins_available_in_subscriptions = self::get_purchased_extension_list();
@@ -726,7 +741,7 @@ if ( ! class_exists( 'ATBDP_Extensions' ) ) {
 				$plugin_item = self::extract_plugin_from_list( $plugin_key, $plugins_available_in_subscriptions );
 				$url         = self::get_file_download_link( $plugin_item, 'plugin' );
 
-				$download_status = $this->download_plugin( array( 'url' => $url ) );
+				$download_status = $this->download_plugin( [ 'url' => $url ] );
 
 				if ( ! $download_status['success'] ) {
 					$status['success'] = false;
@@ -738,19 +753,19 @@ if ( ! class_exists( 'ATBDP_Extensions' ) ) {
 					$status['log']     = $download_status['message'];
 				}
 
-				return array( 'status' => $status );
+				return [ 'status' => $status ];
 			}
 
 			// Update all
-			$updated_plugins       = array();
-			$update_failed_plugins = array();
+			$updated_plugins       = [];
+			$update_failed_plugins = [];
 
 			foreach ( $outdated_plugins as $plugin_base => $plugin ) {
 				$plugin_key  = self::filter_plugin_key_from_base_name( $plugin_key );
 				$plugin_item = self::extract_plugin_from_list( $plugin_key, $plugins_available_in_subscriptions );
 				$url         = self::get_file_download_link( $plugin_item, 'plugin' );
 
-				$download_status = $this->download_plugin( array( 'url' => $url ) );
+				$download_status = $this->download_plugin( [ 'url' => $url ] );
 
 				if ( ! $download_status['success'] ) {
 					$update_failed_plugins[ $plugin_base ] = $plugin;
@@ -762,30 +777,30 @@ if ( ! class_exists( 'ATBDP_Extensions' ) ) {
 			$status['updated_plugins']       = $updated_plugins;
 			$status['update_failed_plugins'] = $update_failed_plugins;
 
-			if ( ! empty( $updated_plugins ) && ! empty( $update_failed_plugins ) ) {
+			if ( $updated_plugins !== [] && $update_failed_plugins !== [] ) {
 				$status['success'] = false;
 				$status['message'] = __( 'Some of the plugin could not update', 'directorist' );
 			}
 
-			if ( empty( $update_failed_plugins ) ) {
+			if ( $update_failed_plugins === [] ) {
 				$status['success'] = true;
 				$status['message'] = __( 'All the plugins are updated successfully', 'directorist' );
 			}
 
-			if ( empty( $updated_plugins ) ) {
+			if ( $updated_plugins === [] ) {
 				$status['success'] = true;
 				$status['message'] = __( 'No plugins could not update', 'directorist' );
 			}
 
-			return array( 'status' => $status );
+			return [ 'status' => $status ];
 		}
 
 		// extract_plugin_from_list
-		public static function extract_plugin_from_list( $plugin_key = '', $list = array() ) {
+		public static function extract_plugin_from_list( $plugin_key = '', $list = [] ) {
 
-			$plugin_item = array();
+			$plugin_item = [];
 			$plugin_key  = ( is_string( $plugin_key ) ) ? $plugin_key : '';
-			$list        = ( is_array( $list ) ) ? $list : array();
+			$list        = ( is_array( $list ) ) ? $list : [];
 
 			$keys_in_list = array_keys( $list );
 
@@ -803,35 +818,32 @@ if ( ! class_exists( 'ATBDP_Extensions' ) ) {
 		}
 
 		// filter_plugin_key_from_base_name
-		public static function filter_plugin_key_from_base_name( $plugin_key = '' ) {
+		public static function filter_plugin_key_from_base_name( $plugin_key = '' ): ?string {
 
 			if ( ! is_string( $plugin_key ) ) {
 				return '';
 			}
 
-			$plugin_key = preg_replace( '/\/.+/', '', $plugin_key );
-
-			return $plugin_key;
+			return preg_replace( '/\/.+/', '', $plugin_key );
 		}
 
 		// get_extension_alias_key
 		public static function get_extension_alias_key( string $plugin_key = '' ) {
 			$extensions_aliases      = self::$extensions_aliases;
-			$extensions_aliases_keys = ( is_array( $extensions_aliases ) && ! empty( $extensions_aliases ) ) ? array_keys( $extensions_aliases ) : array();
-			$plugin_alias_key        = in_array( $plugin_key, $extensions_aliases_keys ) ? $extensions_aliases[ $plugin_key ] : '';
+			$extensions_aliases_keys = ( is_array( $extensions_aliases ) && $extensions_aliases !== [] ) ? array_keys( $extensions_aliases ) : [];
 
-			return $plugin_alias_key;
+			return in_array( $plugin_key, $extensions_aliases_keys ) ? $extensions_aliases[ $plugin_key ] : '';
 		}
 
 		// plugins_bulk_action
-		public function plugins_bulk_action() {
-			$status = array( 'success' => true );
+		public function plugins_bulk_action(): void {
+			$status = [ 'success' => true ];
 
 			if ( ! directorist_verify_nonce() ) {
 				$status['success'] = false;
 				$status['message'] = 'Invalid request';
 
-				wp_send_json( array( 'status' => $status ) );
+				wp_send_json( [ 'status' => $status ] );
 			}
 
 			$task         = ( isset( $_POST['task'] ) ) ? directorist_clean( wp_unslash( $_POST['task'] ) ) : '';
@@ -841,13 +853,13 @@ if ( ! class_exists( 'ATBDP_Extensions' ) ) {
 			if ( empty( $task ) ) {
 				$status['success'] = false;
 				$status['message'] = 'No task found';
-				wp_send_json( array( 'status' => $status ) );
+				wp_send_json( [ 'status' => $status ] );
 			}
 
 			if ( empty( $plugin_items ) ) {
 				$status['success'] = false;
 				$status['message'] = 'No plugin items found';
-				wp_send_json( array( 'status' => $status ) );
+				wp_send_json( [ 'status' => $status ] );
 			}
 
 			// Activate
@@ -857,7 +869,7 @@ if ( ! class_exists( 'ATBDP_Extensions' ) ) {
 					if( is_wp_error( $activated ) ) {
 						$status['success'] = false;
 						$status['message'] = 'Error in plugin activation';
-						wp_send_json( array( 'status' => $status ) );
+						wp_send_json( [ 'status' => $status ] );
 					}
 				}
 			}
@@ -872,99 +884,102 @@ if ( ! class_exists( 'ATBDP_Extensions' ) ) {
 				delete_plugins( $plugin_items );
 			}
 
-			wp_send_json( array( 'status' => $status ) );
+			wp_send_json( [ 'status' => $status ] );
 		}
 
 		// activate_theme
-		public function activate_theme() {
-			$status           = array( 'success' => true );
+		public function activate_theme(): void {
+			$status           = [ 'success' => true ];
 			$theme_stylesheet = ( isset( $_POST['theme_stylesheet'] ) ) ? directorist_clean( wp_unslash( $_POST['theme_stylesheet'] ) ) : '';
 
 			if ( ! directorist_verify_nonce( 'nonce', 'atbdp_nonce_action_js' ) ) {
 				$status['success'] = false;
 				$status['message'] = 'Invalid request';
 
-				wp_send_json( array( 'status' => $status ) );
+				wp_send_json( [ 'status' => $status ] );
 			}
 
 			if ( empty( $theme_stylesheet ) ) {
 				$status['success'] = false;
 				$status['message'] = __( 'Theme\'s stylesheet is missing', 'directorist' );
 
-				wp_send_json( array( 'status' => $status ) );
+				wp_send_json( [ 'status' => $status ] );
 			}
 
 			switch_theme( $theme_stylesheet );
-			wp_send_json( array( 'status' => $status ) );
+			wp_send_json( [ 'status' => $status ] );
 		}
 
 		// activate_plugin
-		public function activate_plugin() {
-			$status     = array( 'success' => true );
+		public function activate_plugin(): void {
+			$status     = [ 'success' => true ];
 			$plugin_key = ( isset( $_POST['item_key'] ) ) ? directorist_clean( wp_unslash( $_POST['item_key'] ) ) : '';
 
 			if ( ! directorist_verify_nonce( 'nonce', 'atbdp_nonce_action_js' ) ) {
 				$status['success'] = false;
 				$status['message'] = 'Invalid request';
 
-				wp_send_json( array( 'status' => $status ) );
+				wp_send_json( [ 'status' => $status ] );
 			}
 
 			if ( empty( $plugin_key ) ) {
 				$status['success'] = false;
-				$status['log']     = array( '$plugin_key' => $plugin_key );
+				$status['log']     = [ '$plugin_key' => $plugin_key ];
 				$status['message'] = __( 'Please specefy which plugin to activate', 'directorist' );
 
-				wp_send_json( array( 'status' => $status ) );
+				wp_send_json( [ 'status' => $status ] );
 			}
 
 			activate_plugin( $plugin_key );
-			wp_send_json( array( 'status' => $status ) );
+			wp_send_json( [ 'status' => $status ] );
 		}
 
 		// handle_theme_update_request
-		public function handle_theme_update_request() {
+		public function handle_theme_update_request(): void {
 
 			if ( ! directorist_verify_nonce( 'nonce', 'atbdp_nonce_action_js' ) ) {
-				$status            = array();
+				$status            = [];
 				$status['success'] = false;
 				$status['message'] = 'Invalid request';
 
-				wp_send_json( array( 'status' => $status ) );
+				wp_send_json( [ 'status' => $status ] );
 			}
 
 			$theme_stylesheet = ( isset( $_POST['theme_stylesheet'] ) ) ? directorist_clean( wp_unslash( $_POST['theme_stylesheet'] ) ) : '';
 
-			$update_theme_status = $this->update_the_themes( array( 'theme_stylesheet' => $theme_stylesheet ) );
+			$update_theme_status = $this->update_the_themes( [ 'theme_stylesheet' => $theme_stylesheet ] );
 			wp_send_json( $update_theme_status );
 		}
 
 		// update_the_theme
-		public function update_the_themes( array $args = array() ) {
-			$default = array( 'theme_stylesheet' => '' );
+        /**
+         * @return array{success: bool, updated_themes: array, update_failed_themes: array, message?: mixed}[]
+         */
+        public function update_the_themes( array $args = [] ): array {
+			$default = [ 'theme_stylesheet' => '' ];
 			$args    = array_merge( $default, $args );
 
-			$status = array( 'success' => true );
+			$status = [ 'success' => true ];
 
 			$theme_stylesheet    = $args['theme_stylesheet'];
 			$theme_updates       = get_site_transient( 'update_themes' );
 			$outdated_themes     = $theme_updates->response;
-			$outdated_themes_key = ( is_array( $outdated_themes ) ) ? array_keys( $outdated_themes ) : array();
+			$outdated_themes_key = ( is_array( $outdated_themes ) ) ? array_keys( $outdated_themes ) : [];
 
-			if ( empty( $outdated_themes_key ) ) {
+			if ( $outdated_themes_key === [] ) {
 				$status['message'] = __( 'All themes are up to date', 'directorist' );
 
-				return array( 'status' => $status );
+				return [ 'status' => $status ];
 			}
 
 			if ( ! empty( $theme_stylesheet ) && ! in_array( $theme_stylesheet, $outdated_themes_key ) ) {
 				$status['message'] = __( 'The theme is up to date', 'directorist' );
 
-				return array( 'status' => $status );
+				return [ 'status' => $status ];
 			}
 
 			$themes_available_in_subscriptions      = self::get_purchased_theme_list();
-			$themes_available_in_subscriptions_keys = ( is_array( $themes_available_in_subscriptions ) ) ? array_keys( $themes_available_in_subscriptions ) : array();
+			$themes_available_in_subscriptions_keys = ( is_array( $themes_available_in_subscriptions ) ) ? array_keys( $themes_available_in_subscriptions ) : [];
 
 			// Check if stylesheet is present
 			if ( ! empty( $theme_stylesheet ) ) {
@@ -974,14 +989,14 @@ if ( ! class_exists( 'ATBDP_Extensions' ) ) {
 					$status['success'] = false;
 					$status['message'] = __( 'The theme is already upto date', 'directorist' );
 
-					return array( 'status' => $status );
+					return [ 'status' => $status ];
 				}
 
 				$theme_item = $themes_available_in_subscriptions[ $theme_stylesheet ];
 				$url        = self::get_file_download_link( $theme_item, 'theme' );
 				$url        = ( empty( $url ) && ! empty( $outdated_themes[ $theme_stylesheet ]['package'] ) ) ? $outdated_themes[ $theme_stylesheet ]['package'] : $url;
 
-				$download_status = $this->download_theme( array( 'url' => $url ) );
+				$download_status = $this->download_theme( [ 'url' => $url ] );
 
 				if ( ! $download_status['success'] ) {
 					$status['success'] = false;
@@ -994,12 +1009,12 @@ if ( ! class_exists( 'ATBDP_Extensions' ) ) {
 					wp_clean_themes_cache();
 				};
 
-				return array( 'status' => $status );
+				return [ 'status' => $status ];
 			}
 
 			// Update all
-			$updated_themes       = array();
-			$update_failed_themes = array();
+			$updated_themes       = [];
+			$update_failed_themes = [];
 
 			foreach ( $outdated_themes as $theme_key => $theme ) {
 				$url = '';
@@ -1011,7 +1026,7 @@ if ( ! class_exists( 'ATBDP_Extensions' ) ) {
 				$theme_item = $themes_available_in_subscriptions[ $theme_key ];
 				$url        = self::get_file_download_link( $theme_item, 'theme' );
 
-				$download_status = $this->download_theme( array( 'url' => $url ) );
+				$download_status = $this->download_theme( [ 'url' => $url ] );
 
 				if ( ! $download_status['success'] ) {
 					$update_failed_themes[ $theme_key ] = $theme;
@@ -1023,42 +1038,40 @@ if ( ! class_exists( 'ATBDP_Extensions' ) ) {
 			$status['updated_themes']       = $updated_themes;
 			$status['update_failed_themes'] = $update_failed_themes;
 
-			if ( ! empty( $updated_themes ) && ! empty( $update_failed_themes ) ) {
+			if ( $updated_themes !== [] && $update_failed_themes !== [] ) {
 				$status['success'] = false;
 				$status['message'] = __( 'Some of the theme could not update', 'directorist' );
 			}
 
-			if ( empty( $update_failed_themes ) ) {
+			if ( $update_failed_themes === [] ) {
 				$status['success'] = true;
 				$status['message'] = __( 'All the themes are updated successfully', 'directorist' );
 			}
 
-			if ( empty( $updated_themes ) ) {
+			if ( $updated_themes === [] ) {
 				$status['success'] = true;
 				$status['message'] = __( 'No themes could not update', 'directorist' );
 			}
 
-			return array( 'status' => $status );
+			return [ 'status' => $status ];
 		}
 
 		/**
-		 * Authenticate users as directorist customer.
-		 *
-		 * @return void
-		 */
-		public function authenticate_the_customer() {
+         * Authenticate users as directorist customer.
+         */
+        public function authenticate_the_customer(): void {
 
-			$status = array(
+			$status = [
 				'success' => true,
-				'log' => array(),
-			);
+				'log' => [],
+			];
 
 			if ( ! directorist_verify_nonce( 'nonce', 'atbdp_nonce_action_js' ) ) {
 				$status['success']                 = false;
-				$status['log']['invalid_request'] = array(
+				$status['log']['invalid_request'] = [
 					'type'    => 'error',
 					'message' => 'Invalid request',
-				);
+				];
 			}
 
 			// Get form data
@@ -1066,68 +1079,68 @@ if ( ! class_exists( 'ATBDP_Extensions' ) ) {
 			$password = ( isset( $_POST['password'] ) ) ? urlencode( $_POST['password'] ) : ''; // @codingStandardsIgnoreLine.
 
 			// Validate username
-			if ( empty( $username ) && ! empty( $password ) ) {
+			if ( empty( $username ) && ($password !== '' && $password !== '0') ) {
 				$status['success']                 = false;
-				$status['log']['username_missing'] = array(
+				$status['log']['username_missing'] = [
 					'type'    => 'error',
 					'message' => 'Username is required',
-				);
+				];
 			}
 
 			// Validate password
-			if ( empty( $password ) && ! empty( $username ) ) {
+			if ( ($password === '' || $password === '0') && ! empty( $username ) ) {
 				$status['success']                 = false;
-				$status['log']['password_missing'] = array(
+				$status['log']['password_missing'] = [
 					'type'    => 'error',
 					'message' => 'Password is required',
-				);
+				];
 			}
 
 			// Validate username && password
-			if ( empty( $password ) && empty( $username ) ) {
+			if ( ($password === '' || $password === '0') && empty( $username ) ) {
 				$status['success']                 = false;
-				$status['log']['password_missing'] = array(
+				$status['log']['password_missing'] = [
 					'type'    => 'error',
 					'message' => 'Username and Password is required',
-				);
+				];
 			}
 
 			if ( ! $status['success'] ) {
-				wp_send_json( array( 'status' => $status ) );
+				wp_send_json( [ 'status' => $status ] );
 			}
 
 			// Get licencing data
 			$response = self::remote_authenticate_user(
-				array(
+				[
 					'user' => $username,
 					'password' => $password,
-				)
+				]
 			);
 
 			// Validate response
 			if ( ! $response['success'] ) {
 				$status['success']      = false;
-				$default_status_message = ( isset( $response['message'] ) ) ? $response['message'] : '';
+				$default_status_message = $response['message'] ?? '';
 
 				if ( isset( $response['log'] ) && isset( $response['log']['errors'] ) && is_array( $response['log']['errors'] ) ) {
 					foreach ( $response['log']['errors'] as $error_key => $error_value ) {
-						$status['log'][ $error_key ] = array(
+						$status['log'][ $error_key ] = [
 							'type'    => 'error',
 							'message' => ( is_array( $error_value ) ) ? $error_value[0] : $error_value,
-						);
+						];
 					}
 				} else {
-					$status['log']['unknown_error'] = array(
+					$status['log']['unknown_error'] = [
 						'type'    => 'error',
-						'message' => ( ! empty( $default_status_message ) ) ? $default_status_message : __( 'Something went wrong', 'directorist' ),
-					);
+						'message' => ( empty( $default_status_message ) ) ? __( 'Something went wrong', 'directorist' ) : $default_status_message,
+					];
 				}
 
 				wp_send_json(
-					array(
+					[
 						'status' => $status,
 						'response_body' => $response,
-					)
+					]
 				);
 			}
 
@@ -1139,18 +1152,18 @@ if ( ! class_exists( 'ATBDP_Extensions' ) ) {
 
 			$plugins_available_in_subscriptions = self::get_purchased_extension_list();
 			$themes_available_in_subscriptions  = self::get_purchased_theme_list();
-			$has_previous_subscriptions         = ( ! empty( $plugins_available_in_subscriptions ) || ! empty( $themes_available_in_subscriptions ) ) ? true : false;
+			$has_previous_subscriptions         = ! empty( $plugins_available_in_subscriptions ) || ! empty( $themes_available_in_subscriptions );
 
 			if ( $previous_username === $username && $has_previous_subscriptions ) {
 				// Enable Sassion
 				update_user_meta( get_current_user_id(), '_atbdp_has_subscriptions_sassion', true );
-				$this->refresh_purchase_status( $args = array( 'password' => $password ) );
+				$this->refresh_purchase_status( $args = [ 'password' => $password ] );
 
 				wp_send_json(
-					array(
+					[
 						'status' => $status,
 						'has_previous_subscriptions' => true,
-					)
+					]
 				);
 			}
 
@@ -1171,48 +1184,51 @@ if ( ! class_exists( 'ATBDP_Extensions' ) ) {
 			}
 
 			$status['success']                 = true;
-			$status['log']['login_successful'] = array(
+			$status['log']['login_successful'] = [
 				'type'    => 'success',
 				'message' => 'Login is successful',
-			);
+			];
 
 			wp_send_json(
-				array(
+				[
 					'status' => $status,
 					'license_data' => $license_data,
-				)
+				]
 			);
 		}
 
 		// handle_refresh_purchase_status_request
-		public function handle_refresh_purchase_status_request() {
-			$status   = array( 'success' => true );
+		public function handle_refresh_purchase_status_request(): void {
+			$status   = [ 'success' => true ];
 
 			if ( ! directorist_verify_nonce( 'nonce', 'atbdp_nonce_action_js' ) ) {
 				$status['success'] = false;
 				$status['message'] = 'Invalid request';
 
-				wp_send_json( array( 'status' => $status ) );
+				wp_send_json( [ 'status' => $status ] );
 			}
 
-			$password = ( isset( $_POST['password'] ) ) ? $_POST['password'] : ''; // @codingStandardsIgnoreLine.
+			$password = $_POST['password'] ?? ''; // @codingStandardsIgnoreLine.
 
-			$status = $this->refresh_purchase_status( array( 'password' => $password ) );
+			$status = $this->refresh_purchase_status( [ 'password' => $password ] );
 
 			wp_send_json( $status );
 		}
 
 		// refresh_purchase_status
-		public function refresh_purchase_status( array $args = array() ) {
-			$status  = array( 'success' => true );
-			$default = array( 'password' => '' );
+        /**
+         * @return mixed[]
+         */
+        public function refresh_purchase_status( array $args = [] ): array {
+			$status  = [ 'success' => true ];
+			$default = [ 'password' => '' ];
 			$args    = array_merge( $default, $args );
 
 			if ( empty( $args['password'] ) ) {
 				$status['success'] = false;
 				$status['message'] = __( 'Password is required', 'directorist' );
 
-				return array( 'status' => $status );
+				return [ 'status' => $status ];
 			}
 
 			$username = get_user_meta( get_current_user_id(), '_atbdp_subscribed_username', true );
@@ -1225,15 +1241,15 @@ if ( ! class_exists( 'ATBDP_Extensions' ) ) {
 
 				delete_user_meta( get_current_user_id(), '_atbdp_has_subscriptions_sassion' );
 
-				return array( 'status' => $status );
+				return [ 'status' => $status ];
 			}
 
 			// Get licencing data
 			$authentication = self::remote_authenticate_user(
-				array(
+				[
 					'user' => $username,
 					'password' => $password,
-				)
+				]
 			);
 
 			// Validate response
@@ -1241,10 +1257,10 @@ if ( ! class_exists( 'ATBDP_Extensions' ) ) {
 				$status['success'] = false;
 				$status['message'] = $authentication['message'];
 
-				return array(
+				return [
 					'status' => $status,
 					'response_body' => $authentication,
-				);
+				];
 			}
 
 			$license_data = $authentication['license_data'];
@@ -1263,32 +1279,32 @@ if ( ! class_exists( 'ATBDP_Extensions' ) ) {
 			$status['success'] = true;
 			$status['message'] = __( 'Your purchase has been refreshed successfuly', 'directorist' );
 
-			return array( 'status' => $status );
+			return [ 'status' => $status ];
 		}
 
 		// handle_close_subscriptions_sassion_request
-		public function handle_close_subscriptions_sassion_request() {
+		public function handle_close_subscriptions_sassion_request(): void {
 
 			if ( ! directorist_verify_nonce( 'nonce', 'atbdp_nonce_action_js' ) ) {
-				$status            = array();
+				$status            = [];
 				$status['success'] = false;
 				$status['message'] = 'Invalid request';
 
-				wp_send_json( array( 'status' => $status ) );
+				wp_send_json( [ 'status' => $status ] );
 			}
 
-			$hard_logout_state = ( isset( $_POST['hard_logout'] ) ) ? boolval( $_POST['hard_logout'] ) : false;
-			$status            = $this->close_subscriptions_sassion( array( 'hard_logout' => $hard_logout_state ) );
+			$hard_logout_state = isset( $_POST['hard_logout'] ) && boolval( $_POST['hard_logout'] );
+			$status            = $this->close_subscriptions_sassion( [ 'hard_logout' => $hard_logout_state ] );
 
 			wp_send_json( $status );
 		}
 
 		// close_subscriptions_sassion
-		public function close_subscriptions_sassion( array $args = array() ) {
-			$default = array( 'hard_logout' => false );
+		public function close_subscriptions_sassion( array $args = [] ): array {
+			$default = [ 'hard_logout' => false ];
 			$args    = array_merge( $default, $args );
 
-			$status = array( 'success' => true );
+			$status = [ 'success' => true ];
 			delete_user_meta( get_current_user_id(), '_atbdp_has_subscriptions_sassion' );
 
 			if ( $args['hard_logout'] ) {
@@ -1301,10 +1317,13 @@ if ( ! class_exists( 'ATBDP_Extensions' ) ) {
 		}
 
 		// prepare_available_in_subscriptions
-		public function prepare_available_in_subscriptions( array $products = array() ) {
-			$available_in_subscriptions = array();
+        /**
+         * @return mixed[]
+         */
+        public function prepare_available_in_subscriptions( array $products = [] ): array {
+			$available_in_subscriptions = [];
 
-			if ( empty( $products ) ) {
+			if ( $products === [] ) {
 				return $available_in_subscriptions;
 			}
 
@@ -1317,56 +1336,55 @@ if ( ! class_exists( 'ATBDP_Extensions' ) ) {
 		}
 
 		// get_product_key_from_permalink
-		public function get_product_key_from_permalink( string $permalink = '' ) {
+		public function get_product_key_from_permalink( string $permalink = '' ): string {
 			$product_key = str_replace( 'http://directorist.com/product/', '', $permalink );
 			$product_key = str_replace( 'https://directorist.com/product/', '', $product_key );
-			$product_key = str_replace( '/', '', $product_key );
 
-			return $product_key;
+			return str_replace( '/', '', $product_key );
 		}
 
 		// handle_license_activation_request
-		public function handle_license_activation_request() {
-			$status       = array( 'success' => true );
+		public function handle_license_activation_request(): void {
+			$status       = [ 'success' => true ];
 			$license_item = ( isset( $_POST['license_item'] ) ) ? directorist_clean( wp_unslash( $_POST['license_item'] ) ) : '';
 			$product_type = ( isset( $_POST['product_type'] ) ) ? directorist_clean( wp_unslash( $_POST['product_type'] ) ) : '';
 
 			if ( ! directorist_verify_nonce( 'nonce', 'atbdp_nonce_action_js' ) ) {
-				$status            = array();
+				$status            = [];
 				$status['success'] = false;
 				$status['message'] = 'Invalid request';
 
-				wp_send_json( array( 'status' => $status ) );
+				wp_send_json( [ 'status' => $status ] );
 			}
 
 			if ( empty( $license_item ) ) {
 				$status['success'] = false;
 				$status['message'] = 'License item is missing';
 
-				wp_send_json( array( 'status' => $status ) );
+				wp_send_json( [ 'status' => $status ] );
 			}
 
 			if ( empty( $product_type ) ) {
 				$status['success'] = false;
 				$status['message'] = 'Product type is required';
 
-				wp_send_json( array( 'status' => $status ) );
+				wp_send_json( [ 'status' => $status ] );
 			}
 
 			$activation_status = $this->activate_license( $license_item, $product_type );
 			$status['success'] = $activation_status['success'];
 
 			wp_send_json(
-				array(
+				[
 					'status' => $status,
 					'activation_status' => $activation_status,
-				)
+				]
 			);
 		}
 
 		// activate_license
-		public function activate_license( $license_item, $product_type = '' ) {
-			$status            = array( 'success' => true );
+		public function activate_license( array $license_item, $product_type = '' ): array {
+			$status            = [ 'success' => true ];
 			$activation_status = self::remote_activate_license( $license_item );
 
 			if ( empty( $activation_status['success'] ) ) {
@@ -1380,11 +1398,11 @@ if ( ! class_exists( 'ATBDP_Extensions' ) ) {
 				$user_purchased = get_user_meta( get_current_user_id(), '_atbdp_purchased_products', true );
 
 				if ( empty( $user_purchased ) ) {
-					$user_purchased = array();
+					$user_purchased = [];
 				}
 
 				if ( empty( $user_purchased[ $product_type ] ) ) {
-					$user_purchased[ $product_type ] = array();
+					$user_purchased[ $product_type ] = [];
 				}
 
 				$purchased_items = $user_purchased[ $product_type ];
@@ -1403,60 +1421,60 @@ if ( ! class_exists( 'ATBDP_Extensions' ) ) {
 		}
 
 		// handle_file_install_request_from_subscriptions
-		public function handle_file_install_request_from_subscriptions() {
+		public function handle_file_install_request_from_subscriptions(): void {
 			$item_key = ( isset( $_POST['item_key'] ) ) ? directorist_clean( wp_unslash( $_POST['item_key'] ) ) : '';
 			$type     = ( isset( $_POST['type'] ) ) ? directorist_clean( wp_unslash( $_POST['type'] ) ) : '';
 
 			if ( ! directorist_verify_nonce( 'nonce', 'atbdp_nonce_action_js' ) ) {
-				$status            = array();
+				$status            = [];
 				$status['success'] = false;
 				$status['message'] = 'Invalid request';
 
-				wp_send_json( array( 'status' => $status ) );
+				wp_send_json( [ 'status' => $status ] );
 			}
 
 			$installation_status = $this->install_file_from_subscriptions(
-				array(
+				[
 					'item_key' => $item_key,
 					'type' => $type,
-				)
+				]
 			);
 
 			wp_send_json( $installation_status );
 		}
 
 		// install_file_from_subscriptions
-		public function install_file_from_subscriptions( array $args = array() ) {
-			$default = array(
+		public function install_file_from_subscriptions( array $args = [] ) {
+			$default = [
 				'item_key' => '',
 				'type' => '',
-			);
+			];
 			$args    = array_merge( $default, $args );
 
 			$item_key = $args['item_key'];
 			$type     = $args['type'];
 
-			$status = array( 'success' => true );
+			$status = [ 'success' => true ];
 
 			if ( empty( $item_key ) ) {
 				$status['success'] = false;
 				$status['message'] = __( 'Item key is missing', 'directorist' );
 
-				return array( 'status' => $status );
+				return [ 'status' => $status ];
 			}
 
 			if ( empty( $type ) ) {
 				$status['success'] = false;
 				$status['message'] = __( 'Type not specified', 'directorist' );
 
-				return array( 'status' => $status );
+				return [ 'status' => $status ];
 			}
 
 			if ( 'plugin' !== $type && 'theme' !== $type ) {
 				$status['success'] = false;
 				$status['message'] = __( 'Invalid type', 'directorist' );
 
-				return array( 'status' => $status );
+				return [ 'status' => $status ];
 			}
 
 			if ( 'theme' === $type ) {
@@ -1471,14 +1489,14 @@ if ( ! class_exists( 'ATBDP_Extensions' ) ) {
 				$status['success'] = false;
 				$status['message'] = __( 'Nothing available in subscriptions', 'directorist' );
 
-				return array( 'status' => $status );
+				return [ 'status' => $status ];
 			}
 
 			if ( empty( $available_in_subscriptions[ $item_key ] ) ) {
 				$status['success'] = false;
 				$status['message'] = __( 'The item is not available in your subscriptions', 'directorist' );
 
-				return array( 'status' => $status );
+				return [ 'status' => $status ];
 			}
 
 			$installing_file = $available_in_subscriptions[ $item_key ];
@@ -1490,13 +1508,13 @@ if ( ! class_exists( 'ATBDP_Extensions' ) ) {
 				$status['success'] = false;
 				$status['message'] = __( 'The license is not valid, please check you subscription.', 'directorist' );
 
-				return array( 'status' => $status );
+				return [ 'status' => $status ];
 			}
 
-			$beta_link = ! empty( $installing_file['beta_link'] ) ? $installing_file['beta_link'] : '';
+			$beta_link = empty( $installing_file['beta_link'] ) ? '' : $installing_file['beta_link'];
 
 			$link          = ATBDP()->beta ? $beta_link : $installing_file['download_link'];
-			$download_args = array( 'url' => $link );
+			$download_args = [ 'url' => $link ];
 
 			if ( 'plugin' === $type ) {
 				$download_status = $this->download_plugin( $download_args );
@@ -1513,18 +1531,18 @@ if ( ! class_exists( 'ATBDP_Extensions' ) ) {
 			$status['success'] = true;
 			$status['message'] = __( 'Installed Successfully', 'directorist' );
 
-			return array( 'status' => $status );
+			return [ 'status' => $status ];
 		}
 
 		// handle_plugin_download_request
 		public function handle_file_download_request() {
-			$status        = array( 'success' => true );
+			$status        = [ 'success' => true ];
 
 			if ( ! directorist_verify_nonce( 'nonce', 'atbdp_nonce_action_js' ) ) {
 				$status['success'] = false;
 				$status['message'] = 'Invalid request';
 
-				wp_send_json( array( 'status' => $status ) );
+				wp_send_json( [ 'status' => $status ] );
 			}
 
 			$download_item = ( isset( $_POST['download_item'] ) ) ? directorist_clean( wp_unslash( $_POST['download_item'] ) ) : '';
@@ -1534,21 +1552,21 @@ if ( ! class_exists( 'ATBDP_Extensions' ) ) {
 				$status['success'] = false;
 				$status['message'] = 'Download item is missing';
 
-				wp_send_json( array( 'status' => $status ) );
+				wp_send_json( [ 'status' => $status ] );
 			}
 
 			if ( empty( $type ) ) {
 				$status['success'] = false;
 				$status['message'] = 'Type not specified';
 
-				wp_send_json( array( 'status' => $status ) );
+				wp_send_json( [ 'status' => $status ] );
 			}
 
 			if ( 'plugin' !== $type || 'theme' !== $type ) {
 				$status['success'] = false;
 				$status['message'] = 'Invalid type';
 
-				wp_send_json( array( 'status' => $status ) );
+				wp_send_json( [ 'status' => $status ] );
 			}
 
 			$activate_license = $this->activate_license( $download_item, $type );
@@ -1558,25 +1576,25 @@ if ( ! class_exists( 'ATBDP_Extensions' ) ) {
 				$status['message'] = __( 'Activation failed', 'directorist' );
 				$status['ref']     = $activate_license;
 
-				wp_send_json( array( 'status' => $status ) );
+				wp_send_json( [ 'status' => $status ] );
 			}
 
 			if ( empty( $download_item['download_link'] ) ) {
 				$status['success'] = false;
 				$status['message'] = 'Download Link not found';
 
-				wp_send_json( array( 'status' => $status ) );
+				wp_send_json( [ 'status' => $status ] );
 			}
 
 			if ( ! is_string( $download_item['download_link'] ) ) {
 				$status['success'] = false;
 				$status['message'] = 'Download Link not found';
 
-				wp_send_json( array( 'status' => $status ) );
+				wp_send_json( [ 'status' => $status ] );
 			}
 
 			$link          = $download_item['download_link'];
-			$download_args = array( 'url' => $link );
+			$download_args = [ 'url' => $link ];
 
 			if ( 'plugin' === $type ) {
 				$download_status = $this->download_plugin( $download_args );
@@ -1593,17 +1611,21 @@ if ( ! class_exists( 'ATBDP_Extensions' ) ) {
 			$status['success'] = true;
 			$status['message'] = __( 'Donloaded', 'directorist' );
 
-			wp_send_json( array( 'status' => $status ) );
+			wp_send_json( [ 'status' => $status ] );
+            return null;
 		}
 
 		// download_plugin
-		public function download_plugin( array $args = array() ) {
-			$status = array( 'success' => false );
+        /**
+         * @return mixed[]
+         */
+        public function download_plugin( array $args = [] ): array {
+			$status = [ 'success' => false ];
 
-			$default = array(
+			$default = [
 				'url' => '',
 				'init_wp_filesystem' => true,
-			);
+			];
 			$args    = array_merge( $default, $args );
 
 			if ( empty( $args['url'] ) || ! self::is_varified_host( $args['url'] ) ) {
@@ -1657,7 +1679,7 @@ if ( ! class_exists( 'ATBDP_Extensions' ) ) {
 			$file_path = "{$temp_dest}/{$file_name}";
 
 			set_error_handler(
-				function ( $errno, $errstr, $errfile, $errline ) {
+				function ( $errno, $errstr, $errfile, $errline ): bool {
 					// error was suppressed with the @-operator
 					if ( 0 === error_reporting() ) {
 						  return false;
@@ -1706,13 +1728,16 @@ if ( ! class_exists( 'ATBDP_Extensions' ) ) {
 		}
 
 		// download_theme
-		public function download_theme( array $args = array() ) {
-			$status = array( 'success' => false );
+        /**
+         * @return mixed[]
+         */
+        public function download_theme( array $args = [] ): array {
+			$status = [ 'success' => false ];
 
-			$default = array(
+			$default = [
 				'url' => '',
 				'init_wp_filesystem' => true,
-			);
+			];
 			$args    = array_merge( $default, $args );
 
 			if ( empty( $args['url'] ) || ! self::is_varified_host( $args['url'] ) ) {
@@ -1766,7 +1791,7 @@ if ( ! class_exists( 'ATBDP_Extensions' ) ) {
 			$file_path = "{$temp_dest}/{$file_name}";
 
 			set_error_handler(
-				function ( $errno, $errstr, $errfile, $errline ) {
+				function ( $errno, $errstr, $errfile, $errline ): bool {
 					// error was suppressed with the @-operator
 					if ( 0 === error_reporting() ) {
 						  return false;
@@ -1801,7 +1826,7 @@ if ( ! class_exists( 'ATBDP_Extensions' ) ) {
 			$zip_files = glob( "{$dir_path}/*.zip" );
 
 			// If has child theme
-			if ( ! empty( $zip_files ) ) {
+			if ( $zip_files !== [] && $zip_files !== false ) {
 				$new_temp_dest = "{$temp_dest}/_temp_dest";
 				$this->install_themes_from_zip_files( $zip_files, $new_temp_dest, $wp_filesystem );
 
@@ -1827,7 +1852,7 @@ if ( ! class_exists( 'ATBDP_Extensions' ) ) {
 		}
 
 		// install_theme_from_zip
-		public function install_themes_from_zip_files( $zip_files, $temp_dest, $wp_filesystem ) {
+		public function install_themes_from_zip_files( $zip_files, $temp_dest, $wp_filesystem ): void {
 			$theme_path = WP_CONTENT_DIR . '/themes';
 
 			foreach ( $zip_files as $zip ) {
@@ -1864,27 +1889,24 @@ if ( ! class_exists( 'ATBDP_Extensions' ) ) {
 
 		// get_customers_purchased
 		public function get_customers_purchased( $license_data ) {
-			// Activate the licenses
-			$activation_url = 'https://directorist.com';
-
 			// Activate the Extensions
-			$purchased_extensions_meta    = array();
-			$purchased_extensions         = array();
-			$invalid_purchased_extensions = array();
+			$purchased_extensions_meta    = [];
+			$purchased_extensions         = [];
+			$invalid_purchased_extensions = [];
 
 			if ( ! empty( $license_data['plugins'] ) ) {
 
 				foreach ( $license_data['plugins'] as $extension ) {
-					$license              = ( ! empty( $response_body['all_access'] ) ) ? $response_body['active_licenses'][0] : $extension['license'];
+					$license              = ( empty( $response_body['all_access'] ) ) ? $extension['license'] : $response_body['active_licenses'][0];
 					$extension['license'] = $license;
 
-					$activation_status = self::remote_activate_license( $extension, 'plugin' );
+					$activation_status = self::remote_activate_license( $extension );
 
 					if ( empty( $activation_status['success'] ) ) {
-						$invalid_purchased_extensions[] = array(
+						$invalid_purchased_extensions[] = [
 							'extension' => $extension,
 							'response' => $activation_status['response'],
-						);
+						];
 						continue;
 					}
 
@@ -1896,34 +1918,33 @@ if ( ! class_exists( 'ATBDP_Extensions' ) ) {
 					$ext_key = str_replace( 'https://directorist.com/product/', '', $ext_key );
 					$ext_key = str_replace( '/', '', $ext_key );
 
-					$purchased_extensions_meta[ $ext_key ] = array(
+					$purchased_extensions_meta[ $ext_key ] = [
 						'item_id' => $extension['item_id'],
 						'license' => $extension['license'],
-						'license' => $extension['license'],
 						'file'    => $extension['links'],
-					);
+					];
 				}
 			}
 
 			// Activate the Themes
-			$purchased_themes_meta    = array();
-			$purchased_themes         = array();
-			$invalid_purchased_themes = array();
+			$purchased_themes_meta    = [];
+			$purchased_themes         = [];
+			$invalid_purchased_themes = [];
 
 			if ( ! empty( $license_data['themes'] ) ) {
 
 				foreach ( $license_data['themes'] as $theme ) {
-					$license          = ( ! empty( $response_body['all_access'] ) ) ? $response_body['active_licenses'][0] : $theme['license'];
+					$license          = ( empty( $response_body['all_access'] ) ) ? $theme['license'] : $response_body['active_licenses'][0];
 					$theme['license'] = $license;
 
 					$activation_status = self::remote_activate_license( $theme );
 
 					if ( empty( $activation_status['success'] ) ) {
 						$invalid_purchased_themes[] = $theme;
-						$invalid_purchased_themes[] = array(
+						$invalid_purchased_themes[] = [
 							'extension' => $theme,
 							'response' => $activation_status['response'],
-						);
+						];
 						continue;
 					}
 
@@ -1935,18 +1956,18 @@ if ( ! class_exists( 'ATBDP_Extensions' ) ) {
 					$theme_key = str_replace( 'https://directorist.com/product/', '', $theme_key );
 					$theme_key = str_replace( '/', '', $theme_key );
 
-					$purchased_themes_meta[ $theme_key ] = array(
+					$purchased_themes_meta[ $theme_key ] = [
 						'item_id' => $extension['item_id'],
 						'license' => $extension['license'],
 						'file'    => $extension['links'],
-					);
+					];
 				}
 			}
 
-			$customers_purchased = array(
+			$customers_purchased = [
 				'extensions' => $purchased_extensions_meta,
 				'themes'     => $purchased_themes_meta,
-			);
+			];
 
 			update_user_meta( get_current_user_id(), '_atbdp_purchased_products', $customers_purchased );
 
@@ -1962,28 +1983,28 @@ if ( ! class_exists( 'ATBDP_Extensions' ) ) {
 		}
 
 		// download_purchased_items
-		public function download_purchased_items() {
-			$status = array(
+		public function download_purchased_items(): void {
+			$status = [
 				'success' => true,
-				'log' => array(),
-			);
+				'log' => [],
+			];
 
 			if ( ! directorist_verify_nonce( 'nonce', 'atbdp_nonce_action_js' ) ) {
 				$status['success'] = false;
 				$status['message'] = 'Invalid request';
 
-				wp_send_json( array( 'status' => $status ) );
+				wp_send_json( [ 'status' => $status ] );
 			}
 
 			$cart = ( isset( $_POST['customers_purchased'] ) ) ? directorist_clean( wp_unslash( $_POST['customers_purchased'] ) ) : '';
 
 			if ( empty( $cart ) ) {
 				$status['success']                        = false;
-				$status['log']['no_purchased_data_found'] = array(
+				$status['log']['no_purchased_data_found'] = [
 					'type'    => 'error',
 					'message' => 'No purchased data found',
-				);
-				wp_send_json( array( 'status' => $status ) );
+				];
+				wp_send_json( [ 'status' => $status ] );
 			}
 
 			// Download the extensions
@@ -2002,10 +2023,10 @@ if ( ! class_exists( 'ATBDP_Extensions' ) ) {
 					}
 
 					$this->download_plugin(
-						array(
+						[
 							'url' => $download_link,
 							'init_wp_filesystem' => false,
-						)
+						]
 					);
 				}
 			}
@@ -2019,43 +2040,43 @@ if ( ! class_exists( 'ATBDP_Extensions' ) ) {
 					}
 
 					$this->download_theme(
-						array(
+						[
 							'url' => $download_link,
 							'init_wp_filesystem' => false,
-						)
+						]
 					);
 				}
 			}
 
 			$status['message'] = 'Download has been completed, redirecting...';
 
-			wp_send_json( array( 'status' => $status ) );
+			wp_send_json( [ 'status' => $status ] );
 		}
 
 		/**
 		 * It Adds menu item
 		 */
-		public function admin_menu() {
+		public function admin_menu(): void {
 			add_submenu_page(
 				'edit.php?post_type=at_biz_dir',
 				__( 'Get Extensions', 'directorist' ),
 				__( 'Themes & Extensions', 'directorist' ),
 				'manage_options',
 				'atbdp-extension',
-				array( $this, 'show_extension_view' )
+				[ $this, 'show_extension_view' ]
 			);
 		}
 
 		// get_extensions_overview
-		public function get_extensions_overview() {
+		public function get_extensions_overview(): array {
 			// Get Extensions Details
 			$plugin_updates       = get_site_transient( 'update_plugins' );
 			$outdated_plugins     = $plugin_updates->response;
-			$outdated_plugins_key = ( is_array( $outdated_plugins ) ) ? array_keys( $outdated_plugins ) : array();
-			$official_extensions  = is_array( $this->extensions ) ? array_keys( $this->extensions ) : array();
+			$outdated_plugins_key = ( is_array( $outdated_plugins ) ) ? array_keys( $outdated_plugins ) : [];
+			$official_extensions  = is_array( $this->extensions ) ? array_keys( $this->extensions ) : [];
 
 			$all_installed_plugins_list = get_plugins();
-			$installed_extensions       = array();
+			$installed_extensions       = [];
 			$total_active_extensions    = 0;
 			$total_outdated_extensions  = 0;
 
@@ -2078,31 +2099,31 @@ if ( ! class_exists( 'ATBDP_Extensions' ) ) {
 
 			// ---
 			$extensions_available_in_subscriptions = $this->get_extensions_available_in_subscriptions(
-				array(
+				[
 					'installed_extensions' => $installed_extensions,
-				)
+				]
 			);
 
 			// ---
 			$extensions_promo_list = $this->get_extensions_promo_list(
-				array(
+				[
 					'extensions_available_in_subscriptions' => $extensions_available_in_subscriptions,
 					'installed_extensions'                  => $installed_extensions,
-				)
+				]
 			);
 
 			$required_extensions_list = $this->prepare_the_final_requred_extension_list(
-				array(
+				[
 					'installed_extension_list'              => $installed_extensions,
 					'extensions_available_in_subscriptions' => $extensions_available_in_subscriptions,
-				)
+				]
 			);
 
 			$total_installed_ext_list             = count( $installed_extensions );
 			$total_ext_available_in_subscriptions = count( $extensions_available_in_subscriptions );
 			$total_available_extensions           = $total_installed_ext_list + $total_ext_available_in_subscriptions;
 
-			$overview = array(
+			return [
 				'outdated_plugin_list'                  => is_array( $outdated_plugins ) ? $outdated_plugins : [],
 				'outdated_plugins_key'                  => $outdated_plugins_key,
 				'all_installed_plugins_list'            => $all_installed_plugins_list,
@@ -2113,28 +2134,26 @@ if ( ! class_exists( 'ATBDP_Extensions' ) ) {
 				'extensions_available_in_subscriptions' => $extensions_available_in_subscriptions,
 				'total_available_extensions'            => $total_available_extensions,
 				'required_extensions'                   => $required_extensions_list,
-			);
-
-			return $overview;
+			];
 		}
 
 		// get_extensions_available_in_subscriptions
-		public function get_extensions_available_in_subscriptions( array $args = array() ) {
-			$installed_extensions      = ( ! empty( $args['installed_extensions'] ) ) ? $args['installed_extensions'] : array();
+		public function get_extensions_available_in_subscriptions( array $args = [] ) {
+			$installed_extensions      = ( empty( $args['installed_extensions'] ) ) ? [] : $args['installed_extensions'];
 			$installed_extensions_keys = $this->get_sanitized_extensions_keys( $installed_extensions );
 
 			$extensions_available_in_subscriptions = self::get_purchased_extension_list();
-			$extensions_available_in_subscriptions = ( is_array( $extensions_available_in_subscriptions ) ) ? $extensions_available_in_subscriptions : array();
+			$extensions_available_in_subscriptions = ( is_array( $extensions_available_in_subscriptions ) ) ? $extensions_available_in_subscriptions : [];
 
-			if ( ! empty( $extensions_available_in_subscriptions ) && is_array( $extensions_available_in_subscriptions ) ) {
+			if ( $extensions_available_in_subscriptions !== [] && is_array( $extensions_available_in_subscriptions ) ) {
 
-				foreach ( $extensions_available_in_subscriptions as $base => $args ) {
-					$base_alias       = $this->get_extension_alias_key( $base );
+				foreach ( array_keys($extensions_available_in_subscriptions) as $base ) {
+					$base_alias       = static::get_extension_alias_key($base);
 					$plugin_key       = preg_replace( '/(directorist-)/', '', $base );
 					$plugin_alias_key = preg_replace( '/(directorist-)/', '', $base_alias );
 
-					$is_in_installed_extensions       = in_array( $plugin_key, $installed_extensions_keys ) ? true : false;
-					$is_in_installed_extensions_alias = in_array( $plugin_alias_key, $installed_extensions_keys ) ? true : false;
+					$is_in_installed_extensions       = in_array( $plugin_key, $installed_extensions_keys );
+					$is_in_installed_extensions_alias = in_array( $plugin_alias_key, $installed_extensions_keys );
 
 					if ( $is_in_installed_extensions || $is_in_installed_extensions_alias ) {
 						unset( $extensions_available_in_subscriptions[ $base ] );
@@ -2146,12 +2165,12 @@ if ( ! class_exists( 'ATBDP_Extensions' ) ) {
 		}
 
 		// get_extensions_promo_list
-		public function get_extensions_promo_list( array $args = array() ) {
-			$installed_extensions      = ( ! empty( $args['installed_extensions'] ) ) ? $args['installed_extensions'] : array();
+		public function get_extensions_promo_list( array $args = [] ) {
+			$installed_extensions      = ( empty( $args['installed_extensions'] ) ) ? [] : $args['installed_extensions'];
 			$installed_extensions_keys = $this->get_sanitized_extensions_keys( $installed_extensions );
 
-			$extensions_available_in_subscriptions      = ( ! empty( $args['extensions_available_in_subscriptions'] ) ) ? $args['extensions_available_in_subscriptions'] : array();
-			$extensions_available_in_subscriptions_keys = is_array( $extensions_available_in_subscriptions ) ? array_keys( $extensions_available_in_subscriptions ) : array();
+			$extensions_available_in_subscriptions      = ( empty( $args['extensions_available_in_subscriptions'] ) ) ? [] : $args['extensions_available_in_subscriptions'];
+			$extensions_available_in_subscriptions_keys = is_array( $extensions_available_in_subscriptions ) ? array_keys( $extensions_available_in_subscriptions ) : [];
 
 			// Filter extensions available in subscriptions
 			$promo_extensions = $this->get_active_extensions();
@@ -2159,21 +2178,21 @@ if ( ! class_exists( 'ATBDP_Extensions' ) ) {
 			if ( ! empty( $promo_extensions ) && is_array( $installed_extensions_keys ) ) {
 
 				foreach ( $promo_extensions as $_extension_base => $_extension_args ) {
-					$extension_base_alias = $this->get_extension_alias_key( $_extension_base );
+					$extension_base_alias = static::get_extension_alias_key($_extension_base);
 					$ext_key              = preg_replace( '/(directorist-)/', '', $_extension_base );
 					$ext_alias_key        = preg_replace( '/(directorist-)/', '', $extension_base_alias );
 
 					// Exclude Installed Extensions
-					$in_installed_extensions       = in_array( $ext_key, $installed_extensions_keys ) ? true : false;
-					$in_installed_extensions_alias = in_array( $ext_alias_key, $installed_extensions_keys ) ? true : false;
+					$in_installed_extensions       = in_array( $ext_key, $installed_extensions_keys );
+					$in_installed_extensions_alias = in_array( $ext_alias_key, $installed_extensions_keys );
 
 					if ( $in_installed_extensions || $in_installed_extensions_alias ) {
 						unset( $promo_extensions[ $_extension_base ] );
 					}
 
 					// Exclude Subscripted Extensions
-					$is_available_in_subscriptions       = in_array( $_extension_base, $extensions_available_in_subscriptions_keys ) ? true : false;
-					$is_available_in_subscriptions_alias = in_array( $extension_base_alias, $extensions_available_in_subscriptions_keys ) ? true : false;
+					$is_available_in_subscriptions       = in_array( $_extension_base, $extensions_available_in_subscriptions_keys );
+					$is_available_in_subscriptions_alias = in_array( $extension_base_alias, $extensions_available_in_subscriptions_keys );
 
 					if ( $is_available_in_subscriptions || $is_available_in_subscriptions_alias ) {
 						unset( $promo_extensions[ $_extension_base ] );
@@ -2185,10 +2204,13 @@ if ( ! class_exists( 'ATBDP_Extensions' ) ) {
 		}
 
 		// get_sanitized_extensions_keys
-		public function get_sanitized_extensions_keys( array $extensions_list = array() ) {
-			$extensions_keys = ( is_array( $extensions_list ) ) ? array_keys( $extensions_list ) : array();
+        /**
+         * @return mixed[][]|int[]|string[]|null[]
+         */
+        public function get_sanitized_extensions_keys( array $extensions_list = [] ): array {
+			$extensions_keys = ( is_array( $extensions_list ) ) ? array_keys( $extensions_list ) : [];
 
-			if ( ! empty( $extensions_keys ) && is_array( $extensions_keys ) ) {
+			if ( $extensions_keys !== [] && is_array( $extensions_keys ) ) {
 
 				foreach ( $extensions_keys as $index => $key ) {
 					$new_key = preg_replace( '/\/.+/', '', $key );
@@ -2202,19 +2224,19 @@ if ( ! class_exists( 'ATBDP_Extensions' ) ) {
 		}
 
 		// get_themes_overview
-		public function get_themes_overview() {
+		public function get_themes_overview(): array {
 			// Check form theme update
 			$current_theme = wp_get_theme();
 			get_theme_update_available( $current_theme->stylesheet );
 
-			$sovware_themes       = ( is_array( $this->themes ) ) ? array_keys( $this->themes ) : array();
+			$sovware_themes       = ( is_array( $this->themes ) ) ? array_keys( $this->themes ) : [];
 			$theme_updates        = get_site_transient( 'update_themes' );
 			$outdated_themes      = $theme_updates->response;
-			$outdated_themes_keys = ( is_array( $outdated_themes ) ) ? array_keys( $outdated_themes ) : array();
+			$outdated_themes_keys = ( is_array( $outdated_themes ) ) ? array_keys( $outdated_themes ) : [];
 
 			$all_themes            = wp_get_themes();
 			$active_theme_slug     = get_option( 'stylesheet' );
-			$installed_theme_list  = array();
+			$installed_theme_list  = [];
 			$total_active_themes   = 0;
 			$total_outdated_themes = 0;
 
@@ -2224,14 +2246,14 @@ if ( ! class_exists( 'ATBDP_Extensions' ) ) {
 					$customizer_link = "customize.php?theme={$theme_data->stylesheet}&return=%2Fwp-admin%2Fthemes.php";
 					$customizer_link = admin_url( $customizer_link );
 
-					$installed_theme_list[ $theme_base ] = array(
+					$installed_theme_list[ $theme_base ] = [
 						'name'            => $theme_data->name,
 						'version'         => $theme_data->version,
 						'thumbnail'       => $theme_data->get_screenshot(),
 						'customizer_link' => $customizer_link,
-						'has_update'      => ( in_array( $theme_data->stylesheet, $outdated_themes_keys ) ) ? true : false,
+						'has_update'      => in_array( $theme_data->stylesheet, $outdated_themes_keys ),
 						'stylesheet'      => $theme_data->stylesheet,
-					);
+					];
 
 					if ( $active_theme_slug === $theme_base ) {
 						$total_active_themes++;
@@ -2243,15 +2265,13 @@ if ( ! class_exists( 'ATBDP_Extensions' ) ) {
 				}
 			}
 
-			$installed_themes_keys = ( is_array( $installed_theme_list ) ) ? array_keys( $installed_theme_list ) : array();
+			$installed_themes_keys = ( is_array( $installed_theme_list ) ) ? array_keys( $installed_theme_list ) : [];
 
 			// Themes available in subscriptions
 			$themes_available_in_subscriptions = self::get_purchased_theme_list();
-			$themes_available_in_subscriptions = ( ! empty( $themes_available_in_subscriptions ) && is_array( $themes_available_in_subscriptions ) ) ? $themes_available_in_subscriptions : array();
+			$themes_available_in_subscriptions = ( ! empty( $themes_available_in_subscriptions ) && is_array( $themes_available_in_subscriptions ) ) ? $themes_available_in_subscriptions : [];
 
-			if ( ! empty( $themes_available_in_subscriptions ) ) {
-
-				foreach ( $themes_available_in_subscriptions as $base => $args ) {
+			foreach ( array_keys($themes_available_in_subscriptions) as $base ) {
 					$item = $themes_available_in_subscriptions[ $base ];
 
 					// Merge Local Theme Info
@@ -2264,32 +2284,30 @@ if ( ! class_exists( 'ATBDP_Extensions' ) ) {
 						$item = array_merge( $installed_theme_list[ $base ], $item );
 					}
 
-					$is_installed         = ( in_array( $base, $installed_themes_keys ) ) ? true : false;
+					$is_installed         = in_array( $base, $installed_themes_keys );
 					$item['is_installed'] = $is_installed;
 
 					$themes_available_in_subscriptions[ $base ] = $item;
 				}
-			}
 
 			// total_available_themes
 			$total_available_themes = count( $themes_available_in_subscriptions );
 
 			// themes_promo_list
 			$themes_promo_list = $this->get_themes_promo_list(
-				array(
+				[
 					'installed_theme_list'              => $installed_theme_list,
 					'themes_available_in_subscriptions' => $themes_available_in_subscriptions,
-				)
+				]
 			);
 
 			// current_active_theme_info
 			$current_active_theme_info = $this->get_current_active_theme_info(
-				array(
+				[
 					'outdated_themes_keys' => $outdated_themes_keys,
 					'installed_theme_list' => $installed_theme_list,
-				)
+				]
 			);
-			$current_active_theme_info['stylesheet'];
 
 			$themes_available_in_subscriptions_keys = array_keys( $themes_available_in_subscriptions );
 
@@ -2297,7 +2315,7 @@ if ( ! class_exists( 'ATBDP_Extensions' ) ) {
 				unset( $themes_available_in_subscriptions[ $current_active_theme_info['stylesheet'] ] );
 			}
 
-			$overview = array(
+			return [
 				'total_active_themes'               => $total_active_themes,
 				'total_outdated_themes'             => $total_outdated_themes,
 				'installed_theme_list'              => $installed_theme_list,
@@ -2305,13 +2323,11 @@ if ( ! class_exists( 'ATBDP_Extensions' ) ) {
 				'themes_promo_list'                 => $themes_promo_list,
 				'themes_available_in_subscriptions' => $themes_available_in_subscriptions,
 				'total_available_themes'            => $total_available_themes,
-			);
-
-			return $overview;
+			];
 		}
 
 		// get_current_active_theme_info
-		public function get_current_active_theme_info( array $args = array() ) {
+		public function get_current_active_theme_info( array $args = [] ): array {
 			// Get Current Active Theme Info
 			$current_active_theme = wp_get_theme();
 			$customizer_link      = "customize.php?theme={$current_active_theme->stylesheet}&return=%2Fwp-admin%2Fthemes.php";
@@ -2320,25 +2336,23 @@ if ( ! class_exists( 'ATBDP_Extensions' ) ) {
 			// Check form theme update
 			$has_update = isset( $args['installed_theme_list'][ $current_active_theme->stylesheet ] ) ? $args['installed_theme_list'][ $current_active_theme->stylesheet ]['has_update'] : '';
 
-			$active_theme_info = array(
+			return [
 				'name'            => $current_active_theme->name,
 				'version'         => $current_active_theme->version,
 				'thumbnail'       => $current_active_theme->get_screenshot(),
 				'customizer_link' => $customizer_link,
 				'has_update'      => $has_update,
 				'stylesheet'      => $current_active_theme->stylesheet,
-			);
-
-			return $active_theme_info;
+			];
 		}
 
 		// get_themes_promo_list
-		public function get_themes_promo_list( array $args = array() ) {
-			$installed_theme_list  = ( ! empty( $args['installed_theme_list'] ) ) ? $args['installed_theme_list'] : array();
+		public function get_themes_promo_list( array $args = [] ) {
+			$installed_theme_list  = ( empty( $args['installed_theme_list'] ) ) ? [] : $args['installed_theme_list'];
 			$installed_themes_keys = $this->get_sanitized_themes_keys( $installed_theme_list );
 
-			$themes_available_in_subscriptions      = ( ! empty( $args['themes_available_in_subscriptions'] ) ) ? $args['themes_available_in_subscriptions'] : array();
-			$themes_available_in_subscriptions_keys = is_array( $themes_available_in_subscriptions ) ? array_keys( $themes_available_in_subscriptions ) : array();
+			$themes_available_in_subscriptions      = ( empty( $args['themes_available_in_subscriptions'] ) ) ? [] : $args['themes_available_in_subscriptions'];
+			$themes_available_in_subscriptions_keys = is_array( $themes_available_in_subscriptions ) ? array_keys( $themes_available_in_subscriptions ) : [];
 
 			// Filter all active themes
 			$themes_promo_list = $this->get_active_themes();
@@ -2363,15 +2377,16 @@ if ( ! class_exists( 'ATBDP_Extensions' ) ) {
 		}
 
 		// get_sanitized_themes_keys
-		public function get_sanitized_themes_keys( array $theme_list = array() ) {
-			$theme_keys = ( is_array( $theme_list ) ) ? array_keys( $theme_list ) : array();
-
-			return $theme_keys;
+		public function get_sanitized_themes_keys( array $theme_list = [] ) {
+			return ( is_array( $theme_list ) ) ? array_keys( $theme_list ) : [];
 		}
 
 		// remote_activate_license
-		public static function remote_activate_license( $license_item = array() ) {
-			$status = array( 'success' => false );
+        /**
+         * @return mixed[]
+         */
+        public static function remote_activate_license( $license_item = [] ): array {
+			$status = [ 'success' => false ];
 
 			if ( ! is_array( $license_item ) ) {
 				$status['message'] = __( 'Nothing to activate', 'directorist' );
@@ -2385,25 +2400,25 @@ if ( ! class_exists( 'ATBDP_Extensions' ) ) {
 				return $status;
 			}
 
-			$item_id = ( ! empty( $license_item['item_id'] ) ) ? $license_item['item_id'] : 0;
-			$license = ( ! empty( $license_item['license'] ) ) ? $license_item['license'] : '';
+			$item_id = ( empty( $license_item['item_id'] ) ) ? 0 : $license_item['item_id'];
+			$license = ( empty( $license_item['license'] ) ) ? '' : $license_item['license'];
 
 			$activation_url = 'https://directorist.com';
-			$query_args     = array(
+			$query_args     = [
 				'edd_action' => 'activate_license',
 				'url'        => home_url(),
 				'item_id'    => $item_id,
 				'license'    => $license,
-			);
+			];
 
 			try {
 				$response = wp_remote_get(
 					$activation_url,
-					array(
+					[
 						'timeout'   => 15,
 						'sslverify' => false,
 						'body'      => $query_args,
-					)
+					]
 				);
 
 				$response_status = json_decode( $response['body'], true );
@@ -2430,26 +2445,29 @@ if ( ! class_exists( 'ATBDP_Extensions' ) ) {
 		}
 
 		// remote_authenticate_user
-		public static function remote_authenticate_user( $user_credentials = array() ) {
-			$status = array( 'success' => true );
+        /**
+         * @return mixed[]
+         */
+        public static function remote_authenticate_user( $user_credentials = [] ): array {
+			$status = [ 'success' => true ];
 
 			$url     = 'https://directorist.com/wp-json/directorist/v1/licencing';
-			$headers = array(
+			$headers = [
 				'user-agent' => 'Directorist/' . md5( esc_url( home_url() ) ) . ';',
 				'Accept'     => 'application/json',
-			);
+			];
 
-			$config = array(
+			$config = [
 				'method'      => 'GET',
 				'timeout'     => 30,
 				'redirection' => 5,
 				'httpversion' => '1.0',
 				'headers'     => $headers,
-				'cookies'     => array(),
+				'cookies'     => [],
 				'body'        => $user_credentials, // [ 'user' => '', 'password' => '']
-			);
+			];
 
-			$response_body = array();
+			$response_body = [];
 
 			try {
 				$response = wp_remote_get( $url, $config );
@@ -2479,7 +2497,7 @@ if ( ! class_exists( 'ATBDP_Extensions' ) ) {
 		}
 
 		// get_file_download_link
-		public static function get_file_download_link( $file_item = array(), $product_type = 'plugin' ) {
+		public static function get_file_download_link( $file_item = [], $product_type = 'plugin' ) {
 			if ( ! is_array( $file_item ) ) {
 				return '';
 			}
@@ -2497,12 +2515,12 @@ if ( ! class_exists( 'ATBDP_Extensions' ) ) {
 			}
 
 			$activation_url = 'https://directorist.com/wp-json/directorist/v1/get-product-data/';
-			$query_args     = array(
+			$query_args     = [
 				'product_type' => $product_type,
 				'license'      => $file_item['license'],
 				'item_id'      => $file_item['item_id'],
 				'get_info'     => 'download_link',
-			);
+			];
 
 			if( ATBDP()->beta ) {
 				$query_args['beta'] = true;
@@ -2511,11 +2529,11 @@ if ( ! class_exists( 'ATBDP_Extensions' ) ) {
 			try {
 				$response = wp_remote_get(
 					$activation_url,
-					array(
+					[
 						'timeout'   => 15,
 						'sslverify' => false,
 						'body'      => $query_args,
-					)
+					]
 				);
 
 				$response = json_decode( $response['body'], true );
@@ -2572,13 +2590,13 @@ if ( ! class_exists( 'ATBDP_Extensions' ) ) {
 		/**
 		 * It Loads Extension view
 		 */
-		public function show_extension_view() {
+		public function show_extension_view(): void {
 			// delete_user_meta( get_current_user_id(), '_atbdp_has_subscriptions_sassion' );
 			// delete_user_meta( get_current_user_id(), '_atbdp_has_subscriptions_sassion' );
 
 			// Check Sassion
 			$has_subscriptions_sassion = get_user_meta( get_current_user_id(), '_atbdp_has_subscriptions_sassion', true );
-			$is_logged_in              = ( ! empty( $has_subscriptions_sassion ) ) ? true : false;
+			$is_logged_in              = ! empty( $has_subscriptions_sassion );
 
 			$settings_url = admin_url( 'edit.php?post_type=at_biz_dir&page=atbdp-settings#extension_settings__extensions_general' );
 
@@ -2588,7 +2606,7 @@ if ( ! class_exists( 'ATBDP_Extensions' ) ) {
 			$hard_logout = apply_filters( 'atbdp_subscriptions_hard_logout', false );
 			$hard_logout = ( $hard_logout ) ? 1 : 0;
 
-			$data = array(
+			$data = [
 				'ATBDP_Extensions'                      => $this,
 				'is_logged_in'                          => $is_logged_in,
 				'hard_logout'                           => $hard_logout,
@@ -2615,25 +2633,18 @@ if ( ! class_exists( 'ATBDP_Extensions' ) ) {
 				'theme_list'                            => $this->themes,
 
 				'settings_url'                          => $settings_url,
-			);
+			];
 
 			ATBDP()->load_template( 'admin-templates/theme-extensions/theme-extension', $data );
 		}
 
-		private function is_verified_nonce() {
-			$nonce = ! empty( $_POST['nonce'] ) ? sanitize_text_field( wp_unslash( $_POST['nonce'] ) ) : '';
-			return wp_verify_nonce( $nonce, 'atbdp_nonce_action_js' );
-		}
-
 		/**
-		 * Check the extension is being downloaded from varified source.
-		 *
-		 * @param  string $extension_url
-		 *
-		 * @return bool
-		 */
-		protected function is_varified_host( $extension_url ) {
-			$signed_hostnames = array( 'directorist.com' );
+         * Check the extension is being downloaded from varified source.
+         *
+         * @param  string $extension_url
+         */
+        protected function is_varified_host( $extension_url ): bool {
+			$signed_hostnames = [ 'directorist.com' ];
 
 			return in_array( parse_url( $extension_url, PHP_URL_HOST ), $signed_hostnames, true );
 		}

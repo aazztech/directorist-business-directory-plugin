@@ -13,15 +13,15 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 class Updater_Notice {
 
-	public static function init() {
-		add_action( 'wp_loaded', [ __CLASS__, 'hide_notices' ] );
-		add_action( 'admin_notices', [ __CLASS__, 'show_notices' ] );
+	public static function init(): void {
+		add_action( 'wp_loaded', [ self::class, 'hide_notices' ] );
+		add_action( 'admin_notices', [ self::class, 'show_notices' ] );
 	}
 
 	/**
 	 * Hide a notice if the GET variable is set.
 	 */
-	public static function hide_notices() {
+	public static function hide_notices(): void {
 
 		if( is_admin() && isset( $_GET["page"] ) && ( ( $_GET["page"] == 'atbdp-settings' ) || ( $_GET["page"] == 'atbdp-directory-types' ) || ( 'atbdp-layout-builder' === $_GET["page"] ) ) ) {
 			remove_all_actions('admin_notices');
@@ -41,10 +41,10 @@ class Updater_Notice {
 		}
 	}
 
-	public static function get_screen_ids() {
+	public static function get_screen_ids(): array {
 		$root_slug = 'at_biz_dir';
 
-		return array(
+		return [
 			$root_slug,
 			'edit-' . $root_slug,
 			'edit-' . $root_slug . '-location',
@@ -57,10 +57,10 @@ class Updater_Notice {
 			'edit-atbdp_listing_review',
 			'dashboard',
 			'plugins',
-		);
+		];
 	}
 
-	public static function show_notices() {
+	public static function show_notices(): void {
 		if ( ! current_user_can( 'manage_options' ) ) {
 			return;
 		}
@@ -91,7 +91,7 @@ class Updater_Notice {
 		}
 	}
 
-	public static function update_notice() {
+	public static function update_notice(): void {
 		$update_url = wp_nonce_url(
 			add_query_arg( 'do_update_directorist', 'true', admin_url( 'edit.php?post_type=at_biz_dir&page=atbdp-settings' ) ),
 			'directorist_db_update',
@@ -117,7 +117,7 @@ class Updater_Notice {
 		<?php
 	}
 
-	public static function updating_notice() {
+	public static function updating_notice(): void {
 		$force_update_url = wp_nonce_url(
 			add_query_arg( 'force_update_directorist', 'true', admin_url( 'edit.php?post_type=at_biz_dir&page=atbdp-settings' ) ),
 			'directorist_force_db_update',
@@ -136,7 +136,7 @@ class Updater_Notice {
 		<?php
 	}
 
-	public static function updated_notice() {
+	public static function updated_notice(): void {
 		if ( get_option( 'directorist_dismissed_update_notice' ) ) {
 			return;
 		}

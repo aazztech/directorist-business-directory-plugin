@@ -10,7 +10,7 @@ require_once trailingslashit( __DIR__ ) . 'functions.php';
 require_once trailingslashit( __DIR__ ) . 'class-datetime.php';
 require_once trailingslashit( __DIR__ ) . 'filter-functions.php';
 
-function register_controllers() {
+function register_controllers(): void {
 	$dir = trailingslashit( __DIR__ );
 
 	// Base controller.

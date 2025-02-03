@@ -39,8 +39,8 @@ class Background_Updater extends Background_Process {
 	 *
 	 * Updater will still run via cron job if this fails for any reason.
 	 */
-	public function dispatch() {
-		$dispatched = parent::dispatch();
+	public function dispatch(): void {
+		parent::dispatch();
 		// $logger     = wc_get_logger();
 
 		// if ( is_wp_error( $dispatched ) ) {
@@ -57,7 +57,7 @@ class Background_Updater extends Background_Process {
 	 * Restart the background process if not already running
 	 * and data exists in the queue.
 	 */
-	public function handle_cron_healthcheck() {
+	public function handle_cron_healthcheck(): void {
 		if ( $this->is_process_running() ) {
 			// Background process already running.
 			return;
@@ -82,11 +82,9 @@ class Background_Updater extends Background_Process {
 	}
 
 	/**
-	 * Is the updater running?
-	 *
-	 * @return boolean
-	 */
-	public function is_updating() {
+     * Is the updater running?
+     */
+    public function is_updating(): bool {
 		return false === $this->is_queue_empty();
 	}
 

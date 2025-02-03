@@ -15,38 +15,38 @@ use Directorist\Helper;
 
 class Bootstrap {
 
-	public static function init() {
+	public static function init(): void {
 		self::include_files();
 		self::setup_hooks();
 	}
 
-	public static function include_files() {
-		require_once 'directorist-review-functions.php';
-		require_once 'class-email.php';
-		require_once 'class-markup.php';
-		require_once 'class-builder.php';
-		require_once 'class-comment.php';
-		require_once 'class-comment-meta.php';
-		require_once 'class-listing-review-meta.php';
-		require_once 'class-comment-form-renderer.php';
-		require_once 'class-comment-form-processor.php';
+	public static function include_files(): void {
+		require_once __DIR__ . '/directorist-review-functions.php';
+		require_once __DIR__ . '/class-email.php';
+		require_once __DIR__ . '/class-markup.php';
+		require_once __DIR__ . '/class-builder.php';
+		require_once __DIR__ . '/class-comment.php';
+		require_once __DIR__ . '/class-comment-meta.php';
+		require_once __DIR__ . '/class-listing-review-meta.php';
+		require_once __DIR__ . '/class-comment-form-renderer.php';
+		require_once __DIR__ . '/class-comment-form-processor.php';
 
 		if ( is_admin() ) {
-			require_once 'class-admin.php';
-			require_once 'class-settings-screen.php';
-			require_once 'class-builder-screen.php';
+			require_once __DIR__ . '/class-admin.php';
+			require_once __DIR__ . '/class-settings-screen.php';
+			require_once __DIR__ . '/class-builder-screen.php';
 		}
 	}
 
-	public static function setup_hooks() {
-		add_action( 'wp_error_added', array( __CLASS__, 'update_error_message' ), 10, 4 );
-		add_action( 'pre_get_posts', array( __CLASS__, 'override_comments_pagination' ) );
-		add_filter( 'comments_template', array( __CLASS__, 'load_comments_template' ), 9999 );
-		add_filter( 'register_post_type_args', array( __CLASS__, 'add_comment_support' ), 10, 2 );
-		add_filter( 'map_meta_cap', array( __CLASS__, 'map_meta_cap_for_review_author' ), 10, 4 );
-		add_filter( 'atbdp_login_redirection_page_url', array( __CLASS__, 'setup_login_redirect' ) );
-		add_filter( 'safe_style_css', array( __CLASS__, 'add_safe_style_css' ) );
-		add_filter( 'option_comment_registration', array( __CLASS__, 'reset_option_comment_registration' ) );
+	public static function setup_hooks(): void {
+		add_action( 'wp_error_added', [ self::class, 'update_error_message' ], 10, 4 );
+		add_action( 'pre_get_posts', [ self::class, 'override_comments_pagination' ] );
+		add_filter( 'comments_template', [ self::class, 'load_comments_template' ], 9999 );
+		add_filter( 'register_post_type_args', [ self::class, 'add_comment_support' ], 10, 2 );
+		add_filter( 'map_meta_cap', [ self::class, 'map_meta_cap_for_review_author' ], 10, 4 );
+		add_filter( 'atbdp_login_redirection_page_url', [ self::class, 'setup_login_redirect' ] );
+		add_filter( 'safe_style_css', [ self::class, 'add_safe_style_css' ] );
+		add_filter( 'option_comment_registration', [ self::class, 'reset_option_comment_registration' ] );
 	}
 
 	/**
@@ -105,11 +105,11 @@ class Bootstrap {
 		return $redirect;
 	}
 
-	public static function update_error_message( $code, $message, $data, $wp_error ) {
+	public static function update_error_message( $code, $message, $data, $wp_error ): void {
 		if ( $code === 'require_valid_comment' || $code === 'not_logged_in' ) {
-			remove_action( 'wp_error_added', array( __CLASS__, 'update_error_message' ) );
+			remove_action( 'wp_error_added', [ self::class, 'update_error_message' ] );
 
-			$comment_post_id = ! empty( $_POST['comment_post_ID'] ) ? absint( $_POST['comment_post_ID'] ) : 0;
+			$comment_post_id = empty( $_POST['comment_post_ID'] ) ? 0 : absint( $_POST['comment_post_ID'] );
 
 			if ( $code === 'require_valid_comment' && directorist_is_listing_post_type( $comment_post_id ) ) {
 				if ( ! empty( $_POST['comment_parent'] ) ) { // @codingStandardsIgnoreLine.
@@ -126,37 +126,35 @@ class Bootstrap {
 			$wp_error->remove( $code );
 			$wp_error->add( $code, $error_message, $data );
 
-			add_action( 'wp_error_added', array( __CLASS__, 'update_error_message' ), 10, 4 );
+			add_action( 'wp_error_added', [ self::class, 'update_error_message' ], 10, 4 );
 		}
 	}
 
 	/**
-	 * Fix comments pagination issue and override defaults.
-	 *
-	 * @param WP_Query $wp_query
-	 *
-	 * @return void
-	 */
-	public static function override_comments_pagination( $wp_query ) {
+     * Fix comments pagination issue and override defaults.
+     *
+     * @param WP_Query $wp_query
+     */
+    public static function override_comments_pagination( $wp_query ): void {
 		if ( ! is_admin() && directorist_is_review_enabled() && $wp_query->is_single && $wp_query->get( 'post_type' ) === ATBDP_POST_TYPE ) {
 			add_filter( 'option_page_comments', '__return_true' );
 			add_filter( 'option_comment_registration', '__return_false' );
 			add_filter( 'option_thread_comments', 'directorist_is_review_reply_enabled' );
-			add_filter( 'option_thread_comments_depth', array( __CLASS__, 'override_comment_depth' ) );
+			add_filter( 'option_thread_comments_depth', [ self::class, 'override_comment_depth' ] );
 			add_filter( 'option_comments_per_page', 'directorist_get_review_per_page' );
-			add_filter( 'option_default_comments_page', array( __CLASS__, 'override_default_comments_page_option' ) );
-			add_filter( 'option_comment_order', array( __CLASS__, 'override_comment_order_option' ) );
-			add_filter( 'comments_template_query_args', array( __CLASS__, 'comments_template_query_args' ) );
+			add_filter( 'option_default_comments_page', [ self::class, 'override_default_comments_page_option' ] );
+			add_filter( 'option_comment_order', [ self::class, 'override_comment_order_option' ] );
+			add_filter( 'comments_template_query_args', [ self::class, 'comments_template_query_args' ] );
 
 			$wp_query->set( 'comments_per_page', directorist_get_review_per_page() );
 		}
 	}
 
-	public static function override_comment_depth() {
+	public static function override_comment_depth(): int {
 		return 3;
 	}
 
-	public static function comments_template_query_args( $args ) {
+	public static function comments_template_query_args( array $args ): array {
 		if ( ! directorist_is_review_reply_enabled() ) {
 			$args['type'] = 'review';
 		}
@@ -164,11 +162,11 @@ class Bootstrap {
 		return $args;
 	}
 
-	public static function override_default_comments_page_option() {
+	public static function override_default_comments_page_option(): string {
 		return 'oldest';
 	}
 
-	public static function override_comment_order_option() {
+	public static function override_comment_order_option(): string {
 		return 'desc';
 	}
 
@@ -200,15 +198,14 @@ class Bootstrap {
 		}
 
 		$post_type = get_post_type_object( ATBDP_POST_TYPE );
-		$caps      = array(
+
+		return [
 			$post_type->cap->edit_posts,
 			$post_type->cap->edit_published_posts,
-		);
-
-		return $caps;
+		];
 	}
 
-	public static function add_comment_support( $args, $post_type ) {
+	public static function add_comment_support( array $args, $post_type ) {
 		if ( $post_type !== ATBDP_POST_TYPE ) {
 			return $args;
 		}
@@ -226,7 +223,7 @@ class Bootstrap {
 		return $template;
 	}
 
-	public static function load_walker() {
+	public static function load_walker(): void {
 		require_once ATBDP_INC_DIR . 'review/class-review-walker.php';
 	}
 }
