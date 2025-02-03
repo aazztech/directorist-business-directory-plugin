@@ -23,7 +23,7 @@ trait Icon_Helper {
 	public static function get_icon_src( $icon ): string {
 		$file = self::get_icon_file( $icon );
 
-		if ( ! $file ) {
+		if ( $file === '' || $file === '0' ) {
 			return '';
 		}
 		return ATBDP_URL . 'assets/icons/' . $file;

@@ -20,7 +20,10 @@ class Directorist_Listing_Taxonomy {
      */
     public $tax;
 
-	public $listing_types;
+	/**
+     * @var mixed[]
+     */
+    public $listing_types;
 	public $current_listing_type;
 
 	public $view;
@@ -423,7 +426,7 @@ class Directorist_Listing_Taxonomy {
 	public function get_current_listing_type() {
 		$listing_types      = $this->get_listing_types();
 
-		$current = empty($listing_types) ? '' : array_key_first( $listing_types );
+		$current = $listing_types === [] ? '' : array_key_first( $listing_types );
 
 		if (isset( $_GET['directory_type'] )) {
             $current = sanitize_text_field( wp_unslash( $_GET['directory_type'] ) ) ;
@@ -431,7 +434,7 @@ class Directorist_Listing_Taxonomy {
             $current = $this->default_directory_type;
         } else {
 
-			foreach ( $listing_types as $id => $type ) {
+			foreach ( array_keys($listing_types) as $id ) {
 				$is_default = get_term_meta( $id, '_default', true );
 				if ( $is_default ) {
 					$current = $id;

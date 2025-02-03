@@ -801,11 +801,11 @@ if ( ! class_exists( 'ATBDP_Custom_Taxonomy' ) ) :
 			}
 
 			$directory_types = $this->get_listing_types();
-			if ( empty( $directory_types ) ) {
+			if ( $directory_types === [] ) {
 				return '';
 			}
 
-			foreach ( $directory_types as $id => $type ) {
+			foreach ( array_keys($directory_types) as $id ) {
 				$is_default = get_term_meta( $id, '_default', true );
 				if ( $is_default ) {
 					return $id;
