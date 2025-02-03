@@ -514,8 +514,8 @@ final class Directorist_Base
 	// require_files
 	public static function require_files( array $files = [] ): void {
 		foreach ( $files as $file ) {
-			if ( file_exists( "{$file}.php" ) ) {
-				require_once "{$file}.php";
+			if ( file_exists( $file . '.php' ) ) {
+				require_once $file . '.php';
 			}
 		}
 	}
@@ -836,7 +836,7 @@ final class Directorist_Base
 	 * @deprecated Use parse_video() for video parsing.
 	 */
 	public function atbdp_parse_videos( $url ): string {
-		_deprecated_function( __METHOD__, '7.8.0', 'Directorist\Helper::parse_video()' );
+		_deprecated_function( __METHOD__, '7.8.0', \Directorist\Helper::class . '::parse_video()' );
 
 		return \Directorist\Helper::parse_video( $url );
 	}

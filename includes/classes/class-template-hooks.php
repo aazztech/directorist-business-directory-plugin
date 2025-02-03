@@ -61,6 +61,7 @@ class Directorist_Template_Hooks {
 		if ( null == self::$instance ) {
 			self::$instance = new self;
 		}
+
 		return self::$instance;
 	}
 

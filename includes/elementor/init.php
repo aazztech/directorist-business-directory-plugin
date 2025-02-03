@@ -18,7 +18,9 @@ if( class_exists( 'AddonskitForELementor' ) ) {
 class Widget_Init {
 
 	public $prefix;
+
 	public $category;
+
 	public $widgets;
 
 	protected static $instance;
@@ -34,6 +36,7 @@ class Widget_Init {
 		if ( null == self::$instance ) {
 			self::$instance = new self;
 		}
+
 		return self::$instance;
 	}
 
@@ -137,4 +140,5 @@ function directorist_add_custom_single_listing_page_content_from_elementor( $con
 
 	return $content;
 }
+
 add_filter( 'directorist_custom_single_listing_pre_page_content', __NAMESPACE__ . '\\directorist_add_custom_single_listing_page_content_from_elementor', 10, 2 );

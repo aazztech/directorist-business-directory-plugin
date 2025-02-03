@@ -30,7 +30,7 @@ class Directorist_Search_Listing extends Custom_Widget_Base {
 		return wp_list_pluck( $directories, 'name', 'slug' );
 	}
 
-	public function az_fields(): array{
+	protected function az_fields(): array{
 		return [
 			[
 				'mode'    => 'section_start',
@@ -227,6 +227,7 @@ class Directorist_Search_Listing extends Custom_Widget_Base {
 			if ( $settings['type'] ) {
 				$atts['directory_type'] = implode( ',', $settings['type'] );
 			}
+
 			if ( $settings['default_type'] ) {
 				$atts['default_directory_type'] = $settings['default_type'];
 			}

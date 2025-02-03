@@ -15,10 +15,15 @@ if ( ! defined( 'ABSPATH' ) ) {
 class Builder {
 
 	protected $fields	= [];
+
 	protected bool $cookies_consent;
+
 	protected bool $gdpr_consent;
+
 	protected $gdpr_consent_label;
+
 	protected $rating_type;
+
 	private static ?\Directorist\Review\Builder $instance 	= null;
 
 	public static function get( $data ): \Directorist\Review\Builder {
@@ -125,7 +130,7 @@ class Builder {
 	}
 
 	protected function get_field( $field_key, $attr = 'label', $default = false ) {
-		$field_key = "review_{$field_key}";
+		$field_key = 'review_' . $field_key;
 		return ( ( isset( $this->fields[ $field_key ][ $attr ] ) && $this->fields[ $field_key ][ $attr ] !== '' ) ? $this->fields[ $field_key ][ $attr ] : $default );
 	}
 }

@@ -17,6 +17,7 @@ use WP_REST_Server;
 abstract class Posts_Controller extends Abstract_Controller {
 
 	public $post_type;
+
     /**
 	 * Get all the WP Query vars that are allowed for the API request.
 	 *
@@ -52,6 +53,7 @@ abstract class Posts_Controller extends Abstract_Controller {
 			$private = apply_filters( 'directorist_rest_private_query_vars', $wp->private_query_vars );
 			$valid_vars = array_merge( $valid_vars, $private );
 		}
+
 		// Define our own in addition to WP's normal vars.
 		$rest_valid = [
 			'date_query',
@@ -110,7 +112,7 @@ abstract class Posts_Controller extends Abstract_Controller {
 				 *
 				 * @param mixed $prepared_args[ $var ] The query_var value.
 				 */
-				$query_args[ $var ] = apply_filters( "directorist_rest_query_var-{$var}", $prepared_args[ $var ] );
+				$query_args[ $var ] = apply_filters( 'directorist_rest_query_var-' . $var, $prepared_args[ $var ] );
 			}
 		}
 

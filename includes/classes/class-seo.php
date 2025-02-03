@@ -697,7 +697,7 @@ if ( ! class_exists( 'ATBDP_SEO' ) ) :
                 foreach ( $meta_attributes as $attr => $value ) {
                     if ( ! empty( $meta_attributes['content'] ) ) {
 						$value = esc_attr( $value );
-						$props .= "{$attr}=\"{$value}\" ";
+						$props .= sprintf('%s="%s" ', $attr, $value);
                     }
                 }
 
@@ -725,7 +725,7 @@ if ( ! class_exists( 'ATBDP_SEO' ) ) :
             ];
 
             $current_page = self::get_directorist_current_page();
-            $callback = "get_{$current_page}_page_seo_meta";
+            $callback = sprintf('get_%s_page_seo_meta', $current_page);
             $seo_meta = $default_seo_meta;
 
             if ( method_exists( $this, $callback ) ) {

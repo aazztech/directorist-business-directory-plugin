@@ -37,10 +37,10 @@ if ( ! class_exists( 'ATBDP_Cache_Helper' ) ) :
 		}
 
 		// get_transient_name
-		public static function get_transient_name( $prefix = '', $args = '' ): string {
+		public static function get_transient_name( string $prefix = '', $args = '' ): string {
 			$args = ( is_array( $args ) ) ? wp_json_encode( $args ) : $args;
 
-			return "{$prefix}_" . md5( $args );
+			return $prefix . '_' . md5( $args );
 		}
 
 		// get_the_transient
@@ -119,8 +119,10 @@ if ( ! class_exists( 'ATBDP_Cache_Helper' ) ) :
 
 			if ( empty( $post_ID ) && empty( $post ) ) {
 				return; }
+
 			if ( empty( $post ) ) {
 				$post = get_post( $post_ID ); }
+
 			if ( empty( $post ) ) {
 				return; }
 

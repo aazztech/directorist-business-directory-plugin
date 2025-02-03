@@ -19,7 +19,7 @@ class Directorist_User_Login extends Custom_Widget_Base {
 		parent::__construct( $data, $args );
 	}
 
-	public function az_fields(): array{
+	protected function az_fields(): array{
 		return [
 			[
 				'mode'    => 'section_start',

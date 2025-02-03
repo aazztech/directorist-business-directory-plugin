@@ -81,11 +81,11 @@ class Comment_Form_Renderer {
 				'error' => '',
 				'html'  => $form,
 			] );
-		} catch ( Exception $e ) {
-			$html = sprintf( '<div class="directorist-alert directorist-alert-danger">%s</div>', $e->getMessage() );
+		} catch ( Exception $exception ) {
+			$html = sprintf( '<div class="directorist-alert directorist-alert-danger">%s</div>', $exception->getMessage() );
 
 			wp_send_json_error( [
-				'error' => $e->getMessage(),
+				'error' => $exception->getMessage(),
 				'html'  => $html,
 			] );
 		}
@@ -513,7 +513,7 @@ class Comment_Form_Renderer {
 						 *
 						 * @param string $field The HTML-formatted output of the comment form field.
 						 */
-						echo directorist_kses( apply_filters( "comment_form_field_{$name}", $field ) . "\n" );
+						echo directorist_kses( apply_filters( 'comment_form_field_' . $name, $field ) . "\n" );
 
 						if ( $last_field === $name ) {
 							/**

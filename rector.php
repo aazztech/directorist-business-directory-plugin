@@ -18,5 +18,6 @@ return RectorConfig::configure()
         deadCode: true,
         codeQuality: true,
 		typeDeclarations: true,
+		codingStyle: true,
     )
 	->withPhpSets(php70: true);

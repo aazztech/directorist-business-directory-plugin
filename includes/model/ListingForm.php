@@ -284,10 +284,10 @@ class Directorist_Listing_Form {
 		$ad          = empty( $address ) ? '' : esc_html( $address );
 		$image       = ( empty( $listing_img[0] ) ) ? '' : "<img src='" . esc_url( wp_get_attachment_image_url( $listing_img[0], 'thumbnail' ) ) . "'>";
 		/*build the markup for google map info window*/
-		$info_content  = "<div class='map_info_window'> <h3> {$t} </h3>";
-		$info_content .= "<p> {$tg} </p>";
+		$info_content  = sprintf("<div class='map_info_window'> <h3> %s </h3>", $t);
+		$info_content .= sprintf('<p> %s </p>', $tg);
 		$info_content .= $image; // add the image if available
-		$info_content .= "<p> {$ad}</p></div>";
+		$info_content .= sprintf('<p> %s</p></div>', $ad);
 		return $info_content;
 	}
 
@@ -865,7 +865,7 @@ class Directorist_Listing_Form {
 					if( current_user_can('manage_options') || current_user_can('edit_pages') ) {
 						$args['error_notice'] = sprintf( __('Please add a directory type first %s', 'directorist' ), '<a href="'. admin_url() .'edit.php?post_type=at_biz_dir&page=atbdp-directory-types">Add Now</a>' );
 					} else {
-						$args['error_notice'] = __('There\'s something unexpected happen. Please contact site admin.', 'directorist');
+						$args['error_notice'] = __("There's something unexpected happen. Please contact site admin.", 'directorist');
 					}
 				} else {
 					$args['error_notice'] = __('Notice: Your given directory type is not valid. Please use a valid directory type', 'directorist');

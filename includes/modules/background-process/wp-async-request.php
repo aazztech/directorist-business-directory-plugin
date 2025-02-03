@@ -13,8 +13,11 @@
 abstract class WP_Async_Request {
 
 	public $query_args;
+
     public $query_url;
+
     public $post_args;
+
     /**
 	 * Prefix
 	 *

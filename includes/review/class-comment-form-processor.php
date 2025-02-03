@@ -102,6 +102,7 @@ class Comment_Form_Processor {
 			if ( $cpage ) {
 				$redirect_to = add_query_arg( 'cpage', $cpage, $redirect_to );
 			}
+
 			$redirect_to .= '#' . $comment_id;
 
 			/**
@@ -114,11 +115,11 @@ class Comment_Form_Processor {
 
 			wp_safe_redirect( $redirect_to );
 			exit;
-		} catch ( Exception $e ) {
-			$html = sprintf( '<div class="directorist-alert directorist-alert-danger">%s</div>', $e->getMessage() );
+		} catch ( Exception $exception ) {
+			$html = sprintf( '<div class="directorist-alert directorist-alert-danger">%s</div>', $exception->getMessage() );
 
 			wp_send_json_error( [
-				'error' => $e->getMessage(),
+				'error' => $exception->getMessage(),
 				'html'  => $html,
 			] );
 		}

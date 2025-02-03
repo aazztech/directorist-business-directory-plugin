@@ -239,6 +239,7 @@ class Users_Controller extends Abstract_Controller {
 		} else {
 			$prepared_args['offset'] = ( $request['page'] - 1 ) * $prepared_args['number'];
 		}
+
 		$orderby_possibles = $this->get_orderby_possibles();
 		$prepared_args['orderby'] = $orderby_possibles[ $request['orderby'] ];
 		$prepared_args['search']  = $request['search'];
@@ -296,6 +297,7 @@ class Users_Controller extends Abstract_Controller {
 			$count_query = new WP_User_Query( $prepared_args );
 			$total_users = $count_query->get_total();
 		}
+
 		$response->header( 'X-WP-Total', (int) $total_users );
 		$max_pages = ceil( $total_users / $per_page );
 		$response->header( 'X-WP-TotalPages', (int) $max_pages );
@@ -306,9 +308,11 @@ class Users_Controller extends Abstract_Controller {
 			if ( $prev_page > $max_pages ) {
 				$prev_page = $max_pages;
 			}
+
 			$prev_link = add_query_arg( 'page', $prev_page, $base );
 			$response->link_header( 'prev', $prev_link );
 		}
+
 		if ( $max_pages > $page ) {
 			$next_page = $page + 1;
 			$next_link = add_query_arg( 'page', $next_page, $base );
@@ -604,6 +608,7 @@ class Users_Controller extends Abstract_Controller {
 		$context  = empty( $request['context'] ) ? 'view' : $request['context'];
 		$data     = $this->add_additional_fields_to_object( $data, $request );
 		$data     = $this->filter_response_by_context( $data, $context );
+
 		$response = rest_ensure_response( $data );
 
 		$response->add_links( $this->prepare_links( $user ) );
@@ -683,6 +688,7 @@ class Users_Controller extends Abstract_Controller {
 				delete_term_meta( $id, 'pro_pic' );
 			}
 		}
+
         return null;
 	}
 

@@ -16,12 +16,17 @@ class Directorist_Listing_Author {
 	protected static $instance;
 
 	public $id;
+
 	public $all_listings;
+
 	public $rating;
+
 	public $total_review;
+
 	public $columns;
 
 	public $listing_types;
+
 	public $current_listing_type;
 
 	private function __construct() {
@@ -32,6 +37,7 @@ class Directorist_Listing_Author {
 		if ( null == self::$instance ) {
 			self::$instance = new self;
 		}
+
 		return self::$instance;
 	}
 
@@ -192,6 +198,7 @@ class Directorist_Listing_Author {
 		if ( ! empty( $category ) ) {
 			$args['tax_query'] = $category;
 		}
+
 		$meta_queries   = [];
 
 		if ( ! empty( $this->current_listing_type ) ) {
@@ -229,7 +236,7 @@ class Directorist_Listing_Author {
 		$u_pro_pic    = get_user_meta( $author_id, 'pro_pic', true );
 		$author_data  = get_userdata( $author_id );
 		$display_name = empty( $author_data->display_name ) ? '' : $author_data->display_name;
-		
+
 		if ( ! empty( $u_pro_pic ) ) {
 			$html = wp_get_attachment_image( $u_pro_pic );
 		}

@@ -5,7 +5,7 @@ class Listings_Exporter {
     // get_prepared_listings_export_file
     public static function get_prepared_listings_export_file(): array {
         $filename      = "listings-export-data";
-        $file_name     = "{$filename}.csv";
+        $file_name     = $filename . '.csv';
         $file_contents = self::get_listings_data_as_csv_content();
 
         $old_file_id = get_directorist_option( 'directorist_export_attachent_id', '', true );
@@ -73,6 +73,7 @@ class Listings_Exporter {
                 $row_content__ = '"' . $row_content__ . '",';
                 $row_content .= $row_content__;
             }
+
             $contents .= rtrim( $row_content, ',' )  . "\n";
         }
 
@@ -150,6 +151,7 @@ class Listings_Exporter {
                 $tr_lengths   [] = $max_row_length;
                 $listings_data[] = $row;
             }
+
             wp_reset_postdata();
         }
 
@@ -159,10 +161,11 @@ class Listings_Exporter {
     // justifyDataRow
     public static function justifyDataTableRow( $data_table = [], $tr_lengths = [] ) {
         if ( empty( $data_table ) ) { return $data_table; }
+
         if ( ! is_array( $data_table ) ) { return $data_table; }
 
         $max_tr_val   = max($tr_lengths);
-        $max_tr_index = array_search($max_tr_val, $tr_lengths);
+        $max_tr_index = array_search($max_tr_val, $tr_lengths, true);
         $modal_tr     = $data_table[ $max_tr_index ];
 
         $justify_table = [];
@@ -184,9 +187,13 @@ class Listings_Exporter {
     // verifyNativeField
     public static function verifyNativeField( $args = [] ) {
         if ( ! is_array( $args ) ) { return false; }
+
         if ( empty( $args['widget_group'] ) ) { return false; }
+
         if ( empty( $args['widget_name'] ) ) { return false; }
+
         if ( empty( $args['field_key'] ) ) { return false; }
+
         if ( 'preset' !== $args['widget_group'] ) { return false; }
 
         $native_fields = [ 'listing_title', 'listing_content' ];
@@ -212,9 +219,13 @@ class Listings_Exporter {
     // verifyTaxonomyField
     public static function verifyTaxonomyField( $args = [] ) {
         if ( ! is_array( $args ) ) { return false; }
+
         if ( empty( $args['widget_group'] ) ) { return false; }
+
         if ( empty( $args['widget_name'] ) ) { return false; }
+
         if ( empty( $args['field_key'] ) ) { return false; }
+
         if ( 'preset' !== $args['widget_group'] ) { return false; }
 
         $taxonomy = [ 'category', 'location', 'tag' ];
@@ -237,10 +248,15 @@ class Listings_Exporter {
     // verifyListingImageModuleField
     public static function verifyListingImageModuleField( $args = [] ) {
         if ( ! is_array( $args ) ) { return false; }
+
         if ( empty( $args['widget_group'] ) ) { return false; }
+
         if ( empty( $args['widget_name'] ) ) { return false; }
+
         if ( empty( $args['field_key'] ) ) { return false; }
+
         if ( 'preset' !== $args['widget_group'] ) { return false; }
+
         return 'listing_img' === $args['field_key'];
     }
 
@@ -282,8 +298,11 @@ class Listings_Exporter {
     // verifyMetaKeyField
     public static function verifyMetaKeyField( $args = [] ) {
         if ( ! is_array( $args ) ) { return false; }
+
         if ( empty( $args['widget_group'] ) ) { return false; }
+
         if ( empty( $args['widget_name'] ) ) { return false; }
+
         return !empty($args['field_key']);
     }
 
@@ -299,8 +318,11 @@ class Listings_Exporter {
     // verifyPriceModuleField
     public static function verifyPriceModuleField( $args = [] ) {
         if ( ! is_array( $args ) ) { return false; }
+
         if ( empty( $args['widget_group'] ) ) { return false; }
+
         if ( empty( $args['widget_name'] ) ) { return false; }
+
         return 'pricing' === $args['widget_name'];
     }
 
@@ -317,8 +339,11 @@ class Listings_Exporter {
     // verifyMapModuleField
     public static function verifyMapModuleField( $args = [] ) {
         if ( ! is_array( $args ) ) { return false; }
+
         if ( empty( $args['widget_group'] ) ) { return false; }
+
         if ( empty( $args['widget_name'] ) ) { return false; }
+
         return 'map' === $args['widget_name'];
     }
 

@@ -14,7 +14,9 @@
 abstract class WP_Background_Process extends WP_Async_Request {
 
 	public $queue_lock_time;
+
     public $cron_interval;
+
     /**
 	 * Action
 	 *

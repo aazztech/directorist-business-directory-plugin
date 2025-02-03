@@ -204,7 +204,9 @@ function atbdp_currency_filter($price = '', $currency_settings = [])
 
     if (is_array($currency_settings)) {
         extract($currency_settings);
-    } // @codingStandardsIgnoreLine. if it is an array then extract it. Using the magic of OR CONDITION's FLOW
+    }
+
+     // @codingStandardsIgnoreLine. if it is an array then extract it. Using the magic of OR CONDITION's FLOW
     $currency = empty($currency) ? directorist_get_currency() : $currency;
     $position = empty($position) ? directorist_get_currency_position() : $position;
 

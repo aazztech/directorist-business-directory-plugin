@@ -525,7 +525,7 @@ class Insights
 
         return (int) $wpdb->get_var(
             $wpdb->prepare(
-                "SELECT count(ID) FROM $wpdb->posts WHERE post_type = %s and post_status = %s",
+                sprintf('SELECT count(ID) FROM %s WHERE post_type = %%s and post_status = %%s', $wpdb->posts),
                 [$post_type, 'publish']
             )
         );

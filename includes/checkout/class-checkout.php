@@ -25,6 +25,7 @@ class ATBDP_Checkout
      * @var string
      */
     public $nonce = 'checkout_nonce';
+
     /**
      * @var string
      */
@@ -46,6 +47,7 @@ class ATBDP_Checkout
             // @codingStandardsIgnoreLine.
             echo esc_html( $price );
         }
+
         wp_die();
     }
 
@@ -65,6 +67,7 @@ class ATBDP_Checkout
         if (!$enable_monetization) {
             return __('Monetization is not active on this site. if you are an admin, you can enable it from the settings panel.', 'directorist');
         }
+
         // user logged in & monetization is active, so lets continue
         // get the listing id from the url query var
         $listing_id = get_query_var('atbdp_listing_id');
@@ -77,6 +80,7 @@ class ATBDP_Checkout
         if ( directorist_payment_guard() ) {
             return __('Sorry, Something went wrong. Listing ID is missing. Please try again.', 'directorist');
         }
+
         // if the checkout form is submitted, then process placing order
         if ( isset( $_SERVER['REQUEST_METHOD'] ) && ( 'POST' == $_SERVER['REQUEST_METHOD'] ) && ATBDP()->helper->verify_nonce($this->nonce, $this->nonce_action)) { // @codingStandardsIgnoreLine.
             // Process the order
@@ -109,10 +113,12 @@ class ATBDP_Checkout
                     'price' => $price,
                 ];
             }
+
             // if data is empty then vail,
             if (empty($form_data)) {
                 return __('Sorry, Nothing is available to buy. Please try again.', 'directorist');
             }
+
             // pass the data using a data var, so that we can add to it more item later.
             $data = [
                 'form_data' => apply_filters('atbdp_checkout_form_final_data', $form_data, $listing_id),
@@ -141,6 +147,7 @@ class ATBDP_Checkout
             //displaying data for checkout
             \Directorist\Helper::get_template( 'payment/checkout', [ 'checkout' => $args ] );
         }
+
         return ob_get_clean();
     }
 
@@ -173,6 +180,7 @@ class ATBDP_Checkout
 
         $data = apply_filters('atbdp_payment_receipt_data', [], $order_id, $listing_id);
         $data = empty($data) ? [] : $data;
+
         $order = get_post($order_id); // we need that order to use its time
         $data = array_merge($data, [
             'order' => $order,
@@ -193,6 +201,7 @@ class ATBDP_Checkout
                 'price' => $price,
             ];
         }
+
         $data['order_items'] = $order_items;
 
         ob_start();
@@ -242,6 +251,7 @@ class ATBDP_Checkout
                 //lets add the settings of featured listing to the order details
                 $order_details[] = atbdp_get_featured_settings_array();
             }
+
             // now lets calculate the total price of all order item's price
             $amount = 0.00;
             foreach ($order_details as $detail) {
@@ -338,6 +348,7 @@ class ATBDP_Checkout
         if (!empty($featured)) {
             update_post_meta($order_data['listing_id'], '_featured', 1);
         }
+
         // Order has been completed. Let's fire a hook for a developer to extend if they wish
         do_action('atbdp_order_completed', $order_data['ID'], $order_data['listing_id']);
     }

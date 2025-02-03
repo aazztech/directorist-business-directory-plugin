@@ -159,6 +159,7 @@ abstract class Abstract_Controller extends WP_REST_Controller {
 
 			$endpoint_args[ $field_id ] = $params;
 		}
+
 		return $endpoint_args;
 	}
 
@@ -238,6 +239,7 @@ abstract class Abstract_Controller extends WP_REST_Controller {
 						$defaults[ $arg ] = $options['default'];
 					}
 				}
+
 				$_item->set_default_params( $defaults );
 
 				// Set request parameters.
@@ -392,12 +394,15 @@ abstract class Abstract_Controller extends WP_REST_Controller {
 		if ( isset( $values['width'] ) ) {
 			$current['width'] = intval( $values['width'] );
 		}
+
 		if ( isset( $values['height'] ) ) {
 			$current['height'] = intval( $values['height'] );
 		}
+
 		if ( isset( $values['crop'] ) ) {
 			$current['crop'] = (bool) $values['crop'];
 		}
+
 		return $current;
 	}
 
@@ -531,6 +536,7 @@ abstract class Abstract_Controller extends WP_REST_Controller {
 		if ( $this->_fields !== null && is_array( $this->_fields ) && $request === $this->_request ) {
 			return $this->_fields;
 		}
+
 		$this->_request = $request;
 
 		$schema     = $this->get_item_schema();
@@ -562,17 +568,20 @@ abstract class Abstract_Controller extends WP_REST_Controller {
 			$this->_fields = $fields;
 			return $fields;
 		}
+
 		$requested_fields = wp_parse_list( $request['_fields'] );
 		if ( 0 === count( $requested_fields ) ) {
 			$this->_fields = $fields;
 			return $fields;
 		}
+
 		// Trim off outside whitespace from the comma delimited list.
 		$requested_fields = array_map( 'trim', $requested_fields );
 		// Always persist 'id', because it can be needed for add_additional_fields_to_object().
 		if ( in_array( 'id', $fields, true ) ) {
 			$requested_fields[] = 'id';
 		}
+
 		// Return the list of all requested fields which appear in the schema.
 		$this->_fields = array_reduce(
 			$requested_fields,
@@ -581,6 +590,7 @@ abstract class Abstract_Controller extends WP_REST_Controller {
 					$response_fields[] = $field;
 					return $response_fields;
 				}
+
 				// Check for nested fields if $field is not a direct match.
 				$nested_fields = explode( '.', $field );
 				// A nested field is included so long as its top-level property
@@ -588,6 +598,7 @@ abstract class Abstract_Controller extends WP_REST_Controller {
 				if ( in_array( $nested_fields[0], $fields, true ) ) {
 					$response_fields[] = $field;
 				}
+
 				return $response_fields;
 			},
 			[]

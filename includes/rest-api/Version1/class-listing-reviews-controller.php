@@ -465,6 +465,7 @@ class Listing_Reviews_Controller extends Abstract_Controller {
 					'context'     => [ 'embed', 'view', 'edit' ],
 				];
 			}
+
 			$schema['properties']['reviewer_avatar_urls'] = [
 				'description' => __( 'Avatar URLs for the object reviewer.', 'directorist' ),
 				'type'        => 'object',

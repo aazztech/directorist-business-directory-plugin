@@ -13,7 +13,7 @@ class Categories_Field extends Taxonomy_Field {
 
 	public $type = 'categories';
 
-	function get_taxonomy() : string {
+	protected function get_taxonomy() : string {
 		return ATBDP_CATEGORY;
 	}
 

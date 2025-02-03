@@ -319,6 +319,7 @@ class ATBDP_Permalink {
         if ($id) {
             $link = get_permalink( $id );
         }
+
         return apply_filters('atbdp_add_listing_page_url', $link );
     }
 

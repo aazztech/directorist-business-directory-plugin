@@ -168,6 +168,7 @@ class All_Tags extends \WP_Widget {
                     $html .= '</a>';
                     $html .= '</li>';
                 }
+
                 $html .= '</ul>';
             }
         } else {

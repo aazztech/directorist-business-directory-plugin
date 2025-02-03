@@ -74,4 +74,5 @@ function register_controllers(): void {
 	$directories = new \Directorist\Rest_Api\Controllers\Version1\Directories_Controller();
 	$directories->register_routes();
 }
+
 add_action( 'rest_api_init', __NAMESPACE__ . '\\register_controllers' );

@@ -753,7 +753,7 @@ class SetupWizard
                 </svg>
                 <h1 class="directorist-setup-wizard__content__title"><?php esc_html_e('Congratulations', 'directorist'); ?></h1>
                 <h4 class="directorist-setup-wizard__content__desc"><?php esc_html_e('Your directory website is ready. Thank you for using Directorist', 'directorist'); ?></h4>
-                <h2 class="directorist-setup-wizard__content__title--section"><?php esc_html_e('What\'s next?', 'directorist'); ?></h2>
+                <h2 class="directorist-setup-wizard__content__title--section"><?php esc_html_e("What's next?", 'directorist'); ?></h2>
                 <div class="directorist-setup-wizard__content__btns">
                     <a href="<?php echo esc_url(admin_url().'edit.php?post_type=at_biz_dir'); ?>" class="directorist-setup-wizard__btn"><?php esc_html_e('Create Your First Listing', 'directorist'); ?></a>  
                     <a href="<?php echo esc_url(admin_url().'edit.php?post_type=at_biz_dir'); ?>" class="directorist-setup-wizard__btn directorist-setup-wizard__btn--return"><?php esc_html_e('Return to the Wordpress Dashboard', 'directorist'); ?></a>  
@@ -908,7 +908,7 @@ class SetupWizard
     {
         $keys = array_keys($this->steps);
 
-        return add_query_arg('step', $keys[array_search($this->step, array_keys($this->steps)) + 1]);
+        return add_query_arg('step', $keys[array_search($this->step, array_keys($this->steps), true) + 1]);
     }
 
     /**
@@ -1020,7 +1020,7 @@ class SetupWizard
                     <li class="<?php
                         if ($step_key === $this->step && 'step-four' !== $step_key ) {
                             echo 'active';
-                        } elseif ( array_search( $this->step, array_keys($this->steps ) ) > array_search( $step_key, array_keys( $this->steps ) ) ) {
+                        } elseif ( array_search( $this->step, array_keys($this->steps ), true ) > array_search( $step_key, array_keys( $this->steps ), true ) ) {
                             echo 'done';
                         } elseif ( isset( $_GET['step'] ) && 'step-four' == $_GET['step'] ) {
                             echo 'done';

@@ -35,34 +35,34 @@ function directorist_uninstall(): void {
     wp_delete_post(get_directorist_option('terms_conditions'), true);
 
     // Delete posts and data
-    $wpdb->query("DELETE FROM {$wpdb->posts} WHERE post_type IN ('at_biz_dir', 'atbdp_fields', 'atbdp_orders', 'atbdp_listing_review', 'atbdp_pricing_plans', 'dcl_claim_listing');");
+    $wpdb->query(sprintf("DELETE FROM %s WHERE post_type IN ('at_biz_dir', 'atbdp_fields', 'atbdp_orders', 'atbdp_listing_review', 'atbdp_pricing_plans', 'dcl_claim_listing');", $wpdb->posts));
 
     // Delete all metabox
-    $wpdb->query("DELETE FROM {$wpdb->postmeta} WHERE post_id NOT IN (SELECT ID FROM {$wpdb->posts});");
+    $wpdb->query(sprintf('DELETE FROM %s WHERE post_id NOT IN (SELECT ID FROM %s);', $wpdb->postmeta, $wpdb->posts));
 
     // Delete term relationships
-    $wpdb->query("DELETE FROM {$wpdb->term_relationships} WHERE object_id NOT IN (SELECT ID FROM {$wpdb->posts});");
+    $wpdb->query(sprintf('DELETE FROM %s WHERE object_id NOT IN (SELECT ID FROM %s);', $wpdb->term_relationships, $wpdb->posts));
 
     // Delete all taxonomy
-    $wpdb->query("DELETE FROM {$wpdb->term_taxonomy} WHERE taxonomy = 'at_biz_dir-location'");
-    $wpdb->query("DELETE FROM {$wpdb->term_taxonomy} WHERE taxonomy = 'at_biz_dir-category'");
-    $wpdb->query("DELETE FROM {$wpdb->term_taxonomy} WHERE taxonomy = 'at_biz_dir-tags'");
-    $wpdb->query("DELETE FROM {$wpdb->term_taxonomy} WHERE taxonomy = 'atbdp_listing_types'");
+    $wpdb->query(sprintf("DELETE FROM %s WHERE taxonomy = 'at_biz_dir-location'", $wpdb->term_taxonomy));
+    $wpdb->query(sprintf("DELETE FROM %s WHERE taxonomy = 'at_biz_dir-category'", $wpdb->term_taxonomy));
+    $wpdb->query(sprintf("DELETE FROM %s WHERE taxonomy = 'at_biz_dir-tags'", $wpdb->term_taxonomy));
+    $wpdb->query(sprintf("DELETE FROM %s WHERE taxonomy = 'atbdp_listing_types'", $wpdb->term_taxonomy));
 
     // Delete all term meta
-    $wpdb->query("DELETE FROM {$wpdb->termmeta} WHERE term_id NOT IN (SELECT term_id FROM {$wpdb->term_taxonomy});");
-    $wpdb->query("DELETE FROM {$wpdb->terms} WHERE term_id NOT IN (SELECT term_id FROM {$wpdb->term_taxonomy});");
+    $wpdb->query(sprintf('DELETE FROM %s WHERE term_id NOT IN (SELECT term_id FROM %s);', $wpdb->termmeta, $wpdb->term_taxonomy));
+    $wpdb->query(sprintf('DELETE FROM %s WHERE term_id NOT IN (SELECT term_id FROM %s);', $wpdb->terms, $wpdb->term_taxonomy));
 
     // Delete review database
-    $wpdb->query("DROP TABLE IF EXISTS {$wpdb->prefix}atbdp_review");
+    $wpdb->query(sprintf('DROP TABLE IF EXISTS %satbdp_review', $wpdb->prefix));
 
     // Delete usermeta
-    $wpdb->query("DELETE FROM $wpdb->usermeta WHERE meta_key LIKE '%atbdp%';");
-    $wpdb->query("DELETE FROM $wpdb->usermeta WHERE meta_key = 'pro_pic';");
+    $wpdb->query(sprintf("DELETE FROM %s WHERE meta_key LIKE '%%atbdp%%';", $wpdb->usermeta));
+    $wpdb->query(sprintf("DELETE FROM %s WHERE meta_key = 'pro_pic';", $wpdb->usermeta));
 
     // Delete all the Plugin Options
     $atbdp_settings = [
-        "{$wpdb->prefix}atbdp_review_db_version",
+        $wpdb->prefix . 'atbdp_review_db_version',
         'atbdp_option',
         'widget_bdpl_widget',
         'widget_bdvd_widget',

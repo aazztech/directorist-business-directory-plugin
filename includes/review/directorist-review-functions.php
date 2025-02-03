@@ -124,7 +124,7 @@ function directorist_get_comment_edit_link( $args = [], $comment = null, $post =
 	$data_attribute_string = '';
 
 	foreach ( $data_attributes as $name => $value ) {
-		$data_attribute_string .= " data-{$name}=\"" . esc_attr( $value ) . '"';
+		$data_attribute_string .= sprintf(' data-%s="', $name) . esc_attr( $value ) . '"';
 	}
 
 	$data_attribute_string = trim( $data_attribute_string );
@@ -244,6 +244,7 @@ function directorist_can_current_user_review( $listing_id = null ) {
 	if ( directorist_is_current_user_listing_author( $listing_id ) && ! directorist_is_owner_review_enabled() ) {
 		return false;
 	}
+
     // Current user already reviewed so return.
     return !directorist_user_review_exists(wp_get_current_user()->user_email, $listing_id);
 }

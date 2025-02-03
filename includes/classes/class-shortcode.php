@@ -15,6 +15,7 @@ class ATBDP_Shortcode {
      * @var $this
      */
     public static $instance;
+
 	public static $shortcodes = [];
 
 	public function __construct() {
@@ -187,6 +188,7 @@ class ATBDP_Shortcode {
 					if (isset( $atts[ 'card' ] ) && $atts[ 'card' ] === 'true') {
                         echo '<div class="directorist-card"><div class="directorist-card__body">';
                     }
+
 					if (isset( $atts[ 'wrap' ] ) && $atts[ 'wrap' ] === 'true') {
                         echo '<div class="directorist-details-info-wrap">';
                     }
@@ -197,6 +199,7 @@ class ATBDP_Shortcode {
 					if (isset( $atts[ 'wrap' ] ) && $atts[ 'wrap' ] === 'true') {
                         echo '</div>';
                     }
+
 					if (isset( $atts[ 'card' ] ) && $atts[ 'card' ] === 'true') {
                         echo '</div></div>';
                     }
@@ -279,6 +282,7 @@ class ATBDP_Shortcode {
 		if (!empty($atts['listing_type'])) {
 			$listing_type = $atts['listing_type'];
 		}
+
 		$searchform = new Directorist_Listing_Search_Form( 'search_form', $listing_type, $atts );
 
 		$atts[ 'shortcode' ] = 'directorist_search_listing';

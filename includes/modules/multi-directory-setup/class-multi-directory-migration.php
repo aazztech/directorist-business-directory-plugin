@@ -26,6 +26,7 @@ class Multi_Directory_Migration {
         ];
 
         $add_directory_args = array_merge( $add_directory_args, $args );
+
         $add_directory      = $this->multi_directory_manager->add_directory( $add_directory_args );
 
         if ( $add_directory['status']['success'] ) {
@@ -982,6 +983,7 @@ class Multi_Directory_Migration {
                 'icon'        => 'las la-heart',
             ];
         }
+
         if ( '1' == get_directorist_option( 'enable_report_abuse', true ) ) {
             $quick_actions[] = [
                 "type"        => "badge",
@@ -992,6 +994,7 @@ class Multi_Directory_Migration {
                 "icon"        => "las la-share"
             ];
         }
+
         if ( '1' == get_directorist_option( 'enable_social_share', true ) ) {
             $quick_actions[] = [
                 "type"        => "badge",
@@ -1241,6 +1244,7 @@ class Multi_Directory_Migration {
             ]
         ]);
     }
+
     // get_listings_card_grid_view_without_thumbnail_data
     public function get_listings_card_grid_view_without_thumbnail_data( array $args = [] ) {
         $default = [ 'listings_card_wedgets' => $this->get_listings_card_wedgets_data() ];
@@ -1700,7 +1704,7 @@ class Multi_Directory_Migration {
         $terms_label_a = get_directorist_option( 'terms_label', true );
         $terms_label_b = get_directorist_option( 'terms_label_link', true );
 
-        return "{$terms_label_a} %{$terms_label_b}%";
+        return sprintf('%s %%%s%%', $terms_label_a, $terms_label_b);
     }
 
     // get_privacy_label
@@ -1708,7 +1712,7 @@ class Multi_Directory_Migration {
         $privacy_label_a = get_directorist_option( 'privacy_label', true );
         $privacy_label_b = get_directorist_option( 'privacy_label_link', true );
 
-        return "{$privacy_label_a} %{$privacy_label_b}%";
+        return sprintf('%s %%%s%%', $privacy_label_a, $privacy_label_b);
     }
 
     // get_preview_image
@@ -1734,6 +1738,7 @@ class Multi_Directory_Migration {
             $accepted_types = [ 'text', 'number', 'date', 'color', 'time', 'radio', 'checkbox', 'select', 'textarea', 'url', 'file' ];
 
             if ( ! in_array( $field_type, $accepted_types ) ) { continue; }
+
             // $get_post_meta = get_post_meta($old_field_id);
 
             $required      = get_post_meta($old_field_id, 'required', true);

@@ -226,7 +226,7 @@ function atbdp_render_the_flush_alert( array $alert = [] ): void {
 
 // atbdp_load_admin_template
 function atbdp_load_admin_template( string $path = '', $data = [] ): void {
-    $file = trailingslashit( ATBDP_VIEWS_DIR ) . "admin-templates/$path.php";
+    $file = trailingslashit( ATBDP_VIEWS_DIR ) . sprintf('admin-templates/%s.php', $path);
 
     if ( file_exists( $file ) ) {
         include( $file );
@@ -360,7 +360,7 @@ if (!function_exists('load_all_files')):
         }
         foreach (scandir($dir) as $file) {
             // require once all the files with the given ext. eg. .php
-            if (preg_match("/{$ext}$/i", $file)) {
+            if (preg_match(sprintf('/%s$/i', $ext), $file)) {
                 require_once($dir . $file);
             }
         }
@@ -691,9 +691,9 @@ if(!function_exists('get_recent_reviews')) {
         global $wpdb;
 
         $sql = $wpdb->prepare(
-            "SELECT * FROM {$wpdb->prefix}atbdp_review
+            'SELECT * FROM %satbdp_review
             ORDER BY id DESC
-            LIMIT %d",
+            LIMIT ' . $wpdb->prefix,
             $number
         );
 
@@ -991,7 +991,7 @@ if (!function_exists('calc_listing_expiry_date')) {
         $start_date = empty($start_date) ? current_time('mysql') : $start_date;
         // Calculate new date
         $date = new DateTime($start_date);
-        $date->add(new DateInterval("P{$expired_date}D")); // set the interval in days
+        $date->add(new DateInterval(sprintf('P%sD', $expired_date))); // set the interval in days
         return $date->format('Y-m-d H:i:s');
 
     }
@@ -1262,7 +1262,7 @@ function atbdp_list_categories($settings): ?string
             if (!empty($settings['show_count'])) {
                 $html .= ' (' . $count . ')';
             }
-            $html .= "</a>$plus_icon";
+            $html .= '</a>' . $plus_icon;
             $html .= atbdp_list_categories($settings);
             $html .= '</li>';
         }
@@ -1372,7 +1372,7 @@ function atbdp_list_locations($settings): ?string
             if (!empty($settings['show_count'])) {
                 $html .= ' (' . $count . ')';
             }
-            $html .= "</a>$plus_icon";
+            $html .= '</a>' . $plus_icon;
             $html .= atbdp_list_locations($settings);
             $html .= '</li>';
         }
@@ -2786,43 +2786,43 @@ function atbdp_thumbnail_card($img_src = '', $_args = []): ?string
 
     if ( $by_ratio ) {
         $padding_top_value = (int) $ratio_height / (int) $ratio_width * 100;
-        $padding_top_css = "padding-top: $padding_top_value%;";
+        $padding_top_css = sprintf('padding-top: %s%%;', $padding_top_value);
         $style .= $padding_top_css;
     } else {
         $height_value = (int) $ratio_height;
-        $height_css = "height: {$height_value}px;";
+        $height_css = sprintf('height: %dpx;', $height_value);
         $style .= $height_css;
     }
 
     $background_color_css = '';
     if ( $image_size !== 'full' && !$blur_background ) {
-        $background_color_css = "background-color: $background_color";
+        $background_color_css = 'background-color: ' . $background_color;
         $style .= $background_color_css;
     }
 
 
     // Card Front Wrap
     $card_front_wrap = "<div class='atbd-thumbnail-card-front-wrap'>";
-    $card_front__img = "<img src='$image_src' alt='$image_alt' class='atbd-thumbnail-card-front-img'/>";
+    $card_front__img = sprintf("<img src='%s' alt='%s' class='atbd-thumbnail-card-front-img'/>", $image_src, $image_alt);
     $front_wrap_html = $card_front_wrap . $card_front__img . "</div>";
 
     // Card Back Wrap
     $card_back_wrap = "<div class='atbd-thumbnail-card-back-wrap'>";
-    $card_back__img = "<img src='$image_src' class='atbd-thumbnail-card-back-img'/>";
+    $card_back__img = sprintf("<img src='%s' class='atbd-thumbnail-card-back-img'/>", $image_src);
     $back_wrap_html = $card_back_wrap . $card_back__img . "</div>";
 
     $blur_bg = ( $blur_background ) ? $back_wrap_html : '';
 
     // Card Contain
-    $card_contain_wrap = "<div class='atbd-thumbnail-card card-contain' style='$style'>";
+    $card_contain_wrap = sprintf("<div class='atbd-thumbnail-card card-contain' style='%s'>", $style);
     $image_contain_html = $card_contain_wrap . $blur_bg . $front_wrap_html . "</div>";
 
     // Card Cover
-    $card_cover_wrap = "<div class='atbd-thumbnail-card card-cover' style='$style'>";
+    $card_cover_wrap = sprintf("<div class='atbd-thumbnail-card card-cover' style='%s'>", $style);
     $image_cover_html = $card_cover_wrap . $front_wrap_html . "</div>";
 
     // Card Full
-    $card_full_wrap = "<div class='atbd-thumbnail-card card-full' style='$background_color_css'>";
+    $card_full_wrap = sprintf("<div class='atbd-thumbnail-card card-full' style='%s'>", $background_color_css);
     $image_full_html = $card_full_wrap . $front_wrap_html . "</div>";
 
     $the_html = $image_cover_html;
@@ -4287,7 +4287,7 @@ function directorist_delete_dir( string $dir ): void {
 	}
 
 	if ( ! rmdir( $dir ) ) {
-		throw new Exception( "Failed to remove directory: $dir" );
+		throw new Exception( 'Failed to remove directory: ' . $dir );
 	}
 }
 
@@ -4414,7 +4414,7 @@ function directorist_download_plugin( array $args = [] ): array {
     }
 
     $plugin_path = WP_CONTENT_DIR . '/plugins';
-    $temp_dest   = "{$plugin_path}/atbdp-temp-dir";
+    $temp_dest   = $plugin_path . '/atbdp-temp-dir';
     $file_url    = $args['url'];
     $file_name   = basename( $file_url );
     $tmp_file    = download_url( $file_url );
@@ -4443,7 +4443,7 @@ function directorist_download_plugin( array $args = [] ): array {
     }
 
     // Sets file temp destination.
-    $file_path = "{$temp_dest}/{$file_name}";
+    $file_path = sprintf('%s/%s', $temp_dest, $file_name);
 
     set_error_handler(
         function ( $errno, $errstr, $errfile, $errline ): bool {
@@ -4459,9 +4459,9 @@ function directorist_download_plugin( array $args = [] ): array {
     // Copies the file to the final destination and deletes temporary file.
     try {
         copy( $tmp_file, $file_path );
-    } catch ( Exception $e ) {
+    } catch ( Exception $exception ) {
         $status['success'] = false;
-        $status['message'] = $e->getMessage();
+        $status['message'] = $exception->getMessage();
 
         return $status;
     }
@@ -4469,15 +4469,15 @@ function directorist_download_plugin( array $args = [] ): array {
     @unlink( $tmp_file );
     unzip_file( $file_path, $temp_dest );
 
-    if ( "{$plugin_path}/" !== $file_path || $file_path !== $plugin_path ) {
+    if ( $plugin_path . '/' !== $file_path || $file_path !== $plugin_path ) {
         @unlink( $file_path );
     }
 
-    $extracted_file_dir = glob( "{$temp_dest}/*", GLOB_ONLYDIR );
+    $extracted_file_dir = glob( $temp_dest . '/*', GLOB_ONLYDIR );
 
     foreach ( $extracted_file_dir as $dir_path ) {
         $dir_name  = basename( $dir_path );
-        $dest_path = "{$plugin_path}/{$dir_name}";
+        $dest_path = sprintf('%s/%s', $plugin_path, $dir_name);
 
         // Delete Previous Files if Exists
         if ( $wp_filesystem->exists( $dest_path ) ) {
@@ -4515,7 +4515,7 @@ function directorist_hex_to_rgb( $hex ): string {
         $g = hexdec( substr( $hex, 2, 2 ) );
         $b = hexdec( substr( $hex, 4, 2 ) );
     }
-    return "$r, $g, $b";
+    return sprintf('%s, %s, %s', $r, $g, $b);
 }
 
 /**

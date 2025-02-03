@@ -79,6 +79,7 @@ class ATBDP_Upgrade
 
 			update_option( 'atbdp_option', $options );
 		}
+
 		// need to update adons kit for elementor
 		$path = WP_PLUGIN_DIR . '/addonskit-for-elementor/addonskit-for-elementor.php';
 
@@ -274,6 +275,7 @@ class ATBDP_Upgrade
 	private function search_field_label_migration( $directory_id ): void {
 		$search_fields = get_term_meta( $directory_id, 'search_form_fields', true );
 		$search_fields = is_array( $search_fields ) ? $search_fields : [];
+
 		$fields        = isset( $search_fields['fields'] ) && is_array( $search_fields['fields'] ) ? $search_fields['fields'] : [];
 
 		foreach ( $fields as $key => $field ) {

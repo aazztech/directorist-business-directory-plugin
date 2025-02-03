@@ -5,6 +5,7 @@
 if ( ! defined('ABSPATH')) {
     exit;
 }
+
 class Atbdp_Image_resizer
 {
     /**
@@ -39,7 +40,7 @@ class Atbdp_Image_resizer
 
         // Get the attachment
         $attachmentUrl = wp_get_attachment_url($this->attachmentId, 'full');
-        
+
         // Bail if we don't have an attachment URL
         if ( ! $attachmentUrl ) {
             return ['url' => $this->attachmentId, 'width' => $width, 'height' => $height];
@@ -61,19 +62,19 @@ class Atbdp_Image_resizer
         $destHeight = apply_filters('easingslider_resize_image_height', $height, $attachmentUrl);
 
         // File name suffix (appended to original file name)
-        $suffix = "{$destWidth}x{$destHeight}";
+        $suffix = sprintf('%sx%s', $destWidth, $destHeight);
 
         // Some additional info about the image
         $info = pathinfo($filePath);
         $dir  = $info['dirname'];
         $ext  = $info['extension'];
-        $name = wp_basename($filePath, ".$ext");
+        $name = wp_basename($filePath, '.' . $ext);
 
         // Suffix applied to filename
-        $suffix = "{$destWidth}x{$destHeight}";
+        $suffix = sprintf('%sx%s', $destWidth, $destHeight);
 
         // Get the destination file name
-        $destFileName = "{$dir}/{$name}-{$suffix}.{$ext}";
+        $destFileName = sprintf('%s/%s-%s.%s', $dir, $name, $suffix, $ext);
 
         // Execute the resizing if resized image doesn't already exist.
         if ( ! file_exists($destFileName)) {
@@ -93,8 +94,8 @@ class Atbdp_Image_resizer
             $size       = $editor->get_size();
             $origWidth  = $size['width'];
             $origHeight = $size['height'];
-
-            $srcX = $srcY = 0;
+            $srcX = 0;
+            $srcY = 0;
             $srcW = $origWidth;
             $srcH = $origHeight;
 

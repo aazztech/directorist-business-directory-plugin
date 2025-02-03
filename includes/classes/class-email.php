@@ -96,18 +96,20 @@ if ( ! class_exists( 'ATBDP_Email' ) ) :
 			if ( empty( $listing_id ) ) {
 				$listing_id = (int) get_post_meta( $order_id, '_listing_id', true );
 			}
+
 			if (empty( $user )) {
                 $post_author_id = get_post_field( 'post_author', $listing_id ?: $order_id );
                 $user = get_userdata( $post_author_id );
             } elseif (! $user instanceof WP_User) {
                 $user = get_userdata( (int) $user );
             }
+
 			$user_password = $user ? get_user_meta( $user->ID, '_atbdp_generated_password', true ) :  '';
 			$site_name = get_option( 'blogname' );
 			$site_url = site_url();
 			$l_title = get_the_title( $listing_id );
 			$listing_url = get_permalink( $listing_id );
-			$l_edit_url = admin_url( "post.php?post={$listing_id}&action=edit" );
+			$l_edit_url = admin_url( sprintf('post.php?post=%d&action=edit', $listing_id) );
 			$user_dashboard = admin_url( 'users.php' );
 			$date_format = get_option( 'date_format' );
 			$time_format = get_option( 'time_format' );
@@ -121,6 +123,7 @@ if ( ! class_exists( 'ATBDP_Email' ) ) :
 			} else {
 				$renewal_link = ATBDP_Permalink::get_renewal_page_link( $listing_id );
 			}
+
 			$dashboard_link = ATBDP_Permalink::get_dashboard_page_link();
 			$order_receipt_link = ATBDP_Permalink::get_payment_receipt_page_link( $order_id );
 			$cats = wp_get_object_terms( $listing_id, ATBDP_CATEGORY, [ 'fields' => 'names' ] );/*@todo, maybe we can use get_the_terms() for utilizing some default caching???*/
@@ -504,8 +507,8 @@ This email is sent automatically for information purpose only. Please do not res
 			$user = $this->get_owner( $listing_id );
 			// Send email according to the type of the payment that user used during checkout. get email template from the db.
 			$offline = ( empty( $offline ) ) ? '' : '_offline';
-			$subject = $this->replace_in_content( get_directorist_option( "email_sub{$offline}_new_order" ), $order_id, $listing_id, $user );
-			$body = $this->replace_in_content( get_directorist_option( "email_tmpl{$offline}_new_order" ), $order_id, $listing_id, $user );
+			$subject = $this->replace_in_content( get_directorist_option( sprintf('email_sub%s_new_order', $offline) ), $order_id, $listing_id, $user );
+			$body = $this->replace_in_content( get_directorist_option( sprintf('email_tmpl%s_new_order', $offline) ), $order_id, $listing_id, $user );
 			$message = atbdp_email_html( $subject, $body );
 
 			$to = $user->user_email;
@@ -544,6 +547,7 @@ This email is sent automatically for information purpose only. Please do not res
 			if ( ! in_array( 'order_completed', get_directorist_option( 'notify_user', [ 'order_completed' ], true ) ) ) {
 				return false;
 			}
+
 			$user = $this->get_owner( $listing_id ?: $order_id );
 			$subject = $this->replace_in_content( get_directorist_option( 'email_sub_completed_order' ), $order_id, $listing_id, $user );
 			$body = $this->replace_in_content( get_directorist_option( 'email_tmpl_completed_order' ), $order_id, $listing_id, $user );
@@ -628,6 +632,7 @@ This email is sent automatically for information purpose only. Please do not res
 
 			$body = $this->get_listing_published_admin_tmpl();
 			$body = $this->replace_in_content( $body, null, $listing_id );
+
 			$message = atbdp_email_html( $subject, $body );
 			$to = $this->get_admin_email_list();
 			$headers = $this->get_email_headers();
@@ -717,6 +722,7 @@ This email is sent automatically for information purpose only. Please do not res
 			} else {
 				$body = $this->replace_in_content( get_directorist_option( 'email_tmpl_new_listing' ), null, $listing_id, $user );
 			}
+
 			$message = atbdp_email_html( $subject, $body );
 			$headers = $this->get_email_headers();
 
@@ -949,11 +955,13 @@ This email is sent automatically for information purpose only. Please do not res
 			if ( get_directorist_option( 'disable_email_notification' ) ) {
 				return false;
 			}
+
 			$s = __( '[==SITE_NAME==] New Author Request', 'directorist' );
 			$subject = str_replace( '==SITE_NAME==', get_option( 'blogname' ), $s );
 
 			$body = $this->author_approval_admin_tmpl();
 			$body = $this->replace_in_content( $body, null, null, $user_id );
+
 			$message = atbdp_email_html( $subject, $body );
 			$to = $this->get_admin_email_list();
 			$headers = $this->get_email_headers();
@@ -1007,6 +1015,7 @@ This email is sent automatically for information purpose only. Please do not res
 			$t = $this->get_order_created_admin_tmpl(); // get the email template & replace order_receipt placeholder in it
 			$body = str_replace( '==ORDER_RECEIPT_URL==', admin_url( 'edit.php?post_type=atbdp_orders' ), $t ); /*@todo; MAYBE ?? it would be good if there is a dedicated page for viewing the payment receipt by the admin regardless the order_receipt shortcode is used or not.*/
 			$body = $this->replace_in_content( $body, $order_id, $listing_id );
+
 			$message = atbdp_email_html( $subject, $body );
 			$to = $this->get_admin_email_list();
 			$headers = $this->get_email_headers();
@@ -1052,6 +1061,7 @@ This email is sent automatically for information purpose only. Please do not res
 			$t = $this->get_order_completed_admin_tmpl(); // get the email template & replace order_receipt placeholder in it
 			$body = str_replace( '==ORDER_RECEIPT_URL==', admin_url( 'edit.php?post_type=atbdp_orders' ), $t );
 			$body = $this->replace_in_content( $body, $order_id, $listing_id );
+
 			$message = atbdp_email_html( $subject, $body );
 			$to = $this->get_admin_email_list();
 			$headers = $this->get_email_headers();
@@ -1159,6 +1169,7 @@ This email is sent automatically for information purpose only. Please do not res
 			$to = $this->get_admin_email_list();
 			$body = $this->get_listing_edited_admin_tmpl();
 			$body = $this->replace_in_content( $body, null, $listing_id );
+
 			$message = atbdp_email_html( $subject, $body );
 			$headers = $this->get_email_headers();
 
@@ -1204,6 +1215,7 @@ We look forward to seeing you soon'
 
 			$body = $this->replace_in_content( $body, null, null, $user );
 			$body = atbdp_email_html( $sub, $body );
+
 			$mail = $this->send_mail( $user->user_email, $sub, $body, $this->get_email_headers() );
 			if ( $mail ) {
 				delete_user_meta( $user_id, '_atbdp_generated_password' );

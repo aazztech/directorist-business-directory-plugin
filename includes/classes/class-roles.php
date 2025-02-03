@@ -55,6 +55,7 @@ class ATBDP_Roles {
             if( !empty( $current_user->caps['subscriber'] ) ):
                 add_filter('show_admin_bar', '__return_false');
             endif;
+
             /*if (is_directoria_active() && !empty( $current_user->caps['administrator'] )):
                 add_filter('show_admin_bar', '__return_false');
             endif;*/
@@ -122,16 +123,16 @@ class ATBDP_Roles {
             // Add the "editor" capabilities of all of our custom posts
             foreach ($custom_posts as $cp) {
                 if(post_type_exists($cp)){
-                $wp_roles->add_cap( 'editor', "edit_{$cp}s");
-                $wp_roles->add_cap( 'editor', "edit_others_{$cp}s" );
-                $wp_roles->add_cap( 'editor', "publish_{$cp}s");
-                $wp_roles->add_cap( 'editor', "read_private_{$cp}s" );
-                $wp_roles->add_cap( 'editor', "delete_{$cp}s");
-                $wp_roles->add_cap( 'editor', "delete_private_{$cp}s" );
-                $wp_roles->add_cap( 'editor', "delete_published_{$cp}s");
-                $wp_roles->add_cap( 'editor', "delete_others_{$cp}s" );
-                $wp_roles->add_cap( 'editor', "edit_private_{$cp}s");
-                $wp_roles->add_cap( 'editor', "edit_published_{$cp}s" );
+                $wp_roles->add_cap( 'editor', sprintf('edit_%ss', $cp));
+                $wp_roles->add_cap( 'editor', sprintf('edit_others_%ss', $cp) );
+                $wp_roles->add_cap( 'editor', sprintf('publish_%ss', $cp));
+                $wp_roles->add_cap( 'editor', sprintf('read_private_%ss', $cp) );
+                $wp_roles->add_cap( 'editor', sprintf('delete_%ss', $cp));
+                $wp_roles->add_cap( 'editor', sprintf('delete_private_%ss', $cp) );
+                $wp_roles->add_cap( 'editor', sprintf('delete_published_%ss', $cp));
+                $wp_roles->add_cap( 'editor', sprintf('delete_others_%ss', $cp) );
+                $wp_roles->add_cap( 'editor', sprintf('edit_private_%ss', $cp));
+                $wp_roles->add_cap( 'editor', sprintf('edit_published_%ss', $cp) );
                 }
             }
 
@@ -139,11 +140,11 @@ class ATBDP_Roles {
             foreach ($users_roles as $users_role) {
                 foreach ($custom_posts as $cp) {
                     if(post_type_exists($cp)){
-                    $wp_roles->add_cap( $users_role, "edit_{$cp}s" );
-                    $wp_roles->add_cap( $users_role, "publish_{$cp}s" );
-                    $wp_roles->add_cap( $users_role, "delete_{$cp}s" );
-                    $wp_roles->add_cap( $users_role, "delete_published_{$cp}s" );
-                    $wp_roles->add_cap( $users_role, "edit_published_{$cp}s" );
+                    $wp_roles->add_cap( $users_role, sprintf('edit_%ss', $cp) );
+                    $wp_roles->add_cap( $users_role, sprintf('publish_%ss', $cp) );
+                    $wp_roles->add_cap( $users_role, sprintf('delete_%ss', $cp) );
+                    $wp_roles->add_cap( $users_role, sprintf('delete_published_%ss', $cp) );
+                    $wp_roles->add_cap( $users_role, sprintf('edit_published_%ss', $cp) );
                     }
                 }
             }
@@ -169,19 +170,19 @@ class ATBDP_Roles {
             if(post_type_exists($cp)){
                 $caps[ $cp ] = [
 
-                    "edit_{$cp}",
-                    "read_{$cp}",
-                    "delete_{$cp}",
-                    "edit_{$cp}s",
-                    "edit_others_{$cp}s",
-                    "publish_{$cp}s",
-                    "read_private_{$cp}s",
-                    "delete_{$cp}s",
-                    "delete_private_{$cp}s",
-                    "delete_published_{$cp}s",
-                    "delete_others_{$cp}s",
-                    "edit_private_{$cp}s",
-                    "edit_published_{$cp}s",
+                    'edit_' . $cp,
+                    'read_' . $cp,
+                    'delete_' . $cp,
+                    sprintf('edit_%ss', $cp),
+                    sprintf('edit_others_%ss', $cp),
+                    sprintf('publish_%ss', $cp),
+                    sprintf('read_private_%ss', $cp),
+                    sprintf('delete_%ss', $cp),
+                    sprintf('delete_private_%ss', $cp),
+                    sprintf('delete_published_%ss', $cp),
+                    sprintf('delete_others_%ss', $cp),
+                    sprintf('edit_private_%ss', $cp),
+                    sprintf('edit_published_%ss', $cp),
 
                 ];
             }
@@ -213,7 +214,7 @@ class ATBDP_Roles {
                     break;
                 }else{
                     // If editing, deleting, or reading a custom post from the above list, get the post and post type object.
-                    if( "edit_{$cp}" == $cap || "delete_{$cp}" == $cap || "read_{$cp}" == $cap ) {
+                    if( 'edit_' . $cp == $cap || 'delete_' . $cp == $cap || 'read_' . $cp == $cap ) {
                         $post = get_post( $args[0] );
                         $post_type = get_post_type_object( $post->post_type );
                         // Set an empty array for the caps.
@@ -221,19 +222,19 @@ class ATBDP_Roles {
                     }
 
                     // If editing a listing, assign the required capability.
-                    if ("edit_{$cp}" == $cap) {
+                    if ('edit_' . $cp == $cap) {
                         if ($user_id == $post->post_author) {
                             $caps[] = $post_type->cap->{'edit_'.$cp.'s'};
                         } else {
                             $caps[] = $post_type->cap->{'edit_others_'.$cp.'s'};
                         }
-                    } elseif ("delete_{$cp}" == $cap) {
+                    } elseif ('delete_' . $cp == $cap) {
                         if ($user_id == $post->post_author) {
                             $caps[] = $post_type->cap->{'delete_'.$cp.'s'};
                         } else {
                             $caps[] = $post_type->cap->{'delete_others_'.$cp.'s'};
                         }
-                    } elseif ("read_{$cp}" == $cap) {
+                    } elseif ('read_' . $cp == $cap) {
                         if ('private' != $post->post_status) {
                             $caps[] = 'read';
                         } elseif ($user_id == $post->post_author) {
@@ -290,32 +291,32 @@ class ATBDP_Roles {
             // Remove the "editor" capabilities
             foreach ($custom_posts as $cp) {
                 if(post_type_exists($cp)){
-                $wp_roles->remove_cap( 'editor', "edit_{$cp}s");
-                $wp_roles->remove_cap( 'editor', "edit_others_{$cp}s" );
-                $wp_roles->remove_cap( 'editor', "publish_{$cp}s");
-                $wp_roles->remove_cap( 'editor', "read_private_{$cp}s" );
-                $wp_roles->remove_cap( 'editor', "delete_{$cp}s");
-                $wp_roles->remove_cap( 'editor', "delete_private_{$cp}s" );
-                $wp_roles->remove_cap( 'editor', "delete_published_{$cp}s");
-                $wp_roles->remove_cap( 'editor', "delete_others_{$cp}s" );
-                $wp_roles->remove_cap( 'editor', "edit_private_{$cp}s");
-                $wp_roles->remove_cap( 'editor', "edit_published_{$cp}s" );
+                $wp_roles->remove_cap( 'editor', sprintf('edit_%ss', $cp));
+                $wp_roles->remove_cap( 'editor', sprintf('edit_others_%ss', $cp) );
+                $wp_roles->remove_cap( 'editor', sprintf('publish_%ss', $cp));
+                $wp_roles->remove_cap( 'editor', sprintf('read_private_%ss', $cp) );
+                $wp_roles->remove_cap( 'editor', sprintf('delete_%ss', $cp));
+                $wp_roles->remove_cap( 'editor', sprintf('delete_private_%ss', $cp) );
+                $wp_roles->remove_cap( 'editor', sprintf('delete_published_%ss', $cp));
+                $wp_roles->remove_cap( 'editor', sprintf('delete_others_%ss', $cp) );
+                $wp_roles->remove_cap( 'editor', sprintf('edit_private_%ss', $cp));
+                $wp_roles->remove_cap( 'editor', sprintf('edit_published_%ss', $cp) );
                 }
             }
 
             // Remove the "editor" capabilities of all of our custom posts
             foreach ($custom_posts as $cp) {
                 if(post_type_exists($cp)){
-                $wp_roles->remove_cap( 'editor', "edit_{$cp}s");
-                $wp_roles->remove_cap( 'editor', "edit_others_{$cp}s" );
-                $wp_roles->remove_cap( 'editor', "publish_{$cp}s");
-                $wp_roles->remove_cap( 'editor', "read_private_{$cp}s" );
-                $wp_roles->remove_cap( 'editor', "delete_{$cp}s");
-                $wp_roles->remove_cap( 'editor', "delete_private_{$cp}s" );
-                $wp_roles->remove_cap( 'editor', "delete_published_{$cp}s");
-                $wp_roles->remove_cap( 'editor', "delete_others_{$cp}s" );
-                $wp_roles->remove_cap( 'editor', "edit_private_{$cp}s");
-                $wp_roles->remove_cap( 'editor', "edit_published_{$cp}s" );
+                $wp_roles->remove_cap( 'editor', sprintf('edit_%ss', $cp));
+                $wp_roles->remove_cap( 'editor', sprintf('edit_others_%ss', $cp) );
+                $wp_roles->remove_cap( 'editor', sprintf('publish_%ss', $cp));
+                $wp_roles->remove_cap( 'editor', sprintf('read_private_%ss', $cp) );
+                $wp_roles->remove_cap( 'editor', sprintf('delete_%ss', $cp));
+                $wp_roles->remove_cap( 'editor', sprintf('delete_private_%ss', $cp) );
+                $wp_roles->remove_cap( 'editor', sprintf('delete_published_%ss', $cp));
+                $wp_roles->remove_cap( 'editor', sprintf('delete_others_%ss', $cp) );
+                $wp_roles->remove_cap( 'editor', sprintf('edit_private_%ss', $cp));
+                $wp_roles->remove_cap( 'editor', sprintf('edit_published_%ss', $cp) );
                 }
             }
 
@@ -324,11 +325,11 @@ class ATBDP_Roles {
             foreach ($users_roles as $users_role) {
                 foreach ($custom_posts as $cp) {
                     if(post_type_exists($cp)){
-                    $wp_roles->remove_cap( $users_role, "edit_{$cp}s" );
-                    $wp_roles->remove_cap( $users_role, "publish_{$cp}s" );
-                    $wp_roles->remove_cap( $users_role, "delete_{$cp}s" );
-                    $wp_roles->remove_cap( $users_role, "delete_published_{$cp}s" );
-                    $wp_roles->remove_cap( $users_role, "edit_published_{$cp}s" );
+                    $wp_roles->remove_cap( $users_role, sprintf('edit_%ss', $cp) );
+                    $wp_roles->remove_cap( $users_role, sprintf('publish_%ss', $cp) );
+                    $wp_roles->remove_cap( $users_role, sprintf('delete_%ss', $cp) );
+                    $wp_roles->remove_cap( $users_role, sprintf('delete_published_%ss', $cp) );
+                    $wp_roles->remove_cap( $users_role, sprintf('edit_published_%ss', $cp) );
                     }
                 }
             }

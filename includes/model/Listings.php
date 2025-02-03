@@ -478,7 +478,7 @@ class Directorist_Listings {
 		$star_5 = ( $average > 4 && $average < 5 ) ? $icon_half_star : $icon_empty_star;
 		$star_5 = ( $average >= 5 ) ? $icon_full_star : $star_5;
 
-		$review_stars = "{$star_1}{$star_2}{$star_3}{$star_4}{$star_5}";
+		$review_stars = $star_1 . $star_2 . $star_3 . $star_4 . $star_5;
 
 		return [
 			'review_stars'    => $review_stars,
@@ -1104,7 +1104,7 @@ class Directorist_Listings {
 	}
 
 	public function archive_view_template(): void {
-		$template_file = "archive/{$this->view}-view";
+		$template_file = sprintf('archive/%s-view', $this->view);
 		Helper::get_template( $template_file, [ 'listings' => $this ] );
 	}
 
@@ -1684,7 +1684,7 @@ class Directorist_Listings {
 			$this->thumbnails_cached = true;
 		}
 
-		function loop_get_the_thumbnail( $class = '' ): string {
+		public function loop_get_the_thumbnail( $class = '' ): string {
 			$default_image_src = Helper::default_preview_image_src( $this->current_listing_type );
 
 			$id = get_the_ID();
@@ -1701,7 +1701,7 @@ class Directorist_Listings {
 			if ( $thumbnail_img_id === [] ) {
 				$thumbnail_img_id = $default_image_src;
 				$image_alt        = esc_html( get_the_title( $id ) );
-				$image            = "<img src='$default_image_src' alt='$image_alt' class='$class' />";
+				$image            = sprintf("<img src='%s' alt='%s' class='%s' />", $default_image_src, $image_alt, $class);
 				if ( ! $this->disable_single_listing ) {
 					$image = $link_start . $image . $link_end;
 				}
@@ -1718,7 +1718,7 @@ class Directorist_Listings {
 				$image_src  = atbdp_get_image_source( reset( $thumbnail_img_id ), $image_quality );
 				$image_alt  = get_post_meta( reset( $thumbnail_img_id ), '_wp_attachment_image_alt', true );
 				$image_alt  = ( empty( $image_alt ) ) ? esc_html( get_the_title( reset( $thumbnail_img_id ) ) ) : esc_attr( $image_alt );
-				$image      = "<img src='$image_src' alt='$image_alt' class='$class' />";
+				$image      = sprintf("<img src='%s' alt='%s' class='%s' />", $image_src, $image_alt, $class);
 				if ( ! $this->disable_single_listing ) {
 					$image = $link_start . $image . $link_end;
 				}
@@ -1732,13 +1732,13 @@ class Directorist_Listings {
 					$image_src = atbdp_get_image_source( $img_id, $image_quality );
 					$image_alt = get_post_meta( $img_id, '_wp_attachment_image_alt', true );
 					$image_alt = empty( $image_alt ) ? esc_html( get_the_title( $img_id ) ) : esc_attr( $image_alt );
-					$image = "<img src='$image_src' alt='$image_alt' class='$class' />";
+					$image = sprintf("<img src='%s' alt='%s' class='%s' />", $image_src, $image_alt, $class);
 
 					if ( ! $this->disable_single_listing ) {
 						$image = $link_start . $image . $link_end;
 					}
 
-					$output .= "<div class='swiper-slide'>$image</div>";
+					$output .= sprintf("<div class='swiper-slide'>%s</div>", $image);
 				}
 
 				return $output . ("</div>
@@ -1793,9 +1793,9 @@ class Directorist_Listings {
          * @todo remove
          */
         public function item_found_title_for_search($count): string {
-			$cat_name = $loc_name = '';
-
-			if ( isset($_GET['in_cat'] ) ) {
+			$cat_name = '';
+            $loc_name = '';
+            if ( isset($_GET['in_cat'] ) ) {
 				$cat_id = intval($_GET['in_cat']);
 				$cat = get_term_by('id', $cat_id, ATBDP_CATEGORY);
 				if ( $cat ) {
@@ -2379,7 +2379,7 @@ class Directorist_Listings {
     	$feature_badge_text = get_directorist_option('feature_badge_text', 'Featured');
 
     	if ( $featured ) {
-    		$badge = "<span class='atbd_badge atbd_badge_featured'>$feature_badge_text</span>";
+    		$badge = sprintf("<span class='atbd_badge atbd_badge_featured'>%s</span>", $feature_badge_text);
     		$content .= $badge;
     	}
 
@@ -2390,7 +2390,7 @@ class Directorist_Listings {
     	$popular_badge_text = get_directorist_option('popular_badge_text', 'Popular');
 
     	if ( atbdp_popular_listings(get_the_ID()) === get_the_ID() ) {
-    		$badge = "<span class='atbd_badge atbd_badge_popular'>$popular_badge_text</span>";
+    		$badge = sprintf("<span class='atbd_badge atbd_badge_popular'>%s</span>", $popular_badge_text);
     		$content .= $badge;
     	}
 

@@ -68,11 +68,13 @@ class Similar_Listing extends \WP_Widget {
 				$atbd_cats_ids[] = $atbd_cat->term_id;
 			}
 		}
+
 		if (!empty($atbd_tags)) {
 			foreach ($atbd_tags as $atbd_tag) {
 				$atbd_tags_ids[] = $atbd_tag->term_id;
 			}
 		}
+
 		$args = [
 			'post_type' => ATBDP_POST_TYPE,
 			'tax_query' => [

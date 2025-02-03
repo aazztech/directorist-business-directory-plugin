@@ -18,14 +18,14 @@ function directorist_710_migrate_reviews_table_to_comments_table(): void {
 
 	$review_table = $wpdb->prefix . 'atbdp_review';
 
-	$review_table_exists = $wpdb->get_results( "SHOW TABLES LIKE '{$review_table}'" );
+	$review_table_exists = $wpdb->get_results( sprintf("SHOW TABLES LIKE '%s'", $review_table) );
 
 	// No need to move forward if table doesn't exist
 	if ( empty( $review_table_exists ) ) {
 		return;
 	}
 
-	$reviews = $wpdb->get_results( "SELECT * FROM {$review_table}" );
+	$reviews = $wpdb->get_results( 'SELECT * FROM ' . $review_table );
 
 	if ( ! empty( $reviews ) ) {
 		foreach ( $reviews as $review ) {
@@ -108,7 +108,7 @@ function directorist_710_migrate_posts_table_to_comments_table(): void {
 function directorist_710_review_rating_clear_transients(): void {
 	global $wpdb;
 
-	$listings = $wpdb->get_results( "SELECT listings.ID as id FROM {$wpdb->posts} AS listings WHERE listings.post_type='at_biz_dir' AND listings.comment_count >= 1" );
+	$listings = $wpdb->get_results( sprintf("SELECT listings.ID as id FROM %s AS listings WHERE listings.post_type='at_biz_dir' AND listings.comment_count >= 1", $wpdb->posts) );
 
 	if ( ! empty( $listings ) ) {
 		foreach ( $listings as $listing ) {
@@ -173,6 +173,7 @@ function directorist_7100_migrate_expired_meta_to_expired_status( $updater ) {
 			'post_status' => 'expired',
 		] );
 	}
+
 	wp_reset_postdata();
 
 	return $listings->have_posts();
@@ -187,7 +188,7 @@ function directorist_7100_clean_listing_status_expired_meta(): void {
 
 	$wpdb->query(
 		$wpdb->prepare(
-			"DELETE FROM $table_name WHERE meta_key = %s AND meta_value = %s",
+			sprintf('DELETE FROM %s WHERE meta_key = %%s AND meta_value = %%s', $table_name),
 			$meta_key,
 			$meta_value
 		)

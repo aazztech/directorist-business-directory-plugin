@@ -39,6 +39,7 @@ class Pricing_Field extends Base_Field {
 		if ( $value['price_type'] === 'range' && ! empty( $value['price_range'] ) && ! in_array( $value['price_range'], $this->get_price_ranges(), true ) ) {
 			$this->add_error( __( 'Invalid price range.', 'directorist' ) );
 		}
+
         return !$this->has_error();
 	}
 

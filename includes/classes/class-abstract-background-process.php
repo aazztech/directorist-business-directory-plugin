@@ -29,6 +29,7 @@ if ( ! class_exists( 'WP_Background_Process', false ) ) {
 abstract class Background_Process extends \WP_Background_Process {
 
 	public $cron_interval;
+
     /**
 	 * Is queue empty.
 	 *
@@ -74,7 +75,7 @@ abstract class Background_Process extends \WP_Background_Process {
 
 		$key = $wpdb->esc_like( $this->identifier . '_batch_' ) . '%';
 
-		$query = $wpdb->get_row( $wpdb->prepare( "SELECT * FROM {$table} WHERE {$column} LIKE %s ORDER BY {$key_column} ASC LIMIT 1", $key ) ); // @codingStandardsIgnoreLine.
+		$query = $wpdb->get_row( $wpdb->prepare( sprintf('SELECT * FROM %s WHERE %s LIKE %%s ORDER BY %s ASC LIMIT 1', $table, $column, $key_column), $key ) ); // @codingStandardsIgnoreLine.
 
 		$batch       = new \stdClass();
 		$batch->key  = $query->$column;
@@ -194,7 +195,7 @@ abstract class Background_Process extends \WP_Background_Process {
 
 		$key = $wpdb->esc_like( $this->identifier . '_batch_' ) . '%';
 
-		$wpdb->query( $wpdb->prepare( "DELETE FROM {$table} WHERE {$column} LIKE %s", $key ) ); // @codingStandardsIgnoreLine.
+		$wpdb->query( $wpdb->prepare( sprintf('DELETE FROM %s WHERE %s LIKE %%s', $table, $column), $key ) ); // @codingStandardsIgnoreLine.
 
 		return $this;
 	}

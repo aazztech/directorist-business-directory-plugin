@@ -35,7 +35,7 @@ if ( ! class_exists( 'ATBDP_Announcement' ) ) :
 			$new_announcements = $this->get_new_announcement_count();
 
 			if ( $new_announcements > 0 ) {
-				$nav_label = $announcement_tab_text . " <span class='atbdp-nav-badge new-announcement-count show'>{$new_announcements}</span>";
+				$nav_label = $announcement_tab_text . sprintf(" <span class='atbdp-nav-badge new-announcement-count show'>%d</span>", $new_announcements);
 			}
 
 			?>
@@ -273,7 +273,7 @@ if ( ! class_exists( 'ATBDP_Announcement' ) ) :
 			$new_announcements = $this->get_new_announcement_count();
 
 			if ( $new_announcements > 0 ) {
-				$nav_label = $announcement_tab_text . " <span class='atbdp-nav-badge new-announcement-count show'>{$new_announcements}</span>";
+				$nav_label = $announcement_tab_text . sprintf(" <span class='atbdp-nav-badge new-announcement-count show'>%d</span>", $new_announcements);
 			}
 
 			?>
@@ -493,7 +493,7 @@ if ( ! class_exists( 'ATBDP_Announcement' ) ) :
 			}
 
 			$today    = date( 'Y-m-d' );
-			$exp_date = date( 'Y-m-d', strtotime( $today . " + {$expiration} days" ) );
+			$exp_date = date( 'Y-m-d', strtotime( $today . sprintf(' + %s days', $expiration) ) );
 
 			update_post_meta( $announcement, '_exp_in_days', $expiration );
 			update_post_meta( $announcement, '_exp_date', $exp_date );

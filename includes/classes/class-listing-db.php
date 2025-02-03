@@ -80,6 +80,7 @@ class ATBDP_Listing_DB {
         }else{
             $args['no_found_rows'] = false;
         }
+
         $args = apply_filters('atbdp_user_dashboard_query_arguments', $args);
         return new WP_Query(apply_filters('atbdp_user_dashboard_query_arguments',$args));
     }
@@ -97,9 +98,11 @@ class ATBDP_Listing_DB {
             do_action( 'directorist_listing_deleted', $id );
             return true;
         }
+
         return false;
 
     }
+
     //@TODO; methods to add: delete all listing by user
 
     public function get_favourites( $user_id = 0 ) {

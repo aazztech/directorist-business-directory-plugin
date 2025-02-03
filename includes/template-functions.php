@@ -11,8 +11,8 @@ function atbdp_get_extension_template_path( string $base_path = '', string $file
     $base_dirrectory = preg_replace( '/(\/.+)?(\/)?/', '', $base_dirrectory );
 
     $template_file      = "";
-    $extension_template = "{$ext_dir_path}{$ext_file_path}.php";
-    $theme_template     = get_template_directory() . "/directorist/extensions/{$base_dirrectory}/{$ext_file_path}.php";
+    $extension_template = sprintf('%s%s.php', $ext_dir_path, $ext_file_path);
+    $theme_template     = get_template_directory() . sprintf('/directorist/extensions/%s/%s.php', $base_dirrectory, $ext_file_path);
 
     if ( ! empty( $ext_dir_path ) && ($ext_file_path !== '' && $ext_file_path !== '0') && file_exists( $extension_template ) ) {
         $template_file = $extension_template;

@@ -25,27 +25,27 @@ trait URI_Helper {
 		return apply_filters( 'directorist_template_directory', 'directorist' );
 	}
 
-	public static function template_path( $template_name, $args = [] ) {
-		$templates = trailingslashit( self::theme_template_directory() ) . "{$template_name}.php";
+	public static function template_path( string $template_name, $args = [] ) {
+		$templates = trailingslashit( self::theme_template_directory() ) . ($template_name . '.php');
 		$template  = locate_template( $templates );
 
 		if ( ! $template ) {
-			$template = self::template_directory() . "{$template_name}.php";;
+			$template = self::template_directory() . ($template_name . '.php');;
 		}
 
 		return apply_filters( 'directorist_template_file_path', $template, $template_name, $args );
 	}
 
-	public static function get_template( $template, $args = [], $shortcode_key = '' ): void {
+	public static function get_template( $template, $args = [], ?string $shortcode_key = '' ): void {
 		if ( is_array( $args ) ) {
 			extract( $args );
 		}
 
 		// Load extension template if exist
 
-		if ( ! empty( $shortcode_key ) ) {
+		if ( $shortcode_key !== null && $shortcode_key !== '' && $shortcode_key !== '0' ) {
 			$default = [ 'template_directory' => '', 'file_path' => '', 'base_directory' => '' ];
-			$ex_args = apply_filters( "atbdp_ext_template_path_{$shortcode_key}", $default, $args );
+			$ex_args = apply_filters( 'atbdp_ext_template_path_' . $shortcode_key, $default, $args );
 			$ex_args = array_merge( $default, $ex_args );
 
 			$extension_path = atbdp_get_extension_template_path( $ex_args['template_directory'], $ex_args['file_path'], $ex_args['base_directory'] );

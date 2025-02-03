@@ -83,6 +83,7 @@ class Categories_Controller extends Terms_Controller {
 		$context  = empty( $request['context'] ) ? 'view' : $request['context'];
 		$data     = $this->add_additional_fields_to_object( $data, $request );
 		$data     = $this->filter_response_by_context( $data, $context );
+
 		$response = rest_ensure_response( $data );
 
 		$response->add_links( $this->prepare_links( $item, $request ) );
@@ -96,7 +97,7 @@ class Categories_Controller extends Terms_Controller {
 		 * @param object            $item      The original term object.
 		 * @param WP_REST_Request   $request   Request used to generate the response.
 		 */
-		return apply_filters( "directorist_rest_prepare_{$this->taxonomy}", $response, $item, $request );
+		return apply_filters( 'directorist_rest_prepare_' . $this->taxonomy, $response, $item, $request );
 	}
 
 	/**

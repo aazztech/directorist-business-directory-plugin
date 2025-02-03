@@ -16,16 +16,21 @@ class Custom_Widget_Base extends Widget_Base {
 	public $az_prefix =  'directorist'; // change category prefix here /@dev
 
 	public $az_name;
+
 	public $az_base;
+
 	/**
      * @var string
      */
     public $az_category;
+
 	public $az_icon = 'directorist-el-custom';
+
 	/**
      * @var array{single: mixed, checkout: mixed, payment: mixed, transaction: mixed}
      */
     public $az_texts;
+
 	/**
      * @var string
      */

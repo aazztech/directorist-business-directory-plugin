@@ -30,8 +30,8 @@ class Fields {
 			}
 
 			self::$fields[ $field->type ] = $field;
-		} catch ( Exception $e ) {
-			wp_die( $e->getMessage() );
+		} catch ( Exception $exception ) {
+			wp_die( $exception->getMessage() );
 		}
 	}
 

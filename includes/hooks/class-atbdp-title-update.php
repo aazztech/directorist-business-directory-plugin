@@ -20,11 +20,13 @@ if ( ! class_exists( 'ATBDP_Title_Update' ) ) :
                         $term = get_term_by( 'slug', $slug, ATBDP_LOCATION );
                         $title = empty($term)?'':$term->name;
                     }
+
                     // Change Category page title
                     if ($post->ID == $CAT_page_ID && $slug = get_query_var( 'atbdp_category' )) {
                         $term = get_term_by( 'slug', $slug, ATBDP_CATEGORY );
                         $title = empty($term)?'':$term->name;
                     }
+
                     // Change Tag page title
                     if ($post->ID == $Tag_page_ID && $slug = get_query_var( 'atbdp_tag' )) {
                         $term = get_term_by( 'slug', $slug, ATBDP_TAGS );

@@ -176,42 +176,42 @@ if ( ! class_exists( 'ATBDP_Helper' ) ) :
 
 			if ( $by_ratio ) {
 				$padding_top_value = (int) $ratio_height / (int) $ratio_width * 100;
-				$padding_top_css   = "padding-top: $padding_top_value%;";
+				$padding_top_css   = sprintf('padding-top: %s%%;', $padding_top_value);
 				$style .= $padding_top_css;
 			} else {
 				$height_value = (int) $ratio_height;
-				$height_css   = "height: {$height_value}px;";
+				$height_css   = sprintf('height: %dpx;', $height_value);
 				$style .= $height_css;
 			}
 
 			$background_color_css = '';
 			if ( 'full' !== $image_size && ! $blur_background ) {
-				$background_color_css = "background-color: $background_color";
+				$background_color_css = 'background-color: ' . $background_color;
 				$style .= $background_color_css;
 			}
 
 			// Card Front Wrap
 			$card_front_wrap = "<div class='atbd-thumbnail-card-front-wrap'>";
-			$card_front__img = "<img src='$image' alt='$alt' class='atbd-thumbnail-card-front-img'/>";
+			$card_front__img = sprintf("<img src='%s' alt='%s' class='atbd-thumbnail-card-front-img'/>", $image, $alt);
 			$front_wrap_html = $card_front_wrap . $card_front__img . '</div>';
 
 			// Card Back Wrap
 			$card_back_wrap = "<div class='atbd-thumbnail-card-back-wrap'>";
-			$card_back__img = "<img src='$image' class='atbd-thumbnail-card-back-img'/>";
+			$card_back__img = sprintf("<img src='%s' class='atbd-thumbnail-card-back-img'/>", $image);
 			$back_wrap_html = $card_back_wrap . $card_back__img . '</div>';
 
 			$blur_bg = ( $blur_background ) ? $back_wrap_html : '';
 
 			// Card Contain
-			$card_contain_wrap  = "<div class='atbd-thumbnail-card card-contain' style='$style'>";
+			$card_contain_wrap  = sprintf("<div class='atbd-thumbnail-card card-contain' style='%s'>", $style);
 			$image_contain_html = $card_contain_wrap . $blur_bg . $front_wrap_html . '</div>';
 
 			// Card Cover
-			$card_cover_wrap  = "<div class='atbd-thumbnail-card card-cover' style='$style'>";
+			$card_cover_wrap  = sprintf("<div class='atbd-thumbnail-card card-cover' style='%s'>", $style);
 			$image_cover_html = $card_cover_wrap . $front_wrap_html . '</div>';
 
 			// Card Full
-			$card_full_wrap  = "<div class='atbd-thumbnail-card card-full' style='$background_color_css'>";
+			$card_full_wrap  = sprintf("<div class='atbd-thumbnail-card card-full' style='%s'>", $background_color_css);
 			$image_full_html = $card_full_wrap . $front_wrap_html . '</div>';
 
 			$the_html = $image_cover_html;

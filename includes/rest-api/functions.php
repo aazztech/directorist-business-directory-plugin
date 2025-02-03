@@ -17,7 +17,7 @@ defined( 'ABSPATH' ) || exit;
  */
 function directorist_rest_prepare_date_response( $date, $utc = true ): ?string {
 	if ( is_numeric( $date ) ) {
-		$date = new Directorist_DateTime( "@$date", new DateTimeZone( 'UTC' ) );
+		$date = new Directorist_DateTime( '@' . $date, new DateTimeZone( 'UTC' ) );
 		$date->setTimezone( new DateTimeZone( directorist_timezone_string() ) );
 	} elseif ( is_string( $date ) ) {
 		$date = new Directorist_DateTime( $date, new DateTimeZone( 'UTC' ) );
@@ -204,6 +204,7 @@ function directorist_rest_set_uploaded_image_as_attachment( array $upload, $id =
 		if ( trim( $image_meta['title'] ) && ! is_numeric( sanitize_title( $image_meta['title'] ) ) ) {
 			$title = directorist_clean( $image_meta['title'] );
 		}
+
 		if ( trim( $image_meta['caption'] ) !== '' && trim( $image_meta['caption'] ) !== '0' ) {
 			$content = directorist_clean( $image_meta['caption'] );
 		}
@@ -271,6 +272,7 @@ function directorist_bool_to_string( $bool ): string {
 	if ( ! is_bool( $bool ) ) {
 		$bool = directorist_string_to_bool( $bool );
 	}
+
 	return $bool ? 'yes' : 'no';
 }
 

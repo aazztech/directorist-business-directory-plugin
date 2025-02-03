@@ -316,7 +316,7 @@ class Directorist_Listing_Taxonomy {
 
 			$image = get_term_meta($term->term_id, 'image', true);
 			if ( $image ) {
-				$image = atbdp_get_image_source($image, apply_filters("atbdp_{$this->type}_image_size", ['350', '280']));
+				$image = atbdp_get_image_source($image, apply_filters(sprintf('atbdp_%s_image_size', $this->type), ['350', '280']));
 				$image = empty($image) ? '' : $image;
 			}
 

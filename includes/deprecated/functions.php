@@ -80,6 +80,7 @@ if (!function_exists('atbdp_icon_type')) {
         } else {
             return $font_type;
         }
+
         return null;
     }
 }

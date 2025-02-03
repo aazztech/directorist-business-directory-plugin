@@ -144,6 +144,7 @@ function atbdp_create_picvacyAndTerms_pages(): void
                 $options[$op_name] = (int)$id;
             }
         }
+
         // if we have new options then lets update the options with new option values.
         if ($id) {
             update_option('atbdp_picvacyAndTerms_pages', 1);
@@ -172,6 +173,7 @@ function atbdp_handle_attachment($file_handler, $post_id, $set_thu = false)
     if (is_numeric($attach_id)) {
         update_post_meta($post_id, '_atbdp_listing_images', $attach_id);
     }
+
     return $attach_id;
 }
 
@@ -190,8 +192,10 @@ function atbdp_get_preview_button(): ?string
         }else{
             $url = add_query_arg(['atbdp_listing_id' => $id, 'reviewed' => 'yes'], $redirect );
         }
+
         return '<a href="' . esc_url($url) . '" class="btn btn-success">' . apply_filters('atbdp_listing_preview_btn_text',  esc_html__(' Continue','directorist') )  . '</a>';
     }
+
     return null;
 }
 
@@ -209,6 +213,7 @@ function atbdp_get_plugin_data($plugin)
             return $data;
         }
     }
+
     return null;
 }
 
@@ -240,6 +245,7 @@ function atbdp_extend_extension_settings_submenus($default)
         ];
         $default[] = $array_license;
     }
+
     return $default;
 }
 
@@ -547,6 +553,7 @@ function directorist_updated_post_meta_action( $meta_id, $object_id, $meta_key, 
         ], false );
     }
 }
+
 add_action( 'added_post_meta', 'directorist_updated_post_meta_action', 99999, 4 );
 add_action( 'updated_post_meta', 'directorist_updated_post_meta_action', 99999, 4 );
 
@@ -575,5 +582,6 @@ function directorist_delete_never_expire_meta_on_update( $check, $object_id, $me
 
     return true;
 }
+
 add_filter( 'add_post_metadata', 'directorist_delete_never_expire_meta_on_update', 10, 4 );
 add_filter( 'update_post_metadata', 'directorist_delete_never_expire_meta_on_update', 10, 4 );

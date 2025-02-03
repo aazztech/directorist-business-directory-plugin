@@ -29,6 +29,7 @@ class Directorist_All_Locations extends Custom_Widget_Base {
 		foreach ( $locations as $location ) {
 			$result[$location->slug] = $location->name;
 		}
+
 		return $result;
 	}
 
@@ -42,7 +43,7 @@ class Directorist_All_Locations extends Custom_Widget_Base {
 		return wp_list_pluck( $directories, 'name', 'slug' );
 	}
 
-	public function az_fields(): array{
+	protected function az_fields(): array{
 		return [
 			[
 				'mode'    => 'section_start',
@@ -156,6 +157,7 @@ class Directorist_All_Locations extends Custom_Widget_Base {
 			if ( $settings['type'] ) {
 				$atts['directory_type'] = implode( ',', $settings['type'] );
 			}
+
 			if ( $settings['default_type'] ) {
 				$atts['default_directory_type'] = $settings['default_type'];
 			}

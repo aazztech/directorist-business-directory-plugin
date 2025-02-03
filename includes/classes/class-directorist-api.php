@@ -24,6 +24,7 @@ class API {
 
 		$promotion  = static::get( 'v1/get-promo' );
 		$promotion = json_decode( $promotion );
+
 		$end_time  = static::get_promotion_end_time( $promotion );
 
 		set_transient( 'directorist_promotion', $promotion, $end_time );

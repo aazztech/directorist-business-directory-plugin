@@ -92,9 +92,9 @@ if ( ! class_exists( 'ATBDP_Add_Listing' ) ) :
 
 				wp_send_json_success( basename( $status['url'] ) );
 
-			} catch ( Exception $e ) {
+			} catch ( Exception $exception ) {
 
-				wp_send_json_error( $e->getMessage(), $e->getCode() );
+				wp_send_json_error( $exception->getMessage(), $exception->getCode() );
 
 			}
 		}
@@ -339,6 +339,7 @@ if ( ! class_exists( 'ATBDP_Add_Listing' ) ) :
                     if ( is_wp_error( $listing_id ) ) {
 						throw new Exception( $listing_id->get_error_message() );
 					}
+
                     directorist_set_listing_directory( $listing_id, $directory_id );
                     do_action( 'atbdp_listing_inserted', $listing_id );
                     // for sending email notification
@@ -361,6 +362,7 @@ if ( ! class_exists( 'ATBDP_Add_Listing' ) ) :
 						 * */
 						do_action( 'atbdp_before_processing_listing_frontend', $listing_id );
 					}
+
                     if ( 'publish' === $listing_create_status ) {
 						do_action( 'atbdp_listing_published', $listing_id );// for sending email notification
 					}
@@ -431,12 +433,13 @@ if ( ! class_exists( 'ATBDP_Add_Listing' ) ) :
 
 				wp_send_json( apply_filters( 'atbdp_listing_form_submission_info', $data ) );
 
-			} catch (Exception $e ) {
+			} catch (Exception $exception ) {
 				return wp_send_json( [
 					'error'     => true,
-					'error_msg' => $e->getMessage(),
-				], $e->getCode() );
+					'error_msg' => $exception->getMessage(),
+				], $exception->getCode() );
 			}
+
             return null;
 		}
 
@@ -471,6 +474,7 @@ if ( ! class_exists( 'ATBDP_Add_Listing' ) ) :
 				if ( is_string( $value ) && $value === '' ) {
 					return false;
 				}
+
                 return !(is_numeric( $value ) && $value == 0);
 			}, ARRAY_FILTER_USE_BOTH );
 		}
@@ -532,7 +536,7 @@ if ( ! class_exists( 'ATBDP_Add_Listing' ) ) :
 					rename( $filepath, $target_dir . $image );
 
 					$mime = wp_check_filetype( $image );
-					$name = wp_basename( $image, ".{$mime['ext']}" );
+					$name = wp_basename( $image, '.' . $mime['ext'] );
 
 					// Construct the attachment array.
 					$attachment = [
@@ -566,9 +570,9 @@ if ( ! class_exists( 'ATBDP_Add_Listing' ) ) :
 					directorist_background_image_process( $background_processable_images );
 				}
 
-			} catch ( Exception $e ) {
+			} catch ( Exception $exception ) {
 
-				error_log( $e->getMessage() );
+				error_log( $exception->getMessage() );
 
 			}
 		}
@@ -839,6 +843,7 @@ if ( ! class_exists( 'ATBDP_Add_Listing' ) ) :
 			if ( !current_user_can( 'delete_pages' ) && $user_id ) {
 				$query['author'] = $user_id;
 			}
+
 			return $query;
 		}
 

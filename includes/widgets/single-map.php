@@ -70,10 +70,11 @@ class Single_Map extends \WP_Widget {
         $address    = get_post_meta( get_the_ID(), '_address', true );
         $t          = get_the_title();
         $t          = empty($t) ? __('No Title', 'directorist') : $t;
-        $info_content = "<div class='map_info_window'> <h3>{$t}</h3>";
-        $info_content .= "<p> {$tagline} </p>";
-        $info_content .= "<address>{$address}</address>";
-        $info_content .= "<a href='http://www.google.com/maps/place/{$manual_lat},{$manual_lng}' target='_blank'> " . __('View On Google Maps', 'directorist') . "</a></div>";
+
+        $info_content = sprintf("<div class='map_info_window'> <h3>%s</h3>", $t);
+        $info_content .= sprintf('<p> %s </p>', $tagline);
+        $info_content .= sprintf('<address>%s</address>', $address);
+        $info_content .= sprintf("<a href='http://www.google.com/maps/place/%s,%s' target='_blank'> ", $manual_lat, $manual_lng) . __('View On Google Maps', 'directorist') . "</a></div>";
 
 		$listing = \Directorist\Directorist_Single_Listing::instance();
 		$map_data = json_decode( $listing->map_data() );

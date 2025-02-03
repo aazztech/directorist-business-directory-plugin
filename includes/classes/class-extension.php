@@ -31,7 +31,9 @@ if ( ! class_exists( 'ATBDP_Extensions' ) ) {
 		public static $extensions_aliases = [];
 
 		public $extensions          = [];
+
 		public $themes              = [];
+
 		public $required_extensions = [];
 
 		public function __construct() {
@@ -163,7 +165,7 @@ if ( ! class_exists( 'ATBDP_Extensions' ) ) {
 				$is_installed = file_exists( $plugin_dir_path . $extension );
 				$is_installed_alias = ! empty( $extension_alias ) && file_exists( $plugin_dir_path . $extension_alias );
 
-				$base = "{$extension}/{$extension}.php";
+				$base = sprintf('%s/%s.php', $extension, $extension);
 
 				if ( ! empty( $this->extensions[ $extension ] ) && ! empty( $this->extensions[ $extension ]['base'] ) ) {
 					$base = $this->extensions[ $extension ]['base'];
@@ -468,7 +470,7 @@ if ( ! class_exists( 'ATBDP_Extensions' ) ) {
                 ],
 				'directorist-job-manager' => [
                     'name'        => 'Job Manager',
-                    'description' => __( 'If you\'re wondering how to place job listings with detailed specifications, then Directorist-Job Manager gets you rid out of this problem', 'directorist' ),
+                    'description' => __( "If you're wondering how to place job listings with detailed specifications, then Directorist-Job Manager gets you rid out of this problem", 'directorist' ),
                     'link'        => 'https://directorist.com/product/directorist-job-manager/',
                     'thumbnail'   => 'https://directorist.com/wp-content/uploads/edd/2024/05/30_Jobs_Manager.svg',
                     'active'      => true,
@@ -901,7 +903,7 @@ if ( ! class_exists( 'ATBDP_Extensions' ) ) {
 
 			if ( empty( $theme_stylesheet ) ) {
 				$status['success'] = false;
-				$status['message'] = __( 'Theme\'s stylesheet is missing', 'directorist' );
+				$status['message'] = __( "Theme's stylesheet is missing", 'directorist' );
 
 				wp_send_json( [ 'status' => $status ] );
 			}
@@ -1650,7 +1652,7 @@ if ( ! class_exists( 'ATBDP_Extensions' ) ) {
 			}
 
 			$plugin_path = WP_CONTENT_DIR . '/plugins';
-			$temp_dest   = "{$plugin_path}/atbdp-temp-dir";
+			$temp_dest   = $plugin_path . '/atbdp-temp-dir';
 			$file_url    = $args['url'];
 			$file_name   = basename( $file_url );
 			$tmp_file    = download_url( $file_url );
@@ -1679,7 +1681,7 @@ if ( ! class_exists( 'ATBDP_Extensions' ) ) {
 			}
 
 			// Sets file temp destination.
-			$file_path = "{$temp_dest}/{$file_name}";
+			$file_path = sprintf('%s/%s', $temp_dest, $file_name);
 
 			set_error_handler(
 				function ( $errno, $errstr, $errfile, $errline ): bool {
@@ -1695,9 +1697,9 @@ if ( ! class_exists( 'ATBDP_Extensions' ) ) {
 			// Copies the file to the final destination and deletes temporary file.
 			try {
 				copy( $tmp_file, $file_path );
-			} catch ( Exception $e ) {
+			} catch ( Exception $exception ) {
 				$status['success'] = false;
-				$status['message'] = $e->getMessage();
+				$status['message'] = $exception->getMessage();
 
 				return $status;
 			}
@@ -1705,15 +1707,15 @@ if ( ! class_exists( 'ATBDP_Extensions' ) ) {
 			@unlink( $tmp_file );
 			unzip_file( $file_path, $temp_dest );
 
-			if ( "{$plugin_path}/" !== $file_path || $file_path !== $plugin_path ) {
+			if ( $plugin_path . '/' !== $file_path || $file_path !== $plugin_path ) {
 				@unlink( $file_path );
 			}
 
-			$extracted_file_dir = glob( "{$temp_dest}/*", GLOB_ONLYDIR );
+			$extracted_file_dir = glob( $temp_dest . '/*', GLOB_ONLYDIR );
 
 			foreach ( $extracted_file_dir as $dir_path ) {
 				$dir_name  = basename( $dir_path );
-				$dest_path = "{$plugin_path}/{$dir_name}";
+				$dest_path = sprintf('%s/%s', $plugin_path, $dir_name);
 
 				// Delete Previous Files if Exists
 				if ( $wp_filesystem->exists( $dest_path ) ) {
@@ -1762,7 +1764,7 @@ if ( ! class_exists( 'ATBDP_Extensions' ) ) {
 			}
 
 			$theme_path = WP_CONTENT_DIR . '/themes';
-			$temp_dest  = "{$theme_path}/atbdp-temp-dir";
+			$temp_dest  = $theme_path . '/atbdp-temp-dir';
 			$file_url   = $args['url'];
 			$file_name  = basename( $file_url );
 			$tmp_file   = download_url( $file_url );
@@ -1791,7 +1793,7 @@ if ( ! class_exists( 'ATBDP_Extensions' ) ) {
 			}
 
 			// Sets file temp destination.
-			$file_path = "{$temp_dest}/{$file_name}";
+			$file_path = sprintf('%s/%s', $temp_dest, $file_name);
 
 			set_error_handler(
 				function ( $errno, $errstr, $errfile, $errline ): bool {
@@ -1807,9 +1809,9 @@ if ( ! class_exists( 'ATBDP_Extensions' ) ) {
 			// Copies the file to the final destination and deletes temporary file.
 			try {
 				copy( $tmp_file, $file_path );
-			} catch ( Exception $e ) {
+			} catch ( Exception $exception ) {
 				$status['success'] = false;
-				$status['message'] = $e->getMessage();
+				$status['message'] = $exception->getMessage();
 
 				return $status;
 			}
@@ -1817,20 +1819,20 @@ if ( ! class_exists( 'ATBDP_Extensions' ) ) {
 			@unlink( $tmp_file );
 			unzip_file( $file_path, $temp_dest );
 
-			if ( "{$theme_path}/" !== $file_path || $file_path !== $theme_path ) {
+			if ( $theme_path . '/' !== $file_path || $file_path !== $theme_path ) {
 				@unlink( $file_path );
 			}
 
-			$extracted_file_dir = glob( "{$temp_dest}/*", GLOB_ONLYDIR );
+			$extracted_file_dir = glob( $temp_dest . '/*', GLOB_ONLYDIR );
 			$dir_path           = $extracted_file_dir[0];
 
 			$dir_name  = basename( $dir_path );
-			$dest_path = "{$theme_path}/{$dir_name}";
-			$zip_files = glob( "{$dir_path}/*.zip" );
+			$dest_path = sprintf('%s/%s', $theme_path, $dir_name);
+			$zip_files = glob( $dir_path . '/*.zip' );
 
 			// If has child theme
 			if ( $zip_files !== [] && $zip_files !== false ) {
-				$new_temp_dest = "{$temp_dest}/_temp_dest";
+				$new_temp_dest = $temp_dest . '/_temp_dest';
 				$this->install_themes_from_zip_files( $zip_files, $new_temp_dest, $wp_filesystem );
 
 				copy_dir( $new_temp_dest, $theme_path );
@@ -1863,8 +1865,8 @@ if ( ! class_exists( 'ATBDP_Extensions' ) ) {
 				$dir_name = str_replace( '.zip', '', $file );
 
 				if ( preg_match( '/[-]child[.]zip$/', $file ) ) {
-					$temp_dest_path = "{$temp_dest}/{$dir_name}";
-					$main_dest_path = "{$theme_path}/{$dir_name}";
+					$temp_dest_path = sprintf('%s/%s', $temp_dest, $dir_name);
+					$main_dest_path = sprintf('%s/%s', $theme_path, $dir_name);
 
 					// Skip if has child
 					if ( $wp_filesystem->exists( $main_dest_path ) ) {
@@ -1878,7 +1880,7 @@ if ( ! class_exists( 'ATBDP_Extensions' ) ) {
 					continue;
 				}
 
-				$main_dest_path = "{$theme_path}/{$dir_name}";
+				$main_dest_path = sprintf('%s/%s', $theme_path, $dir_name);
 
 				if ( $wp_filesystem->exists( $main_dest_path ) ) {
 					$wp_filesystem->delete( $main_dest_path, true );
@@ -2249,7 +2251,7 @@ if ( ! class_exists( 'ATBDP_Extensions' ) ) {
 			foreach ( $all_themes as $theme_base => $theme_data ) {
 
 				if ( in_array( $theme_base, $sovware_themes ) ) {
-					$customizer_link = "customize.php?theme={$theme_data->stylesheet}&return=%2Fwp-admin%2Fthemes.php";
+					$customizer_link = sprintf('customize.php?theme=%s&return=%%2Fwp-admin%%2Fthemes.php', $theme_data->stylesheet);
 					$customizer_link = admin_url( $customizer_link );
 
 					$installed_theme_list[ $theme_base ] = [
@@ -2336,7 +2338,7 @@ if ( ! class_exists( 'ATBDP_Extensions' ) ) {
 		public function get_current_active_theme_info( array $args = [] ): array {
 			// Get Current Active Theme Info
 			$current_active_theme = wp_get_theme();
-			$customizer_link      = "customize.php?theme={$current_active_theme->stylesheet}&return=%2Fwp-admin%2Fthemes.php";
+			$customizer_link      = sprintf('customize.php?theme=%s&return=%%2Fwp-admin%%2Fthemes.php', $current_active_theme->stylesheet);
 			$customizer_link      = admin_url( $customizer_link );
 
 			// Check form theme update
@@ -2428,9 +2430,9 @@ if ( ! class_exists( 'ATBDP_Extensions' ) ) {
 				);
 
 				$response_status = json_decode( $response['body'], true );
-			} catch ( Exception $e ) {
+			} catch ( Exception $exception ) {
 				$status['success']  = false;
-				$status['message']  = $e->getMessage();
+				$status['message']  = $exception->getMessage();
 				$status['response'] = null;
 
 				return $status;
@@ -2484,9 +2486,9 @@ if ( ! class_exists( 'ATBDP_Extensions' ) ) {
 				} else {
 					$response_body = is_string( $response['body'] ) ? json_decode( $response['body'], true ) : $response['body'];
 				}
-			} catch ( Exception $e ) {
+			} catch ( Exception $exception ) {
 				$status['success'] = false;
-				$status['message'] = $e->getMessage();
+				$status['message'] = $exception->getMessage();
 			}
 
 			if ( is_array( $response_body ) ) {
@@ -2543,7 +2545,7 @@ if ( ! class_exists( 'ATBDP_Extensions' ) ) {
 				);
 
 				$response = json_decode( $response['body'], true );
-			} catch ( Exception $e ) {
+			} catch ( Exception $exception ) {
 				return '';
 			}
 

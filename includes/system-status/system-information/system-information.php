@@ -159,6 +159,7 @@ class ATBDP_System_Info
 				if ( is_multisite() && 0 !== strpos( $table->name, $site_tables_prefix ) && ! in_array( $table->name, $global_tables, true ) ) {
 					continue;
 				}
+
 				$table_type = in_array( $table->name, $core_tables, true ) ? 'directorist' : 'other';
 
 				$tables[ $table_type ][ $table->name ] = [
@@ -198,7 +199,7 @@ class ATBDP_System_Info
     public function get_post_type_counts(): array {
 		global $wpdb;
 
-		$post_type_counts = $wpdb->get_results( "SELECT post_type AS 'type', count(1) AS 'count' FROM {$wpdb->posts} GROUP BY post_type;" );
+		$post_type_counts = $wpdb->get_results( sprintf("SELECT post_type AS 'type', count(1) AS 'count' FROM %s GROUP BY post_type;", $wpdb->posts) );
 
 		return is_array( $post_type_counts ) ? $post_type_counts : [];
     }
@@ -312,6 +313,7 @@ class ATBDP_System_Info
 				if ( $core_version && (empty( $theme_version ) || version_compare($theme_version, $core_version, '<')) && ! $outdated_templates ) {
 					$outdated_templates = true;
 				}
+
 				$override_files[] = [
 					'file'         => str_replace( WP_CONTENT_DIR . '/themes/', '', $theme_file ),
 					'version'      => $theme_version,
@@ -427,6 +429,7 @@ class ATBDP_System_Info
 		foreach ( $php_vars as $setting ) {
 			$dump_php[ $setting ] = ini_get( $setting );
 		}
+
 		$dump_php['Error Reporting'] = implode( '<br>', $this->_error_reporting() );
 		$extensions                  = get_loaded_extensions();
 		natcasesort( $extensions );
@@ -498,6 +501,7 @@ class ATBDP_System_Info
 				}
 			}
 		}
+
 		return $result;
 	}
 
@@ -559,10 +563,11 @@ class ATBDP_System_Info
             case 'K':
                 $ret *= 1024;
         }
+
         return $ret;
     }
 
-    function directorist_help_tip( $tip ): string {
+    public function directorist_help_tip( $tip ): string {
 
         $tip = esc_attr( $tip );
 

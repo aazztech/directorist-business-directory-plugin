@@ -21,10 +21,12 @@ use Directorist\Helper;
 class Listings_Controller extends Posts_Controller {
 
 	public $public;
+
     /**
      * @var \Directorist\Rest_Api\Controllers\Version1\WP_REST_Request
      */
     public $request;
+
     /**
 	 * Route base.
 	 *
@@ -127,9 +129,11 @@ class Listings_Controller extends Posts_Controller {
 			if ( $prev_page > $max_pages ) {
 				$prev_page = $max_pages;
 			}
+
 			$prev_link = add_query_arg( 'page', $prev_page, $base );
 			$response->link_header( 'prev', $prev_link );
 		}
+
 		if ( $max_pages > $page ) {
 			$next_page = $page + 1;
 			$next_link = add_query_arg( 'page', $next_page, $base );
@@ -275,6 +279,7 @@ class Listings_Controller extends Posts_Controller {
 						'title'          => $args['order'],
 					];
 				}
+
 				break;
 
 			case 'date':
@@ -285,6 +290,7 @@ class Listings_Controller extends Posts_Controller {
 						'date'           => $args['order'],
 					];
 				}
+
 				break;
 
 			case 'price':
@@ -304,6 +310,7 @@ class Listings_Controller extends Posts_Controller {
 					$args['orderby']  = 'meta_value_num';
 					$args['order']    = $args['orderby'];
 				}
+
 				break;
 
 			case 'popular':
@@ -471,7 +478,7 @@ class Listings_Controller extends Posts_Controller {
 		 * @param array           $args    Key value array of query var to query value.
 		 * @param WP_REST_Request $request The request used.
 		 */
-		$args = apply_filters( "directorist_rest_{$this->post_type}_object_query", $args, $request );
+		$args = apply_filters( sprintf('directorist_rest_%s_object_query', $this->post_type), $args, $request );
 
 		// Force the post_type argument, since it's not a user input variable.
 		$args['post_type'] = $this->post_type;
@@ -504,7 +511,7 @@ class Listings_Controller extends Posts_Controller {
 		$post = get_post( $id );
 
 		if ( $id === 0 || empty( $post->ID ) || $post->post_type !== $this->post_type ) {
-			return new WP_Error( "directorist_rest_invalid_{$this->post_type}_id", __( 'Invalid ID.', 'directorist' ), [ 'status' => 404 ] );
+			return new WP_Error( sprintf('directorist_rest_invalid_%s_id', $this->post_type), __( 'Invalid ID.', 'directorist' ), [ 'status' => 404 ] );
 		}
 
 		$data = $this->prepare_item_for_response( $post, $request );
@@ -548,7 +555,7 @@ class Listings_Controller extends Posts_Controller {
 		 * @param WP_Post          $object   Object data.
 		 * @param WP_REST_Request  $request  Request object.
 		 */
-		return apply_filters( "directorist_rest_prepare_{$this->post_type}_object", $response, $object, $request );
+		return apply_filters( sprintf('directorist_rest_prepare_%s_object', $this->post_type), $response, $object, $request );
 	}
 
 	/**
@@ -826,6 +833,7 @@ class Listings_Controller extends Posts_Controller {
 			if ( empty( $link['id'] ) || empty( $link['url'] ) ) {
 				continue;
 			}
+
 			$data[] = [
 				'id' => $link['id'],
 				'url' => $link['url']

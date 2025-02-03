@@ -59,6 +59,7 @@ class Comment_Meta {
 		if ( $action === 'set' && isset( $args[0], $args[1] ) ) {
 			return self::set_data( $args[0], $field_key, $args[1] );
 		}
+
         return null;
 	}
 }

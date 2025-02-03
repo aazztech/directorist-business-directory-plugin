@@ -15,7 +15,9 @@
          * @var string
          */
         protected $postilion = 0;
+
         public $importable_fields = [];
+
         private $default_directory;
 
         public function __construct()
@@ -82,6 +84,7 @@
             $default_directory     =  directorist_default_directory();
             $directory_type        = isset( $_POST['directory_type'] ) ? absint( $_POST['directory_type'] ) : 0;
             $directory_type        = ( empty( $directory_type ) ) ? $default_directory : $directory_type;
+
             $title                 = isset( $_POST['listing_title'] ) ? directorist_clean( wp_unslash( $_POST['listing_title'] ) ) : '';
             $new_listing_status    = get_term_meta( $directory_type, 'new_listing_status', 'pending');
             $supported_post_status = array_keys( get_post_statuses() );
@@ -90,6 +93,7 @@
             $description           = isset( $_POST['listing_content'] ) ? directorist_clean( wp_unslash( $_POST['listing_content'] ) ) : '';
             $position              = isset( $_POST['position'] ) ? directorist_clean( wp_unslash( $_POST['position'] ) ) : 0;
             $position              = ( is_numeric( $position ) ) ? ( int ) $position : 0;
+
             $metas                 = isset( $_POST['meta'] ) ? directorist_clean( wp_unslash( $_POST['meta'] ) ) : [];
             $tax_inputs            = isset( $_POST['tax_input'] ) ? directorist_clean( wp_unslash( $_POST['tax_input'] ) ) : [];
             $limit                 = apply_filters( 'atbdp_listing_import_limit_per_cycle', 10 );
@@ -98,6 +102,7 @@
             $limit                 = apply_filters('atbdp_listing_import_limit_per_cycle', ( $total_length > 100 ) ? 20 : ( ( $total_length < 35 ) ? 2 : 5 ) );
             $posts                 = ( empty( $all_posts ) ) ? [] : array_slice( $all_posts, $position );
             $posts                 = apply_filters( 'directorist_listings_importing_posts', $posts, $position, $limit, $_POST );
+
 			$publish_date          = isset( $metas['publish_date'] ) ? directorist_clean( $metas['publish_date'] ) : '';
 
             if ( empty( $total_length ) ) {
@@ -250,6 +255,7 @@
                                 $attachment_ids[] = $attachment_id;
                             }
                         }
+
                         update_post_meta($post_id, '_listing_img', $attachment_ids );
                     }
 
@@ -318,6 +324,7 @@
             if (!filter_var($file_url, FILTER_VALIDATE_URL)) {
                 return false;
             }
+
             $contents = @file_get_contents($file_url);
 
             if ($contents === false) {
@@ -370,6 +377,7 @@
                     $type = $mime['type'];
                 }
             }
+
             $attachment = [ 'post_title' => basename($upload['file']), 'post_content' => '', 'post_type' => 'attachment', 'post_mime_type' => $type, 'guid' => $upload['url'] ];
             $id = wp_insert_attachment( $attachment, $upload['file'], $post_id );
             wp_update_attachment_metadata( $id, wp_generate_attachment_metadata($id, $upload['file']) );
@@ -481,7 +489,9 @@
                 $field_key  = empty( $field['field_key'] ) ? '' : $field['field_key'];
                 $label      = empty( $field['label'] ) ? '' : $field['label'];
                 if( 'tax_input[at_biz_dir-location][]'  == $field_key ) {  $field_key = 'location'; }
+
                 if( 'admin_category_select[]'           == $field_key ) {  $field_key = 'category';  }
+
                 if( 'tax_input[at_biz_dir-tags][]'      == $field_key ) { $field_key = 'tag'; }
 
                 if ( isset( $field['widget_name'] ) ) {
@@ -490,6 +500,7 @@
                         $this->importable_fields[ 'price_range' ] = esc_html__( 'Price Range', 'directorist' );
                         continue;
                         }
+
                     if( 'map' == $field['widget_name'] ) {
                         $this->importable_fields[ 'manual_lat' ] = esc_html__( 'Map Latitude', 'directorist' );
                         $this->importable_fields[ 'manual_lng' ] = esc_html__( 'Map Longitude', 'directorist' );
@@ -616,11 +627,12 @@
         public function importer_body_template( $return = false ): void {
             $step = ( isset( $_REQUEST['step'] ) ) ? directorist_clean( wp_unslash( $_REQUEST['step'] ) ) : 1;
             $step = ( ! empty( $step ) && is_numeric( $step ) ) ? ( int ) $step : 1;
+
             $template_base_path = 'admin-templates/import-export/body-templates';
             $template_paths = [
-                1 => "{$template_base_path}/step-one",
-                2 => "{$template_base_path}/step-two",
-                3 => "{$template_base_path}/step-done",
+                1 => $template_base_path . '/step-one',
+                2 => $template_base_path . '/step-two',
+                3 => $template_base_path . '/step-done',
             ];
 
             $template_path = $template_paths[ $step ] ?? $template_paths[ 1 ];

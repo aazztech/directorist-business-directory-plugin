@@ -306,7 +306,7 @@ class License {
         }
 
         if ( ! current_user_can( 'manage_options' ) ) {
-            $this->error = $this->client->_trans( 'You don\'t have permission to manage license.' );
+            $this->error = $this->client->_trans( "You don't have permission to manage license." );
 
             return;
         }

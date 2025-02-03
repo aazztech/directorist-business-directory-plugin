@@ -220,9 +220,11 @@ class All_Categories extends \WP_Widget {
                     $total = ($count !== 0)?($count-$number_of_expired):$count;
                     $html .= '<span class="directorist-taxonomy-list__count"> (' . $total . ') </span>';
                 }
+
                 if( empty( $settings['immediate_category'] ) && empty( $settings['hide_empty'] ) ) {
                     $html .= $plus_icon ? '<span class="directorist-taxonomy-list__toggler">'. $plus_icon . '</span>' : '';
                 }
+
                 $html .= '</a>';
                 $html .= $this->sub_categories_list( $settings );
                 $html .= '</div>';
@@ -231,6 +233,7 @@ class All_Categories extends \WP_Widget {
                     break;
                 }
             }
+
             $html .= '</div>';
 
         }
@@ -291,6 +294,7 @@ class All_Categories extends \WP_Widget {
                     $html .= '<span class="directorist-taxonomy-list__count"> (' .
                     $total . ') </span>';
                 }
+
                 $html .= $plus_icon ? '<span class="directorist-taxonomy-list__sub-item-toggler"></span>' : '';
                 $html .= '</a>';
                 $html .= $this->sub_categories_list( $settings );
@@ -299,6 +303,7 @@ class All_Categories extends \WP_Widget {
                     break;
                 }
             }
+
             $html .= '</ul>';
 
         }

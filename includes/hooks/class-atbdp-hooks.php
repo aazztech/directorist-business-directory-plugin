@@ -50,6 +50,7 @@ if ( ! class_exists( 'ATBDP_Hooks' ) ) :
                 if ( 'action' === $hook['type'] ) {
                     add_action( $hook['name'], [$callback, 'run'], $priority, $accepted_args );
                 }
+
                 if ( 'filter' === $hook['type'] ) {
                     add_filter( $hook['name'], [$callback, 'run'], $priority, $accepted_args );
                 }

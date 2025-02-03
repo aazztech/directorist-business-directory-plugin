@@ -139,7 +139,7 @@ class AI_Builder {
 				$type_counts[$type]++;
 			}
 			$suffix = $type_counts[$type] > 0 ? '-' . $type_counts[$type] : '';
-			$field_key = "custom-{$type}{$suffix}";
+			$field_key = sprintf('custom-%s%s', $type, $suffix);
 
 			// Handle specific structures for checkbox, radio, and select fields
 			if (in_array($type, ['checkbox', 'radio', 'select']) && isset($field['options']) && is_array($field['options'])) {
@@ -234,7 +234,7 @@ class AI_Builder {
 		array_walk($new_fields_array, function (&$field, $key): void {
 			// Generate the field_key dynamically by type and prefix "custom-"
 			$type = strtolower($field['type']);
-			$field_key = "custom-{$type}";
+			$field_key = 'custom-' . $type;
 
 			$field = array_merge($field, [
 				'widget_group' => 'custom',

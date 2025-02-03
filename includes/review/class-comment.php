@@ -77,6 +77,7 @@ class Comment {
 			if ( ! directorist_is_guest_review_enabled() && ! is_user_logged_in() ) {
 				throw new Exception( __( '<strong>Error</strong>: You must login to share review.', 'directorist' ), 401 );
 			}
+
 			$post_id       = absint( $_POST['comment_post_ID'] ); // @codingStandardsIgnoreLine.
 			$listing       = Directorist_Single_Listing::instance( $post_id );
 			$section_data  = $listing->get_review_section_data();
@@ -122,8 +123,8 @@ class Comment {
 			}
 
 			do_action( 'directorist_review_validate_data', $comment_data );
-		} catch( Exception $e ) {
-			wp_die( wp_kses_post( $e->getMessage() ) );
+		} catch( Exception $exception ) {
+			wp_die( wp_kses_post( $exception->getMessage() ) );
 			exit;
 		}
 
@@ -185,6 +186,7 @@ class Comment {
 					} elseif ( ! in_array( $row['comment_approved'], [ 'post-trashed', 'trash' ], true ) ) {
 						$stats['total_comments'] += $row['num_comments'];
 					}
+
 					if ( isset( $approved[ $row['comment_approved'] ] ) ) {
 						$stats[ $approved[ $row['comment_approved'] ] ] = $row['num_comments'];
 					}
@@ -409,7 +411,7 @@ class Comment {
 					FROM $wpdb->comments
 					WHERE
 						comment_parent = 0
-						AND comment_post_ID IN ( $listing_id_string_placeholder )
+						AND comment_post_ID IN ( {$listing_id_string_placeholder} )
 						AND comment_approved = '1'
 						AND comment_type = 'review'
 					GROUP BY listing_id

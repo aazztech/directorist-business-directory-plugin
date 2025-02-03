@@ -13,12 +13,19 @@ if (! defined( 'ABSPATH' )) {
 class EDD_SL_Plugin_Updater {
 
 	private $api_url     = '';
+
 	private $api_data    = [];
+
 	private $name        = '';
+
 	private string $slug;
+
 	private $version     = '';
+
 	private bool $wp_override;
+
 	private bool $beta;
+
 	private string $cache_key;
 
 	private int $health_check_timeout = 5;
@@ -243,7 +250,7 @@ class EDD_SL_Plugin_Updater {
 				);
 			}
 
-			do_action( "in_plugin_update_message-{$file}", $plugin, $version_info );
+			do_action( 'in_plugin_update_message-' . $file, $plugin, $version_info );
 
 			echo '</div></td></tr>';
 		}
@@ -357,6 +364,7 @@ class EDD_SL_Plugin_Updater {
 		if ( strpos( $url, 'https://' ) !== false && strpos( $url, 'edd_action=package_download' ) ) {
 			$args['sslverify'] = $verify_ssl;
 		}
+
 		return $args;
 
 	}

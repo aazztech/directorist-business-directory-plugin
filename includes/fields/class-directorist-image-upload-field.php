@@ -91,6 +91,7 @@ class Image_Upload_Field extends Base_Field {
 				break;
 			}
 		}
+
         return !$this->has_error();
 	}
 

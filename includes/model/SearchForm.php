@@ -13,46 +13,75 @@ class Directorist_Listing_Search_Form {
 
 	// Search Shortcode
 	public $options = [];
+
 	public $type;
+
 	public $listing_type;
+
 	/**
      * @var mixed[]
      */
     public $form_data;
 
 	public $atts;
+
 	public $defaults;
+
 	public $params;
 
 	public $show_title_subtitle;
+
 	public $has_search_button;
+
 	public $has_more_filters_button;
+
 	public $logged_in_user_only;
+
 	public $redirect_page_url;
+
 	public $search_bar_title;
+
 	public $search_bar_sub_title;
+
 	public $search_button_text;
+
 	public $more_filters_text;
+
 	public $more_filters_display;
+
 	public $show_connector;
+
 	public $connectors_title;
+
 	public $popular_cat_title;
+
 	public $popular_cat_num;
+
 	public $show_popular_category;
+
 	public $directory_type;
+
 	public $default_directory_type;
 
 	// Common - Search Shortcode and Listing Header
 	public $has_reset_filters_button;
+
 	public $has_apply_filters_button;
+
 	public $reset_filters_text;
+
 	public $apply_filters_text;
 
 	public $c_symbol;
+
 	public $category_id;
+
 	public $category_class;
+
 	public $location_id;
+
 	public $location_class;
+
 	public $select_listing_map;
 
 	protected $deferred_data = [];
@@ -110,6 +139,7 @@ class Directorist_Listing_Search_Form {
 
 			return $this->deferred_data[ $prop ];
 		}
+
         return null;
 	}
 
@@ -394,6 +424,7 @@ class Directorist_Listing_Search_Form {
 				}
 			}
 		}
+
 		return [
 			'custom_field_key'	=> $custom_field_key,
 			'assign_to_cat'		=> $assign_to_cat,
@@ -612,6 +643,7 @@ class Directorist_Listing_Search_Form {
 		if ( is_wp_error( $term_data ) ) {
 			return '';
 		}
+
 		return $term_data->slug;
 	}
 
@@ -639,6 +671,7 @@ class Directorist_Listing_Search_Form {
 		if( ! empty( $radius_search ) && 'zip' == $radius_search_based_on ) {
 			$class .= ' zip-radius-search';
 		}
+
 		return $class;
 	}
 
@@ -699,6 +732,7 @@ class Directorist_Listing_Search_Form {
 					$tag_id[] = $tag_post->ID;
 				}
 			}
+
 			$tag_id = $tag_id === [] ? '' : $tag_id;
 			$terms  = wp_get_object_terms( $tag_id, ATBDP_TAGS );
 		}

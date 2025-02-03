@@ -150,7 +150,7 @@ class ATBDP_Order
 
         $args = [
             'labels' => $labels,
-            'description' => __('This order post type will keep track of user\'s order and payment status', 'directorist'),
+            'description' => __("This order post type will keep track of user's order and payment status", 'directorist'),
             'supports' => ['title', 'author',],
             'taxonomies' => [''],
             'hierarchical' => false,
@@ -461,7 +461,7 @@ class ATBDP_Order
             // This is based on wp-admin/edit.php
             $sendback = remove_query_arg(array_merge($allowed_actions, ['untrashed', 'deleted', 'ids']), wp_get_referer());
             if (!$sendback) {
-                $sendback = admin_url("edit.php?post_type=$post_type");
+                $sendback = admin_url('edit.php?post_type=' . $post_type);
             }
 
             $pagenum = $wp_list_table->get_pagenum();

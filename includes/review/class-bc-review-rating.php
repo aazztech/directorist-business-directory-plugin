@@ -141,6 +141,7 @@ class ATBDP_Review_Rating_DB {
 				'rating' => (int) \Directorist\Review\Comment_Meta::get_rating( $comment_id )
 			];
 		}
+
 		unset( $comments, $comments_query );
 
 		return $data;

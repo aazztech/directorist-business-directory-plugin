@@ -120,6 +120,7 @@ class Helper {
 		if (trim($input) === "") {
             return $input;
         }
+
 		return preg_replace(
 			[
 				// Remove comment(s)
@@ -201,6 +202,7 @@ class Helper {
 				if ( $screen == 'at_biz_dir_page_atbdp-directory-types' && empty( $_GET['action'] ) ) {
 					$status = true;
 				}
+
 				break;
 
 			case 'builder-edit':
@@ -213,24 +215,28 @@ class Helper {
 					// Multi-directory disabled
 					$status = true;
 				}
+
 				break;
 
 			case 'settings':
 				if ( $screen == 'at_biz_dir_page_atbdp-settings' ) {
 					$status = true;
 				}
+
 				break;
 
 			case 'all_listings':
 				if ( $screen == 'edit' && !empty( $_GET['post_type'] ) && $_GET['post_type'] == 'at_biz_dir' ) {
 					$status = true;
 				}
+
 				break;
 
 			case 'add_listing':
 				if ( $screen == 'post' && get_post_type( get_the_ID() ) === 'at_biz_dir' ) {
 					$status = true;
 				}
+
 				break;
 
 			case 'taxonomy':
@@ -240,36 +246,42 @@ class Helper {
 						$status = true;
 					}
 				}
+
 				break;
 
 			case 'support':
 				if ( $screen == 'at_biz_dir_page_directorist-status' ) {
 					$status = true;
 				}
+
 				break;
 
 			case 'extensions':
 				if ( $screen == 'at_biz_dir_page_atbdp-extension' ) {
 					$status = true;
 				}
+
 				break;
 
 			case 'import_export':
 				if ( $screen == 'at_biz_dir_page_tools' ) {
 					$status = true;
 				}
+
 				break;
 
 			case 'wp-plugins':
 				if ( $screen == 'plugins' ) {
 					$status = true;
 				}
+
 				break;
 
 			case 'wp-users':
 				if ( $screen == 'users' ) {
 					$status = true;
 				}
+
 				break;
 		}
 

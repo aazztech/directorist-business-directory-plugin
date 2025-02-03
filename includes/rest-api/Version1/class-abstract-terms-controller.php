@@ -19,7 +19,9 @@ use WP_REST_Server;
 abstract class Terms_Controller extends Abstract_Controller {
 
 	public $total_terms;
+
     public $sort_column;
+
     /**
 	 * Route base.
 	 *
@@ -261,7 +263,7 @@ abstract class Terms_Controller extends Abstract_Controller {
 		 *                                       passed to get_terms.
 		 * @param WP_REST_Request $request       The current request.
 		 */
-		$prepared_args = apply_filters( "directorist_rest_{$taxonomy}_query", $prepared_args, $request );
+		$prepared_args = apply_filters( sprintf('directorist_rest_%s_query', $taxonomy), $prepared_args, $request );
 
 		do_action( 'directorist_rest_before_query', 'get_term_items', $request, $prepared_args, $taxonomy );
 
@@ -332,9 +334,11 @@ abstract class Terms_Controller extends Abstract_Controller {
 			if ( $prev_page > $max_pages ) {
 				$prev_page = $max_pages;
 			}
+
 			$prev_link = add_query_arg( 'page', $prev_page, $base );
 			$response->link_header( 'prev', $prev_link );
 		}
+
 		if ( $max_pages > $page ) {
 			$next_page = $page + 1;
 			$next_link = add_query_arg( 'page', $next_page, $base );
@@ -402,13 +406,16 @@ abstract class Terms_Controller extends Abstract_Controller {
 		if ( ! empty( $schema['properties']['description'] ) && isset( $request['description'] ) ) {
 			$args['description'] = $request['description'];
 		}
+
 		if ( isset( $request['slug'] ) ) {
 			$args['slug'] = $request['slug'];
 		}
+
 		if ( isset( $request['parent'] ) ) {
 			if ( ! is_taxonomy_hierarchical( $taxonomy ) ) {
 				return new WP_Error( 'directorist_rest_taxonomy_not_hierarchical', __( 'Can not set resource parent, taxonomy is not hierarchical.', 'directorist' ), [ 'status' => 400 ] );
 			}
+
 			$args['parent'] = $request['parent'];
 		}
 
@@ -452,7 +459,7 @@ abstract class Terms_Controller extends Abstract_Controller {
 		 * @param WP_REST_Request $request   Request object.
 		 * @param boolean         $creating  True when creating term, false when updating.
 		 */
-		do_action( "directorist_rest_insert_{$taxonomy}", $term, $request, true );
+		do_action( 'directorist_rest_insert_' . $taxonomy, $term, $request, true );
 
 		$request->set_param( 'context', 'edit' );
 		$response = $this->prepare_item_for_response( $term, $request );
@@ -512,16 +519,20 @@ abstract class Terms_Controller extends Abstract_Controller {
 		if ( isset( $request['name'] ) ) {
 			$prepared_args['name'] = $request['name'];
 		}
+
 		if ( ! empty( $schema['properties']['description'] ) && isset( $request['description'] ) ) {
 			$prepared_args['description'] = $request['description'];
 		}
+
 		if ( isset( $request['slug'] ) ) {
 			$prepared_args['slug'] = $request['slug'];
 		}
+
 		if ( isset( $request['parent'] ) ) {
 			if ( ! is_taxonomy_hierarchical( $taxonomy ) ) {
 				return new WP_Error( 'directorist_rest_taxonomy_not_hierarchical', __( 'Can not set resource parent, taxonomy is not hierarchical.', 'directorist' ), [ 'status' => 400 ] );
 			}
+
 			$prepared_args['parent'] = $request['parent'];
 		}
 
@@ -553,7 +564,7 @@ abstract class Terms_Controller extends Abstract_Controller {
 		 * @param WP_REST_Request $request   Request object.
 		 * @param boolean         $creating  True when creating term, false when updating.
 		 */
-		do_action( "directorist_rest_insert_{$taxonomy}", $term, $request, false );
+		do_action( 'directorist_rest_insert_' . $taxonomy, $term, $request, false );
 
 		$request->set_param( 'context', 'edit' );
 		$response = $this->prepare_item_for_response( $term, $request );
@@ -604,7 +615,7 @@ abstract class Terms_Controller extends Abstract_Controller {
 		 * @param WP_REST_Response $response The response data.
 		 * @param WP_REST_Request  $request  The request sent to the API.
 		 */
-		do_action( "directorist_rest_delete_{$taxonomy}", $term, $response, $request );
+		do_action( 'directorist_rest_delete_' . $taxonomy, $term, $response, $request );
 
 		return apply_filters( 'directorist_rest_response', $response, 'delete_term_item', $request, $id, $taxonomy );
 	}
@@ -686,8 +697,10 @@ abstract class Terms_Controller extends Abstract_Controller {
 					$this->sort_column = $prepared_args['orderby'];
 					break;
 			}
+
 			usort( $query_result, [ $this, 'compare_terms' ] );
 		}
+
 		if ( strtolower( $prepared_args['order'] ) !== 'asc' ) {
 			$query_result = array_reverse( $query_result );
 		}

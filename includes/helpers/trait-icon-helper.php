@@ -26,6 +26,7 @@ trait Icon_Helper {
 		if ( $file === '' || $file === '0' ) {
 			return '';
 		}
+
 		return ATBDP_URL . 'assets/icons/' . $file;
 	}
 

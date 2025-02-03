@@ -173,6 +173,7 @@ function atbdp_send_back_to_checkout($args = []): void
 
         $redirect = add_query_arg($args, $redirect);
     }
+
     wp_redirect(apply_filters('atbdp_send_back_to_checkout', $redirect, $args));
     wp_die();
 }

@@ -20,7 +20,7 @@ class Directorist_Transaction_Failure extends Custom_Widget_Base {
 	}
 
 
-	public function az_fields(): array{
+	protected function az_fields(): array{
 		return [
 			[
 				'mode'    => 'section_start',

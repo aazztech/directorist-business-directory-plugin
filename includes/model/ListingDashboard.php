@@ -15,19 +15,24 @@ if (! defined( 'ABSPATH' )) {
 class Directorist_Listing_Dashboard {
 
 	protected static $instance;
+
 	public static $display_title = false;
 
 	public $id;
 
 	public $current_listings_query;
+
 	public $user_type;
+
 	public $become_author_button;
+
 	public $become_author_button_text;
 
 	private function __construct() {
 		$this->id 						 = get_current_user_id();
 		$user_type 		  		 		 = get_user_meta( get_current_user_id(), '_user_type', true );
 		$this->user_type  		 		 = empty( $user_type ) ? '' : $user_type;
+
 		$this->become_author_button 	 = get_directorist_option( 'become_author_button', 1);
 		$this->become_author_button_text = get_directorist_option( 'become_author_button_text', __( 'Become An Author', 'directorist' ) );
 	}
@@ -36,6 +41,7 @@ class Directorist_Listing_Dashboard {
 		if ( null == self::$instance ) {
 			self::$instance = new self();
 		}
+
 		return self::$instance;
 	}
 
@@ -216,7 +222,7 @@ class Directorist_Listing_Dashboard {
 		$image_alt = ( empty( $image_alt ) ) ? esc_html( get_the_title( $thumbnail_id ) ) : esc_attr( $image_alt );
 		$image_alt = ( empty( $image_alt ) ) ? esc_html( get_the_title() ) : $image_alt;
 
-		return "<img src='$image_src' alt='$image_alt' />";
+		return sprintf("<img src='%s' alt='%s' />", $image_src, $image_alt);
 	}
 
 	/**
@@ -240,6 +246,7 @@ class Directorist_Listing_Dashboard {
 				if (!empty($cats)) {
 					$cat_icon = get_cat_icon($cats[0]->term_id);
 				}
+
 				$cat_icon = empty($cat_icon) ? 'las la-tags' : $cat_icon;
 				$icon = directorist_icon( $cat_icon, false );
 
@@ -255,6 +262,7 @@ class Directorist_Listing_Dashboard {
 				if ( ! empty( $listing_prv_img ) ) {
 					$prv_image = atbdp_get_image_source( $listing_prv_img, 'large' );
 				}
+
 				if ( ! empty( $listing_img[0] ) ) {
 					$gallery_img = atbdp_get_image_source( $listing_img[0], 'medium' );
 				}
@@ -263,10 +271,12 @@ class Directorist_Listing_Dashboard {
 					$img_src = $prv_image;
 
 				}
+
 				if ( ! empty( $listing_img[0] ) && empty( $listing_prv_img ) ) {
 					$img_src = $gallery_img;
 
 				}
+
 				if ( empty( $listing_img[0] ) && empty( $listing_prv_img ) ) {
 					$img_src = $default_image_src;
 				}
@@ -453,8 +463,9 @@ class Directorist_Listing_Dashboard {
 			$renew_succeed = $_GET['renew'] == 'success';
 		}
 		else {
-			$renew_token_expired = $renew_succeed = false;
-		}
+            $renew_token_expired = false;
+            $renew_succeed = false;
+        }
 
 		$args = [
 			'dashboard' => $this,

@@ -6,8 +6,11 @@ class Multi_Directory_Manager {
     use Multi_Directory_Helper;
 
     public static $fields  = [];
+
     public static $layouts = [];
+
     public static $config  = [];
+
     public static $options = [];
 
     /**
@@ -489,6 +492,7 @@ class Multi_Directory_Manager {
     public function import_default_directory( array $args = [] ): void {
         $file = DIRECTORIST_ASSETS_DIR . 'sample-data/directory/directory.json';
         if ( ! file_exists( $file ) ) { return; }
+
         $file_contents = file_get_contents( $file );
 
         $add_directory = self::add_directory([
@@ -514,6 +518,7 @@ class Multi_Directory_Manager {
 
                     wp_set_object_terms( get_the_id(), $add_directory['term_id'], 'atbdp_listing_types' );
                 }
+
                 wp_reset_postdata();
             }
         }

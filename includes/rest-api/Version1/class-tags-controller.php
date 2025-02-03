@@ -66,7 +66,7 @@ class Tags_Controller extends Terms_Controller {
 		 * @param object            $item      The original term object.
 		 * @param WP_REST_Request   $request   Request used to generate the response.
 		 */
-		return apply_filters( "directorist_rest_prepare_{$this->taxonomy}", $response, $item, $request );
+		return apply_filters( 'directorist_rest_prepare_' . $this->taxonomy, $response, $item, $request );
 	}
 
 	/**

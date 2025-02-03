@@ -7,8 +7,11 @@ use function PHPSTORM_META\type;
 
 class Builder_Data {
     protected static $fields           = [];
+
     protected static $layouts          = [];
+
     protected static $config           = [];
+
     protected static $options          = [];
 
     public function __construct() {

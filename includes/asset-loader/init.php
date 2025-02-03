@@ -99,6 +99,7 @@ class Asset_Loader {
 					wp_enqueue_script( 'jquery-masonry' );
 					self::enqueue_map_scripts();
 				}
+
 				break;
 
 			// Search Form
@@ -173,6 +174,7 @@ class Asset_Loader {
 				if ( Helper::map_type() === 'google' ) {
 					wp_enqueue_script( 'google-map-api' );
 				}
+
 				break;
 
 			case 'search-form/custom-fields/color_picker':

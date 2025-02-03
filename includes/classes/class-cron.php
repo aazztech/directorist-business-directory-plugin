@@ -15,6 +15,7 @@
 if ( ! defined( 'ABSPATH' ) ) {
 	die( 'What the hell are you doing here accessing this file directly' );
 }
+
 if ( ! class_exists( 'ATBDP_Cron' ) ) :
 	class ATBDP_Cron {
 
@@ -33,7 +34,7 @@ if ( ! class_exists( 'ATBDP_Cron' ) ) :
 		}
 
 		// update_atbdp_schedule_tasks
-		function update_atbdp_schedule_tasks( $post_id, $post ): void {
+		public function update_atbdp_schedule_tasks( $post_id, $post ): void {
 
 			if ( ! is_admin() || ATBDP_POST_TYPE !== get_post_type( $post_id ) ) {
 				return;
@@ -80,6 +81,7 @@ if ( ! class_exists( 'ATBDP_Cron' ) ) :
 			 */
 			do_action( 'atbdp_schedule_task' );
 		}
+
 		/**
 		 * @since 5.0.1
 		 */
@@ -159,6 +161,7 @@ if ( ! class_exists( 'ATBDP_Cron' ) ) :
 			if ( $listings->found_posts ) {
 				return $listings->posts;
 			}
+
 			return '';
 		}
 
@@ -171,7 +174,7 @@ if ( ! class_exists( 'ATBDP_Cron' ) ) :
 		private function update_renewal_status(): void {
 			$renew_email_threshold = get_directorist_option( 'email_to_expire_day' ); // before how many days of expiration, a renewal message should be sent
 			if ( $renew_email_threshold > 0 ) {
-				$renew_email_threshold_date = date( 'Y-m-d H:i:s', strtotime( "+{$renew_email_threshold} days" ) );
+				$renew_email_threshold_date = date( 'Y-m-d H:i:s', strtotime( sprintf('+%s days', $renew_email_threshold) ) );
 
 				// Define the query
 				$args = [
@@ -260,7 +263,7 @@ if ( ! class_exists( 'ATBDP_Cron' ) ) :
 						'_featured'              => 0,
 						'_renewal_reminder_sent' => 0,
 					];
-					
+
 					// if deletion threshold is set then add deletion date
 					if ( $delete_threshold > 0 ) {
 						$metas['_deletion_date'] = date( 'Y-m-d H:i:s', strtotime( '+' . $delete_threshold . ' days' ) );
@@ -415,7 +418,7 @@ if ( ! class_exists( 'ATBDP_Cron' ) ) :
 						// Send emails
 						$expiration_date      = get_post_meta( $listing->ID, '_expiry_date', true );
 						$expiration_date_time = strtotime( $expiration_date );
-						$reminder_date_time   = strtotime( "+{$email_renewal_day} days", strtotime( $expiration_date_time ) );
+						$reminder_date_time   = strtotime( sprintf('+%d days', $email_renewal_day), strtotime( $expiration_date_time ) );
 
 						if ( current_time( 'timestamp' ) > $reminder_date_time ) {
 							do_action( 'atbdp_send_renewal_reminder', $listing->ID );
@@ -474,6 +477,7 @@ if ( ! class_exists( 'ATBDP_Cron' ) ) :
 					} else {
 						wp_trash_post( $listing->ID );
 					}
+
 					do_action( 'atbdp_deleted_expired_listings', $listing->ID );
 				}
 			}

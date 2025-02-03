@@ -243,6 +243,7 @@ class Listings_Actions_Controller extends Abstract_Controller {
 		$message = strtr($message, $placeholders);
 
 		$message = atbdp_email_html($subject, $message);
+
 		$headers = "From: {$user->display_name} <{$user->user_email}>\r\n";
 		$headers .= "Reply-To: {$user->user_email}\r\n";
 
@@ -292,6 +293,7 @@ class Listings_Actions_Controller extends Abstract_Controller {
 		$subject = strtr($contact_email_subject, $placeholders);
 		$message = strtr($contact_email_body, $placeholders);
 		$message = nl2br($message);
+
 		$headers = "From: {$name} <{$site_email}>\r\n";
 		$headers .= "Reply-To: {$email}\r\n";
 		$message = atbdp_email_html( $subject, $message );

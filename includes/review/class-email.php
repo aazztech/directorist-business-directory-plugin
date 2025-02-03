@@ -102,6 +102,7 @@ class Email {
 		$listing_title = get_the_title( $post->ID );
 		$listing_url   = get_the_permalink( $post->ID );
 		$listing_url   = sprintf( '<a href="%s">%s</a>', $listing_url, $listing_url );
+
 		$comment_author = empty( $review->comment_author ) ? $review->comment_author_email : $review->comment_author;
 
 		$to = get_directorist_option( 'admin_email_lists' );
@@ -110,9 +111,10 @@ class Email {
 			$to = get_bloginfo( 'admin_email' );
 		}
 
-		$subject = "[$site_name] New review at $listing_title";
-		$message = __( "Dear Admin,<br /><br />A new review at $listing_url.<br /><br />Name: $comment_author<br />Email: $review->comment_author_email<br />Review: $review->comment_content", 'directorist' );
+		$subject = sprintf('[%s] New review at %s', $site_name, $listing_title);
+		$message = __( sprintf('Dear Admin,<br /><br />A new review at %s.<br /><br />Name: %s<br />Email: %s<br />Review: %s', $listing_url, $comment_author, $review->comment_author_email, $review->comment_content), 'directorist' );
 		$message = atbdp_email_html( $subject, $message );
+
 		$headers = "From: {$review->comment_author_email} <{$review->comment_author_email}>\r\n";
 		$headers .= "Reply-To: {$review->comment_author_email}\r\n";
 

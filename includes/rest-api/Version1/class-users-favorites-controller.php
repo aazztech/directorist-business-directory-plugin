@@ -248,6 +248,7 @@ class User_Favorites_Controller extends Abstract_Controller {
 		$context  = empty( $request['context'] ) ? 'view' : $request['context'];
 		$data     = $this->add_additional_fields_to_object( $data, $request );
 		$data     = $this->filter_response_by_context( $data, $context );
+
 		$response = rest_ensure_response( $data );
 
 		/**
@@ -282,5 +283,6 @@ class User_Favorites_Controller extends Abstract_Controller {
 		return $this->add_additional_fields_schema( $schema );
 	}
 }
+
 /* This code is retrieving the user meta data for the user ID of the user that is logged
 in. */

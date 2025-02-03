@@ -750,7 +750,7 @@ if ( ! class_exists( 'ATBDP_Ajax_Handler' ) ) :
 			// Register the user
 			$user_name = preg_replace( '/@.+$/', '', $email );
 			$rand      = random_int( 10000, 90000 );
-			$username  = "{$user_name}_{$rand}";
+			$username  = sprintf('%s_%d', $user_name, $rand);
 			$new_user  = register_new_user( $username, $email );
 
 			if ( ! $new_user ) {
@@ -925,8 +925,8 @@ if ( ! class_exists( 'ATBDP_Ajax_Handler' ) ) :
 				}*/
 				// atbdp_Media::post_attachment_upload();
 				// ATBDP()->atbdp_Media->post_attachment_upload();
-			} catch ( \Exception $e ) {
-				wp_send_json_error( $e->getMessage() );
+			} catch ( \Exception $exception ) {
+				wp_send_json_error( $exception->getMessage() );
 			}
 		}
 
@@ -1410,7 +1410,7 @@ if ( ! class_exists( 'ATBDP_Ajax_Handler' ) ) :
 		 * @return   string    $result    Message based on the result.
 		 * @since    4.0.0
 		 */
-		function atbdp_email_listing_owner_listing_contact() {
+		public function atbdp_email_listing_owner_listing_contact() {
 			if ( ! directorist_verify_nonce() ) {
 				return false;
 			}
@@ -1495,7 +1495,7 @@ if ( ! class_exists( 'ATBDP_Ajax_Handler' ) ) :
 		 *
 		 * @since    4.0
 		 */
-		function atbdp_email_admin_listing_contact() {
+		public function atbdp_email_admin_listing_contact() {
 
 			if ( ! directorist_verify_nonce() ) {
 				return false;

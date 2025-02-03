@@ -56,7 +56,7 @@ class Helper {
     public static function getTimeInMillisecond(): int {
 		try {
 			return ( int ) ( microtime( true ) * 1000 );
-		} catch ( Exception $e ) {
+		} catch ( Exception $exception ) {
 			return 0;
 		}
 	}
@@ -754,7 +754,7 @@ class Helper {
 		$url = preg_replace( self::get_query_string_pattern(), '', $url );
 		$url = rtrim( $url, '/' );
 
-		return "{$url}/{$slug}/{$query_string}";
+		return sprintf('%s/%s/%s', $url, $slug, $query_string);
 	}
 
 	/**

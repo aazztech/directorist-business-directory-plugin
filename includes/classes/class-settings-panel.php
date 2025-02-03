@@ -6,11 +6,17 @@ if ( ! class_exists('ATBDP_Settings_Panel') ) {
 	class ATBDP_Settings_Panel
 	{
 		private string $extension_url    = '';
+
 		public $fields            = [];
+
 		public $layouts           = [];
+
 		public $config            = [];
+
 		public $default_form      = [];
+
 		public $old_custom_fields = [];
+
 		public $cetagory_options  = [];
 
 		// run
@@ -165,7 +171,7 @@ if ( ! class_exists('ATBDP_Settings_Panel') ) {
             $e = '</span></b>'; // end color
 
             $description = <<<SWBD
-                You can use the following keywords/placeholder in any of your email bodies/templates or subjects to output dynamic value. **Usage: place the placeholder name between $c == $e and $c == $e . For Example: use {$c}==SITE_NAME=={$e} to output The Your Website Name etc. <br/><br/>
+                You can use the following keywords/placeholder in any of your email bodies/templates or subjects to output dynamic value. **Usage: place the placeholder name between {$c} == {$e} and {$c} == {$e} . For Example: use {$c}==SITE_NAME=={$e} to output The Your Website Name etc. <br/><br/>
                 {$c}==NAME=={$e} : It outputs The listing owner's display name on the site<br/>
                 {$c}==USERNAME=={$e} : It outputs The listing owner's user name on the site<br/>
                 {$c}==SITE_NAME=={$e} : It outputs your site name<br/>
@@ -298,7 +304,7 @@ SWBD;
 			$path = ( empty( $args['path'] ) ) ? '' : $args['path'];
 
 			// $path = 'directory/directory.json'
-			$file = DIRECTORIST_ASSETS_DIR . "sample-data/{$path}";
+			$file = DIRECTORIST_ASSETS_DIR . ('sample-data/' . $path);
 			if ( ! file_exists( $file ) ) { return ''; }
 
 			$data = file_get_contents( $file );
@@ -1498,7 +1504,7 @@ Please remember that your order may be canceled if you do not make your payment 
                 'map_api_key' => [
                     'type' => 'text',
                     'label' => __('Google Map API key', 'directorist'),
-                    'description' => sprintf(__('Please replace it by your own API. It\'s required to use Google Map. You can find detailed information %s.', 'directorist'), '<a href="https://developers.google.com/maps/documentation/javascript/get-api-key" target="_blank"> <div class="atbdp_shortcodes" style="color: red;">here</div> </a>'),
+                    'description' => sprintf(__("Please replace it by your own API. It's required to use Google Map. You can find detailed information %s.", 'directorist'), '<a href="https://developers.google.com/maps/documentation/javascript/get-api-key" target="_blank"> <div class="atbdp_shortcodes" style="color: red;">here</div> </a>'),
                     'value' => '',
                     'show-if' => [
                         'where' => "select_listing_map",
@@ -2408,7 +2414,7 @@ Please remember that your order may be canceled if you do not make your payment 
                 'single_category_meta_desc'    => [
                     'type'          => 'text',
                     'label'         => __('Single Category Page Meta Description', 'directorist'),
-                    'description'   => __('Leave it blank to set category\'s description as meta description of this page', 'directorist'),
+                    'description'   => __("Leave it blank to set category's description as meta description of this page", 'directorist'),
                     'value'         => '',
                 ],
                 'all_locations_meta_title'    => [
@@ -2431,7 +2437,7 @@ Please remember that your order may be canceled if you do not make your payment 
                 'single_locations_meta_desc'    => [
                     'type'          => 'text',
                     'label'         => __('Single Locations Page Meta Description', 'directorist'),
-                    'description'   => __('Leave it blank to set location\'s description as meta description of this page', 'directorist'),
+                    'description'   => __("Leave it blank to set location's description as meta description of this page", 'directorist'),
                     'value'         => '',
                 ],
                 'registration_meta_title'    => [
@@ -4440,7 +4446,7 @@ Please remember that your order may be canceled if you do not make your payment 
          * @return array page names with key value pairs in a multi-dimensional array
          * @since 3.0.0
          */
-        function get_pages_vl_arrays(): array
+        public function get_pages_vl_arrays(): array
         {
             $pages = get_pages();
             $pages_options = [];
@@ -4456,7 +4462,7 @@ Please remember that your order may be canceled if you do not make your payment 
         /**
          * @return array{value: mixed, label: mixed}[]
          */
-        function get_user_roles(): array
+        public function get_user_roles(): array
         {
             $get_editable_roles = get_editable_roles();
             $role               = [];
@@ -4483,7 +4489,7 @@ Please remember that your order may be canceled if you do not make your payment 
          * @return array page names with key value pairs in a multi-dimensional array
          * @since 3.0.0
          */
-        function get_pages_with_prev_page(): array
+        public function get_pages_with_prev_page(): array
         {
             $pages = get_pages();
             $pages_options = [];

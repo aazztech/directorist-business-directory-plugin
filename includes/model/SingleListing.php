@@ -17,19 +17,27 @@ class Directorist_Single_Listing {
 
 	// Basic
 	public $id;
+
 	public $post;
+
 	public $author_id;
 
 	// Type
 	public $type;
+
 	public $header_data;
+
 	public $content_data;
 
 	// Meta
 	public $tagline;
+
 	public $fm_plan;
+
 	public $price_range;
+
 	public $atbd_listing_pricing;
+
 	public $price;
 
 
@@ -43,6 +51,7 @@ class Directorist_Single_Listing {
 		if ( null == self::$instance ) {
 			self::$instance = new self( $listing_id );
 		}
+
 		return self::$instance;
 	}
 
@@ -341,6 +350,7 @@ class Directorist_Single_Listing {
 					}
 				}
 			}
+
 			break;
 
 			case 'checkbox':
@@ -352,6 +362,7 @@ class Directorist_Single_Listing {
 					$option_value[] = $space . $option['option_label'];
 				}
 			}
+
 			$output = implode( ',', $option_value );
 			$result = $output !== '' && $output !== '0' ? $output : $value;
 			break;
@@ -378,6 +389,7 @@ class Directorist_Single_Listing {
 		if (!empty($data['address_link_with_map'])) {
 			$value = '<a target="google_map" href="https://www.google.com/maps/search/' . esc_html($value) . '">' . esc_html($value) . '</a>';
 		}
+
 		return $value;
 	}
 
@@ -467,7 +479,7 @@ class Directorist_Single_Listing {
 			'facebook' => [
 				'title' => __('Facebook', 'directorist'),
 				'icon'  => 'lab la-facebook',
-				'link'  => "https://www.facebook.com/share.php?u={$link}&title={$title}",
+				'link'  => sprintf('https://www.facebook.com/share.php?u=%s&title=%s', $link, $title),
 			],
 			'twitter' => [
 				'title' => __('Twitter', 'directorist'),
@@ -477,7 +489,7 @@ class Directorist_Single_Listing {
 			'linkedin' => [
 				'title' => __('LinkedIn', 'directorist'),
 				'icon'  => 'lab la-linkedin',
-				'link'  => "http://www.linkedin.com/shareArticle?mini=true&url={$link}&title={$title}",
+				'link'  => sprintf('http://www.linkedin.com/shareArticle?mini=true&url=%s&title=%s', $link, $title),
 			],
 		];
 
@@ -725,6 +737,7 @@ class Directorist_Single_Listing {
 		if ( !$email ) {
 			return false;
 		}
+
         return $email_display_type == 'public' || $email_display_type == 'logged_in' && is_user_logged_in();
 	}
 
@@ -783,8 +796,8 @@ class Directorist_Single_Listing {
 		$c_position    = directorist_get_currency_position();
 		$currency      = directorist_get_currency();
 		$symbol        = atbdp_currency_symbol($currency);
-
-		$before = $after = '';
+        $before = '';
+        $after = '';
 		if ('after' == $c_position) {
 			$after = $symbol;
 		}
@@ -977,6 +990,7 @@ class Directorist_Single_Listing {
 			}
 
 		}
+
         return null;
 
 	}
@@ -1127,12 +1141,14 @@ class Directorist_Single_Listing {
 					$_value = trim($choice);
 					$_label = $_value;
 				}
+
 				$_checked = '';
 				if (in_array($_value, $values)) {
 					$space = str_repeat(' ', 1);
-					$output[] = "{$space}$_value";
+					$output[] = $space . $_value;
 				}
 			}
+
 			$result = implode(',', $output);
 			break;
 
@@ -1197,7 +1213,7 @@ class Directorist_Single_Listing {
 		}
 
 		if ( ! empty( $display_image_map ) ) {
-			$info_content .= "<div class='map-listing-card-single__img'>$image</div>";
+			$info_content .= sprintf("<div class='map-listing-card-single__img'>%s</div>", $image);
 		}
 
 		if ( ! empty( $display_user_avatar_map ) ) {
@@ -1207,7 +1223,7 @@ class Directorist_Single_Listing {
 		$info_content .= "<div class='map-listing-card-single__content'>";
 
 		if ( ! empty( $display_title_map ) ) {
-			$info_content .= "<h3 class='map-listing-card-single__content__title'>$t</h3>";
+			$info_content .= sprintf("<h3 class='map-listing-card-single__content__title'>%s</h3>", $t);
 		}
 
 		if ( ! empty( $display_review_map ) || ! empty( $display_price_map ) ) {
@@ -1227,12 +1243,12 @@ class Directorist_Single_Listing {
 		$info_content .= "<div class='map-listing-card-single__content__info'>";
 
 		if( ! empty( $phone ) && ! empty( $display_phone_map ) ) {
-			$info_content .= "<div class='directorist-info-item map-listing-card-single__content__phone'>" . directorist_icon( 'fas fa-phone-alt', false ) . "<div class='directorist-info-item'><a href='tel:{$phone}'>{$phone}</a></div></div>";
+			$info_content .= "<div class='directorist-info-item map-listing-card-single__content__phone'>" . directorist_icon( 'fas fa-phone-alt', false ) . sprintf("<div class='directorist-info-item'><a href='tel:%s'>%s</a></div></div>", $phone, $phone);
 		}
 
 		if (!empty($display_address_map) && !empty($ad)) {
 			$info_content .= "<div class='directorist-info-item map-listing-card-single__content__address'>" .directorist_icon('fas fa-map-marker-alt', false). "<div class='directorist-info-item'>";
-			$info_content .= apply_filters("atbdp_address_in_map_info_window", "<a href='http://www.google.com/maps?daddr={$manual_lat},{$manual_lng}' target='_blank'>{$ad}</a></div></div>");
+			$info_content .= apply_filters("atbdp_address_in_map_info_window", sprintf("<a href='http://www.google.com/maps?daddr=%s,%s' target='_blank'>%s</a></div></div>", $manual_lat, $manual_lng, $ad));
 		}
 
 		$info_content .= "</div>";
@@ -1289,7 +1305,7 @@ class Directorist_Single_Listing {
 		$star_5 = ( $average >= 4.5 && $average < 5 ) ? $icon_half_star : $icon_empty_star;
 		$star_5 = ( $average >= 5 ) ? $icon_full_star : $star_5;
 
-		$review_stars = "{$star_1}{$star_2}{$star_3}{$star_4}{$star_5}";
+		$review_stars = $star_1 . $star_2 . $star_3 . $star_4 . $star_5;
 
 		$args = [
 			'review_stars'    => $review_stars,
@@ -1371,11 +1387,13 @@ class Directorist_Single_Listing {
 				$atbd_cats_ids[] = $atbd_cat->term_id;
 			}
 		}
+
 		if (!empty($atbd_tags)) {
 			foreach ($atbd_tags as $atbd_tag) {
 				$atbd_tags_ids[] = $atbd_tag->term_id;
 			}
 		}
+
 		$args = [
 			'post_type' => ATBDP_POST_TYPE,
 			'tax_query' => [

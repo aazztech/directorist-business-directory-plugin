@@ -22,7 +22,7 @@ class DeprecatedNotice {
 	public string $min_addon_version   = '8.0';
 
 	public function __construct() {
-		$parent_path        = WP_PLUGIN_DIR . "/{$this->addon_slug}";
+		$parent_path        = WP_PLUGIN_DIR . ('/' . $this->addon_slug);
 		$this->is_installed = is_file( $parent_path );
 
 		if ( $this->is_installed ) {
@@ -126,12 +126,12 @@ class DeprecatedNotice {
 	}
 
 	public function get_plugin_activation_url( string $path ): string {
-		return wp_nonce_url( self_admin_url( "plugins.php?action=activate&plugin={$path}&paged=1" ), 'activate-plugin_' . $path );
+		return wp_nonce_url( self_admin_url( sprintf('plugins.php?action=activate&plugin=%s&paged=1', $path) ), 'activate-plugin_' . $path );
 	}
 
 	public function get_plugin_installation_url( $path ): string {
 		$slug = preg_replace( '/\/.+$/', '', $path );
 
-		return wp_nonce_url( self_admin_url( "update.php?action=install-plugin&plugin={$slug}" ), 'install-plugin_' . $slug );
+		return wp_nonce_url( self_admin_url( 'update.php?action=install-plugin&plugin=' . $slug ), 'install-plugin_' . $slug );
 	}
 }

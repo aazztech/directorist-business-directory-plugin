@@ -655,7 +655,7 @@ if ( ! class_exists( 'ATBDP_Custom_Taxonomy' ) ) :
 			}
 			if ( $column_name == 'atbdp_category_icon' ) {
 
-				return empty( $icon ) ? ' ' : "<i class='{$icon}'></i>";
+				return empty( $icon ) ? ' ' : sprintf("<i class='%s'></i>", $icon);
 			}
 
 			if ($column_name == 'atbdp_category_directory_type' && $directory_type) {
