@@ -410,7 +410,7 @@ class Directorist_Listing_Taxonomy {
 		return '';
 	}
 
-	public function get_listing_types() {
+	public function get_listing_types(): array {
 		$args = [];
 
 		if ( $this->directory_type ) {

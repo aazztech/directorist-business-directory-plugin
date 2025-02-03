@@ -726,7 +726,10 @@ class Directorist_Listing_Form {
 		return in_array( $data['widget_name'], $fields );
 	}
 
-	public function get_listing_types() {
+	/**
+     * @return mixed[]
+     */
+    public function get_listing_types(): array {
 		$args = [];
 
 		if ( self::$directory_type ) {

@@ -29,7 +29,7 @@ trait Icon_Helper {
 		return ATBDP_URL . 'assets/icons/' . $file;
 	}
 
-	private static function get_icon_file( $icon ) {
+	private static function get_icon_file( $icon ): string {
 
 		if( empty( $icon ) || ! is_string( $icon ) ) {
 			return '';

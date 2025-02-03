@@ -452,7 +452,7 @@ class Directorist_Listing_Search_Form {
 		return in_array( $data['widget_name'], $fields, true );
 	}
 
-	public function get_listing_type_data() {
+	public function get_listing_type_data(): array {
 		$args = [];
 
 		if ( $this->directory_type ) {

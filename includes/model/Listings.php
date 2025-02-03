@@ -1308,7 +1308,7 @@ class Directorist_Listings {
 		return $link_list;
 	}
 
-	public function get_listing_types() {
+	public function get_listing_types(): array {
 		$args = [];
 
 		if ( $this->directory_type ) {

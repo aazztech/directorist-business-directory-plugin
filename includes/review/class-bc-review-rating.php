@@ -45,15 +45,13 @@ class ATBDP_Review_Rating {
 	}
 
 	/**
-	 * Get listing rating.
-	 *
-	 * @param int $listing_id
-	 * @deprecated 7.1.0
-	 * @see directorist_get_listing_rating()
-	 *
-	 * @return float|int
-	 */
-	public function get_average( $listing_id = 0 ) {
+     * Get listing rating.
+     *
+     * @param int $listing_id
+     * @deprecated 7.1.0
+     * @see directorist_get_listing_rating()
+     */
+    public function get_average( $listing_id = 0 ): float {
 		return directorist_get_listing_rating( $listing_id );
 	}
 }

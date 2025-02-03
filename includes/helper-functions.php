@@ -2999,7 +2999,7 @@ if ( ! function_exists( 'default_directory_type' ) ) {
 }
 
 if( !function_exists('get_listing_types') ){
-    function get_listing_types() {
+    function get_listing_types(): array {
         return directorist_get_directories_for_template();
     }
 }

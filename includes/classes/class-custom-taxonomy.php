@@ -791,7 +791,7 @@ if ( ! class_exists( 'ATBDP_Custom_Taxonomy' ) ) :
 
 		}
 
-		public function get_listing_types() {
+		public function get_listing_types(): array {
 			return directorist_get_directories_for_template();
 		}
 

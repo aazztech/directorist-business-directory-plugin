@@ -821,7 +821,7 @@ class Directorist_Single_Listing {
 		return directorist_get_listing_review_count( $this->id );
 	}
 
-	public function get_rating_count() {
+	public function get_rating_count(): float {
 		return directorist_get_listing_rating( $this->id );
 	}
 

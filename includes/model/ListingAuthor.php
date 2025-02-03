@@ -85,7 +85,7 @@ class Directorist_Listing_Author {
 
 	}
 
-	public function get_listing_types() {
+	public function get_listing_types(): array {
 		return directorist_get_directories_for_template();
 	}
 
