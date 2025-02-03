@@ -1,6 +1,6 @@
 <div class="directorist-search-popup-block__popup">
 	<div class="directorist-search-popup-block__form-close">
-		<?php directorist_icon( 'la times' );?>
+		<?php directorist_icon( 'la times' ); ?>
 	</div>
 	<div class="dspb-container">
 		<div class="dspb-row">

@@ -1,7 +1,6 @@
 <?php
 /**
  * Directorist fields file.
- *
  */
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;

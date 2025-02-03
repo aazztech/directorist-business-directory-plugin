@@ -5,13 +5,15 @@
  * @version 7.0.5.2
  */
 
-use \Directorist\Helper;
+use Directorist\Helper;
 
-if ( ! defined( 'ABSPATH' ) ) exit;
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
 
 $id = $listing->id;
 
-if ( !Helper::has_price_range( $id ) && !Helper::has_price( $id ) ) {
+if ( ! Helper::has_price_range( $id ) && ! Helper::has_price( $id ) ) {
 	return;
 }
 ?>
@@ -20,9 +22,7 @@ if ( !Helper::has_price_range( $id ) && !Helper::has_price( $id ) ) {
 	<?php
 	if ( 'range' === Helper::pricing_type( $id ) ) {
 		Helper::price_range_template( $id );
-	}
-	
-	else {
+	} else {
 		Helper::price_template( $id );
 	}
 	?>

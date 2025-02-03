@@ -5,7 +5,9 @@
  * @version 8.0
  */
 
-if ( ! defined( 'ABSPATH' ) ) exit;
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
 $data_min  = $data['min_value'] ?? '';
 $data_max  = $data['max_value'] ?? '';
 $data_step = absint( $data['step'] ?? 1 );
@@ -13,7 +15,7 @@ $data_step = absint( $data['step'] ?? 1 );
 
 <div class="directorist-form-group directorist-custom-field-number">
 
-	<?php $listing_form->field_label_template( $data );?>
+	<?php $listing_form->field_label_template( $data ); ?>
 
 	<div class="directorist-form-group__with-prefix">
 

@@ -7,8 +7,8 @@
 ?>
 
 <?php
-if (is_numeric($searchform->listing_type)) {
-	$term = get_term_by('id', $searchform->listing_type, ATBDP_TYPE);
+if ( is_numeric( $searchform->listing_type ) ) {
+	$term         = get_term_by( 'id', $searchform->listing_type, ATBDP_TYPE );
 	$listing_type = $term->slug;
 }
 ?>
@@ -25,16 +25,16 @@ if (is_numeric($searchform->listing_type)) {
 			</div>
 
 			<div class="directorist-search-modal__contents__body">
-				<input type="hidden" name='directory_type' value='<?php echo !empty($listing_type) ? esc_attr( $listing_type ) : esc_attr( $searchform->listing_type ); ?>'>
+				<input type="hidden" name='directory_type' value='<?php echo ! empty( $listing_type ) ? esc_attr( $listing_type ) : esc_attr( $searchform->listing_type ); ?>'>
 				<div class="directorist-advanced-filter__basic">
-					<?php foreach ($searchform->form_data[0]['fields'] as $field) : ?>
-						<div class="directorist-advanced-filter__basic__element"><?php $searchform->field_template($field); ?></div>
+					<?php foreach ( $searchform->form_data[0]['fields'] as $field ) : ?>
+						<div class="directorist-advanced-filter__basic__element"><?php $searchform->field_template( $field ); ?></div>
 					<?php endforeach; ?>
 				</div>
 
 				<div class="directorist-advanced-filter__advanced">
-					<?php foreach ($searchform->form_data[1]['fields'] as $field) : ?>
-						<div class="directorist-advanced-filter__advanced__element directorist-search-field-<?php echo esc_attr($field['widget_name']) ?>"><?php $searchform->field_template($field); ?></div>
+					<?php foreach ( $searchform->form_data[1]['fields'] as $field ) : ?>
+						<div class="directorist-advanced-filter__advanced__element directorist-search-field-<?php echo esc_attr( $field['widget_name'] ); ?>"><?php $searchform->field_template( $field ); ?></div>
 					<?php endforeach; ?>
 				</div>
 			</div>

@@ -5,9 +5,11 @@
  * @version 7.7.0
  */
 
-use \Directorist\Helper;
+use Directorist\Helper;
 
-if ( ! defined( 'ABSPATH' ) ) exit;
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
 ?>
 
 <div class="directorist-wrapper directorist-author-profile-content directorist-w-100">

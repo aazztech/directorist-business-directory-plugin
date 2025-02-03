@@ -5,30 +5,32 @@
  * @version 7.7.0
  */
 
-if ( ! defined( 'ABSPATH' ) ) exit;
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
 
 $listing_img            = atbdp_get_listing_attachment_ids( $listing_form->get_add_listing_id() );
 $maximum                = ! empty( $data['max'] ) ? $data['max'] : $data['max_image_limit'];
 $unlimited              = ! empty( $data['unlimited'] ) ? $data['unlimited'] : '';
-$limit					= $unlimited ? '0' : $maximum;
+$limit                  = $unlimited ? '0' : $maximum;
 $max_file_size          = (float) $data['max_per_image_limit'];
 $max_total_file_size    = (float) $data['max_total_image_limit'];
 $max_file_size_kb       = $max_file_size * 1024;
 $max_total_file_size_kb = $max_total_file_size * 1024;
 $required               = (bool) $data['required'];
-$select_files_label     = ! empty( $data['select_files_label'] ) ? $data['select_files_label'] : __( 'Select Files', 'directorist' ); 
+$select_files_label     = ! empty( $data['select_files_label'] ) ? $data['select_files_label'] : __( 'Select Files', 'directorist' );
 
 $accepted_mime_types       = directorist_get_mime_types( 'image', 'extension' );
-$accepted_mime_types_upper = array_map( 'strtoupper', $accepted_mime_types ) ;
+$accepted_mime_types_upper = array_map( 'strtoupper', $accepted_mime_types );
 $accepted_mime_types       = array_merge( $accepted_mime_types, $accepted_mime_types_upper );
 
-$img_upload_data = [
+$img_upload_data = array(
 	'type'               => join( ', ', $accepted_mime_types ),
 	'max_num_of_img'     => $limit,
 	'max_total_img_size' => $max_total_file_size_kb,
 	'is_required'        => $required,
 	'max_size_per_img'   => $max_file_size_kb,
-];
+);
 
 $img_upload_data = json_encode( $img_upload_data );
 ?>
@@ -68,7 +70,7 @@ $img_upload_data = json_encode( $img_upload_data );
 			<span class="ezmu-dictionary-info-type"></span>
 			<span class="ezmu-dictionary-info-min-file-items"><?php esc_html_e( 'Minimum __DT__ file is required', 'directorist' ); ?></span>
 			<span class="ezmu-dictionary-info-max-file-items">
-				<?php echo !empty($unlimited) ? esc_html__( 'Unlimited images with this plan!', 'directorist' ) : ( ( $limit > 1 ) ? esc_html__('Maximum __DT__ files are allowed', 'directorist') : esc_html__( 'Maximum __DT__ file is allowed', 'directorist' ) ); ?>
+				<?php echo ! empty( $unlimited ) ? esc_html__( 'Unlimited images with this plan!', 'directorist' ) : ( ( $limit > 1 ) ? esc_html__( 'Maximum __DT__ files are allowed', 'directorist' ) : esc_html__( 'Maximum __DT__ file is allowed', 'directorist' ) ); ?>
 			</span>
 		</div>
 	</div>

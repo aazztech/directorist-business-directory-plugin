@@ -1,7 +1,6 @@
 <?php
 /**
  * Directorist Select Field class.
- *
  */
 namespace Directorist\Fields;
 
@@ -20,9 +19,12 @@ class Select_Field extends Base_Field {
 			return array();
 		}
 
-		return array_map( static function( $option ) {
-			return str_replace( '&lt;', '<', $option['option_value'] );
-		}, $options );
+		return array_map(
+			static function ( $option ) {
+				return str_replace( '&lt;', '<', $option['option_value'] );
+			},
+			$options
+		);
 	}
 
 	public function validate( $posted_data ) {

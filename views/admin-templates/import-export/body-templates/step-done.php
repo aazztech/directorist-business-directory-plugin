@@ -16,12 +16,16 @@ $failed   = isset( $_GET['listing-failed'] ) ? sanitize_text_field( wp_unslash( 
 			<div class="wc-actions">
 				<span class="dashicons dashicons-yes"></span>
 				<p class="import-complete"><?php esc_html_e( 'Import Completed!', 'directorist' ); ?></p>
-				<p><strong><?php echo esc_attr($imported)?></strong> <?php esc_html_e('listings imported', 'directorist');
-				if(($failed != 'NaN') && ($failed != '0')){
-				?> 
-				&<strong><?php echo ' ' .esc_attr($failed);?></strong> <?php esc_html_e('were skipped.', 'directorist');
-				}
-				?>
+				<p><strong><?php echo esc_attr( $imported ); ?></strong> 
+										<?php
+										esc_html_e( 'listings imported', 'directorist' );
+										if ( ( $failed != 'NaN' ) && ( $failed != '0' ) ) {
+											?>
+								&<strong><?php echo ' ' . esc_attr( $failed ); ?></strong> 
+													<?php
+														esc_html_e( 'were skipped.', 'directorist' );
+										}
+										?>
 			</p>
 			</div>
 		</div>

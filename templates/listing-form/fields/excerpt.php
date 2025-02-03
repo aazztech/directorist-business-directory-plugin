@@ -5,12 +5,14 @@
  * @version 7.0.5.6
  */
 
-if ( ! defined( 'ABSPATH' ) ) exit;
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
 ?>
 
 <div class="directorist-form-group directorist-form-excerpt-field">
 
-	<?php $listing_form->field_label_template( $data );?>
+	<?php $listing_form->field_label_template( $data ); ?>
 
 	<textarea name="<?php echo esc_attr( $data['field_key'] ); ?>" id="<?php echo esc_attr( $data['field_key'] ); ?>" class="directorist-form-element" cols="30" rows="5" placeholder="<?php echo esc_attr( $data['placeholder'] ); ?>" <?php $listing_form->required( $data ); ?>><?php echo esc_textarea( $data['value'] ); ?></textarea>
 

@@ -5,9 +5,11 @@
  * @version 8.0
  */
 
-use \Directorist\Helper;
+use Directorist\Helper;
 
-if ( ! defined( 'ABSPATH' ) ) exit;
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
 ?>
 
 <?php do_action( 'directorist_before_author_about_section' ); ?>
@@ -26,52 +28,52 @@ if ( ! defined( 'ABSPATH' ) ) exit;
 
 					<ul class="directorist-author-info-list">
 
-						<?php if ( $address ): ?>
+						<?php if ( $address ) : ?>
 							<li class="directorist-author-info-list__item">
 								<?php directorist_icon( 'las la-map-marker' ); ?>
 									<span class="directorist-info"><?php echo esc_html( $address ); ?></span>
 							</li>
 						<?php endif; ?>
 
-						<?php if ( $phone ): ?>
+						<?php if ( $phone ) : ?>
 							<li class="directorist-author-info-list__item">
 								<?php directorist_icon( 'las la-phone' ); ?>
 									<span class="directorist-info"><a href="tel:<?php ATBDP_Helper::sanitize_tel_attr( $phone ); ?>"><?php echo esc_html( $phone ); ?></a></span>
 							</li>
 						<?php endif; ?>
 
-						<?php if ( $email_endabled && $email ): ?>
+						<?php if ( $email_endabled && $email ) : ?>
 							<li class="directorist-author-info-list__item">
 								<?php directorist_icon( 'las la-envelope' ); ?>
 									<span class="directorist-info"><?php echo esc_html( $email ); ?></span>
 							</li>
 						<?php endif; ?>
 
-						<?php if ( $website ): ?>
+						<?php if ( $website ) : ?>
 							<li class="directorist-author-info-list__item">
 								<?php directorist_icon( 'las la-globe' ); ?>
-									<span class="directorist-info"><a target="_blank" href="<?php echo esc_url( $website ); ?>"><?php echo esc_html( $website) ; ?></a></span>
+									<span class="directorist-info"><a target="_blank" href="<?php echo esc_url( $website ); ?>"><?php echo esc_html( $website ); ?></a></span>
 							</li>
 						<?php endif; ?>
 
 					</ul>
 
-					<?php if ( $facebook || $twitter || $linkedin || $youtube ): ?>
+					<?php if ( $facebook || $twitter || $linkedin || $youtube ) : ?>
 
 						<ul class="directorist-author-social">
-							<?php if ( $facebook ): ?>
+							<?php if ( $facebook ) : ?>
 								<li class="directorist-author-social-item directorist-author-social__item"><a target="_blank" href="<?php echo esc_url( $facebook ); ?>"><?php directorist_icon( 'lab la-facebook' ); ?></a></li>
 							<?php endif; ?>
 
-							<?php if ( $twitter ): ?>
+							<?php if ( $twitter ) : ?>
 								<li class="directorist-author-social-item directorist-author-social__item"><a target="_blank" href="<?php echo esc_url( $twitter ); ?>"><?php directorist_icon( 'lab la-twitter' ); ?></a></li>
 							<?php endif; ?>
 
-							<?php if ( $linkedin ): ?>
+							<?php if ( $linkedin ) : ?>
 								<li class="directorist-author-social-item directorist-author-social__item"><a target="_blank" href="<?php echo esc_url( $linkedin ); ?>"><?php directorist_icon( 'lab la-linkedin' ); ?></a></li>
 							<?php endif; ?>
 
-							<?php if ( $youtube ): ?>
+							<?php if ( $youtube ) : ?>
 								<li class="directorist-author-social-item directorist-author-social__item"><a target="_blank" href="<?php echo esc_url( $youtube ); ?>"><?php directorist_icon( 'lab la-youtube' ); ?></a></li>
 							<?php endif; ?>
 
@@ -93,7 +95,7 @@ if ( ! defined( 'ABSPATH' ) ) exit;
 
 			<div class="directorist-card__body">
 				<div class="directorist-author-about__content">
-					<p><?php echo $bio ? wp_kses_post( $bio ) : esc_html__( 'Nothing to show!', 'directorist' );?></p>
+					<p><?php echo $bio ? wp_kses_post( $bio ) : esc_html__( 'Nothing to show!', 'directorist' ); ?></p>
 				</div>
 			</div>
 

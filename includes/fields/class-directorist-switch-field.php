@@ -1,7 +1,6 @@
 <?php
 /**
  * Directorist Switch Field class.
- *
  */
 namespace Directorist\Fields;
 

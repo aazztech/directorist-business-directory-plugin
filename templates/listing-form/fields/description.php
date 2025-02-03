@@ -5,7 +5,9 @@
  * @version 7.4.0
  */
 
-if ( ! defined( 'ABSPATH' ) ) exit;
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
 
 $maxlength = $data['max'] ?? '';
 ?>
@@ -19,8 +21,7 @@ $maxlength = $data['max'] ?? '';
 		?>
 		<textarea name="<?php echo esc_attr( $data['field_key'] ); ?>" id="<?php echo esc_attr( $data['field_key'] ); ?>" class="directorist-form-element" rows="8" placeholder="<?php echo esc_attr( $data['placeholder'] ); ?>" maxlength="<?php echo esc_attr( $maxlength ); ?>" <?php $listing_form->required( $data ); ?>><?php echo esc_html( $data['value'] ); ?></textarea>
 		<?php
-	}
-	else {
+	} else {
 		wp_editor(
 			wp_kses_post( $data['value'] ),
 			$data['field_key'],

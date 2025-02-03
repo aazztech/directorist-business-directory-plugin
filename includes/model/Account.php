@@ -1,20 +1,21 @@
 <?php
-  /**
- * @author wpWax
- */
+	/**
+	 * @author wpWax
+	 */
 
 namespace Directorist;
 
-use \ATBDP_Permalink;
+use ATBDP_Permalink;
 
-if ( ! defined( 'ABSPATH' ) ) exit;
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
 
 class Directorist_Account {
 
 	protected static $instance = null;
 
 	private function __construct() {
-
 	}
 
 	public static function instance() {
@@ -24,7 +25,7 @@ class Directorist_Account {
 		return self::$instance;
 	}
 
-	public function render( $atts = [] ) {
+	public function render( $atts = array() ) {
 		if ( is_user_logged_in() ) {
 			$error_message = sprintf( __( 'The account page is only accessible to logged-out users.<a href="%s">Go to Dashboard</a>', 'directorist' ), esc_url( ATBDP_Permalink::get_dashboard_page_link() ) );
 			ob_start();
@@ -32,57 +33,60 @@ class Directorist_Account {
 			return ob_get_clean();
 		}
 
-		$atts = shortcode_atts( array(
-			'active_form'          => 'signin',
-			'user_role'            => get_directorist_option( 'display_user_type', false ) ? 'yes' : 'no',
-			'author_role_label'    => __( 'I am an author', 'directorist' ),
-			'user_role_label'      => __( 'I am a user', 'directorist' ),
-			'username_label'       => get_directorist_option( 'reg_username', __( 'Username', 'directorist' ) ),
-			'password'             => get_directorist_option( 'display_password_reg', true ) ? 'yes' : 'no',
-			'password_label'       => get_directorist_option( 'reg_password', __( 'Password', 'directorist' ) ),
-			'email_label'          => get_directorist_option( 'reg_email', __( 'Email ', 'directorist' ) ),
-			'website'              => get_directorist_option( 'display_website_reg', false ) ? 'yes' : 'no',
-			'website_label'        => get_directorist_option( 'reg_website', __( 'Website', 'directorist' ) ),
-			'website_required'     => get_directorist_option( 'require_website_reg', false ) ? 'yes' : 'no',
-			'firstname'            => get_directorist_option( 'display_fname_reg', false ) ? 'yes' : 'no',
-			'firstname_label'      => get_directorist_option( 'reg_fname', __( 'First Name', 'directorist' ) ),
-			'firstname_required'   => get_directorist_option( 'require_fname_reg', false ) ? 'yes' : 'no',
-			'lastname'             => get_directorist_option( 'display_lname_reg', false ) ? 'yes' : 'no',
-			'lastname_label'       => get_directorist_option( 'reg_lname', __( 'Last Name', 'directorist' ) ),
-			'lastname_required'    => get_directorist_option( 'require_lname_reg', false ) ? 'yes' : 'no',
-			'bio'                  => get_directorist_option( 'display_bio_reg', 0 ) ? 'yes' : 'no',
-			'bio_label'            => get_directorist_option( 'reg_bio', __( 'About/bio', 'directorist' ) ),
-			'bio_required'         => get_directorist_option( 'require_bio_reg', 0 ) ? 'yes' : 'no',
-			'privacy'              => get_directorist_option( 'registration_privacy', 1 ) ? 'yes' : 'no',
-			'privacy_label'        => get_directorist_option( 'registration_privacy_label', __( 'I agree to the', 'directorist' ) ),
-			'privacy_linking_text' => get_directorist_option( 'registration_privacy_label_link', __('Privacy & Policy', 'directorist') ),
-			'terms'                => get_directorist_option( 'regi_terms_condition', 1 ) ? 'yes' : 'no',
-			'terms_label'          => get_directorist_option( 'regi_terms_label', __( 'I agree with all', 'directorist' ) ),
-			'terms_linking_text'   => get_directorist_option( 'regi_terms_label_link', 'terms & conditions' ),
-			'signup_button_label'  => get_directorist_option( 'reg_signup', __( 'Sign Up', 'directorist' ) ),
-			'signin_message'       => get_directorist_option( 'login_text', __( 'Already have an account? Please Sign in', 'directorist' ) ),
-			'signin_linking_text'  => get_directorist_option( 'log_linkingmsg', __( 'Here', 'directorist' ) ),
-			'signin_after_signup'  => get_directorist_option( 'auto_login', 0 ) ? 'yes' : 'no',
-			'signup_redirect_url'  => '',
-			  // login atts
-			'signin_username_label' => get_directorist_option( 'log_username', __( 'Username or Email Address', 'directorist' ) ),
-			'signin_button_label'   => get_directorist_option( 'log_button', __( 'Sign In', 'directorist' ) ),
-			'signup_label'          => get_directorist_option( 'reg_text', __( "Don't have an account?", 'directorist' ) ),
-			'signup_linking_text'   => get_directorist_option( 'reg_linktxt', __( 'Sign Up', 'directorist' ) ),
-			  // recover password atts
-			'enable_recovery_password'            => get_directorist_option( 'display_recpass', 1 ) ? 'yes' : 'no',
-			'recovery_password_label'             => get_directorist_option( 'recpass_text', __( 'Forgot Password?', 'directorist' ) ),
-			'recovery_password_description'       => get_directorist_option( 'recpass_desc', __( 'Lost your password? Please enter your email address. You will receive a link to create a new password via email.', 'directorist' ) ),
-			'recovery_password_email_label'       => get_directorist_option( 'recpass_username', __( 'E-mail:', 'directorist' ) ),
-			'recovery_password_email_placeholder' => get_directorist_option( 'recpass_placeholder', __( 'eg. mail@example.com', 'directorist' ) ),
-			'recovery_password_button_label'      => get_directorist_option( 'recpass_button', __( 'Get New Password', 'directorist' ) ),
-			'user_type'                           => ''
-		), $atts );
+		$atts = shortcode_atts(
+			array(
+				'active_form'                         => 'signin',
+				'user_role'                           => get_directorist_option( 'display_user_type', false ) ? 'yes' : 'no',
+				'author_role_label'                   => __( 'I am an author', 'directorist' ),
+				'user_role_label'                     => __( 'I am a user', 'directorist' ),
+				'username_label'                      => get_directorist_option( 'reg_username', __( 'Username', 'directorist' ) ),
+				'password'                            => get_directorist_option( 'display_password_reg', true ) ? 'yes' : 'no',
+				'password_label'                      => get_directorist_option( 'reg_password', __( 'Password', 'directorist' ) ),
+				'email_label'                         => get_directorist_option( 'reg_email', __( 'Email ', 'directorist' ) ),
+				'website'                             => get_directorist_option( 'display_website_reg', false ) ? 'yes' : 'no',
+				'website_label'                       => get_directorist_option( 'reg_website', __( 'Website', 'directorist' ) ),
+				'website_required'                    => get_directorist_option( 'require_website_reg', false ) ? 'yes' : 'no',
+				'firstname'                           => get_directorist_option( 'display_fname_reg', false ) ? 'yes' : 'no',
+				'firstname_label'                     => get_directorist_option( 'reg_fname', __( 'First Name', 'directorist' ) ),
+				'firstname_required'                  => get_directorist_option( 'require_fname_reg', false ) ? 'yes' : 'no',
+				'lastname'                            => get_directorist_option( 'display_lname_reg', false ) ? 'yes' : 'no',
+				'lastname_label'                      => get_directorist_option( 'reg_lname', __( 'Last Name', 'directorist' ) ),
+				'lastname_required'                   => get_directorist_option( 'require_lname_reg', false ) ? 'yes' : 'no',
+				'bio'                                 => get_directorist_option( 'display_bio_reg', 0 ) ? 'yes' : 'no',
+				'bio_label'                           => get_directorist_option( 'reg_bio', __( 'About/bio', 'directorist' ) ),
+				'bio_required'                        => get_directorist_option( 'require_bio_reg', 0 ) ? 'yes' : 'no',
+				'privacy'                             => get_directorist_option( 'registration_privacy', 1 ) ? 'yes' : 'no',
+				'privacy_label'                       => get_directorist_option( 'registration_privacy_label', __( 'I agree to the', 'directorist' ) ),
+				'privacy_linking_text'                => get_directorist_option( 'registration_privacy_label_link', __( 'Privacy & Policy', 'directorist' ) ),
+				'terms'                               => get_directorist_option( 'regi_terms_condition', 1 ) ? 'yes' : 'no',
+				'terms_label'                         => get_directorist_option( 'regi_terms_label', __( 'I agree with all', 'directorist' ) ),
+				'terms_linking_text'                  => get_directorist_option( 'regi_terms_label_link', 'terms & conditions' ),
+				'signup_button_label'                 => get_directorist_option( 'reg_signup', __( 'Sign Up', 'directorist' ) ),
+				'signin_message'                      => get_directorist_option( 'login_text', __( 'Already have an account? Please Sign in', 'directorist' ) ),
+				'signin_linking_text'                 => get_directorist_option( 'log_linkingmsg', __( 'Here', 'directorist' ) ),
+				'signin_after_signup'                 => get_directorist_option( 'auto_login', 0 ) ? 'yes' : 'no',
+				'signup_redirect_url'                 => '',
+				// login atts
+				'signin_username_label'               => get_directorist_option( 'log_username', __( 'Username or Email Address', 'directorist' ) ),
+				'signin_button_label'                 => get_directorist_option( 'log_button', __( 'Sign In', 'directorist' ) ),
+				'signup_label'                        => get_directorist_option( 'reg_text', __( "Don't have an account?", 'directorist' ) ),
+				'signup_linking_text'                 => get_directorist_option( 'reg_linktxt', __( 'Sign Up', 'directorist' ) ),
+				// recover password atts
+				'enable_recovery_password'            => get_directorist_option( 'display_recpass', 1 ) ? 'yes' : 'no',
+				'recovery_password_label'             => get_directorist_option( 'recpass_text', __( 'Forgot Password?', 'directorist' ) ),
+				'recovery_password_description'       => get_directorist_option( 'recpass_desc', __( 'Lost your password? Please enter your email address. You will receive a link to create a new password via email.', 'directorist' ) ),
+				'recovery_password_email_label'       => get_directorist_option( 'recpass_username', __( 'E-mail:', 'directorist' ) ),
+				'recovery_password_email_placeholder' => get_directorist_option( 'recpass_placeholder', __( 'eg. mail@example.com', 'directorist' ) ),
+				'recovery_password_button_label'      => get_directorist_option( 'recpass_button', __( 'Get New Password', 'directorist' ) ),
+				'user_type'                           => '',
+			),
+			$atts
+		);
 
-		$user_type = ! empty( $_REQUEST['user_type'] ) ? sanitize_text_field( wp_unslash( $_REQUEST['user_type'] ) ) : $atts['user_type'];
+		$user_type   = ! empty( $_REQUEST['user_type'] ) ? sanitize_text_field( wp_unslash( $_REQUEST['user_type'] ) ) : $atts['user_type'];
 		$active_form = ( isset( $_GET['signup'] ) && directorist_is_user_registration_enabled() ) ? 'signup' : $atts['active_form'];
 
-		$data = [
+		$data = array(
 			'enable_user_type'                 => $atts['user_role'],
 			'user_type'                        => $user_type,
 			'enable_registration_password'     => $atts['password'],
@@ -100,11 +104,11 @@ class Directorist_Account {
 			'auto_login_after_registration'    => $atts['signin_after_signup'],
 			'redirection_after_registration'   => $atts['signup_redirect_url'],
 			'active_form'                      => $active_form,
-		];
+		);
 		wp_localize_script( 'directorist-account', 'directorist_signin_signup_params', $data );
 		wp_localize_script( 'jquery', 'directorist_signin_signup_params', $data );
 
-		$args = [
+		$args = array(
 			'log_username'              => $atts['signin_username_label'],
 			'log_password'              => $atts['password_label'],
 			'log_button'                => $atts['signin_button_label'],
@@ -155,7 +159,7 @@ class Directorist_Account {
 			'author_role_label'         => $atts['author_role_label'],
 			'user_role_label'           => $atts['user_role_label'],
 			'active_form'               => $active_form,
-		];
+		);
 
 		return Helper::get_template_contents( 'account/login-registration-form', $args );
 	}

@@ -5,9 +5,11 @@
  * @version 7.4
  */
 
-use \Directorist\Helper;
+use Directorist\Helper;
 
-if ( ! defined( 'ABSPATH' ) ) exit;
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
 ?>
 
 <div class="directorist-user-dashboard">
@@ -16,7 +18,7 @@ if ( ! defined( 'ABSPATH' ) ) exit;
 
 		<?php $dashboard->notice_template(); ?>
 
-		<?php if ( $dashboard->display_title() ): ?>
+		<?php if ( $dashboard->display_title() ) : ?>
 			<h2><?php esc_html_e( 'My Dashboard', 'directorist' ); ?></h2>
 		<?php endif; ?>
 

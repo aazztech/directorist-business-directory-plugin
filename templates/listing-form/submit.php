@@ -5,7 +5,9 @@
  * @version 8.0
  */
 
-if ( ! defined( 'ABSPATH' ) ) exit;
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
 ?>
 
 <div class="directorist-add-listing-form__action">
@@ -22,7 +24,7 @@ if ( ! defined( 'ABSPATH' ) ) exit;
 		</p>
 	</div>
 
-	<?php if ( $display_guest_listings && !is_user_logged_in() ): ?>
+	<?php if ( $display_guest_listings && ! is_user_logged_in() ) : ?>
 		<div class="directorist-form-group">
 
 			<label for="guest_user_email"><?php echo esc_html( $guest_email_label ); ?>:<span class="directorist-form-required"> *</span></label>

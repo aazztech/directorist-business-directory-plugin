@@ -5,15 +5,17 @@
  * @version 8.0
  */
 
-if ( ! defined( 'ABSPATH' ) ) exit;
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
 
-if ( !$value ) {
+if ( ! $value ) {
 	return;
 }
 ?>
 
 <p class="directorist-listing-single__info__excerpt">
-	<?php 
+	<?php
 	echo esc_html( wp_trim_words( $value, (int) $data['words_limit'] ) );
 	if ( $data['show_readmore'] ) {
 		// Add the permalink with the 'read more' text as a link

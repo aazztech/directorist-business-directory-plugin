@@ -1,7 +1,6 @@
 <?php
 /**
  * Directorist Number Field class.
- *
  */
 namespace Directorist\Fields;
 
@@ -15,9 +14,9 @@ class Number_Field extends Base_Field {
 
 	public function validate( $posted_data ) {
 		$value     = $this->get_value( $posted_data );
-		$min_value = $this->__get('min_value');
-		$max_value = $this->__get('max_value');
-		
+		$min_value = $this->__get( 'min_value' );
+		$max_value = $this->__get( 'max_value' );
+
 		if ( ! is_numeric( $value ) ) {
 			$this->add_error( __( 'Invalid number.', 'directorist' ) );
 
@@ -25,7 +24,7 @@ class Number_Field extends Base_Field {
 		}
 
 		if ( isset( $min_value, $max_value ) && ( $min_value > $value || ( $max_value > 0 && $max_value < $value ) ) ) {
-			$error_message = sprintf( __( 'Value should be between %d and %d', 'directorist' ), $min_value, $max_value );
+			$error_message = sprintf( __( 'Value should be between %1$d and %2$d', 'directorist' ), $min_value, $max_value );
 			$this->add_error( $error_message );
 
 			return false;

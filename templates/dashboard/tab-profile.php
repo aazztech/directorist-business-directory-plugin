@@ -5,22 +5,24 @@
  * @version 7.4.0
  */
 
-use \Directorist\Helper;
+use Directorist\Helper;
 
-if ( ! defined( 'ABSPATH' ) ) exit;
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
 ?>
 
 <form action="#" id="user_profile_form" method="post">
 
 	<div class="<?php Helper::directorist_row(); ?>">
 
-		<div class="<?php Helper::directorist_column('lg-3'); ?>">
+		<div class="<?php Helper::directorist_column( 'lg-3' ); ?>">
 
 			<?php $dashboard->profile_pic_template(); ?>
 
 		</div>
 
-		<div class="<?php Helper::directorist_column('lg-9'); ?>">
+		<div class="<?php Helper::directorist_column( 'lg-9' ); ?>">
 
 			<div class="directorist-user-profile-edit">
 
@@ -50,7 +52,7 @@ if ( ! defined( 'ABSPATH' ) ) exit;
 
 								<div class="directorist-form-group">
 
-									<label for="user_name"><?php esc_html_e('User Name', 'directorist'); ?></label>
+									<label for="user_name"><?php esc_html_e( 'User Name', 'directorist' ); ?></label>
 
 									<input class="directorist-form-element" id="user_name" type="text" disabled="disabled" name="user[user_name]" value="<?php echo esc_attr( $dashboard->user_info( 'username' ) ); ?>"> <span class="directorist-input-extra-info"><?php esc_html_e( '(username can not be changed)', 'directorist' ); ?></span>
 
@@ -153,7 +155,7 @@ if ( ! defined( 'ABSPATH' ) ) exit;
 
 									<input id="facebook" class="directorist-form-element" type="url" name="user[facebook]" value="<?php echo esc_attr( $dashboard->user_info( 'facebook' ) ); ?>" placeholder="<?php esc_attr_e( 'Enter your facebook url', 'directorist' ); ?>">
 
-									<span class="directorist-input-extra-info"><?php esc_html_e( 'Leave it empty to hide', 'directorist' ) ?></span>
+									<span class="directorist-input-extra-info"><?php esc_html_e( 'Leave it empty to hide', 'directorist' ); ?></span>
 
 								</div>
 
@@ -163,7 +165,7 @@ if ( ! defined( 'ABSPATH' ) ) exit;
 
 									<input id="twitter" class="directorist-form-element" type="url" name="user[twitter]" value="<?php echo esc_attr( $dashboard->user_info( 'twitter' ) ); ?>" placeholder="<?php esc_attr_e( 'Enter your twitter url', 'directorist' ); ?>">
 
-									<span class="directorist-input-extra-info"><?php esc_html_e( 'Leave it empty to hide', 'directorist' ) ?></span>
+									<span class="directorist-input-extra-info"><?php esc_html_e( 'Leave it empty to hide', 'directorist' ); ?></span>
 
 								</div>
 
@@ -173,7 +175,7 @@ if ( ! defined( 'ABSPATH' ) ) exit;
 
 									<input id="linkedIn" class="directorist-form-element" type="url" name="user[linkedIn]" value="<?php echo esc_attr( $dashboard->user_info( 'linkedin' ) ); ?>" placeholder="<?php esc_attr_e( 'Enter linkedIn url', 'directorist' ); ?>">
 
-									<span class="directorist-input-extra-info"><?php esc_html_e( 'Leave it empty to hide', 'directorist' ) ?></span>
+									<span class="directorist-input-extra-info"><?php esc_html_e( 'Leave it empty to hide', 'directorist' ); ?></span>
 
 								</div>
 
@@ -183,7 +185,7 @@ if ( ! defined( 'ABSPATH' ) ) exit;
 
 									<input id="youtube" class="directorist-form-element" type="url" name="user[youtube]" value="<?php echo esc_attr( $dashboard->user_info( 'youtube' ) ); ?>" placeholder="<?php esc_attr_e( 'Enter youtube url', 'directorist' ); ?>">
 
-									<span class="directorist-input-extra-info"><?php esc_html_e( 'Leave it empty to hide', 'directorist' ) ?></span>
+									<span class="directorist-input-extra-info"><?php esc_html_e( 'Leave it empty to hide', 'directorist' ); ?></span>
 
 								</div>
 

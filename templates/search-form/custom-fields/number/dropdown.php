@@ -5,7 +5,9 @@
  * @version 8.0
  */
 
-if ( ! defined( 'ABSPATH' ) ) exit;
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
 
 $options = directorist_calculate_number_options( $data );
 ?>
@@ -20,10 +22,10 @@ $options = directorist_calculate_number_options( $data );
 
 		<select name='custom_field[<?php echo esc_attr( $data['field_key'] ); ?>]' <?php echo ! empty( $data['required'] ) ? 'required="required"' : ''; ?> data-isSearch="true" data-placeholder="<?php echo esc_attr( $data['placeholder'] ?? '' ); ?>">
 
-			<option value=""><?php echo esc_html( ! empty( $data['placeholder'] ) ? $data['placeholder'] : __( 'Select', 'directorist' ) )?></option>
+			<option value=""><?php echo esc_html( ! empty( $data['placeholder'] ) ? $data['placeholder'] : __( 'Select', 'directorist' ) ); ?></option>
 
 			<?php
-			if( $options ) {
+			if ( $options ) {
 				foreach ( $options['select'] as $option ) {
 					printf( '<option value="%s"%s>%s</option>', esc_attr( $option ), esc_attr( selected( (int) $value === $option ) ), esc_html( $option ) );
 				}
@@ -34,7 +36,7 @@ $options = directorist_calculate_number_options( $data );
 
 	</div>
 
-    <div class="directorist-search-field__btn directorist-search-field__btn--clear">
+	<div class="directorist-search-field__btn directorist-search-field__btn--clear">
 		<?php directorist_icon( 'fas fa-times-circle' ); ?>	
 	</div>
 

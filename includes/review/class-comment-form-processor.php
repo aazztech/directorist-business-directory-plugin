@@ -18,7 +18,7 @@ class Comment_Form_Processor {
 	const AJAX_ACTION = 'directorist_process_comment_form';
 
 	public static function init() {
-		add_action( 'wp_ajax_' . self::AJAX_ACTION , array( __CLASS__, 'process' ) );
+		add_action( 'wp_ajax_' . self::AJAX_ACTION, array( __CLASS__, 'process' ) );
 		add_action( 'wp_ajax_nopriv_' . self::AJAX_ACTION, array( __CLASS__, 'process' ) );
 	}
 
@@ -49,10 +49,12 @@ class Comment_Form_Processor {
 			$comment_type_label = $is_review ? __( 'review', 'directorist' ) : __( 'comment', 'directorist' );
 
 			if ( ! is_user_logged_in() ) {
-				throw new Exception( sprintf(
-					__( 'Please login to update your %s.', 'directorist' ),
-					$comment_type_label
-				) );
+				throw new Exception(
+					sprintf(
+						__( 'Please login to update your %s.', 'directorist' ),
+						$comment_type_label
+					)
+				);
 			}
 
 			if ( ! current_user_can( 'edit_comment', $comment_id ) ) {
@@ -82,7 +84,7 @@ class Comment_Form_Processor {
 				'comment_ID'      => $comment->comment_ID,
 				'comment_post_ID' => $comment->comment_post_ID,
 				'comment_type'    => $comment->comment_type,
-				'comment_content' => $comment_content
+				'comment_content' => $comment_content,
 			);
 
 			$updated_comment = wp_update_comment( $comment_data, true );
@@ -97,7 +99,7 @@ class Comment_Form_Processor {
 			Comment::post_rating( $comment_id, $comment_data, $_POST );
 			Comment::clear_transients( $comment->comment_post_ID );
 
-			$cpage = isset( $_POST['cpage'] ) ? absint( $_POST['cpage'] ) : 0;
+			$cpage       = isset( $_POST['cpage'] ) ? absint( $_POST['cpage'] ) : 0;
 			$redirect_to = get_permalink( $comment->comment_post_ID );
 			if ( $cpage ) {
 				$redirect_to = add_query_arg( 'cpage', $cpage, $redirect_to );
@@ -106,21 +108,21 @@ class Comment_Form_Processor {
 
 			/**
 			* @since 7.7.0
-			*
 			*/
 
 			do_action( 'directorist_review_updated', $comment_id, $comment_data );
-
 
 			wp_safe_redirect( $redirect_to );
 			exit;
 		} catch ( Exception $e ) {
 			$html = sprintf( '<div class="directorist-alert directorist-alert-danger">%s</div>', $e->getMessage() );
 
-			wp_send_json_error( array(
-				'error' => $e->getMessage(),
-				'html'  => $html,
-			) );
+			wp_send_json_error(
+				array(
+					'error' => $e->getMessage(),
+					'html'  => $html,
+				)
+			);
 		}
 	}
 }

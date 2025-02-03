@@ -36,7 +36,9 @@ class Listing_Reviews_Controller extends Abstract_Controller {
 	 */
 	public function register_routes() {
 		register_rest_route(
-			$this->namespace, '/' . $this->rest_base, array(
+			$this->namespace,
+			'/' . $this->rest_base,
+			array(
 				array(
 					'methods'             => WP_REST_Server::READABLE,
 					'callback'            => array( $this, 'get_items' ),
@@ -48,7 +50,9 @@ class Listing_Reviews_Controller extends Abstract_Controller {
 		);
 
 		register_rest_route(
-			$this->namespace, '/' . $this->rest_base . '/(?P<id>[\d]+)', array(
+			$this->namespace,
+			'/' . $this->rest_base . '/(?P<id>[\d]+)',
+			array(
 				'args'   => array(
 					'id' => array(
 						'description' => __( 'Unique identifier for the resource.', 'directorist' ),
@@ -460,15 +464,15 @@ class Listing_Reviews_Controller extends Abstract_Controller {
 			$avatar_properties = array();
 			$avatar_sizes      = rest_get_avatar_sizes();
 
-			foreach ( $avatar_sizes as $size ) {
-				$avatar_properties[ $size ] = array(
-					/* translators: %d: avatar image size in pixels */
-					'description' => sprintf( __( 'Avatar URL with image size of %d pixels.', 'directorist' ), $size ),
-					'type'        => 'string',
-					'format'      => 'uri',
-					'context'     => array( 'embed', 'view', 'edit' ),
-				);
-			}
+		foreach ( $avatar_sizes as $size ) {
+			$avatar_properties[ $size ] = array(
+				/* translators: %d: avatar image size in pixels */
+				'description' => sprintf( __( 'Avatar URL with image size of %d pixels.', 'directorist' ), $size ),
+				'type'        => 'string',
+				'format'      => 'uri',
+				'context'     => array( 'embed', 'view', 'edit' ),
+			);
+		}
 			$schema['properties']['reviewer_avatar_urls'] = array(
 				'description' => __( 'Avatar URLs for the object reviewer.', 'directorist' ),
 				'type'        => 'object',
@@ -476,9 +480,9 @@ class Listing_Reviews_Controller extends Abstract_Controller {
 				'readonly'    => true,
 				'properties'  => $avatar_properties,
 			);
-		// }
+			// }
 
-		return $this->add_additional_fields_schema( $schema );
+			return $this->add_additional_fields_schema( $schema );
 	}
 
 	/**

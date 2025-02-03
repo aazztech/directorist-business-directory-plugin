@@ -2,59 +2,59 @@
 /**
  * @author AazzTech
  */
-class ATBDP_Status
-{
+class ATBDP_Status {
 
-    public $custom_url;
 
-    public function __construct() {
-        add_action( 'admin_menu', array( $this, 'status_menu' ), 60 );
+	public $custom_url;
 
-        $this->include();
-        $this->custom_url = new ATBDP_Custom_Url();
-    }
+	public function __construct() {
+		add_action( 'admin_menu', array( $this, 'status_menu' ), 60 );
 
-    public function include() {
-        include ATBDP_INC_DIR . '/system-status/system-information/system-information.php';
-        include ATBDP_INC_DIR . '/system-status/custom-url.php';
-    }
+		$this->include();
+		$this->custom_url = new ATBDP_Custom_Url();
+	}
 
-     /**
-     * Add system status menu page
-     *
-     * @return void
-     */
-    public function status_menu() {
-        add_submenu_page( 'edit.php?post_type=at_biz_dir', __( 'Help & Support', 'directorist' ), __( 'Help & Support', 'directorist' ) , 'manage_options', 'directorist-status', array( $this, 'tools_page' ) );
-    }
+	public function include() {
+		include ATBDP_INC_DIR . '/system-status/system-information/system-information.php';
+		include ATBDP_INC_DIR . '/system-status/custom-url.php';
+	}
 
-    public function tools_page() {
-        include ATBDP_INC_DIR . '/system-status/template.php';
-    }
+	/**
+	 * Add system status menu page
+	 *
+	 * @return void
+	 */
+	public function status_menu() {
+		add_submenu_page( 'edit.php?post_type=at_biz_dir', __( 'Help & Support', 'directorist' ), __( 'Help & Support', 'directorist' ), 'manage_options', 'directorist-status', array( $this, 'tools_page' ) );
+	}
 
-    public function status_page() { ?>
+	public function tools_page() {
+		include ATBDP_INC_DIR . '/system-status/template.php';
+	}
 
-        <div class='postbox'>
-        <?php
-        esc_html_e( 'Help & Support', 'directorist' );
-        new ATBDP_System_Info();
-       ?>
-        </div>
+	public function status_page() {
+		?>
 
-        <div class='postbox'>
-        <?php
-            $this->custom_url->custom_link();
-        ?>
-        </div>
+		<div class='postbox'>
+		<?php
+		esc_html_e( 'Help & Support', 'directorist' );
+		new ATBDP_System_Info();
+		?>
+		</div>
 
-        <div class='postbox'>
-            <?php
-            include ATBDP_INC_DIR . '/system-status/warning.php';
-            ?>
-        </div>
-        <?php
-    }
+		<div class='postbox'>
+		<?php
+			$this->custom_url->custom_link();
+		?>
+		</div>
 
+		<div class='postbox'>
+			<?php
+			include ATBDP_INC_DIR . '/system-status/warning.php';
+			?>
+		</div>
+		<?php
+	}
 }
 
 new ATBDP_Status();

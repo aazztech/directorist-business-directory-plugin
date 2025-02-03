@@ -12,7 +12,7 @@ class ATBDP_Listings_Data_Store {
 	 *
 	 * @return object WP_Query
 	 */
-	public static function get_archive_listings_query( array $query_args = [], array $custom_option = [] ) {
+	public static function get_archive_listings_query( array $query_args = array(), array $custom_option = array() ) {
 		_deprecated_function( __METHOD__, '7.4.3', 'DB::get_listings' );
 		return DB::get_listings_data( $query_args );
 	}
@@ -22,7 +22,7 @@ class ATBDP_Listings_Data_Store {
 	 *
 	 * @return object WP_Query
 	 */
-	public static function get_listings( array $args = [] ) {
+	public static function get_listings( array $args = array() ) {
 		_deprecated_function( __METHOD__, '7.4.3' );
 		return get_posts( $args );
 	}
@@ -32,20 +32,20 @@ class ATBDP_Listings_Data_Store {
 	 *
 	 * @return object WP_Query
 	 */
-	public static function get_listings_query( array $args = [] ) {
+	public static function get_listings_query( array $args = array() ) {
 		_deprecated_function( __METHOD__, '7.4.3' );
 		return new WP_Query();
 	}
 
 	// get_listings_ids
-	public static function get_listings_ids( array $query_args = [] ) {
+	public static function get_listings_ids( array $query_args = array() ) {
 		_deprecated_function( __METHOD__, '7.4.3' );
-		$default = [
+		$default    = array(
 			'post_type'      => ATBDP_POST_TYPE,
 			'posts_per_page' => -1,
 			'post_status'    => 'publish',
-			'fields'         => 'ids'
-		];
+			'fields'         => 'ids',
+		);
 		$query_args = array_merge( $default, $query_args );
 
 		$query = new WP_Query( $query_args );

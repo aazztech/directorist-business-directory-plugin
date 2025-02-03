@@ -5,16 +5,18 @@
  * @version 6.7
  */
 
-if ( ! defined( 'ABSPATH' ) ) exit;
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
 
-if( is_admin() || $data['value'] ) {
+if ( is_admin() || $data['value'] ) {
 	return;
 }
 ?>
 
 <div class="directorist-form-group directorist-form-listing-type">
 
-	<?php $listing_form->field_label_template( $data );?>
+	<?php $listing_form->field_label_template( $data ); ?>
 
 	<div class="directorist-form-listing-type__single directorist-radio directorist-radio-circle">
 

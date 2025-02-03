@@ -5,12 +5,14 @@
  * @version 8.0.0
  */
 
-if ( ! defined( 'ABSPATH' ) ) exit;
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
 ?>
 
 <div class="directorist-search-field directorist-form-group directorist-time">
 
-	<?php if ( !empty($data['label']) ): ?>
+	<?php if ( ! empty( $data['label'] ) ) : ?>
 		<label class="directorist-search-field__label"><?php echo esc_html( $data['label'] ); ?></label>
 	<?php endif; ?>
 

@@ -90,43 +90,43 @@ function directorist_get_rating_field_meta_key() {
 /**
  * Get comment edit link.
  *
- * @param array $args
+ * @param array                 $args
  * @param WP_Comment|string|int $comment
- * @param WP_Post|int $post
+ * @param WP_Post|int           $post
  *
  * @return void
  */
 function directorist_get_comment_edit_link( $args = array(), $comment = null, $post = null ) {
-    $defaults = array(
-        'edit_text'    => __( 'Edit', 'directorist' ),
-        'edit_of_text' => __( 'Edit %s', 'directorist' ),
-        'max_depth'    => 0,
-        'depth'        => 0,
-    );
+	$defaults = array(
+		'edit_text'    => __( 'Edit', 'directorist' ),
+		'edit_of_text' => __( 'Edit %s', 'directorist' ),
+		'max_depth'    => 0,
+		'depth'        => 0,
+	);
 
-    $args = wp_parse_args( $args, $defaults );
+	$args = wp_parse_args( $args, $defaults );
 
-    $comment = get_comment( $comment );
+	$comment = get_comment( $comment );
 
-    if ( empty( $comment ) ) {
-        return;
-    }
+	if ( empty( $comment ) ) {
+		return;
+	}
 
 	if ( ! current_user_can( 'edit_comment', $comment->comment_ID ) ) {
 		return;
 	}
 
-    if ( empty( $post ) ) {
-        $post = $comment->comment_post_ID;
-    }
+	if ( empty( $post ) ) {
+		$post = $comment->comment_post_ID;
+	}
 
-    $post = get_post( $post );
+	$post = get_post( $post );
 
-    if ( ! comments_open( $post->ID ) ) {
-        return false;
-    }
+	if ( ! comments_open( $post->ID ) ) {
+		return false;
+	}
 
-	$comment_type = ( $comment->comment_type === 'review' ? __( 'review', 'directorist' ) : __( 'comment', 'directorist' ) );
+	$comment_type    = ( $comment->comment_type === 'review' ? __( 'review', 'directorist' ) : __( 'comment', 'directorist' ) );
 	$data_attributes = array(
 		'commentid' => $comment->comment_ID,
 		'postid'    => $post->ID,
@@ -149,7 +149,7 @@ function directorist_get_comment_edit_link( $args = array(), $comment = null, $p
 		$args['edit_text']
 	);
 
-    return apply_filters( 'directorist_comment_edit_link', $link, $args, $comment, $post );
+	return apply_filters( 'directorist_comment_edit_link', $link, $args, $comment, $post );
 }
 
 /**
@@ -167,7 +167,7 @@ function directorist_get_comment_form_ajax_url( $type = 'add' ) {
  * Check if user already shared a review.
  *
  * @param string $user_email
- * @param int $post_id.
+ * @param int    $post_id.
  * @return bool
  */
 function directorist_user_review_exists( $user_email, $post_id ) {
@@ -290,7 +290,7 @@ function directorist_get_review_gdpr_consent_label() {
 			'<a target="_blank" href="' . esc_url( ATBDP_Permalink::get_privacy_policy_page_url() ) . '">',
 			'</a>',
 			'<a target="_blank" href="' . esc_url( ATBDP_Permalink::get_terms_and_conditions_page_url() ) . '">',
-			'</a>'
+			'</a>',
 		),
 		$label
 	);

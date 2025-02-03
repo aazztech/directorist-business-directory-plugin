@@ -9,10 +9,11 @@ defined( 'ABSPATH' ) || exit;
  *
  * Required WP 4.4 or later.
  * See https://developer.wordpress.org/reference/functions/mysql_to_rfc3339/
+ *
  * @see wc_rest_prepare_date_response
  *
  * @param  string|null|Directorist_DateTime $date Date.
- * @param  bool                    $utc  Send false to get local/offset time.
+ * @param  bool                             $utc  Send false to get local/offset time.
  * @return string|null ISO8601/RFC3339 formatted datetime.
  */
 function directorist_rest_prepare_date_response( $date, $utc = true ) {
@@ -131,10 +132,10 @@ function directorist_rest_upload_image_from_url( $image_url ) {
 
 	// Add extension to the name when downloaded from extension less url
 	if ( strrpos( $file_array['name'], '.' ) === false ) {
-		$mime_type          = mime_content_type( $file_array['tmp_name'] );
-		$_mime_types        = array_flip( $allowed_mime_types );
-		$extensions         = $_mime_types[ $mime_type ] ?? '';
-		$extensions         = explode( '|', $extensions, 2 );
+		$mime_type           = mime_content_type( $file_array['tmp_name'] );
+		$_mime_types         = array_flip( $allowed_mime_types );
+		$extensions          = $_mime_types[ $mime_type ] ?? '';
+		$extensions          = explode( '|', $extensions, 2 );
 		$file_array['name'] .= '.' . $extensions[0];
 	}
 

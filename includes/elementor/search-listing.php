@@ -8,11 +8,13 @@ namespace AazzTech\Directorist\Elementor;
 use Elementor\Controls_Manager;
 use Directorist\Helper;
 
-if ( ! defined( 'ABSPATH' ) ) exit;
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
 
 class Directorist_Search_Listing extends Custom_Widget_Base {
 
-	public function __construct( $data = [], $args = null ) {
+	public function __construct( $data = array(), $args = null ) {
 		$this->az_name = __( 'Search Form', 'directorist' );
 		$this->az_base = 'directorist_search_listing';
 		parent::__construct( $data, $args );
@@ -28,18 +30,18 @@ class Directorist_Search_Listing extends Custom_Widget_Base {
 		return wp_list_pluck( $directories, 'name', 'slug' );
 	}
 
-	public function az_fields(){
+	public function az_fields() {
 		$fields = array(
 			array(
-				'mode'    => 'section_start',
-				'id'      => 'sec_general',
-				'label'   => __( 'General', 'directorist' ),
+				'mode'  => 'section_start',
+				'id'    => 'sec_general',
+				'label' => __( 'General', 'directorist' ),
 			),
 			array(
-				'type'      => Controls_Manager::SWITCHER,
-				'id'        => 'show_subtitle',
-				'label'     => __( 'Add Element Title & Subtitle?', 'directorist' ),
-				'default'   => 'yes',
+				'type'    => Controls_Manager::SWITCHER,
+				'id'      => 'show_subtitle',
+				'label'   => __( 'Add Element Title & Subtitle?', 'directorist' ),
+				'default' => 'yes',
 			),
 			array(
 				'type'      => Controls_Manager::CHOOSE,
@@ -81,31 +83,31 @@ class Directorist_Search_Listing extends Custom_Widget_Base {
 				'condition' => array( 'show_subtitle' => array( 'yes' ) ),
 			),
 			array(
-				'type'     => Controls_Manager::SELECT2,
-				'id'       => 'type',
-				'label'    => __( 'Directory Types', 'directorist' ),
-				'multiple' => true,
-				'options'  => $this->az_listing_types(),
-				'condition' => directorist_is_multi_directory_enabled() ? '' : ['nocondition' => true],
+				'type'      => Controls_Manager::SELECT2,
+				'id'        => 'type',
+				'label'     => __( 'Directory Types', 'directorist' ),
+				'multiple'  => true,
+				'options'   => $this->az_listing_types(),
+				'condition' => directorist_is_multi_directory_enabled() ? '' : array( 'nocondition' => true ),
 			),
 			array(
-				'type'     => Controls_Manager::SELECT2,
-				'id'       => 'default_type',
-				'label'    => __( 'Default Directory Types', 'directorist' ),
-				'options'  => $this->az_listing_types(),
-				'condition' => directorist_is_multi_directory_enabled() ? '' : ['nocondition' => true],
+				'type'      => Controls_Manager::SELECT2,
+				'id'        => 'default_type',
+				'label'     => __( 'Default Directory Types', 'directorist' ),
+				'options'   => $this->az_listing_types(),
+				'condition' => directorist_is_multi_directory_enabled() ? '' : array( 'nocondition' => true ),
 			),
 			array(
-				'type'      => Controls_Manager::TEXT,
-				'id'        => 'search_btn_text',
-				'label'     => __( 'Search Button Label', 'directorist' ),
-				'default'   => __( 'Search Listing', 'directorist' ),
+				'type'    => Controls_Manager::TEXT,
+				'id'      => 'search_btn_text',
+				'label'   => __( 'Search Button Label', 'directorist' ),
+				'default' => __( 'Search Listing', 'directorist' ),
 			),
 			array(
-				'type'      => Controls_Manager::SWITCHER,
-				'id'        => 'show_more_filter_btn',
-				'label'     => __( 'Show More Search Field?', 'directorist' ),
-				'default'   => 'yes',
+				'type'    => Controls_Manager::SWITCHER,
+				'id'      => 'show_more_filter_btn',
+				'label'   => __( 'Show More Search Field?', 'directorist' ),
+				'default' => 'yes',
 			),
 			array(
 				'type'      => Controls_Manager::TEXT,
@@ -126,7 +128,10 @@ class Directorist_Search_Listing extends Custom_Widget_Base {
 				'id'        => 'more_filter_reset_btn_text',
 				'label'     => __( 'More Field Reset Button Label', 'directorist' ),
 				'default'   => __( 'Reset Filters', 'directorist' ),
-				'condition' => array( 'more_filter_reset_btn' => 'yes', 'show_more_filter_btn' => 'yes' ),
+				'condition' => array(
+					'more_filter_reset_btn' => 'yes',
+					'show_more_filter_btn'  => 'yes',
+				),
 			),
 			array(
 				'type'      => Controls_Manager::SWITCHER,
@@ -140,22 +145,25 @@ class Directorist_Search_Listing extends Custom_Widget_Base {
 				'id'        => 'more_filter_search_btn_text',
 				'label'     => __( 'More Field Search Button Label', 'directorist' ),
 				'default'   => __( 'Apply Filters', 'directorist' ),
-				'condition' => array( 'more_filter_search_btn' => 'yes', 'show_more_filter_btn' => 'yes' ),
+				'condition' => array(
+					'more_filter_search_btn' => 'yes',
+					'show_more_filter_btn'   => 'yes',
+				),
 			),
 			array(
-				'type'      => Controls_Manager::SWITCHER,
-				'id'        => 'user',
-				'label'     => __( 'Show only for logged in user?', 'directorist' ),
-				'default'   => 'no',
+				'type'    => Controls_Manager::SWITCHER,
+				'id'      => 'user',
+				'label'   => __( 'Show only for logged in user?', 'directorist' ),
+				'default' => 'no',
 			),
 			array(
 				'mode' => 'section_end',
 			),
 			array(
-				'mode'  => 'section_start',
-				'id'    => 'sec_style',
-				'tab'   => Controls_Manager::TAB_STYLE,
-				'label' => __( 'Color', 'directorist' ),
+				'mode'      => 'section_start',
+				'id'        => 'sec_style',
+				'tab'       => Controls_Manager::TAB_STYLE,
+				'label'     => __( 'Color', 'directorist' ),
 				'condition' => array( 'show_subtitle' => array( 'yes' ) ),
 			),
 			array(
@@ -178,10 +186,10 @@ class Directorist_Search_Listing extends Custom_Widget_Base {
 				'mode' => 'section_end',
 			),
 			array(
-				'mode'  => 'section_start',
-				'id'    => 'sec_style_type',
-				'tab'   => Controls_Manager::TAB_STYLE,
-				'label' => __( 'Typography', 'directorist' ),
+				'mode'      => 'section_start',
+				'id'        => 'sec_style_type',
+				'tab'       => Controls_Manager::TAB_STYLE,
+				'label'     => __( 'Typography', 'directorist' ),
 				'condition' => array( 'show_subtitle' => array( 'yes' ) ),
 			),
 			array(
@@ -209,17 +217,17 @@ class Directorist_Search_Listing extends Custom_Widget_Base {
 		$settings = $this->get_settings_for_display();
 
 		$atts = array(
-			'show_title_subtitle'   => $settings['show_subtitle'],
-			'search_bar_title'      => $settings['title'],
-			'search_bar_sub_title'  => $settings['subtitle'],
-			'search_button_text'    => $settings['search_btn_text'],
-			'more_filters_button'   => $settings['show_more_filter_btn'],
-			'more_filters_text'     => $settings['more_filter_btn_text'],
-			'reset_filters_button'  => $settings['more_filter_reset_btn'],
-			'apply_filters_button'  => $settings['more_filter_search_btn'],
-			'reset_filters_text'    => $settings['more_filter_reset_btn_text'],
-			'apply_filters_text'    => $settings['more_filter_search_btn_text'],
-			'logged_in_user_only'   => $settings['user'] ? $settings['user'] : 'no',
+			'show_title_subtitle'  => $settings['show_subtitle'],
+			'search_bar_title'     => $settings['title'],
+			'search_bar_sub_title' => $settings['subtitle'],
+			'search_button_text'   => $settings['search_btn_text'],
+			'more_filters_button'  => $settings['show_more_filter_btn'],
+			'more_filters_text'    => $settings['more_filter_btn_text'],
+			'reset_filters_button' => $settings['more_filter_reset_btn'],
+			'apply_filters_button' => $settings['more_filter_search_btn'],
+			'reset_filters_text'   => $settings['more_filter_reset_btn_text'],
+			'apply_filters_text'   => $settings['more_filter_search_btn_text'],
+			'logged_in_user_only'  => $settings['user'] ? $settings['user'] : 'no',
 		);
 
 		if ( directorist_is_multi_directory_enabled() ) {

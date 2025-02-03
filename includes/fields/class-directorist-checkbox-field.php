@@ -19,9 +19,12 @@ class Checkbox_Field extends Base_Field {
 			return array();
 		}
 
-		return array_map( static function( $option ) {
-			return str_replace( '&lt;', '<', $option['option_value'] );
-		}, $options );
+		return array_map(
+			static function ( $option ) {
+				return str_replace( '&lt;', '<', $option['option_value'] );
+			},
+			$options
+		);
 	}
 
 	public function validate( $posted_data ) {
@@ -35,7 +38,7 @@ class Checkbox_Field extends Base_Field {
 
 		return true;
 	}
-	
+
 	public function sanitize( $posted_data ) {
 		return directorist_clean( $this->get_value( $posted_data ) );
 	}

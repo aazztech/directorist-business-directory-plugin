@@ -5,7 +5,9 @@
  * @version 8.0
  */
 
-if ( ! defined( 'ABSPATH' ) ) exit;
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
 $fields = $searchform->get_basic_fields();
 ?>
 
@@ -16,7 +18,7 @@ $fields = $searchform->get_basic_fields();
 
 		<?php if ( ! empty( $fields ) ) : ?>
 
-			<?php foreach ( $fields as $key => $field ){ ?>
+			<?php foreach ( $fields as $key => $field ) { ?>
 				<div class="directorist-search-modal__input <?php echo $key === 'radius_search' ? 'directorist-radius-search' : ''; ?>">
 					<?php $searchform->field_template( $field ); ?>
 				</div>
@@ -29,7 +31,7 @@ $fields = $searchform->get_basic_fields();
 
 				<?php directorist_icon( 'las la-search' ); ?>
 
-				<?php echo esc_html( $searchform->search_button_text );?>
+				<?php echo esc_html( $searchform->search_button_text ); ?>
 
 			</button>
 		</div>

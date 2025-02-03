@@ -22,7 +22,6 @@ if ( ! class_exists( 'ATBDP_Announcement' ) ) :
 			add_action( 'wp_ajax_atbdp_close_announcement', array( $this, 'close_announcement' ) );
 			add_action( 'wp_ajax_atbdp_get_new_announcement_count', array( $this, 'response_new_announcement_count' ) );
 			add_action( 'wp_ajax_atbdp_clear_seen_announcements', array( $this, 'clear_seen_announcements' ) );
-
 		}
 
 		public function non_legacy_add_dashboard_nav_link() {
@@ -99,7 +98,7 @@ if ( ! class_exists( 'ATBDP_Announcement' ) ) :
 							$recipient = get_post_meta( get_the_ID(), '_recepents', true );
 							if ( ! empty( $recipient ) && is_array( $recipient ) ) {
 								if ( ! in_array( $current_user_email, $recipient ) ) {
-									$skipped_post_count++;
+									++$skipped_post_count;
 									continue;
 								}
 							}
@@ -234,7 +233,7 @@ if ( ! class_exists( 'ATBDP_Announcement' ) ) :
 					$recipient = get_post_meta( get_the_ID(), '_recepents', true );
 					if ( ! empty( $recipient ) && is_array( $recipient ) ) {
 						if ( ! in_array( $current_user_email, $recipient ) ) {
-							$skipped_post_count++;
+							++$skipped_post_count;
 							continue;
 						}
 					}
@@ -316,7 +315,7 @@ if ( ! class_exists( 'ATBDP_Announcement' ) ) :
 							$recipient = get_post_meta( get_the_ID(), '_recepents', true );
 							if ( ! empty( $recipient ) && is_array( $recipient ) ) {
 								if ( ! in_array( $current_user_email, $recipient ) ) {
-									$skipped_post_count++;
+									++$skipped_post_count;
 									continue;
 								}
 							}
@@ -378,11 +377,11 @@ if ( ! class_exists( 'ATBDP_Announcement' ) ) :
 				return array_filter( $result );
 			}
 
-			$number_of_loops = ceil( $total/$number );
+			$number_of_loops = ceil( $total / $number );
 
 			// Run subsequent queries
-			for ( $i = 2; $i <= $number_of_loops ; $i++ ) {
-				$args = array(
+			for ( $i = 2; $i <= $number_of_loops; $i++ ) {
+				$args   = array(
 					'role__not_in' => 'Administrator',
 					'fields'       => 'user_email',
 					'paged'        => $i,

@@ -266,52 +266,53 @@ abstract class Terms_Controller extends Abstract_Controller {
 		if ( ! empty( $prepared_args['listing'] ) ) {
 			$query_result = $this->get_terms_for_listing( $prepared_args, $request );
 			$total_terms  = $this->total_terms;
-		} else {
-			if ( ! empty( $request['directory'] ) ) {
+		} elseif ( ! empty( $request['directory'] ) ) {
 				$_prepared_args = $prepared_args;
 
 				unset( $_prepared_args['number'] );
 				unset( $_prepared_args['offset'] );
 
 				$terms               = get_terms( $taxonomy, $_prepared_args );
-				$queried_directories = ( is_array( $request['directory'] ) ) ? $request['directory'] : [ $request['directory'] ];
+				$queried_directories = ( is_array( $request['directory'] ) ) ? $request['directory'] : array( $request['directory'] );
 
-				$terms = array_filter( $terms, function( $term ) use( $queried_directories ) {
-					$directories = get_term_meta( $term->term_id, '_directory_type', true );
+				$terms = array_filter(
+					$terms,
+					function ( $term ) use ( $queried_directories ) {
+						$directories = get_term_meta( $term->term_id, '_directory_type', true );
 
-					if ( empty( $directories ) || ! is_array( $directories ) ) {
-						return false;
+						if ( empty( $directories ) || ! is_array( $directories ) ) {
+							return false;
+						}
+
+						$exists = array_intersect( $queried_directories, $directories );
+						return ( count( $exists ) > 0 );
 					}
-
-					$exists = array_intersect( $queried_directories, $directories );
-					return ( count( $exists ) > 0 );
-				} );
+				);
 
 				$offset       = $prepared_args['offset'] ? $prepared_args['offset'] : 0;
 				$query_result = array_slice( $terms, $offset, $prepared_args['number'] );
 				$total_terms  = count( $terms );
 
-				if ( $offset >= $total_terms ) {
-					$query_result = array();
-				}
-			} else {
-				$query_result = get_terms( $taxonomy, $prepared_args );
+			if ( $offset >= $total_terms ) {
+				$query_result = array();
+			}
+		} else {
+			$query_result = get_terms( $taxonomy, $prepared_args );
 
-				$count_args = $prepared_args;
-				unset( $count_args['number'] );
-				unset( $count_args['offset'] );
-				$total_terms = wp_count_terms( $taxonomy, $count_args );
+			$count_args = $prepared_args;
+			unset( $count_args['number'] );
+			unset( $count_args['offset'] );
+			$total_terms = wp_count_terms( $taxonomy, $count_args );
 
-				// Ensure we don't return results when offset is out of bounds.
-				// See https://core.trac.wordpress.org/ticket/35935.
-				if ( $prepared_args['offset'] && $prepared_args['offset'] >= $total_terms ) {
-					$query_result = array();
-				}
+			// Ensure we don't return results when offset is out of bounds.
+			// See https://core.trac.wordpress.org/ticket/35935.
+			if ( $prepared_args['offset'] && $prepared_args['offset'] >= $total_terms ) {
+				$query_result = array();
+			}
 
-				// wp_count_terms can return a falsy value when the term has no children.
-				if ( ! $total_terms ) {
-					$total_terms = 0;
-				}
+			// wp_count_terms can return a falsy value when the term has no children.
+			if ( ! $total_terms ) {
+				$total_terms = 0;
 			}
 		}
 
@@ -386,10 +387,8 @@ abstract class Terms_Controller extends Abstract_Controller {
 			if ( 0 === $request['parent'] ) {
 				// Only query top-level terms.
 				$prepared_args['parent'] = 0;
-			} else {
-				if ( $request['parent'] ) {
+			} elseif ( $request['parent'] ) {
 					$prepared_args['parent'] = $request['parent'];
-				}
 			}
 		}
 
@@ -511,8 +510,8 @@ abstract class Terms_Controller extends Abstract_Controller {
 	 * @return WP_REST_Request|WP_Error
 	 */
 	public function update_item( $request ) {
-		$taxonomy      = $this->taxonomy;
-		$id            = (int) $request['id'];
+		$taxonomy = $this->taxonomy;
+		$id       = (int) $request['id'];
 
 		do_action( 'directorist_rest_before_query', 'update_term_item', $request, $id, $taxonomy );
 

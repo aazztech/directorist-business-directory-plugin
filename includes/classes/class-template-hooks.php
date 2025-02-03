@@ -5,7 +5,9 @@
 
 namespace Directorist;
 
-if ( ! defined( 'ABSPATH' ) ) exit;
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
 
 class Directorist_Template_Hooks {
 
@@ -14,50 +16,50 @@ class Directorist_Template_Hooks {
 	private function __construct() {
 
 		// Allow '--directorist-icon' inline style var in wp_kses_post, which is used in directorist_icon()
-		add_filter( 'safe_style_css', array( $this, 'add_style_attr' )  );
-		add_filter( 'safecss_filter_attr_allow_css', array( $this, 'allow_style_attr' ), 10, 2  );
+		add_filter( 'safe_style_css', array( $this, 'add_style_attr' ) );
+		add_filter( 'safecss_filter_attr_allow_css', array( $this, 'allow_style_attr' ), 10, 2 );
 
 		// Dashboard ajax
 		$dashboard = Directorist_Listing_Dashboard::instance();
-		add_action('wp_ajax_directorist_dashboard_listing_tab', array( $dashboard, 'ajax_listing_tab' ) );
+		add_action( 'wp_ajax_directorist_dashboard_listing_tab', array( $dashboard, 'ajax_listing_tab' ) );
 
 		// All Categories
-		add_action( 'atbdp_before_all_categories_loop',    array( '\Directorist\Directorist_Listing_Taxonomy', 'archive_type' ) );
+		add_action( 'atbdp_before_all_categories_loop', array( '\Directorist\Directorist_Listing_Taxonomy', 'archive_type' ) );
 
 		// All Locations
-		add_action( 'atbdp_before_all_locations_loop',    array( '\Directorist\Directorist_Listing_Taxonomy', 'archive_type' ) );
+		add_action( 'atbdp_before_all_locations_loop', array( '\Directorist\Directorist_Listing_Taxonomy', 'archive_type' ) );
 
 		// Listing Archive - @todo: remove these unused hooks
-		add_action( 'directorist_archive_header',    array( '\Directorist\Directorist_Listings', 'archive_type' ) );
-		add_action( 'directorist_archive_header',    array( '\Directorist\Directorist_Listings', 'archive_header' ), 15 );
+		add_action( 'directorist_archive_header', array( '\Directorist\Directorist_Listings', 'archive_type' ) );
+		add_action( 'directorist_archive_header', array( '\Directorist\Directorist_Listings', 'archive_header' ), 15 );
 
 		// Listings Badges - Grid View - @todo: remove these unused hooks
-		add_filter( 'atbdp_grid_lower_badges', array( '\Directorist\Directorist_Listings', 'featured_badge') );
-		add_filter( 'atbdp_grid_lower_badges', array( '\Directorist\Directorist_Listings', 'popular_badge'), 15 );
-		add_filter( 'atbdp_grid_lower_badges', array( '\Directorist\Directorist_Listings', 'new_listing_badge'), 20 );
+		add_filter( 'atbdp_grid_lower_badges', array( '\Directorist\Directorist_Listings', 'featured_badge' ) );
+		add_filter( 'atbdp_grid_lower_badges', array( '\Directorist\Directorist_Listings', 'popular_badge' ), 15 );
+		add_filter( 'atbdp_grid_lower_badges', array( '\Directorist\Directorist_Listings', 'new_listing_badge' ), 20 );
 
 		// Listings Badges - List View
-		add_filter( 'atbdp_list_lower_badges', array( '\Directorist\Directorist_Listings', 'featured_badge_list_view') );
-		add_filter( 'atbdp_list_lower_badges', array( '\Directorist\Directorist_Listings', 'populer_badge_list_view'), 15 );
-		add_filter( 'atbdp_list_lower_badges', array( '\Directorist\Directorist_Listings', 'new_badge_list_view'), 20 );
+		add_filter( 'atbdp_list_lower_badges', array( '\Directorist\Directorist_Listings', 'featured_badge_list_view' ) );
+		add_filter( 'atbdp_list_lower_badges', array( '\Directorist\Directorist_Listings', 'populer_badge_list_view' ), 15 );
+		add_filter( 'atbdp_list_lower_badges', array( '\Directorist\Directorist_Listings', 'new_badge_list_view' ), 20 );
 
 		// Listings Top - List View - @todo: remove these unused hooks
-		add_action( 'directorist_list_view_listing_meta_end', array( '\Directorist\Directorist_Listings', 'list_view_business_hours') );
-		add_action( 'directorist_list_view_top_content_end',  array( '\Directorist\Directorist_Listings', 'mark_as_favourite_button'), 15 );
+		add_action( 'directorist_list_view_listing_meta_end', array( '\Directorist\Directorist_Listings', 'list_view_business_hours' ) );
+		add_action( 'directorist_list_view_top_content_end', array( '\Directorist\Directorist_Listings', 'mark_as_favourite_button' ), 15 );
 
 		// Listing Thumbnail Area - @todo: remove these unused hooks
-		add_action( 'atbdp_listing_thumbnail_area', array( '\Directorist\Directorist_Listings', 'mark_as_favourite_button'), 15 );
+		add_action( 'atbdp_listing_thumbnail_area', array( '\Directorist\Directorist_Listings', 'mark_as_favourite_button' ), 15 );
 
 		// Single Listing
 		// Set high priority to override page builders.
-		add_filter( 'template_include', [ $this, 'single_template_path' ], 999 );
-		add_filter( 'the_content',      [ $this, 'single_content' ], 20 );
+		add_filter( 'template_include', array( $this, 'single_template_path' ), 999 );
+		add_filter( 'the_content', array( $this, 'single_content' ), 20 );
 	}
 
 	// instance
 	public static function instance() {
 		if ( null == self::$instance ) {
-			self::$instance = new self;
+			self::$instance = new self();
 		}
 		return self::$instance;
 	}
@@ -69,7 +71,7 @@ class Directorist_Template_Hooks {
 
 	public function allow_style_attr( $allow_css, $css_test_string ) {
 		$parts = explode( ':', $css_test_string, 2 );
-		$attr = trim( $parts[0] );
+		$attr  = trim( $parts[0] );
 
 		if ( $attr === '--directorist-icon' ) {
 			return true;
@@ -134,8 +136,8 @@ class Directorist_Template_Hooks {
 			return false;
 		}
 
-		$has_template            = false;
-		$template_filename       = $template_name . '.html';
+		$has_template      = false;
+		$template_filename = $template_name . '.html';
 		// Since Gutenberg 12.1.0, the conventions for block templates directories have changed,
 		// we should check both these possible directories for backwards-compatibility.
 		$possible_templates_dirs = array( 'templates', 'block-templates' );
@@ -172,6 +174,9 @@ class Directorist_Template_Hooks {
 	}
 }
 
-add_action( 'init', function(){
-	Directorist_Template_Hooks::instance();
-} );
+add_action(
+	'init',
+	function () {
+		Directorist_Template_Hooks::instance();
+	}
+);

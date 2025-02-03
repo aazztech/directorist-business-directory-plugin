@@ -5,7 +5,9 @@
  * @version 7.4.0
  */
 
-if ( ! defined( 'ABSPATH' ) ) exit;
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
 
 if ( empty( $listing->get_location_list() ) ) {
 	return;

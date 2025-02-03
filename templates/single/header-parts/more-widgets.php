@@ -5,11 +5,13 @@
  * @version 8.0
  */
 
-if ( ! defined( 'ABSPATH' ) ) exit;
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
 ?>
 
 <div class="directorist-listing-details">
 
-    <?php $listing->quick_info_template(); ?>
+	<?php $listing->quick_info_template(); ?>
 
 </div>

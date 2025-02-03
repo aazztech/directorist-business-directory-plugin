@@ -14,9 +14,9 @@ if ( ! defined( 'ABSPATH' ) ) {
 class Builder_Screen {
 
 	public static function init() {
-		add_filter( 'directorist/builder/config', [ __CLASS__, 'register_config' ] );
-		add_filter( 'directorist/builder/fields', [ __CLASS__, 'register_fields' ] );
-		add_filter( 'directorist/builder/layouts', [ __CLASS__, 'register_layout' ] );
+		add_filter( 'directorist/builder/config', array( __CLASS__, 'register_config' ) );
+		add_filter( 'directorist/builder/fields', array( __CLASS__, 'register_fields' ) );
+		add_filter( 'directorist/builder/layouts', array( __CLASS__, 'register_layout' ) );
 	}
 
 	public static function register_config( $config ) {
@@ -28,7 +28,7 @@ class Builder_Screen {
 	}
 
 	public static function get_fields() {
-		$fields = [];
+		$fields = array();
 		return $fields;
 	}
 

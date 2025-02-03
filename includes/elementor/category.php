@@ -7,28 +7,30 @@ namespace AazzTech\Directorist\Elementor;
 
 use Elementor\Controls_Manager;
 
-if ( ! defined( 'ABSPATH' ) ) exit;
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
 
 class Directorist_Category extends Custom_Widget_Base {
 
-	public function __construct( $data = [], $args = null ) {
+	public function __construct( $data = array(), $args = null ) {
 		$this->az_name = __( 'Single Category', 'directorist' );
 		$this->az_base = 'directorist_category';
 		parent::__construct( $data, $args );
 	}
 
-	public function az_fields(){
+	public function az_fields() {
 		$fields = array(
 			array(
-				'mode'    => 'section_start',
-				'id'      => 'sec_general',
-				'label'   => __( 'General', 'directorist' ),
+				'mode'  => 'section_start',
+				'id'    => 'sec_general',
+				'label' => __( 'General', 'directorist' ),
 			),
 			array(
-				'type'      => Controls_Manager::SWITCHER,
-				'id'        => 'header',
-				'label'     => __( 'Show Header?', 'directorist' ),
-				'default'   => 'yes',
+				'type'    => Controls_Manager::SWITCHER,
+				'id'      => 'header',
+				'label'   => __( 'Show Header?', 'directorist' ),
+				'default' => 'yes',
 			),
 			array(
 				'type'      => Controls_Manager::TEXT,
@@ -58,31 +60,31 @@ class Directorist_Category extends Custom_Widget_Base {
 				'condition' => array( 'view' => array( 'map' ) ),
 			),
 			array(
-				'type'    => Controls_Manager::SELECT,
-				'id'      => 'columns',
-				'label'   => __( 'Category Per Row', 'directorist' ),
-				'options' => array(
-					'3' => __( '3 Items / Row', 'directorist'  ),
-					'4' => __( '4 Items / Row', 'directorist'  ),
-					'5' => __( '5 Items / Row', 'directorist'  ),
+				'type'      => Controls_Manager::SELECT,
+				'id'        => 'columns',
+				'label'     => __( 'Category Per Row', 'directorist' ),
+				'options'   => array(
+					'3' => __( '3 Items / Row', 'directorist' ),
+					'4' => __( '4 Items / Row', 'directorist' ),
+					'5' => __( '5 Items / Row', 'directorist' ),
 				),
-				'default' => '3',
+				'default'   => '3',
 				'condition' => array( 'view' => array( 'grid' ) ),
 			),
 			array(
-				'type'      => Controls_Manager::NUMBER,
-				'id'        => 'number_cat',
-				'label'     => __( 'Number of Categories to Show', 'directorist' ),
-				'min'       => 1,
-				'max'       => 100,
-				'step'      => 1,
-				'default'   => 6,
+				'type'    => Controls_Manager::NUMBER,
+				'id'      => 'number_cat',
+				'label'   => __( 'Number of Categories to Show', 'directorist' ),
+				'min'     => 1,
+				'max'     => 100,
+				'step'    => 1,
+				'default' => 6,
 			),
 			array(
-				'type'      => Controls_Manager::SWITCHER,
-				'id'        => 'show_pagination',
-				'label'     => __( 'Show Pagination?', 'directorist' ),
-				'default'   => 'no',
+				'type'    => Controls_Manager::SWITCHER,
+				'id'      => 'show_pagination',
+				'label'   => __( 'Show Pagination?', 'directorist' ),
+				'default' => 'no',
 			),
 			array(
 				'type'    => Controls_Manager::SELECT,
@@ -106,24 +108,25 @@ class Directorist_Category extends Custom_Widget_Base {
 				'default' => 'desc',
 			),
 			array(
-				'type'      => Controls_Manager::SWITCHER,
-				'id'        => 'user',
-				'label'     => __( 'Only For Logged In User?', 'directorist' ),
-				'default'   => 'no',
+				'type'    => Controls_Manager::SWITCHER,
+				'id'      => 'user',
+				'label'   => __( 'Only For Logged In User?', 'directorist' ),
+				'default' => 'no',
 			),
 			array(
 				'mode' => 'section_end',
 			),
 		);
 		return $fields;
-	}	
+	}
 
 	protected function render() {
 		$settings = $this->get_settings_for_display();
 
 		$user = $settings['user'] ? $settings['user'] : 'no';
 
-		$shortcode = sprintf( '[directorist_category header="%1$s" header_title="%2$s" view="%3$s" map_height="%4$s" columns="%5$s" listings_per_page="%6$s" show_pagination="%7$s" orderby="%8$s" order="%9$s" logged_in_user_only="%10$s"]', 
+		$shortcode = sprintf(
+			'[directorist_category header="%1$s" header_title="%2$s" view="%3$s" map_height="%4$s" columns="%5$s" listings_per_page="%6$s" show_pagination="%7$s" orderby="%8$s" order="%9$s" logged_in_user_only="%10$s"]',
 			esc_attr( $settings['header'] ),
 			esc_attr( $settings['header_title'] ),
 			esc_attr( $settings['view'] ),

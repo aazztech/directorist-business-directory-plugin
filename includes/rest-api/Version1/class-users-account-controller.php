@@ -30,90 +30,106 @@ class Users_Account_Controller extends Abstract_Controller {
 	 */
 	public function register_routes() {
 		// Send Password Reset PIN
-		register_rest_route( $this->namespace, '/' . $this->rest_base . '/send-password-reset-pin', array(
-			'methods'             => WP_REST_Server::CREATABLE,
-			'callback'            => array( $this, 'send_password_reset_pin' ),
-			'permission_callback' => array( $this, 'check_send_password_permission' ),
-			'args'                => array(
-				'email' => array(
-					'required'    => true,
-					'type'        => 'string',
-					'format'      => 'email',
-					'description' => __( 'User email address.', 'directorist' ),
+		register_rest_route(
+			$this->namespace,
+			'/' . $this->rest_base . '/send-password-reset-pin',
+			array(
+				'methods'             => WP_REST_Server::CREATABLE,
+				'callback'            => array( $this, 'send_password_reset_pin' ),
+				'permission_callback' => array( $this, 'check_send_password_permission' ),
+				'args'                => array(
+					'email' => array(
+						'required'    => true,
+						'type'        => 'string',
+						'format'      => 'email',
+						'description' => __( 'User email address.', 'directorist' ),
+					),
 				),
 			)
-		) );
+		);
 
 		// Verify Password Reset PIN
-		register_rest_route( $this->namespace, '/' . $this->rest_base . '/verify-password-reset-pin', array(
-			'methods'             => WP_REST_Server::CREATABLE,
-			'callback'            => array( $this, 'verify_password_reset_pin' ),
-			'permission_callback' => array( $this, 'check_verify_reset_pin_permission' ),
-			'args'                => array(
-				'email' => array(
-					'required'    => true,
-					'type'        => 'string',
-					'format'      => 'email',
-					'description' => __( 'User email address.', 'directorist' ),
-				),
-				'pin' => array(
-					'required'    => true,
-					'type'        => 'string',
-					'description' => __( 'Password rest pin.', 'directorist' ),
+		register_rest_route(
+			$this->namespace,
+			'/' . $this->rest_base . '/verify-password-reset-pin',
+			array(
+				'methods'             => WP_REST_Server::CREATABLE,
+				'callback'            => array( $this, 'verify_password_reset_pin' ),
+				'permission_callback' => array( $this, 'check_verify_reset_pin_permission' ),
+				'args'                => array(
+					'email' => array(
+						'required'    => true,
+						'type'        => 'string',
+						'format'      => 'email',
+						'description' => __( 'User email address.', 'directorist' ),
+					),
+					'pin'   => array(
+						'required'    => true,
+						'type'        => 'string',
+						'description' => __( 'Password rest pin.', 'directorist' ),
+					),
 				),
 			)
-		) );
+		);
 
 		// Rest user password.
-		register_rest_route( $this->namespace, '/' . $this->rest_base . '/reset-user-password', array(
-			'methods'             => WP_REST_Server::CREATABLE,
-			'callback'            => array( $this, 'reset_user_password' ),
-			'permission_callback' => array( $this, 'check_reset_password_permission' ),
-			'args'                => array(
-				'email' => array(
-					'required'    => true,
-					'type'        => 'string',
-					'format'      => 'email',
-					'description' => __( 'User email address.', 'directorist' ),
-				),
-				'password' => array(
-					'required'    => true,
-					'type'        => 'string',
-					'minLength'   => 6,
-					'description' => __( 'User new password.', 'directorist' ),
-				),
-				'pin' => array(
-					'required'    => true,
-					'type'        => 'string',
-					'description' => __( 'Password rest pin.', 'directorist' ),
+		register_rest_route(
+			$this->namespace,
+			'/' . $this->rest_base . '/reset-user-password',
+			array(
+				'methods'             => WP_REST_Server::CREATABLE,
+				'callback'            => array( $this, 'reset_user_password' ),
+				'permission_callback' => array( $this, 'check_reset_password_permission' ),
+				'args'                => array(
+					'email'    => array(
+						'required'    => true,
+						'type'        => 'string',
+						'format'      => 'email',
+						'description' => __( 'User email address.', 'directorist' ),
+					),
+					'password' => array(
+						'required'    => true,
+						'type'        => 'string',
+						'minLength'   => 6,
+						'description' => __( 'User new password.', 'directorist' ),
+					),
+					'pin'      => array(
+						'required'    => true,
+						'type'        => 'string',
+						'description' => __( 'Password rest pin.', 'directorist' ),
+					),
 				),
 			)
-		) );
+		);
 
 		// Change password.
-		register_rest_route( $this->namespace, '/' . $this->rest_base . '/change-password', array(
-			'methods'             => WP_REST_Server::CREATABLE,
-			'callback'            => array( $this, 'change_password' ),
-			'permission_callback' => array( $this, 'check_change_password_permission' ),
-			'args'                => array(
-				'user_id' => array(
-					'required'    => true,
-					'type'        => 'integer',
-					'description' => __( 'User id.', 'directorist' ),
-				),
-				'old_password' => array(
-					'required'    => true,
-					'type'        => 'string',
-					'description' => __( 'User old password.', 'directorist' ),
-				),
-				'new_password' => array(
-					'required'    => true,
-					'type'        => 'string',
-					'minLength'   => 6,
-					'description' => __( 'User new password.', 'directorist' ),
+		register_rest_route(
+			$this->namespace,
+			'/' . $this->rest_base . '/change-password',
+			array(
+				'methods'             => WP_REST_Server::CREATABLE,
+				'callback'            => array( $this, 'change_password' ),
+				'permission_callback' => array( $this, 'check_change_password_permission' ),
+				'args'                => array(
+					'user_id'      => array(
+						'required'    => true,
+						'type'        => 'integer',
+						'description' => __( 'User id.', 'directorist' ),
+					),
+					'old_password' => array(
+						'required'    => true,
+						'type'        => 'string',
+						'description' => __( 'User old password.', 'directorist' ),
+					),
+					'new_password' => array(
+						'required'    => true,
+						'type'        => 'string',
+						'minLength'   => 6,
+						'description' => __( 'User new password.', 'directorist' ),
+					),
 				),
 			)
-		) );
+		);
 	}
 
 	protected function get_user_by_email( $email ) {
@@ -171,11 +187,11 @@ class Users_Account_Controller extends Abstract_Controller {
 
 		ATBDP()->email->send_password_reset_pin_email( $user );
 
-		$data = [
+		$data = array(
 			'success' => true,
 			'message' => __( 'Password reset code has been sent to your email.', 'directorist' ),
 			'email'   => $request['email'],
-		];
+		);
 
 		$response = rest_ensure_response( $data );
 
@@ -189,10 +205,10 @@ class Users_Account_Controller extends Abstract_Controller {
 			return $is_valid;
 		}
 
-		$data = [
+		$data = array(
 			'success' => true,
 			'message' => __( 'Password reset pin has been verified.', 'directorist' ),
-		];
+		);
 
 		$response = rest_ensure_response( $data );
 
@@ -213,11 +229,11 @@ class Users_Account_Controller extends Abstract_Controller {
 		directorist_delete_password_reset_code_transient( $user );
 		delete_user_meta( $user->ID, 'directorist_pasword_reset_key' );
 
-		$data = [
+		$data = array(
 			'success' => true,
 			'message' => __( 'Password has been reset successfully.', 'directorist' ),
 			'user_id' => $user->ID,
-		];
+		);
 
 		$response = rest_ensure_response( $data );
 
@@ -234,10 +250,10 @@ class Users_Account_Controller extends Abstract_Controller {
 		// Change Password
 		wp_set_password( $request['new_password'], $user->ID );
 
-		$data = [
+		$data = array(
 			'success' => true,
 			'message' => __( 'Password has been changed successfully.', 'directorist' ),
-		];
+		);
 
 		$response = rest_ensure_response( $data );
 

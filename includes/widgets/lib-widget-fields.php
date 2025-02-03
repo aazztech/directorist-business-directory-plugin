@@ -7,22 +7,24 @@
 
 namespace Directorist\Widgets;
 
-if ( ! defined( 'ABSPATH' ) ) exit;
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
 
 class Widget_Fields {
 
 	public static function init() {
-		add_action( 'admin_footer', [ __CLASS__, 'load_scripts' ] );
+		add_action( 'admin_footer', array( __CLASS__, 'load_scripts' ) );
 	}
 
 	public static function create( $fields, $instance, $object ) {
 		foreach ( $fields as $key => $field ) {
 			$label   = $field['label'];
-			$desc    = !empty( $field['desc'] ) ? $field['desc'] : false;
+			$desc    = ! empty( $field['desc'] ) ? $field['desc'] : false;
 			$id      = $object->get_field_id( $key );
 			$name    = $object->get_field_name( $key );
-			$value   = $instance[$key];
-			$options = !empty( $field['options'] ) ? $field['options'] : false;
+			$value   = $instance[ $key ];
+			$options = ! empty( $field['options'] ) ? $field['options'] : false;
 
 			if ( method_exists( __CLASS__, $field['type'] ) ) {
 				echo '<div class="directorist-widget-field">';
@@ -102,11 +104,11 @@ class Widget_Fields {
 		echo '
 		<label for="' . esc_attr( $id ) . '">' . esc_html( $label ) . ':</label>
 		<div class="directorist_widget_image_area">
-			<input name="'. esc_attr( $name ) .'" type="hidden" class="directorist-widget-upload-img" value="'. esc_attr( $value ) .'" />
-			<img src="'. esc_url( $image ) .'" class="directorist_widget_preview_image" style="'. esc_attr( $disstyle ) .'" alt="" />
-			<input class="directorist_widget_upload_image upload_button_'. esc_attr( $id ) .' button-primary" type="button" value="' . esc_attr__( 'Choose Image', 'directorist' ). '" />
-			<div class="directorist_widget_remove_image_wrap" style="'. esc_attr( $disstyle ) .'">
-				<a href="#" class="directorist_widget_remove_image button" >' . esc_html__( 'Remove Image', 'directorist' ). '</a>
+			<input name="' . esc_attr( $name ) . '" type="hidden" class="directorist-widget-upload-img" value="' . esc_attr( $value ) . '" />
+			<img src="' . esc_url( $image ) . '" class="directorist_widget_preview_image" style="' . esc_attr( $disstyle ) . '" alt="" />
+			<input class="directorist_widget_upload_image upload_button_' . esc_attr( $id ) . ' button-primary" type="button" value="' . esc_attr__( 'Choose Image', 'directorist' ) . '" />
+			<div class="directorist_widget_remove_image_wrap" style="' . esc_attr( $disstyle ) . '">
+				<a href="#" class="directorist_widget_remove_image button" >' . esc_html__( 'Remove Image', 'directorist' ) . '</a>
 			</div>
 		</div>
 		';

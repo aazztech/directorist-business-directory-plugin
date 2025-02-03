@@ -5,9 +5,11 @@
  * @version 8.0
  */
 
-use \Directorist\Helper;
+use Directorist\Helper;
 
-if ( ! defined( 'ABSPATH' ) ) exit;
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
 ?>
 <form action="<?php atbdp_search_result_page_link(); ?>" class="directorist-search-form directorist-advanced-search">
 	<div class="directorist-search-form__box">
@@ -20,7 +22,7 @@ if ( ! defined( 'ABSPATH' ) ) exit;
 		<div class="directorist-advanced-filter__advanced">
 		<input type="hidden" name='directory_type' value='<?php echo esc_attr( $listings->get_directory_type_slug() ); ?>'>
 			<?php foreach ( $searchform->form_data[1]['fields'] as $field ) : ?>
-				<div class="directorist-advanced-filter__advanced__element directorist-search-field-<?php echo esc_attr( $field['widget_name'] ) ?>"><?php $searchform->field_template( $field ); ?></div>
+				<div class="directorist-advanced-filter__advanced__element directorist-search-field-<?php echo esc_attr( $field['widget_name'] ); ?>"><?php $searchform->field_template( $field ); ?></div>
 			<?php endforeach; ?>
 			<div class="directorist-advanced-filter__action directorist-advanced-filter__action--ajax">
 				<button class="directorist-btn-reset-js directorist-btn-reset-ajax"><?php echo esc_html( $searchform->options['reset_sidebar_filters_text'] ?? esc_html__( 'Clear All', 'directorist' ) ); ?></button>

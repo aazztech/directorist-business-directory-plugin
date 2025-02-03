@@ -1,7 +1,6 @@
 <?php
 /**
  * Directorist Map Field class.
- *
  */
 namespace Directorist\Fields;
 
@@ -21,7 +20,7 @@ class Map_Field extends Base_Field {
 		return array(
 			'hide_map'   => (bool) sanitize_text_field( directorist_get_var( $posted_data['hide_map'] ) ),
 			'manual_lat' => sanitize_text_field( directorist_get_var( $posted_data['manual_lat'] ) ),
-			'manual_lng' => sanitize_text_field( directorist_get_var( $posted_data['manual_lng'] ) )
+			'manual_lng' => sanitize_text_field( directorist_get_var( $posted_data['manual_lng'] ) ),
 		);
 	}
 }

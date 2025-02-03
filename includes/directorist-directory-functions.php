@@ -13,7 +13,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 function directorist_get_directory_meta( $directory_id, string $meta_key ) {
-    return get_term_meta( $directory_id, $meta_key, true );
+	return get_term_meta( $directory_id, $meta_key, true );
 }
 
 function directorist_get_listing_form_fields( $directory_id ) {
@@ -32,10 +32,10 @@ function directorist_get_listing_form_fields( $directory_id ) {
 		$fields[ $field_key ] = $_fields[ $field_key ];
 	}
 
-	if( isset( $fields['view_count'] ) ) {
+	if ( isset( $fields['view_count'] ) ) {
 		unset( $fields['view_count'] );
 	}
-	
+
 	return $fields;
 }
 
@@ -44,9 +44,9 @@ function directorist_get_listing_form_groups( $directory_id ) {
 	$_groups   = directorist_get_var( $form_data['groups'], array() );
 	$groups    = array();
 
-    foreach ( $_groups as $group ) {
+	foreach ( $_groups as $group ) {
 		$groups[] = array(
-			'label' => $group['label'],
+			'label'  => $group['label'],
 			'fields' => $group['fields'],
 		);
 	}
@@ -100,7 +100,7 @@ function directorist_should_check_privacy_policy( $directory_id ) {
 /**
  * Get listing default create status from directory settings.
  *
- * @param  int  $directory_id
+ * @param  int $directory_id
  *
  * @return string Default create status.
  */
@@ -114,8 +114,8 @@ function directorist_get_listing_create_status( $directory_id ) {
  * Get listing default edit status from directory settings.
  * And if $listing_id is given then follow the conditions.
  *
- * @param  int  $directory_id
- * @param  int  $listing_id Added in version 8.
+ * @param  int $directory_id
+ * @param  int $listing_id Added in version 8.
  *
  * @return string Default edit status.
  */
@@ -143,7 +143,7 @@ function directorist_get_listing_edit_status( $directory_id, $listing_id = 0 ) {
 	if ( $listing_id && ( $listing_status = get_post_status( $listing_id ) ) !== false ) {
 		if ( $builder_status === 'publish' && $listing_status === 'publish' ) {
 			$status = 'publish';
-		} else if ( $builder_status === 'pending' || $listing_status === 'pending' ) {
+		} elseif ( $builder_status === 'pending' || $listing_status === 'pending' ) {
 			$status = 'pending';
 		}
 	}
@@ -195,11 +195,11 @@ function directorist_update_term_directory( $term_id, array $directory_ids = arr
 	update_term_meta( $term_id, '_directory_type', $directory_ids );
 }
 
-function directorist_update_location_directory( $location_id, array $directory_ids = array(), $append = false) {
+function directorist_update_location_directory( $location_id, array $directory_ids = array(), $append = false ) {
 	directorist_update_term_directory( $location_id, $directory_ids, $append );
 }
 
-function directorist_update_category_directory( $location_id, array $directory_ids = array(), $append = false) {
+function directorist_update_category_directory( $location_id, array $directory_ids = array(), $append = false ) {
 	directorist_update_term_directory( $location_id, $directory_ids, $append );
 }
 
@@ -241,7 +241,7 @@ function directorist_get_directory_general_settings( $directory_id ) {
 
 function directorist_get_directories( array $args = array() ) {
 	$defaults = array(
-		'hide_empty' => false,
+		'hide_empty'   => false,
 		'default_only' => false,
 	);
 
@@ -267,15 +267,19 @@ function directorist_get_directories_for_template( array $args = array() ) {
 		return array();
 	}
 
-	return array_reduce( $directories, static function( $carry, $directory ) {
-		$carry[ $directory->term_id ] = array(
-			'term' => $directory,
-			'name' => $directory->name,
-			'data' => directorist_get_directory_general_settings( $directory->term_id ),
-		);
+	return array_reduce(
+		$directories,
+		static function ( $carry, $directory ) {
+			$carry[ $directory->term_id ] = array(
+				'term' => $directory,
+				'name' => $directory->name,
+				'data' => directorist_get_directory_general_settings( $directory->term_id ),
+			);
 
-		return $carry;
-	}, array() );
+			return $carry;
+		},
+		array()
+	);
 }
 
 /**
@@ -295,7 +299,7 @@ function directorist_get_category_custom_field_relations( $directory_id ) {
 
 	$relations = array();
 
-	foreach( $submission_form_fields['fields'] as $field ) {
+	foreach ( $submission_form_fields['fields'] as $field ) {
 		if ( empty( $field['assign_to'] ) || empty( $field['category'] ) ) {
 			continue;
 		}

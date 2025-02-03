@@ -1,7 +1,6 @@
 <?php
 /**
  * Directorist Pricing Field class.
- *
  */
 namespace Directorist\Fields;
 
@@ -25,7 +24,7 @@ class Pricing_Field extends Base_Field {
 		return array(
 			'price_type'  => sanitize_text_field( directorist_get_var( $posted_data['atbd_listing_pricing'] ) ),
 			'price'       => round( (float) directorist_get_var( $posted_data['price'], 0 ), 2 ),
-			'price_range' => sanitize_text_field( directorist_get_var( $posted_data['price_range'] ) )
+			'price_range' => sanitize_text_field( directorist_get_var( $posted_data['price_range'] ) ),
 		);
 	}
 

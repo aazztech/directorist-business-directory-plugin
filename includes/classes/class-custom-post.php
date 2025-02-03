@@ -93,7 +93,7 @@ if ( ! class_exists( 'ATBDP_Custom_Post' ) ) :
 						$directory_select.val( $selected_option[0].value );
 					}
 
-    				// Set the value of the "View Count" input field
+					// Set the value of the "View Count" input field
 					if ( view_count !== '' ) {
 						$view_count_input.val( view_count );
 					}
@@ -163,7 +163,8 @@ if ( ! class_exists( 'ATBDP_Custom_Post' ) ) :
 				return;
 			}
 
-			if ( 'directory_type' === $column_name ) : ?>
+			if ( 'directory_type' === $column_name ) :
+				?>
 				<fieldset class="inline-edit-col-right" style="margin-top: 0;">
 					<div class="inline-edit-group wp-clearfix">
 						<?php wp_nonce_field( directorist_get_nonce_key(), 'directorist_nonce' ); ?>
@@ -174,7 +175,8 @@ if ( ! class_exists( 'ATBDP_Custom_Post' ) ) :
 								<?php
 								$listing_types = directorist_get_directories();
 
-								foreach ( $listing_types as $listing_type ) { ?>
+								foreach ( $listing_types as $listing_type ) {
+									?>
 									<option value="<?php echo esc_attr( $listing_type->term_id ); ?>"><?php echo esc_html( $listing_type->name ); ?></option>
 								<?php } ?>
 							</select>
@@ -185,7 +187,8 @@ if ( ! class_exists( 'ATBDP_Custom_Post' ) ) :
 
 			<?php
 
-			if ( 'directorist_listing_view_count' === $column_name ) : ?>
+			if ( 'directorist_listing_view_count' === $column_name ) :
+				?>
 				<fieldset class="inline-edit-col-right">
 					<div class="inline-edit-group wp-clearfix">
 						<label class="inline-edit-directorist-listing-view-count alignleft">
@@ -194,12 +197,13 @@ if ( ! class_exists( 'ATBDP_Custom_Post' ) ) :
 						</label>
 					</div>
 				</fieldset>
-			<?php endif;
+				<?php
+			endif;
 		}
 
 		public function add_cpt_to_pll( $post_types, $hide ) {
 			/*
-			 echo '<pre>';
+			echo '<pre>';
 			var_dump($post_types);
 			echo '</pre>';*/
 
@@ -380,9 +384,9 @@ if ( ! class_exists( 'ATBDP_Custom_Post' ) ) :
 				$columns['atbdp_featured'] = __( 'Featured', 'directorist' );
 			}
 
-			$columns['directorist_listing_view_count']  = '<span class="screen-reader-text">' . esc_html__( 'Listing views', 'directorist' ) .'</span><span aria-hidden="true" class="dashicons dashicons-visibility"></span>';
+			$columns['directorist_listing_view_count'] = '<span class="screen-reader-text">' . esc_html__( 'Listing views', 'directorist' ) . '</span><span aria-hidden="true" class="dashicons dashicons-visibility"></span>';
 
-			$columns['atbdp_date']        = __( 'Date', 'directorist' );
+			$columns['atbdp_date'] = __( 'Date', 'directorist' );
 
 			return apply_filters( 'atbdp_add_new_listing_column', $columns );
 		}
@@ -470,7 +474,7 @@ if ( ! class_exists( 'ATBDP_Custom_Post' ) ) :
 
 				case 'atbdp_date':
 					$creation_time = get_the_time( 'U' );
-					$created_date = date_i18n( $date_format, $creation_time );
+					$created_date  = date_i18n( $date_format, $creation_time );
 
 					$never_expire = get_post_meta( $post_id, '_never_expire', true );
 					$expiry_date  = '';

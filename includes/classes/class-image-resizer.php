@@ -2,163 +2,166 @@
 /**
  * Exit if accessed directly
  */
-if ( ! defined('ABSPATH')) {
-    exit;
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
 }
-class Atbdp_Image_resizer
-{
-    /**
-     * The attachment image ID
-     *
-     * @var int
-     */
-    protected $attachmentId;
+class Atbdp_Image_resizer {
 
-    /**
-     * Constructor
-     *
-     * @param  int $attachmentId
-     * @return void
-     */
-    public function __construct($attachmentId)
-    {
-        $this->attachmentId = ( is_string( $attachmentId ) || is_int( $attachmentId ) ) ? $attachmentId : '' ;
-    }
+	/**
+	 * The attachment image ID
+	 *
+	 * @var int
+	 */
+	protected $attachmentId;
 
-    /**
-     * Resizes an attachment image
-     *
-     * @param int     $width
-     * @param int     $height
-     * @param boolean $crop
-     * @param int     $quality
-     * @return array
-     */
-    public function resize($width, $height, $crop = true, $quality = 100)
-    {
-        global $wpdb;
+	/**
+	 * Constructor
+	 *
+	 * @param  int $attachmentId
+	 * @return void
+	 */
+	public function __construct( $attachmentId ) {
+		$this->attachmentId = ( is_string( $attachmentId ) || is_int( $attachmentId ) ) ? $attachmentId : '';
+	}
 
-        // Get the attachment
-        $attachmentUrl = wp_get_attachment_url($this->attachmentId, 'full');
-        
-        // Bail if we don't have an attachment URL
-        if ( ! $attachmentUrl ) {
-            return array('url' => $this->attachmentId, 'width' => $width, 'height' => $height);
-        }
+	/**
+	 * Resizes an attachment image
+	 *
+	 * @param int     $width
+	 * @param int     $height
+	 * @param boolean $crop
+	 * @param int     $quality
+	 * @return array
+	 */
+	public function resize( $width, $height, $crop = true, $quality = 100 ) {
+		global $wpdb;
 
-        // Get the image file path
-        $filePath = parse_url($attachmentUrl);
-        $filePath = ! empty( $_SERVER['DOCUMENT_ROOT'] ) ? directorist_clean( wp_unslash( $_SERVER['DOCUMENT_ROOT'] ) ) . $filePath['path'] : '';
+		// Get the attachment
+		$attachmentUrl = wp_get_attachment_url( $this->attachmentId, 'full' );
 
-        // Additional handling for multisite
-        if (is_multisite()) {
-            global $blog_id;
-            $blogDetails = get_blog_details($blog_id);
-            $filePath    = str_replace($blogDetails->path . 'files/', '/wp-content/blogs.dir/'. $blog_id .'/files/', $filePath);
-        }
+		// Bail if we don't have an attachment URL
+		if ( ! $attachmentUrl ) {
+			return array(
+				'url'    => $this->attachmentId,
+				'width'  => $width,
+				'height' => $height,
+			);
+		}
 
-        // Destination width and height variables
-        $destWidth  = apply_filters('easingslider_resize_image_width',  $width,  $attachmentUrl);
-        $destHeight = apply_filters('easingslider_resize_image_height', $height, $attachmentUrl);
+		// Get the image file path
+		$filePath = parse_url( $attachmentUrl );
+		$filePath = ! empty( $_SERVER['DOCUMENT_ROOT'] ) ? directorist_clean( wp_unslash( $_SERVER['DOCUMENT_ROOT'] ) ) . $filePath['path'] : '';
 
-        // File name suffix (appended to original file name)
-        $suffix = "{$destWidth}x{$destHeight}";
+		// Additional handling for multisite
+		if ( is_multisite() ) {
+			global $blog_id;
+			$blogDetails = get_blog_details( $blog_id );
+			$filePath    = str_replace( $blogDetails->path . 'files/', '/wp-content/blogs.dir/' . $blog_id . '/files/', $filePath );
+		}
 
-        // Some additional info about the image
-        $info = pathinfo($filePath);
-        $dir  = $info['dirname'];
-        $ext  = $info['extension'];
-        $name = wp_basename($filePath, ".$ext");
+		// Destination width and height variables
+		$destWidth  = apply_filters( 'easingslider_resize_image_width', $width, $attachmentUrl );
+		$destHeight = apply_filters( 'easingslider_resize_image_height', $height, $attachmentUrl );
 
-        // Suffix applied to filename
-        $suffix = "{$destWidth}x{$destHeight}";
+		// File name suffix (appended to original file name)
+		$suffix = "{$destWidth}x{$destHeight}";
 
-        // Get the destination file name
-        $destFileName = "{$dir}/{$name}-{$suffix}.{$ext}";
+		// Some additional info about the image
+		$info = pathinfo( $filePath );
+		$dir  = $info['dirname'];
+		$ext  = $info['extension'];
+		$name = wp_basename( $filePath, ".$ext" );
 
-        // Execute the resizing if resized image doesn't already exist.
-        if ( ! file_exists($destFileName)) {
+		// Suffix applied to filename
+		$suffix = "{$destWidth}x{$destHeight}";
 
-            // Load Wordpress Image Editor
-            $editor = wp_get_image_editor($filePath);
+		// Get the destination file name
+		$destFileName = "{$dir}/{$name}-{$suffix}.{$ext}";
 
-            // Bail if we encounter a WP_Error
-            if (is_wp_error($editor)) {
-                return array('url' => $attachmentUrl, 'width' => $width, 'height' => $height);
-            }
+		// Execute the resizing if resized image doesn't already exist.
+		if ( ! file_exists( $destFileName ) ) {
 
-            // Set the quality
-            $editor->set_quality($quality);
+			// Load WordPress Image Editor
+			$editor = wp_get_image_editor( $filePath );
 
-            // Get the original image size
-            $size       = $editor->get_size();
-            $origWidth  = $size['width'];
-            $origHeight = $size['height'];
+			// Bail if we encounter a WP_Error
+			if ( is_wp_error( $editor ) ) {
+				return array(
+					'url'    => $attachmentUrl,
+					'width'  => $width,
+					'height' => $height,
+				);
+			}
 
-            $srcX = $srcY = 0;
-            $srcW = $origWidth;
-            $srcH = $origHeight;
+			// Set the quality
+			$editor->set_quality( $quality );
 
-            // Handle cropping
-            if ($crop) {
+			// Get the original image size
+			$size       = $editor->get_size();
+			$origWidth  = $size['width'];
+			$origHeight = $size['height'];
 
-                $cmpX = $origWidth / $destWidth;
-                $cmpY = $origHeight / $destHeight;
+			$srcX = $srcY = 0;
+			$srcW = $origWidth;
+			$srcH = $origHeight;
 
-                // Calculate x or y coordinate, and width or height of source
-                if ($cmpX > $cmpY) {
-                    $srcW = round($origWidth / $cmpX * $cmpY);
-                    $srcX = round(($origWidth - ($origWidth / $cmpX * $cmpY)) / 2);
-                }
-                else if ($cmpY > $cmpX) {
-                    $srcH = round($origHeight / $cmpY * $cmpX);
-                    $srcY = round(($origHeight - ($origHeight / $cmpY * $cmpX)) / 2);
-                }
+			// Handle cropping
+			if ( $crop ) {
 
-            }
+				$cmpX = $origWidth / $destWidth;
+				$cmpY = $origHeight / $destHeight;
 
-            // Time to crop the image
-            $editor->crop($srcX, $srcY, $srcW, $srcH, $destWidth, $destHeight);
+				// Calculate x or y coordinate, and width or height of source
+				if ( $cmpX > $cmpY ) {
+					$srcW = round( $origWidth / $cmpX * $cmpY );
+					$srcX = round( ( $origWidth - ( $origWidth / $cmpX * $cmpY ) ) / 2 );
+				} elseif ( $cmpY > $cmpX ) {
+					$srcH = round( $origHeight / $cmpY * $cmpX );
+					$srcY = round( ( $origHeight - ( $origHeight / $cmpY * $cmpX ) ) / 2 );
+				}
+			}
 
-            // Now let's save the image
-            $saved = $editor->save($destFileName);
+			// Time to crop the image
+			$editor->crop( $srcX, $srcY, $srcW, $srcH, $destWidth, $destHeight );
 
-            // Get resized image information
-            $resizedUrl    = str_replace(basename($attachmentUrl), basename($saved['path']), $attachmentUrl);
-            $resizedWidth  = $saved['width'];
-            $resizedHeight = $saved['height'];
-            $resizedType   = $saved['mime-type'];
+			// Now let's save the image
+			$saved = $editor->save( $destFileName );
 
-            /**
-             * Add the resized dimensions to original image metadata
-             *
-             * This ensures our resized images are deleted when the original image is deleted from the Media Library
-             */
-            $metadata = wp_get_attachment_metadata($this->attachmentId);
-            if (isset($metadata['image_meta'])) {
-                $metadata['image_meta']['resized_images'][] = $resizedWidth .'x'. $resizedHeight;
-                wp_update_attachment_metadata($this->attachmentId, $metadata);
-            }
+			// Get resized image information
+			$resizedUrl    = str_replace( basename( $attachmentUrl ), basename( $saved['path'] ), $attachmentUrl );
+			$resizedWidth  = $saved['width'];
+			$resizedHeight = $saved['height'];
+			$resizedType   = $saved['mime-type'];
 
-            // Create the image array
-            $resizedImage = array(
-                'url'    => $resizedUrl,
-                'width'  => $resizedWidth,
-                'height' => $resizedHeight,
-                'type'   => $resizedType
-            );
+			/**
+			 * Add the resized dimensions to original image metadata
+			 *
+			 * This ensures our resized images are deleted when the original image is deleted from the Media Library
+			 */
+			$metadata = wp_get_attachment_metadata( $this->attachmentId );
+			if ( isset( $metadata['image_meta'] ) ) {
+				$metadata['image_meta']['resized_images'][] = $resizedWidth . 'x' . $resizedHeight;
+				wp_update_attachment_metadata( $this->attachmentId, $metadata );
+			}
 
-        }
-        else {
-            $resizedImage = array(
-                'url'    => str_replace(basename($attachmentUrl), basename($destFileName), $attachmentUrl),
-                'width'  => $destWidth,
-                'height' => $destHeight,
-                'type'   => $ext
-            );
-        }
+			// Create the image array
+			$resizedImage = array(
+				'url'    => $resizedUrl,
+				'width'  => $resizedWidth,
+				'height' => $resizedHeight,
+				'type'   => $resizedType,
+			);
 
-        // And we're done!
-        return $resizedImage;
-    }
+		} else {
+			$resizedImage = array(
+				'url'    => str_replace( basename( $attachmentUrl ), basename( $destFileName ), $attachmentUrl ),
+				'width'  => $destWidth,
+				'height' => $destHeight,
+				'type'   => $ext,
+			);
+		}
+
+		// And we're done!
+		return $resizedImage;
+	}
 }

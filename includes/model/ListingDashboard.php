@@ -8,11 +8,13 @@ namespace Directorist;
 use ATBDP_Permalink;
 use Directorist\database\DB;
 
-if ( ! defined( 'ABSPATH' ) ) exit;
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
 
 class Directorist_Listing_Dashboard {
 
-	protected static $instance = null;
+	protected static $instance   = null;
 	public static $display_title = false;
 
 	public $id;
@@ -23,10 +25,10 @@ class Directorist_Listing_Dashboard {
 	public $become_author_button_text;
 
 	private function __construct() {
-		$this->id 						 = get_current_user_id();
-		$user_type 		  		 		 = get_user_meta( get_current_user_id(), '_user_type', true );
-		$this->user_type  		 		 = ! empty( $user_type ) ? $user_type : '';
-		$this->become_author_button 	 = get_directorist_option( 'become_author_button', 1);
+		$this->id                        = get_current_user_id();
+		$user_type                       = get_user_meta( get_current_user_id(), '_user_type', true );
+		$this->user_type                 = ! empty( $user_type ) ? $user_type : '';
+		$this->become_author_button      = get_directorist_option( 'become_author_button', 1 );
 		$this->become_author_button_text = get_directorist_option( 'become_author_button_text', __( 'Become An Author', 'directorist' ) );
 	}
 
@@ -59,10 +61,10 @@ class Directorist_Listing_Dashboard {
 			'query'     => $this->listings_query( $tab, $paged, $search ),
 		);
 
-		$result = [
+		$result = array(
 			'content'    => Helper::get_template_contents( 'dashboard/listing-row', $args ),
 			'pagination' => $this->listing_pagination( 'page/%#%', $paged ),
-		];
+		);
 
 		wp_send_json_success( $result );
 
@@ -89,9 +91,9 @@ class Directorist_Listing_Dashboard {
 			'orderby'        => 'date',
 		);
 
-		if ( $pagination_enabled) {
+		if ( $pagination_enabled ) {
 			$args['paged'] = $paged;
-		} else{
+		} else {
 			$args['no_found_rows'] = false;
 		}
 
@@ -111,14 +113,13 @@ class Directorist_Listing_Dashboard {
 	}
 
 	public function get_listing_price_html() {
-		$id = get_the_ID();
-		$price = get_post_meta( $id, '_price', true );
-		$price_range = get_post_meta( $id, '_price_range', true );
+		$id                   = get_the_ID();
+		$price                = get_post_meta( $id, '_price', true );
+		$price_range          = get_post_meta( $id, '_price_range', true );
 		$atbd_listing_pricing = get_post_meta( $id, '_atbd_listing_pricing', true );
-		if (!empty($price_range) && ('range' === $atbd_listing_pricing)) {
+		if ( ! empty( $price_range ) && ( 'range' === $atbd_listing_pricing ) ) {
 			return atbdp_display_price_range( $price_range );
-		}
-		else {
+		} else {
 			return atbdp_display_price( $price );
 		}
 	}
@@ -158,62 +159,64 @@ class Directorist_Listing_Dashboard {
 		$paged = $paged ? $paged : atbdp_get_paged_num();
 		$big   = 999999999;
 
-		$links = paginate_links(array(
-			'base'      => $base ? $base : str_replace( $big, '%#%', esc_url( get_pagenum_link( $big ) ) ),
-			'format'    => '?paged=%#%',
-			'current'   => max(1, $paged),
-			'total'     => $query->max_num_pages,
-			'prev_text' => directorist_icon( 'fas fa-chevron-left', false ),
-			'next_text' => directorist_icon( 'fas fa-chevron-right', false ),
-		));
+		$links = paginate_links(
+			array(
+				'base'      => $base ? $base : str_replace( $big, '%#%', esc_url( get_pagenum_link( $big ) ) ),
+				'format'    => '?paged=%#%',
+				'current'   => max( 1, $paged ),
+				'total'     => $query->max_num_pages,
+				'prev_text' => directorist_icon( 'fas fa-chevron-left', false ),
+				'next_text' => directorist_icon( 'fas fa-chevron-right', false ),
+			)
+		);
 
 		return $links;
 	}
 
 	public function get_listing_status_html() {
-		$id = get_the_ID();
+		$id           = get_the_ID();
 		$status_label = get_post_status_object( get_post_status( $id ) )->label;
-		$html = sprintf('<span class="directorist_badge dashboard-badge directorist_status_%s">%s</span>', strtolower($status_label), $status_label );
+		$html         = sprintf( '<span class="directorist_badge dashboard-badge directorist_status_%s">%s</span>', strtolower( $status_label ), $status_label );
 		return $html;
 	}
 
 	public function get_listing_type() {
 		$type = directorist_get_listing_directory( get_the_ID() );
 		$term = get_term( $type );
-		return !empty( $term->name ) ? $term->name : '';
+		return ! empty( $term->name ) ? $term->name : '';
 	}
 
 	public function get_listing_thumbnail() {
-		$id                = get_the_ID();
-		$type              = directorist_get_listing_directory( $id );
+		$id   = get_the_ID();
+		$type = directorist_get_listing_directory( $id );
 
 		$default_image_src = Helper::default_preview_image_src( $type );
-		$image_quality     = get_directorist_option('preview_image_quality', 'directorist_preview');
+		$image_quality     = get_directorist_option( 'preview_image_quality', 'directorist_preview' );
 		$listing_prv_img   = directorist_get_listing_preview_image( $id );
 		$listing_img       = directorist_get_listing_gallery_images( $id );
 
 		if ( is_array( $listing_img ) && ! empty( $listing_img[0] ) ) {
 			$thumbnail_img = atbdp_get_image_source( $listing_img[0], $image_quality );
-			$thumbnail_id = $listing_img[0];
+			$thumbnail_id  = $listing_img[0];
 		}
 
 		if ( ! empty( $listing_prv_img ) ) {
 			$thumbnail_img = atbdp_get_image_source( $listing_prv_img, $image_quality );
-			$thumbnail_id = $listing_prv_img;
+			$thumbnail_id  = $listing_prv_img;
 		}
 
 		if ( ! empty( $img_src ) ) {
 			$thumbnail_img = $img_src;
-			$thumbnail_id = 0;
+			$thumbnail_id  = 0;
 		}
 
 		if ( empty( $thumbnail_img ) ) {
 			$thumbnail_img = $default_image_src;
-			$thumbnail_id = 0;
+			$thumbnail_id  = 0;
 		}
 
-		$image_src    = is_array($thumbnail_img) ? $thumbnail_img['url'] : $thumbnail_img;
-		$image_alt = get_post_meta($thumbnail_id, '_wp_attachment_image_alt', true);
+		$image_src = is_array( $thumbnail_img ) ? $thumbnail_img['url'] : $thumbnail_img;
+		$image_alt = get_post_meta( $thumbnail_id, '_wp_attachment_image_alt', true );
 		$image_alt = ( ! empty( $image_alt ) ) ? esc_attr( $image_alt ) : esc_html( get_the_title( $thumbnail_id ) );
 		$image_alt = ( ! empty( $image_alt ) ) ? $image_alt : esc_html( get_the_title() );
 
@@ -225,7 +228,7 @@ class Directorist_Listing_Dashboard {
 
 		$fav_listings = DB::favorite_listings_query();
 
-		if ( $fav_listings->have_posts() ){
+		if ( $fav_listings->have_posts() ) {
 			foreach ( $fav_listings->posts as $post ) {
 				$listing_type  = directorist_get_listing_directory( $post->ID );
 				$title         = ! empty( $post->post_title ) ? $post->post_title : __( 'Untitled', 'directorist' );
@@ -234,21 +237,20 @@ class Directorist_Listing_Dashboard {
 				$category_name = ! empty( $cats ) ? $cats[0]->name : 'Uncategorized';
 				$mark_fav_html = atbdp_listings_mark_as_favourite( $post->ID );
 
-
-				if (!empty($cats)) {
-					$cat_icon = get_cat_icon($cats[0]->term_id);
+				if ( ! empty( $cats ) ) {
+					$cat_icon = get_cat_icon( $cats[0]->term_id );
 				}
-				$cat_icon = !empty($cat_icon) ? $cat_icon : 'las la-tags';
-				$icon = directorist_icon( $cat_icon, false );
+				$cat_icon = ! empty( $cat_icon ) ? $cat_icon : 'las la-tags';
+				$icon     = directorist_icon( $cat_icon, false );
 
 				$category_link = ! empty( $cats ) ? esc_url( ATBDP_Permalink::atbdp_get_category_page( $cats[0] ) ) : '#';
 				$post_link     = esc_url( get_post_permalink( $post->ID ) );
 
-				$listing_img     	= directorist_get_listing_gallery_images( $post->ID );
-				$listing_prv_img 	= directorist_get_listing_preview_image( $post->ID );
-				$default_image_src 	= Helper::default_preview_image_src( $listing_type );
-				$crop_width      	= get_directorist_option( 'crop_width', 360 );
-				$crop_height     	= get_directorist_option( 'crop_height', 300 );
+				$listing_img       = directorist_get_listing_gallery_images( $post->ID );
+				$listing_prv_img   = directorist_get_listing_preview_image( $post->ID );
+				$default_image_src = Helper::default_preview_image_src( $listing_type );
+				$crop_width        = get_directorist_option( 'crop_width', 360 );
+				$crop_height       = get_directorist_option( 'crop_height', 300 );
 
 				if ( ! empty( $listing_prv_img ) ) {
 					$prv_image = atbdp_get_image_source( $listing_prv_img, 'large' );
@@ -286,74 +288,74 @@ class Directorist_Listing_Dashboard {
 	}
 
 	public function user_info( $type ) {
-		$id = $this->id;
+		$id       = $this->id;
 		$userdata = get_userdata( $id );
-		$result = '';
+		$result   = '';
 
 		switch ( $type ) {
 			case 'display_name':
-			$result = $userdata->display_name;
-			break;
+				$result = $userdata->display_name;
+				break;
 
 			case 'username':
-			$result = $userdata->user_login;
-			break;
+				$result = $userdata->user_login;
+				break;
 
 			case 'first_name':
-			$result = $userdata->first_name;
-			break;
+				$result = $userdata->first_name;
+				break;
 
 			case 'last_name':
-			$result = $userdata->last_name;
-			break;
+				$result = $userdata->last_name;
+				break;
 
 			case 'email':
-			$result = $userdata->user_email;
-			break;
+				$result = $userdata->user_email;
+				break;
 
 			case 'phone':
-			$result = get_user_meta( $id, 'atbdp_phone', true );
-			break;
+				$result = get_user_meta( $id, 'atbdp_phone', true );
+				break;
 
 			case 'website':
-			$result = $userdata->user_url;
-			break;
+				$result = $userdata->user_url;
+				break;
 
 			case 'address':
-			$result = get_user_meta( $id, 'address', true );
-			break;
+				$result = get_user_meta( $id, 'address', true );
+				break;
 
 			case 'facebook':
-			$result = get_user_meta( $id, 'atbdp_facebook', true );
-			break;
+				$result = get_user_meta( $id, 'atbdp_facebook', true );
+				break;
 
 			case 'twitter':
-			$result = get_user_meta( $id, 'atbdp_twitter', true );
-			break;
+				$result = get_user_meta( $id, 'atbdp_twitter', true );
+				break;
 
 			case 'linkedin':
-			$result = get_user_meta( $id, 'atbdp_linkedin', true );
-			break;
+				$result = get_user_meta( $id, 'atbdp_linkedin', true );
+				break;
 
 			case 'youtube':
-			$result = get_user_meta( $id, 'atbdp_youtube', true );
-			break;
+				$result = get_user_meta( $id, 'atbdp_youtube', true );
+				break;
 
 			case 'bio':
-			$result = get_user_meta( $id, 'description', true );
-			break;
+				$result = get_user_meta( $id, 'description', true );
+				break;
 
 			case 'hide_contact_form':
-			$result = get_user_meta( $id, 'directorist_hide_contact_form', true );
-			break;
+				$result = get_user_meta( $id, 'directorist_hide_contact_form', true );
+				break;
 
 			case 'display_author_email':
-			$result = get_user_meta( $id, 'directorist_display_author_email', true );
-			break;
+				$result = get_user_meta( $id, 'directorist_display_author_email', true );
+				break;
 
 			case 'contact_owner_recipient':
-			$result = get_user_meta( $id, 'directorist_contact_owner_recipient', true );
-			break;
+				$result = get_user_meta( $id, 'directorist_contact_owner_recipient', true );
+				break;
 		}
 
 		return $result;
@@ -363,10 +365,10 @@ class Directorist_Listing_Dashboard {
 		// Tabs
 		$dashboard_tabs = array();
 
-		$my_listing_tab     = get_directorist_option( 'my_listing_tab', 1 );
-		$my_profile_tab     = get_directorist_option( 'my_profile_tab', 1 );
-		$fav_listings_tab   = get_directorist_option( 'fav_listings_tab', 1 );
-		$announcement_tab 	= get_directorist_option( 'announcement_tab', 1 );
+		$my_listing_tab   = get_directorist_option( 'my_listing_tab', 1 );
+		$my_profile_tab   = get_directorist_option( 'my_profile_tab', 1 );
+		$fav_listings_tab = get_directorist_option( 'fav_listings_tab', 1 );
+		$announcement_tab = get_directorist_option( 'announcement_tab', 1 );
 
 		if ( $my_listing_tab && ( 'general' != $this->user_type && 'become_author' != $this->user_type ) ) {
 			$my_listing_tab_text = get_directorist_option( 'my_listing_tab_text', __( 'My Listing', 'directorist' ) );
@@ -375,57 +377,57 @@ class Directorist_Listing_Dashboard {
 			$list_found = $listings->found_posts;
 
 			$dashboard_tabs['dashboard_my_listings'] = array(
-				'title'     => sprintf( '%1$s (%2$s)', $my_listing_tab_text, $list_found ),
-				'content'   => Helper::get_template_contents( 'dashboard/tab-my-listings', [ 'dashboard' => $this ] ),
-				'icon'	    => 'las la-list',
+				'title'   => sprintf( '%1$s (%2$s)', $my_listing_tab_text, $list_found ),
+				'content' => Helper::get_template_contents( 'dashboard/tab-my-listings', array( 'dashboard' => $this ) ),
+				'icon'    => 'las la-list',
 			);
 		}
 
 		if ( $my_profile_tab ) {
 			$dashboard_tabs['dashboard_profile'] = array(
-				'title'     => get_directorist_option('my_profile_tab_text', __('My Profile', 'directorist')),
-				'icon'	    => 'las la-user',
-				'content'   => Helper::get_template_contents( 'dashboard/tab-profile', [ 'dashboard' => $this ] ),
+				'title'   => get_directorist_option( 'my_profile_tab_text', __( 'My Profile', 'directorist' ) ),
+				'icon'    => 'las la-user',
+				'content' => Helper::get_template_contents( 'dashboard/tab-profile', array( 'dashboard' => $this ) ),
 			);
 		}
 
 		if ( $fav_listings_tab ) {
 			$dashboard_tabs['dashboard_fav_listings'] = array(
-				'title'     => get_directorist_option('fav_listings_tab_text', __('Favorite Listings', 'directorist')),
-				'content'   => Helper::get_template_contents( 'dashboard/tab-fav-listings', [ 'dashboard' => $this ] ),
-				'icon'		=> 'las la-heart',
+				'title'   => get_directorist_option( 'fav_listings_tab_text', __( 'Favorite Listings', 'directorist' ) ),
+				'content' => Helper::get_template_contents( 'dashboard/tab-fav-listings', array( 'dashboard' => $this ) ),
+				'icon'    => 'las la-heart',
 			);
 		}
 
 		$dashboard_tabs['dashboard_preferences'] = array(
-			'title'     => __( 'Preferences', 'directorist' ),
-			'content'   => Helper::get_template_contents( 'dashboard/tab-preferences', [ 'dashboard' => $this ] ),
-			'icon'		=> 'las la-sliders-h',
+			'title'   => __( 'Preferences', 'directorist' ),
+			'content' => Helper::get_template_contents( 'dashboard/tab-preferences', array( 'dashboard' => $this ) ),
+			'icon'    => 'las la-sliders-h',
 		);
 
 		return apply_filters( 'directorist_dashboard_tabs', $dashboard_tabs );
 	}
 
 	public function get_announcements() {
-		$announcements       = [];
+		$announcements       = array();
 		$announcements_query = \ATBDP()->announcement::get_announcement_query_data();
 		$current_user_email  = get_the_author_meta( 'user_email', get_current_user_id() );
 
 		foreach ( $announcements_query->posts as $announcement ) {
-			$id = $announcement->ID;
+			$id        = $announcement->ID;
 			$recepents = get_post_meta( $id, '_recepents', true );
-			$recepents = ! empty( $recepents ) ? explode( ',', $recepents ) : [];
+			$recepents = ! empty( $recepents ) ? explode( ',', $recepents ) : array();
 
-			if ( ! empty( $recepents ) && is_array( $recepents )  ) {
+			if ( ! empty( $recepents ) && is_array( $recepents ) ) {
 				if ( ! in_array( $current_user_email, $recepents ) ) {
 					continue;
 				}
 			}
 
-			$announcements[$id] = [
+			$announcements[ $id ] = array(
 				'title'   => get_the_title( $id ),
 				'content' => $announcement->post_content,
-			];
+			);
 		}
 
 		return $announcements;
@@ -441,22 +443,21 @@ class Directorist_Listing_Dashboard {
 	}
 
 	public function profile_pic_template() {
-		Helper::get_template( 'dashboard/profile-pic', [ 'dashboard' => $this ] );
+		Helper::get_template( 'dashboard/profile-pic', array( 'dashboard' => $this ) );
 	}
 
 	public function notice_template() {
-		if ( isset($_GET['renew'] ) ) {
+		if ( isset( $_GET['renew'] ) ) {
 			$renew_token_expired = $_GET['renew'] == 'token_expired' ? true : false;
-			$renew_succeed = $_GET['renew'] == 'success' ? true : false;
-		}
-		else {
+			$renew_succeed       = $_GET['renew'] == 'success' ? true : false;
+		} else {
 			$renew_token_expired = $renew_succeed = false;
 		}
 
 		$args = array(
-			'dashboard' => $this,
+			'dashboard'           => $this,
 			'renew_token_expired' => $renew_token_expired,
-			'renew_succeed' => $renew_succeed,
+			'renew_succeed'       => $renew_succeed,
 		);
 
 		Helper::get_template( 'dashboard/notice', $args );
@@ -488,15 +489,15 @@ class Directorist_Listing_Dashboard {
 	}
 
 	public function navigation_template() {
-		Helper::get_template( 'dashboard/navigation', [ 'dashboard' => $this ] );
+		Helper::get_template( 'dashboard/navigation', array( 'dashboard' => $this ) );
 	}
 
 	public function main_contents_template() {
-		Helper::get_template( 'dashboard/main-contents', [ 'dashboard' => $this ] );
+		Helper::get_template( 'dashboard/main-contents', array( 'dashboard' => $this ) );
 	}
 
 	public function nav_buttons_template() {
-		Helper::get_template( 'dashboard/nav-buttons', [ 'dashboard' => $this ] );
+		Helper::get_template( 'dashboard/nav-buttons', array( 'dashboard' => $this ) );
 	}
 
 	public function user_can_submit() {
@@ -504,8 +505,7 @@ class Directorist_Listing_Dashboard {
 
 		if ( $display_submit_btn && 'general' != $this->user_type && 'become_author' != $this->user_type ) {
 			return true;
-		}
-		else {
+		} else {
 			return false;
 		}
 	}
@@ -523,14 +523,14 @@ class Directorist_Listing_Dashboard {
 	}
 
 	public function render_shortcode( $atts ) {
-		$atts = shortcode_atts( ['show_title' => ''], $atts );
+		$atts                = shortcode_atts( array( 'show_title' => '' ), $atts );
 		self::$display_title = ( $atts['show_title'] == 'yes' ) ? true : false;
 
-		if (!is_user_logged_in()) {
+		if ( ! is_user_logged_in() ) {
 			return $this->restrict_access_template();
 		}
 
-		return Helper::get_template_contents( 'dashboard-contents', [ 'dashboard' => $this ] );
+		return Helper::get_template_contents( 'dashboard-contents', array( 'dashboard' => $this ) );
 	}
 
 	public function can_renew() {
@@ -539,10 +539,10 @@ class Directorist_Listing_Dashboard {
 		// $status  = get_post_meta( $post_id, '_listing_status', true );
 
 		// if ( 'renewal' == $status || 'expired' == $status ) {
-		// 	$can_renew = get_directorist_option( 'can_renew_listing' );
-		// 	if ( $can_renew ) {
-		// 		return true;
-		// 	}
+		// $can_renew = get_directorist_option( 'can_renew_listing' );
+		// if ( $can_renew ) {
+		// return true;
+		// }
 		// }
 
 		if ( ! directorist_can_user_renew_listings() ) {
@@ -566,7 +566,7 @@ class Directorist_Listing_Dashboard {
 		// $featured = get_post_meta( $post_id, '_featured', true );
 
 		// if ( 'renewal' == $status || 'expired' == $status ) {
-		// 	return false;
+		// return false;
 		// }
 
 		if ( ! directorist_is_featured_listing_enabled() ) {
@@ -592,36 +592,36 @@ class Directorist_Listing_Dashboard {
 	}
 
 	public function get_action_dropdown_item() {
-		$dropdown_items = apply_filters( 'directorist_dashboard_listing_action_items', [], $this );
+		$dropdown_items = apply_filters( 'directorist_dashboard_listing_action_items', array(), $this );
 
 		$post_id = get_the_ID();
 
 		if ( $this->can_renew() ) {
 			$dropdown_items['renew'] = array(
-				'class'			    => '',
-				'data_attr'			=>	'',
-				'link'				=>	add_query_arg( 'renew_from', 'dashboard', esc_url( $this->get_renewal_link( $post_id ) ) ),
-				'icon'				=>  directorist_icon( 'las la-hand-holding-usd', false ),
-				'label'				=>  __( 'Renew', 'directorist' )
+				'class'     => '',
+				'data_attr' => '',
+				'link'      => add_query_arg( 'renew_from', 'dashboard', esc_url( $this->get_renewal_link( $post_id ) ) ),
+				'icon'      => directorist_icon( 'las la-hand-holding-usd', false ),
+				'label'     => __( 'Renew', 'directorist' ),
 			);
 		}
 
 		if ( $this->can_promote() ) {
 			$dropdown_items['promote'] = array(
-				'class'			    => '',
-				'data_attr'			=>	'',
-				'link'				=>	ATBDP_Permalink::get_checkout_page_link( $post_id ),
-				'icon'				=>  directorist_icon( 'las la-ad', false ),
-				'label'				=>  __( 'Promote', 'directorist' )
+				'class'     => '',
+				'data_attr' => '',
+				'link'      => ATBDP_Permalink::get_checkout_page_link( $post_id ),
+				'icon'      => directorist_icon( 'las la-ad', false ),
+				'label'     => __( 'Promote', 'directorist' ),
 			);
 		}
 
 		$dropdown_items['delete'] = array(
-			'class'			    => '',
-			'data_attr'			=>	'data-task="delete"',
-			'link'				=>	'#',
-			'icon'				=>  directorist_icon( 'las la-trash', false ),
-			'label'				=>  __( 'Delete Listing', 'directorist' )
+			'class'     => '',
+			'data_attr' => 'data-task="delete"',
+			'link'      => '#',
+			'icon'      => directorist_icon( 'las la-trash', false ),
+			'label'     => __( 'Delete Listing', 'directorist' ),
 		);
 
 		return apply_filters( 'directorist_dashboard_listing_action_items_end', $dropdown_items, $this );

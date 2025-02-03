@@ -5,13 +5,13 @@
 
 use Directorist\Helper;
 
-class ATBDP_System_Info
-{
-    public function __construct() {
-        include ATBDP_INC_DIR . '/system-status/system-information/system-information-template.php';
-    }
+class ATBDP_System_Info {
 
-    public function get_environment_info() {
+	public function __construct() {
+		include ATBDP_INC_DIR . '/system-status/system-information/system-information-template.php';
+	}
+
+	public function get_environment_info() {
 		global $wpdb;
 
 		// Figure out cURL version, if installed.
@@ -28,31 +28,37 @@ class ATBDP_System_Info
 		}
 
 		// User agent
-		$user_agent 	= isset( $_SERVER['HTTP_USER_AGENT'] ) ? sanitize_text_field( wp_unslash( $_SERVER['HTTP_USER_AGENT'] ) ) : '';
-		$default_role   = get_option( 'default_role' );
+		$user_agent   = isset( $_SERVER['HTTP_USER_AGENT'] ) ? sanitize_text_field( wp_unslash( $_SERVER['HTTP_USER_AGENT'] ) ) : '';
+		$default_role = get_option( 'default_role' );
 		// Test POST requests
-		$post_response = wp_safe_remote_post( 'http://api.wordpress.org/core/browse-happy/1.1/', array(
-			'timeout'     => 10,
-			'user-agent'  => 'WordPress/' . get_bloginfo( 'version' ) . '; ' . home_url(),
-			'httpversion' => '1.1',
-			'body'        => array(
-			    'useragent' => $user_agent,
-			),
-		) );
+		$post_response = wp_safe_remote_post(
+			'http://api.wordpress.org/core/browse-happy/1.1/',
+			array(
+				'timeout'     => 10,
+				'user-agent'  => 'WordPress/' . get_bloginfo( 'version' ) . '; ' . home_url(),
+				'httpversion' => '1.1',
+				'body'        => array(
+					'useragent' => $user_agent,
+				),
+			)
+		);
 
-		$post_response_body = NULL;
+		$post_response_body       = null;
 		$post_response_successful = false;
 		if ( ! is_wp_error( $post_response ) && $post_response['response']['code'] >= 200 && $post_response['response']['code'] < 300 ) {
 			$post_response_successful = true;
-			$post_response_body = json_decode( wp_remote_retrieve_body( $post_response ), true );
+			$post_response_body       = json_decode( wp_remote_retrieve_body( $post_response ), true );
 		}
 
 		// Test GET requests
-		$get_response = wp_safe_remote_get( 'https://plugins.svn.wordpress.org/directorist/trunk/readme.txt', array(
-			'timeout'     => 10,
-			'user-agent'  => 'Directorist/' . ATBDP_VERSION,
-			'httpversion' => '1.1',
-		) );
+		$get_response            = wp_safe_remote_get(
+			'https://plugins.svn.wordpress.org/directorist/trunk/readme.txt',
+			array(
+				'timeout'     => 10,
+				'user-agent'  => 'Directorist/' . ATBDP_VERSION,
+				'httpversion' => '1.1',
+			)
+		);
 		$get_response_successful = false;
 		if ( ! is_wp_error( $post_response ) && $post_response['response']['code'] >= 200 && $post_response['response']['code'] < 300 ) {
 			$get_response_successful = true;
@@ -88,15 +94,15 @@ class ATBDP_System_Info
 			'remote_post_response'      => ( is_wp_error( $post_response ) ? $post_response->get_error_message() : $post_response['response']['code'] ),
 			'remote_get_successful'     => $get_response_successful,
 			'remote_get_response'       => ( is_wp_error( $get_response ) ? $get_response->get_error_message() : $get_response['response']['code'] ),
-			'platform'       			=> ! empty( $post_response_body['platform'] ) ? $post_response_body['platform'] : '-',
-			'browser_name'       		=> ! empty( $post_response_body['name'] ) ? $post_response_body['name'] : '-',
-			'browser_version'       	=> ! empty( $post_response_body['version'] ) ? $post_response_body['version'] : '-',
-			'user_agent'       			=> $user_agent,
-			'default_role'       		=> $default_role,
+			'platform'                  => ! empty( $post_response_body['platform'] ) ? $post_response_body['platform'] : '-',
+			'browser_name'              => ! empty( $post_response_body['name'] ) ? $post_response_body['name'] : '-',
+			'browser_version'           => ! empty( $post_response_body['version'] ) ? $post_response_body['version'] : '-',
+			'user_agent'                => $user_agent,
+			'default_role'              => $default_role,
 		);
-    }
+	}
 
-    /**
+	/**
 	 * Get array of database information. Version, prefix, and table existence.
 	 *
 	 * @return array
@@ -181,9 +187,9 @@ class ATBDP_System_Info
 			'database_tables'        => $tables,
 			'database_size'          => $database_size,
 		);
-    }
+	}
 
-    /**
+	/**
 	 * Add prefix to table.
 	 *
 	 * @param string $table table name
@@ -192,9 +198,9 @@ class ATBDP_System_Info
 	protected function add_db_table_prefix( $table ) {
 		global $wpdb;
 		return $wpdb->prefix . $table;
-    }
+	}
 
-    /**
+	/**
 	 * Get array of counts of objects. Orders, products, etc.
 	 *
 	 * @return array
@@ -205,9 +211,9 @@ class ATBDP_System_Info
 		$post_type_counts = $wpdb->get_results( "SELECT post_type AS 'type', count(1) AS 'count' FROM {$wpdb->posts} GROUP BY post_type;" );
 
 		return is_array( $post_type_counts ) ? $post_type_counts : array();
-    }
+	}
 
-     /**
+	/**
 	 * Returns security tips.
 	 *
 	 * @return array
@@ -218,16 +224,16 @@ class ATBDP_System_Info
 			'secure_connection' => 'https' === substr( $check_page, 0, 5 ),
 			'hide_errors'       => ! ( defined( 'WP_DEBUG' ) && defined( 'WP_DEBUG_DISPLAY' ) && WP_DEBUG && WP_DEBUG_DISPLAY ) || 0 === intval( ini_get( 'display_errors' ) ),
 		);
-    }
+	}
 
-    /**
+	/**
 	 * Get a list of plugins active on the site.
 	 *
 	 * @return array
 	 */
 	public function get_active_plugins() {
-		require_once( ABSPATH . 'wp-admin/includes/plugin.php' );
-		require_once( ABSPATH . 'wp-admin/includes/update.php' );
+		require_once ABSPATH . 'wp-admin/includes/plugin.php';
+		require_once ABSPATH . 'wp-admin/includes/update.php';
 
 		if ( ! function_exists( 'get_plugin_updates' ) ) {
 			return array();
@@ -266,9 +272,9 @@ class ATBDP_System_Info
 		}
 
 		return $active_plugins_data;
-    }
+	}
 
-    /**
+	/**
 	 * Get info on the current active theme, info on parent theme (if present)
 	 * and a list of template overrides.
 	 *
@@ -333,36 +339,39 @@ class ATBDP_System_Info
 		}
 
 		$active_theme_info = array(
-			'name'                    => $active_theme->name,
-			'version'                 => $active_theme->version,
-			'version_latest'          => self::get_latest_theme_version( $active_theme ),
-			'author_url'              => esc_url_raw( $active_theme->{'Author URI'} ),
-			'is_child_theme'          => is_child_theme(),
-			'has_outdated_templates'  => $outdated_templates,
-			'overrides'               => $override_files,
+			'name'                   => $active_theme->name,
+			'version'                => $active_theme->version,
+			'version_latest'         => self::get_latest_theme_version( $active_theme ),
+			'author_url'             => esc_url_raw( $active_theme->{'Author URI'} ),
+			'is_child_theme'         => is_child_theme(),
+			'has_outdated_templates' => $outdated_templates,
+			'overrides'              => $override_files,
 		);
 
 		return array_merge( $active_theme_info, $parent_theme_info );
-    }
+	}
 
-    /**
+	/**
 	 * Get latest version of a theme by slug.
-     *
-     * @since 2.0.0
-     *
+	 *
+	 * @since 2.0.0
+	 *
 	 * @param  object $theme WP_Theme object.
 	 * @return string Version number if found.
 	 */
 	public static function get_latest_theme_version( $theme ) {
-		include_once( ABSPATH . 'wp-admin/includes/theme.php' );
+		include_once ABSPATH . 'wp-admin/includes/theme.php';
 
-		$api = themes_api( 'theme_information', array(
-			'slug'     => $theme->get_stylesheet(),
-			'fields'   => array(
-				'sections' => false,
-				'tags'     => false,
-			),
-		) );
+		$api = themes_api(
+			'theme_information',
+			array(
+				'slug'   => $theme->get_stylesheet(),
+				'fields' => array(
+					'sections' => false,
+					'tags'     => false,
+				),
+			)
+		);
 
 		$update_theme_version = 0;
 
@@ -370,25 +379,30 @@ class ATBDP_System_Info
 		if ( is_object( $api ) && ! is_wp_error( $api ) ) {
 			if ( isset( $api->version ) ) {
 				$update_theme_version = $api->version;
-			} else if ( isset( $api->stable_version ) ) {
+			} elseif ( isset( $api->stable_version ) ) {
 				$update_theme_version = $api->stable_version;
 			}
 
-		// Check GeoDirectory Theme Version.
+			// Check GeoDirectory Theme Version.
 		} elseif ( strstr( $theme->{'Author URI'}, 'aazztech' ) ) {
-			$theme_dir = substr( strtolower( str_replace( ' ', '', $theme->name ) ), 0, 45 );
+			$theme_dir          = substr( strtolower( str_replace( ' ', '', $theme->name ) ), 0, 45 );
 			$theme_version_data = get_transient( $theme_dir . '_version_data' );
 
 			if ( false === $theme_version_data ) {
 				$theme_changelog = wp_safe_remote_get( 'http://dzv365zjfbd8v.cloudfront.net/changelogs/' . $theme_dir . '/changelog.txt' );
-				$cl_lines  = explode( "\n", wp_remote_retrieve_body( $theme_changelog ) );
+				$cl_lines        = explode( "\n", wp_remote_retrieve_body( $theme_changelog ) );
 				if ( ! empty( $cl_lines ) ) {
 					foreach ( $cl_lines as $line_num => $cl_line ) {
 						if ( preg_match( '/^[0-9]/', $cl_line ) ) {
 							$theme_date         = str_replace( '.', '-', trim( substr( $cl_line, 0, strpos( $cl_line, '-' ) ) ) );
-							$theme_version      = preg_replace( '~[^0-9,.]~', '',stristr( $cl_line, "version" ) );
+							$theme_version      = preg_replace( '~[^0-9,.]~', '', stristr( $cl_line, 'version' ) );
 							$theme_update       = trim( str_replace( '*', '', $cl_lines[ $line_num + 1 ] ) );
-							$theme_version_data = array( 'date' => $theme_date, 'version' => $theme_version, 'update' => $theme_update, 'changelog' => $theme_changelog );
+							$theme_version_data = array(
+								'date'      => $theme_date,
+								'version'   => $theme_version,
+								'update'    => $theme_update,
+								'changelog' => $theme_changelog,
+							);
 							set_transient( $theme_dir . '_version_data', $theme_version_data, DAY_IN_SECONDS );
 							break;
 						}
@@ -404,7 +418,7 @@ class ATBDP_System_Info
 		return $update_theme_version;
 	}
 
-    public function php_information() {
+	public function php_information() {
 		$dump_php = array();
 		$php_vars = array(
 			'max_execution_time',
@@ -478,9 +492,9 @@ class ATBDP_System_Info
 		}
 
 		return $levels;
-    }
+	}
 
-    /**
+	/**
 	 * Scan the template files.
 	 *
 	 * @param  string $template_path Path to the template directory.
@@ -510,7 +524,7 @@ class ATBDP_System_Info
 		return $result;
 	}
 
-    /**
+	/**
 	 * Retrieve metadata from a file. Based on WP Core's get_file_data function.
 	 *
 	 * @since  2.1.1
@@ -544,37 +558,37 @@ class ATBDP_System_Info
 		return $version;
 	}
 
-    /**
-     * let_to_num function.
-     *
-     * This function transforms the php.ini notation for numbers (like '2M') to an integer.
-     *
-     * @since 2.0.0
-     * @param $size
-     * @return int
-     */
-    public function directorist_let_to_num( $size ) {
-        $l   = substr( $size, -1 );
-        $ret = substr( $size, 0, -1 );
-        switch ( strtoupper( $l ) ) {
-            case 'P':
-                $ret *= 1024;
-            case 'T':
-                $ret *= 1024;
-            case 'G':
-                $ret *= 1024;
-            case 'M':
-                $ret *= 1024;
-            case 'K':
-                $ret *= 1024;
-        }
-        return $ret;
-    }
+	/**
+	 * let_to_num function.
+	 *
+	 * This function transforms the php.ini notation for numbers (like '2M') to an integer.
+	 *
+	 * @since 2.0.0
+	 * @param $size
+	 * @return int
+	 */
+	public function directorist_let_to_num( $size ) {
+		$l   = substr( $size, -1 );
+		$ret = substr( $size, 0, -1 );
+		switch ( strtoupper( $l ) ) {
+			case 'P':
+				$ret *= 1024;
+			case 'T':
+				$ret *= 1024;
+			case 'G':
+				$ret *= 1024;
+			case 'M':
+				$ret *= 1024;
+			case 'K':
+				$ret *= 1024;
+		}
+		return $ret;
+	}
 
-    function directorist_help_tip( $tip ) {
+	function directorist_help_tip( $tip ) {
 
-        $tip = esc_attr( $tip );
+		$tip = esc_attr( $tip );
 
-        return '<span class="atbdp-help-tip dashicons dashicons-editor-help" title="' . $tip . '"></span>';
-    }
+		return '<span class="atbdp-help-tip dashicons dashicons-editor-help" title="' . $tip . '"></span>';
+	}
 }

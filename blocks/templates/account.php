@@ -27,7 +27,7 @@ $user_type = ! empty( $_REQUEST['user_type'] ) ? $_REQUEST['user_type'] : $user_
 
 				<div class="modal-header">
 
-					<div class="modal-title" id="login_modal_label"><?php esc_html_e( 'Sign In', 'directorist' );?></div>
+					<div class="modal-title" id="login_modal_label"><?php esc_html_e( 'Sign In', 'directorist' ); ?></div>
 
 					<button type="button" class="directorist-account-block-close" data-bs-dismiss="modal" aria-label="Close"> <span aria-hidden="true">×</span> </button>
 
@@ -35,7 +35,7 @@ $user_type = ! empty( $_REQUEST['user_type'] ) ? $_REQUEST['user_type'] : $user_
 
 				<div class="modal-body">
 
-					<?php include_once 'login.php';?>
+					<?php require_once 'login.php'; ?>
 
 				</div>
 
@@ -53,7 +53,7 @@ $user_type = ! empty( $_REQUEST['user_type'] ) ? $_REQUEST['user_type'] : $user_
 
 				<div class="modal-header">
 
-					<div class="modal-title"><?php esc_attr_e( 'Registration', 'directorist' );?></div>
+					<div class="modal-title"><?php esc_attr_e( 'Registration', 'directorist' ); ?></div>
 
 					<button type="button" class="directorist-account-block-close" data-bs-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span> </button>
 
@@ -61,7 +61,7 @@ $user_type = ! empty( $_REQUEST['user_type'] ) ? $_REQUEST['user_type'] : $user_
 
 				<div class="modal-body">
 
-					<?php include_once 'registration.php';?>
+					<?php require_once 'registration.php'; ?>
 
 				</div>
 

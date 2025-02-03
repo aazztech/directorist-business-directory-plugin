@@ -2,8 +2,8 @@
 	<div class="directorist-create-directory__header">
 		<div class="directorist-create-directory__close">
 			<a href="<?php echo esc_attr(
-                admin_url()
-            ); ?>" class="directorist-create-directory__close__btn">
+				admin_url()
+			); ?>" class="directorist-create-directory__close__btn">
 				<svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
 					<path fill-rule="evenodd" clip-rule="evenodd"
 						d="M5.24408 5.24408C5.56951 4.91864 6.09715 4.91864 6.42259 5.24408L10 8.82149L13.5774 5.24408C13.9028 4.91864 14.4305 4.91864 14.7559 5.24408C15.0814 5.56951 15.0814 6.09715 14.7559 6.42259L11.1785 10L14.7559 13.5774C15.0814 13.9028 15.0814 14.4305 14.7559 14.7559C14.4305 15.0814 13.9028 15.0814 13.5774 14.7559L10 11.1785L6.42259 14.7559C6.09715 15.0814 5.56951 15.0814 5.24408 14.7559C4.91864 14.4305 4.91864 13.9028 5.24408 13.5774L8.82149 10L5.24408 6.42259C4.91864 6.09715 4.91864 5.56951 5.24408 5.24408Z"
@@ -44,33 +44,39 @@
 	<div class="directorist-create-directory__wrapper">
 		<div class="directorist-create-directory__top">
 			<div class="directorist-create-directory__step">
-				<ul class="atbdp-setup-steps <?php echo esc_attr($hide); ?>">
+				<ul class="atbdp-setup-steps <?php echo esc_attr( $hide ); ?>">
 					<li class="active"></li>
 					<li></li>
 					<li></li>
 				</ul>
 				<span class="step-count">
 					<span class="current-step">
-						<?php esc_html_e(
-							sprintf("%d", $active_number),
-						"directorist"
-					); ?>
+						<?php
+						esc_html_e(
+							sprintf( '%d', $active_number ),
+							'directorist'
+						);
+						?>
 					</span>/
 					<span class="total-step">3</span>
 				</span>
 			</div>
 			<div class="directorist-create-directory__info">
 				<h1 class="directorist-create-directory__info__title">
-					<?php esc_html_e(
-                        "Let’s set up your directory",
-                        "directorist"
-                    ); ?>
+					<?php
+					esc_html_e(
+						'Let’s set up your directory',
+						'directorist'
+					);
+					?>
 				</h1>
 				<p class="directorist-create-directory__info__desc">
-					<?php esc_html_e(
-                        "Build your directory instantly. Customize with Directorist AI",
-                        "directorist"
-                    ); ?>
+					<?php
+					esc_html_e(
+						'Build your directory instantly. Customize with Directorist AI',
+						'directorist'
+					);
+					?>
 				</p>
 			</div>
 		</div>
@@ -605,9 +611,13 @@
 			<!-- Footer -->
 			<div class="directorist-create-directory__content__footer">
 				<div class="directorist-create-directory__back">
-					<a href="<?php echo esc_url(
-                        wp_get_referer()
-                    ); ?>" class="directorist-create-directory__back__btn">
+					<a href="
+					<?php
+					echo esc_url(
+						wp_get_referer()
+					);
+					?>
+					" class="directorist-create-directory__back__btn">
 						<svg width="21" height="20" viewBox="0 0 21 20" fill="none" xmlns="http://www.w3.org/2000/svg">
 							<path d="M13 5L8 10L13 15" stroke="currentColor" stroke-width="1.5"
 								stroke-miterlimit="16" />

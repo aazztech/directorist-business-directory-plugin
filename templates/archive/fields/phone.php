@@ -5,13 +5,15 @@
  * @version 8.0
  */
 
-use \Directorist\Helper;
+use Directorist\Helper;
 
-if ( ! defined( 'ABSPATH' ) ) exit;
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
 
 $phone_args = array(
-	'number'    => $value,
-	'whatsapp'  => $listings->has_whatsapp( $data ),
+	'number'   => $value,
+	'whatsapp' => $listings->has_whatsapp( $data ),
 );
 ?>
 

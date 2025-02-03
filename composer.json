@@ -6,12 +6,6 @@
             "email": "support@wpWax.com"
         }
     ],
-    "require-dev": {
-        "dealerdirect/phpcodesniffer-composer-installer": "^0.7.0",
-		"squizlabs/php_codesniffer": "3.6.0",
-		"wp-coding-standards/wpcs": "~2.3.0",
-		"phpcompatibility/phpcompatibility-wp": "~2.1.3"
-    },
     "config": {
         "allow-plugins": {
             "dealerdirect/phpcodesniffer-composer-installer": true
@@ -21,5 +15,8 @@
 		"report": "@php ./vendor/bin/phpcs --report=summary,source",
 		"format": "@php ./vendor/bin/phpcbf",
 		"sniffer:php8.1": "./vendor/bin/phpcs -p . --standard=PHPCompatibilityWP --severity=1 --runtime-set testVersion 8.1- --extensions=php"
-	}
+	},
+    "require-dev": {
+        "wp-coding-standards/wpcs": "^3.1"
+    }
 }

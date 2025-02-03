@@ -145,14 +145,14 @@ class Listings_Actions_Controller extends Abstract_Controller {
 	/**
 	 * Prepare a single listings output for response.
 	 *
-	 * @param array         $data  Listings data.
+	 * @param array           $data  Listings data.
 	 * @param WP_REST_Request $request Request object.
 	 *
 	 * @return WP_REST_Response
 	 */
 	public function prepare_item_for_response( $data, $request ) {
 		$context = ! empty( $request['context'] ) ? $request['context'] : 'view';
-		$schema = $this->get_item_schema();
+		$schema  = $this->get_item_schema();
 
 		$data = array_intersect_key( $request->get_params(), $schema['properties'] );
 		$data = $this->add_additional_fields_to_object( $data, $request );
@@ -170,7 +170,7 @@ class Listings_Actions_Controller extends Abstract_Controller {
 		 * @param array            $data     Data.
 		 * @param WP_REST_Request  $request  Request object.
 		 */
-		return apply_filters( "directorist_rest_prepare_listings_actions", $response, $data, $request );
+		return apply_filters( 'directorist_rest_prepare_listings_actions', $response, $data, $request );
 	}
 
 	/**
@@ -184,17 +184,17 @@ class Listings_Actions_Controller extends Abstract_Controller {
 			'title'      => 'listings-actions',
 			'type'       => 'object',
 			'properties' => array(
-				'id' => array(
+				'id'      => array(
 					'description' => __( 'Action name.', 'directorist' ),
 					'type'        => 'string',
 					'context'     => array( 'view', 'edit' ),
 				),
-				'name' => array(
+				'name'    => array(
 					'description' => __( 'Action initiator name.', 'directorist' ),
 					'type'        => 'string',
 					'context'     => array( 'view', 'edit' ),
 				),
-				'email' => array(
+				'email'   => array(
 					'description' => __( 'Action email.', 'directorist' ),
 					'type'        => 'string',
 					'format'      => 'email',
@@ -205,7 +205,7 @@ class Listings_Actions_Controller extends Abstract_Controller {
 					'type'        => 'string',
 					'context'     => array( 'view', 'edit' ),
 				),
-			)
+			),
 		);
 
 		return $this->add_additional_fields_schema( $schema );
@@ -232,20 +232,20 @@ class Listings_Actions_Controller extends Abstract_Controller {
 			'{listing_url}'   => sprintf( '<a href="%s">%s</a>', $listing_url, $listing_url ),
 			'{sender_name}'   => $user->display_name,
 			'{sender_email}'  => $user->user_email,
-			'{message}'       => $message
+			'{message}'       => $message,
 		);
-		$send_email = get_directorist_option( 'admin_email_lists' );
+		$send_email   = get_directorist_option( 'admin_email_lists' );
 
-		$to = !empty($send_email) ? $send_email : get_bloginfo('admin_email');
+		$to = ! empty( $send_email ) ? $send_email : get_bloginfo( 'admin_email' );
 
-		$subject = __('{site_name} Report Abuse via "{listing_title}"', 'directorist');
-		$subject = strtr($subject, $placeholders);
+		$subject = __( '{site_name} Report Abuse via "{listing_title}"', 'directorist' );
+		$subject = strtr( $subject, $placeholders );
 
-		$message = __("Dear Administrator,<br /><br />This is an email abuse report for a listing at {listing_url}.<br /><br />Name: {sender_name}<br />Email: {sender_email}<br />Message: {message}", 'directorist');
-		$message = strtr($message, $placeholders);
+		$message = __( 'Dear Administrator,<br /><br />This is an email abuse report for a listing at {listing_url}.<br /><br />Name: {sender_name}<br />Email: {sender_email}<br />Message: {message}', 'directorist' );
+		$message = strtr( $message, $placeholders );
 
-		$message = atbdp_email_html($subject, $message);
-		$headers = "From: {$user->display_name} <{$user->user_email}>\r\n";
+		$message  = atbdp_email_html( $subject, $message );
+		$headers  = "From: {$user->display_name} <{$user->user_email}>\r\n";
 		$headers .= "Reply-To: {$user->user_email}\r\n";
 
 		// return true or false, based on the result
@@ -260,47 +260,47 @@ class Listings_Actions_Controller extends Abstract_Controller {
 		$listing_email = get_post_meta( $post_id, '_email', true );
 		$message       = stripslashes( esc_textarea( $message ) );
 		// vars
-		$post_author_id        = get_post_field('post_author', $post_id);
-		$user                  = get_userdata($post_author_id);
-		$site_name             = get_bloginfo('name');
-		$site_url              = get_bloginfo('url');
-		$site_email            = get_bloginfo('admin_email');
-		$listing_title         = get_the_title($post_id);
-		$listing_url           = get_permalink($post_id);
-		$date_format           = get_option('date_format');
-		$time_format           = get_option('time_format');
-		$current_time          = current_time('timestamp');
-		$contact_email_subject = get_directorist_option('email_sub_listing_contact_email');
-		$contact_email_body    = get_directorist_option('email_tmpl_listing_contact_email');
-		$contact_recipient 	   = get_user_meta( $post_author_id, 'directorist_contact_owner_recipient', true );
+		$post_author_id        = get_post_field( 'post_author', $post_id );
+		$user                  = get_userdata( $post_author_id );
+		$site_name             = get_bloginfo( 'name' );
+		$site_url              = get_bloginfo( 'url' );
+		$site_email            = get_bloginfo( 'admin_email' );
+		$listing_title         = get_the_title( $post_id );
+		$listing_url           = get_permalink( $post_id );
+		$date_format           = get_option( 'date_format' );
+		$time_format           = get_option( 'time_format' );
+		$current_time          = current_time( 'timestamp' );
+		$contact_email_subject = get_directorist_option( 'email_sub_listing_contact_email' );
+		$contact_email_body    = get_directorist_option( 'email_tmpl_listing_contact_email' );
+		$contact_recipient     = get_user_meta( $post_author_id, 'directorist_contact_owner_recipient', true );
 		$user_email            = ! empty( $contact_recipient ) ? $contact_recipient : 'author';
 
 		$placeholders = array(
 			'==NAME=='          => $user->display_name,
 			'==USERNAME=='      => $user->user_login,
 			'==SITE_NAME=='     => $site_name,
-			'==SITE_LINK=='     => sprintf('<a href="%s">%s</a>', $site_url, $site_name),
-			'==SITE_URL=='      => sprintf('<a href="%s">%s</a>', $site_url, $site_url),
+			'==SITE_LINK=='     => sprintf( '<a href="%s">%s</a>', $site_url, $site_name ),
+			'==SITE_URL=='      => sprintf( '<a href="%s">%s</a>', $site_url, $site_url ),
 			'==LISTING_TITLE==' => $listing_title,
-			'==LISTING_LINK=='  => sprintf('<a href="%s">%s</a>', $listing_url, $listing_title),
-			'==LISTING_URL=='   => sprintf('<a href="%s">%s</a>', $listing_url, $listing_url),
+			'==LISTING_LINK=='  => sprintf( '<a href="%s">%s</a>', $listing_url, $listing_title ),
+			'==LISTING_URL=='   => sprintf( '<a href="%s">%s</a>', $listing_url, $listing_url ),
 			'==SENDER_NAME=='   => $name,
 			'==SENDER_EMAIL=='  => $email,
 			'==MESSAGE=='       => $message,
-			'==TODAY=='         => date_i18n($date_format, $current_time),
-			'==NOW=='           => date_i18n($date_format . ' ' . $time_format, $current_time)
+			'==TODAY=='         => date_i18n( $date_format, $current_time ),
+			'==NOW=='           => date_i18n( $date_format . ' ' . $time_format, $current_time ),
 		);
-		if ('listing_email' == $user_email) {
+		if ( 'listing_email' == $user_email ) {
 			$to = $listing_email;
 		} else {
 			$to = $user->user_email;
 		}
-		$subject = strtr($contact_email_subject, $placeholders);
-		$message = strtr($contact_email_body, $placeholders);
-		$message = nl2br($message);
-		$headers = "From: {$name} <{$site_email}>\r\n";
+		$subject  = strtr( $contact_email_subject, $placeholders );
+		$message  = strtr( $contact_email_body, $placeholders );
+		$message  = nl2br( $message );
+		$headers  = "From: {$name} <{$site_email}>\r\n";
 		$headers .= "Reply-To: {$email}\r\n";
-		$message = atbdp_email_html( $subject, $message );
+		$message  = atbdp_email_html( $subject, $message );
 
 		// return true or false, based on the result
 		return (bool) ATBDP()->email->send_mail( $to, $subject, $message, $headers );

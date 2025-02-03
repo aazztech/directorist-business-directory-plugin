@@ -33,7 +33,7 @@ trait Icon_Helper {
 
 	private static function get_icon_file( $icon ) {
 
-		if( empty( $icon ) || ! is_string( $icon ) ) {
+		if ( empty( $icon ) || ! is_string( $icon ) ) {
 			return '';
 		}
 
@@ -58,12 +58,12 @@ trait Icon_Helper {
 	private static function get_font_awesome_file( $icon ) {
 		list( $prefix, $name ) = array_pad( explode( ' ', $icon ), 2, '' );
 
-		if ( ! $name ) { 
+		if ( ! $name ) {
 			return '';
 		}
 
-		$filename              = str_replace( 'fa-', '', $name );
-		$filename              = $filename . '.svg';
+		$filename = str_replace( 'fa-', '', $name );
+		$filename = $filename . '.svg';
 
 		$far_file = 'font-awesome/svgs/regular/' . $filename;
 		$fas_file = 'font-awesome/svgs/solid/' . $filename;
@@ -102,12 +102,12 @@ trait Icon_Helper {
 	 */
 	private static function get_line_awesome_file( $icon ) {
 		list( $prefix, $name ) = array_pad( explode( ' ', $icon ), 2, '' );
-		
-		if ( ! $name ) { 
+
+		if ( ! $name ) {
 			return '';
 		}
 
-		$filename              = str_replace( 'la-', '', $name );
+		$filename = str_replace( 'la-', '', $name );
 
 		$lar_file = 'line-awesome/svgs/' . $filename . '.svg';
 		$las_file = 'line-awesome/svgs/' . $filename . '-solid.svg';
@@ -175,8 +175,8 @@ trait Icon_Helper {
 	 */
 	private static function get_unicons_file( $icon ) {
 		list( $prefix, $name ) = array_pad( explode( ' ', $icon ), 2, '' );
-		
-		if ( ! $name ) { 
+
+		if ( ! $name ) {
 			return '';
 		}
 

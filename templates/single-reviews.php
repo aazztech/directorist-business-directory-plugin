@@ -33,8 +33,15 @@ $section_label = isset( $section_data['label'] ) ? $section_data['label'] : '';
 ?>
 <section id="<?php echo esc_attr( $section_id ); ?>" class="directorist-review-container <?php echo esc_attr( $section_class ); ?>">
 	<div class="directorist-card directorist-review-content">
-		<div class="directorist-card__header directorist-review-content__header <?php if ( ! have_comments() ) : ?>directorist-review-content__header--noreviews<?php endif;?>">
-			<?php if ( ! have_comments() ) : ?><?php endif;?>
+		<div class="directorist-card__header directorist-review-content__header 
+		<?php
+		if ( ! have_comments() ) :
+			?>
+			directorist-review-content__header--noreviews<?php endif; ?>">
+			<?php
+			if ( ! have_comments() ) :
+				?>
+				<?php endif; ?>
 			<h3 class="directorist-card__header__title">
 				<?php if ( ! empty( $section_icon ) ) : ?>
 					<span class="directorist-card__header-icon"><?php directorist_icon( $section_icon ); ?> </span>
@@ -45,7 +52,18 @@ $section_label = isset( $section_data['label'] ) ? $section_data['label'] : '';
 			<?php if ( directorist_can_current_user_review() || directorist_can_guest_review() ) : ?>
 				<a href="#respond" rel="nofollow" class="directorist-btn"><?php directorist_icon( 'las la-star' ); ?><?php esc_attr_e( 'Write a Review', 'directorist' ); ?></a>
 			<?php elseif ( ! is_user_logged_in() ) : ?>
-				<a href="<?php echo esc_url( ATBDP_Permalink::get_login_page_url( array( 'redirect' => get_the_permalink(), 'scope' => 'review' ) ) ); ?>" rel="nofollow" class="directorist-btn"><?php directorist_icon( 'las la-star' ); ?><?php esc_attr_e( 'Login to Write Your Review', 'directorist' ); ?></a>
+				<a href="
+				<?php
+				echo esc_url(
+					ATBDP_Permalink::get_login_page_url(
+						array(
+							'redirect' => get_the_permalink(),
+							'scope'    => 'review',
+						)
+					)
+				);
+				?>
+							" rel="nofollow" class="directorist-btn"><?php directorist_icon( 'las la-star' ); ?><?php esc_attr_e( 'Login to Write Your Review', 'directorist' ); ?></a>
 			<?php endif; ?>
 		</div><!-- ends: .directorist-review-content__header -->
 
@@ -53,27 +71,31 @@ $section_label = isset( $section_data['label'] ) ? $section_data['label'] : '';
 			<div class="directorist-card__body">
 				<p class="directorist-review-single directorist-noreviews"><?php esc_html_e( 'There are no reviews yet.', 'directorist' ); ?></p>
 			</div>
-		<?php endif;?>
+		<?php endif; ?>
 
-		<?php if ( have_comments() ): ?>
+		<?php if ( have_comments() ) : ?>
 			<div class="directorist-card__body directorist-review-content__overview">
 				<div class="directorist-review-content__overview__rating">
 					<div class="directorist-rating-point"><?php echo esc_html( $review_rating ); ?></div>
 					<div class="directorist-rating-content">
-						<span class="directorist-rating-stars"><?php Markup::show_rating_stars( $review_rating );?></span>
-						<span class="directorist-rating-overall"><?php echo esc_html( $review_text );?></span>
+						<span class="directorist-rating-stars"><?php Markup::show_rating_stars( $review_rating ); ?></span>
+						<span class="directorist-rating-overall"><?php echo esc_html( $review_text ); ?></span>
 					</div>
 				</div>
 			</div><!-- ends: .directorist-review-content__overview -->
 
 			<ul class="commentlist directorist-review-content__reviews">
-				<?php wp_list_comments( array(
-					'avatar_size' => 50,
-					'format'      => 'html5',
-					'walker'      => new Review_Walker(),
-				) );?>
+				<?php
+				wp_list_comments(
+					array(
+						'avatar_size' => 50,
+						'format'      => 'html5',
+						'walker'      => new Review_Walker(),
+					)
+				);
+				?>
 			</ul>
-		<?php endif;?>
+		<?php endif; ?>
 	</div><!-- ends: .directorist-review-content -->
 
 	<?php if ( get_comment_pages_count() > 1 ) : ?>
@@ -81,15 +103,17 @@ $section_label = isset( $section_data['label'] ) ? $section_data['label'] : '';
 			<?php
 			$prev_text = directorist_icon( 'las la-arrow-left', false );
 			$next_text = directorist_icon( 'las la-arrow-right', false );
-			paginate_comments_links( array(
-				'prev_text'    => $prev_text,
-				'next_text'    => $next_text,
-				'type'         => 'plain',
-				'add_fragment' => '#' . $section_id,
-			) );
+			paginate_comments_links(
+				array(
+					'prev_text'    => $prev_text,
+					'next_text'    => $next_text,
+					'type'         => 'plain',
+					'add_fragment' => '#' . $section_id,
+				)
+			);
 			?>
 		</nav>
-	<?php endif;?>
+	<?php endif; ?>
 
 	<?php
 	if ( is_user_logged_in() || directorist_is_guest_review_enabled() || directorist_is_review_reply_enabled() ) {
@@ -144,12 +168,13 @@ $section_label = isset( $section_data['label'] ) ? $section_data['label'] : '';
 			$fields['cookies'] = '';
 		}
 
-		$comment_fields = array();
+		$comment_fields           = array();
 		$comment_fields['rating'] = '<div class="directorist-review-criteria">' . Markup::get_rating( 0 ) . '</div>';
 
 		$comment_fields['content'] = sprintf(
 			'<div class="directorist-form-group form-group-comment">%s</div>',
-			sprintf( '<textarea id="comment" class="directorist-form-element" placeholder="%s" name="comment" cols="30" rows="10" maxlength="65525" required="required"></textarea>',
+			sprintf(
+				'<textarea id="comment" class="directorist-form-element" placeholder="%s" name="comment" cols="30" rows="10" maxlength="65525" required="required"></textarea>',
 				$builder->get_comment_placeholder( __( 'Share your experience and help others make better choices', 'directorist' ) )
 			)
 		);

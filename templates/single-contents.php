@@ -5,15 +5,17 @@
  * @version 8.0
  */
 
-use \Directorist\Directorist_Single_Listing;
-use \Directorist\Helper;
+use Directorist\Directorist_Single_Listing;
+use Directorist\Helper;
 
-if ( ! defined( 'ABSPATH' ) ) exit;
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
 
 $listing = Directorist_Single_Listing::instance();
 ?>
 
-<div class="directorist-single-contents-area directorist-w-100" data-id="<?php echo esc_attr( $listing->id ?? ''); ?>">
+<div class="directorist-single-contents-area directorist-w-100" data-id="<?php echo esc_attr( $listing->id ?? '' ); ?>">
 	<div class="<?php Helper::directorist_container_fluid(); ?>">
 		<?php $listing->notice_template(); ?>
 
@@ -21,13 +23,14 @@ $listing = Directorist_Single_Listing::instance();
 
 			<div class="<?php Helper::directorist_single_column(); ?>">
 
-				<?php 
-				
-				$disable_single_listing = get_directorist_option( 'disable_single_listing') ? true : false;
+				<?php
 
-				if( !$disable_single_listing ){ ?>
+				$disable_single_listing = get_directorist_option( 'disable_single_listing' ) ? true : false;
 
-					<?php if ( $listing->single_page_enabled() ): ?>
+				if ( ! $disable_single_listing ) {
+					?>
+
+					<?php if ( $listing->single_page_enabled() ) : ?>
 
 						<div class="directorist-single-wrapper">
 
@@ -39,7 +42,7 @@ $listing = Directorist_Single_Listing::instance();
 
 						</div>
 
-					<?php else: ?>
+					<?php else : ?>
 
 						<div class="directorist-single-wrapper">
 

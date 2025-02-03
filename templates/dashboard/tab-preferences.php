@@ -5,12 +5,14 @@
  * @version 7.4.0
  */
 
-use \Directorist\Helper;
+use Directorist\Helper;
 
-if ( ! defined( 'ABSPATH' ) ) exit;
-$hide_contact_form 			= $dashboard->user_info( 'hide_contact_form' ) ? $dashboard->user_info( 'hide_contact_form' ) : 'no';
-$display_author_email 		= $dashboard->user_info( 'display_author_email' ) ? $dashboard->user_info( 'display_author_email' ) : 'public';
-$contact_owner_recipient 	= $dashboard->user_info( 'contact_owner_recipient' ) ? $dashboard->user_info( 'contact_owner_recipient' ) : 'author';
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+$hide_contact_form       = $dashboard->user_info( 'hide_contact_form' ) ? $dashboard->user_info( 'hide_contact_form' ) : 'no';
+$display_author_email    = $dashboard->user_info( 'display_author_email' ) ? $dashboard->user_info( 'display_author_email' ) : 'public';
+$contact_owner_recipient = $dashboard->user_info( 'contact_owner_recipient' ) ? $dashboard->user_info( 'contact_owner_recipient' ) : 'author';
 ?>
 
 <form action="#" id="user_preferences" method="post">
@@ -37,15 +39,15 @@ $contact_owner_recipient 	= $dashboard->user_info( 'contact_owner_recipient' ) ?
 							<div class="directorist-flex directorist-flex-wrap directorist-radio-wrapper">
 								<div class="directorist-radio directorist-radio-circle">
 									<input type="radio" id="public" name="directorist_display_author_email" value="public" <?php checked( $display_author_email, 'public' ); ?>>
-									<label class="directorist-radio__label" for="public"><?php esc_html_e('Display to Everyone', 'directorist') ?></label>
+									<label class="directorist-radio__label" for="public"><?php esc_html_e( 'Display to Everyone', 'directorist' ); ?></label>
 								</div>
 								<div class="directorist-radio directorist-radio-circle">
 									<input type="radio" id="logged_in" name="directorist_display_author_email" value="logged_in" <?php checked( $display_author_email, 'logged_in' ); ?>>
-									<label class="directorist-radio__label" for="logged_in"><?php esc_html_e('Display to Logged in Users Only', 'directorist') ?></label>
+									<label class="directorist-radio__label" for="logged_in"><?php esc_html_e( 'Display to Logged in Users Only', 'directorist' ); ?></label>
 								</div>
 								<div class="directorist-radio directorist-radio-circle">
 									<input type="radio" id="none_to_display" name="directorist_display_author_email" value="none_to_display" <?php checked( $display_author_email, 'none_to_display' ); ?>>
-									<label class="directorist-radio__label" for="none_to_display"><?php esc_html_e('Don’t Display', 'directorist') ?></label>
+									<label class="directorist-radio__label" for="none_to_display"><?php esc_html_e( 'Don’t Display', 'directorist' ); ?></label>
 								</div>
 							</div>
 						</div>
@@ -58,11 +60,11 @@ $contact_owner_recipient 	= $dashboard->user_info( 'contact_owner_recipient' ) ?
 							<div class="directorist-flex directorist-flex-wrap directorist-radio-wrapper">
 								<div class="directorist-radio directorist-radio-circle">
 									<input type="radio" id="author" name="directorist_contact_owner_recipient" value="author" <?php checked( $contact_owner_recipient, 'author' ); ?>>
-									<label class="directorist-radio__label" for="author"><?php esc_html_e( 'Author Email', 'directorist' ) ?></label>
+									<label class="directorist-radio__label" for="author"><?php esc_html_e( 'Author Email', 'directorist' ); ?></label>
 								</div>
 								<div class="directorist-radio directorist-radio-circle">
 									<input type="radio" id="listing_email" name="directorist_contact_owner_recipient" value="listing_email" <?php checked( $contact_owner_recipient, 'listing_email' ); ?>>
-									<label class="directorist-radio__label" for="listing_email"><?php esc_html_e( "Listing's Email", 'directorist' ) ?></label>
+									<label class="directorist-radio__label" for="listing_email"><?php esc_html_e( "Listing's Email", 'directorist' ); ?></label>
 								</div>
 							</div>
 						</div>

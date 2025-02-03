@@ -49,7 +49,6 @@ if ( ! class_exists( 'ATBDP_Custom_Taxonomy' ) ) :
 			add_action( 'template_redirect', array( $this, 'atbdp_template_redirect' ) );
 
 			add_action( 'wp_loaded', array( $this, 'directorist_bulk_term_update' ) );
-
 		}
 
 
@@ -86,14 +85,12 @@ if ( ! class_exists( 'ATBDP_Custom_Taxonomy' ) ) :
 										update_term_meta( $data->term_id, '_directory_type', array( $id ) );
 									}
 								}
-							} else {
-								if ( ! is_numeric( $old_data ) ) {
+							} elseif ( ! is_numeric( $old_data ) ) {
 									$term_with_directory_slug = get_term_by( 'slug', $old_data, 'atbdp_listing_types' );
 									$id                       = $term_with_directory_slug->term_id;
 									update_term_meta( $data->term_id, '_directory_type', array( $id ) );
-								} else {
-									update_term_meta( $data->term_id, '_directory_type', array( $old_data ) );
-								}
+							} else {
+								update_term_meta( $data->term_id, '_directory_type', array( $old_data ) );
 							}
 						} else {
 							update_term_meta( $data->term_id, '_directory_type', array( default_directory_type() ) );
@@ -262,7 +259,7 @@ if ( ! class_exists( 'ATBDP_Custom_Taxonomy' ) ) :
 			$icon_name                = get_term_meta( $term->term_id, 'category_icon', true );
 			$selected_directory_types = (array) get_term_meta( $term->term_id, '_directory_type', true );
 			$directory_types          = directorist_get_directories();
-			$default_listing_type = $this->default_listing_type();
+			$default_listing_type     = $this->default_listing_type();
 			if ( ! $default_listing_type ) {
 				?>
 			<tr class="form-field term-group-wrap">
@@ -289,9 +286,9 @@ if ( ! class_exists( 'ATBDP_Custom_Taxonomy' ) ) :
 			<tr class="form-field term-group-wrap">
 			<th scope="row"><label for="category_icon"><?php esc_html_e( 'Category Icon', 'directorist' ); ?></label></th>
 			<td>
-                <div class="directorist-category-icon-picker"></div>
-                <input type="hidden" class="category_icon_value" value="<?php echo esc_attr( $icon_name ); ?>" name="category_icon">
-            </td>
+				<div class="directorist-category-icon-picker"></div>
+				<input type="hidden" class="category_icon_value" value="<?php echo esc_attr( $icon_name ); ?>" name="category_icon">
+			</td>
 			</tr>
 			<?php
 			// get current cat image
@@ -328,7 +325,8 @@ if ( ! class_exists( 'ATBDP_Custom_Taxonomy' ) ) :
 			$image_src            = ( $image_id ) ? wp_get_attachment_url( (int) $image_id ) : '';
 			$directory_types      = directorist_get_directories();
 			$default_listing_type = $this->default_listing_type();
-			if ( ! $default_listing_type ) { ?>
+			if ( ! $default_listing_type ) {
+				?>
 			<tr class="form-field term-group-wrap">
 				<th scope="row"><label for="category_icon"><?php esc_html_e( 'Directory Type', 'directorist' ); ?></label></th>
 				<td>
@@ -364,7 +362,7 @@ if ( ! class_exists( 'ATBDP_Custom_Taxonomy' ) ) :
 					</div>
 					<p>
 						<input type="button" class="button button-secondary" id="atbdp-categories-upload-image"
-							   value="<?php esc_html_e( 'Add Image', 'directorist' ); ?>"/>
+								value="<?php esc_html_e( 'Add Image', 'directorist' ); ?>"/>
 					</p>
 				</td>
 			</tr>
@@ -436,7 +434,7 @@ if ( ! class_exists( 'ATBDP_Custom_Taxonomy' ) ) :
 			<div class="form-field term-group">
 				<label for="category_icon"><?php esc_html_e( 'Category Icon', 'directorist' ); ?></label>
 				<div class="directorist-category-icon-picker"></div>
-                <input type="hidden" class="category_icon_value" value="" name="category_icon">
+				<input type="hidden" class="category_icon_value" value="" name="category_icon">
 			</div>
 			<div class="form-field term-group">
 				<label for="atbdp-categories-image-id"><?php esc_html_e( 'Image', 'directorist' ); ?></label>
@@ -444,7 +442,7 @@ if ( ! class_exists( 'ATBDP_Custom_Taxonomy' ) ) :
 				<div id="atbdp-categories-image-wrapper"></div>
 				<p>
 					<input type="button" class="button button-secondary" id="atbdp-categories-upload-image"
-						   value="<?php esc_attr_e( 'Add Image', 'directorist' ); ?>"/>
+							value="<?php esc_attr_e( 'Add Image', 'directorist' ); ?>"/>
 				</p>
 			</div>
 			<?php
@@ -480,7 +478,7 @@ if ( ! class_exists( 'ATBDP_Custom_Taxonomy' ) ) :
 				<div id="atbdp-categories-image-wrapper"></div>
 				<p>
 					<input type="button" class="button button-secondary" id="atbdp-categories-upload-image"
-						   value="<?php esc_html_e( 'Add Image', 'directorist' ); ?>"/>
+							value="<?php esc_html_e( 'Add Image', 'directorist' ); ?>"/>
 				</p>
 			</div>
 			<?php
@@ -586,7 +584,7 @@ if ( ! class_exists( 'ATBDP_Custom_Taxonomy' ) ) :
 				'menu_name'         => __( 'Tags', 'directorist' ),
 			);
 
-			$args       = array(
+			$args = array(
 				'hierarchical'      => false,
 				'labels'            => $labels,
 				'show_ui'           => true,
@@ -614,7 +612,7 @@ if ( ! class_exists( 'ATBDP_Custom_Taxonomy' ) ) :
 			$new_columns = $original_columns;
 			array_splice( $new_columns, 1 ); // in this way we could place our columns on the first place after the first checkbox.
 
-			$new_columns['ID'] = __( 'ID', 'directorist' );
+			$new_columns['ID']                  = __( 'ID', 'directorist' );
 			$new_columns['atbdp_category_icon'] = __( 'Icon', 'directorist' );
 
 			if ( directorist_is_multi_directory_enabled() ) {
@@ -651,7 +649,7 @@ if ( ! class_exists( 'ATBDP_Custom_Taxonomy' ) ) :
 			$directory_type = is_array( $directory_type ) ? $directory_type : array( $directory_type );
 
 			/*
-			 $icon_type = array();
+			$icon_type = array();
 			if (!empty($icon)){
 				$icon_type = explode('-', $icon);
 			}
@@ -772,7 +770,6 @@ if ( ! class_exists( 'ATBDP_Custom_Taxonomy' ) ) :
 				}
 			}
 			return false;
-
 		}
 
 		/**
@@ -808,7 +805,6 @@ if ( ! class_exists( 'ATBDP_Custom_Taxonomy' ) ) :
 				}
 			}
 			return false;
-
 		}
 
 		public function get_listing_types() {

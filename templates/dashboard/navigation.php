@@ -5,7 +5,9 @@
  * @version 7.4.0
  */
 
-if ( ! defined( 'ABSPATH' ) ) exit;
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
 
 $counter = 1;
 ?>
@@ -16,7 +18,7 @@ $counter = 1;
 
 		<ul class="directorist-tab__nav__items">
 
-			<?php foreach ( $dashboard->dashboard_tabs() as $key => $value ): ?>
+			<?php foreach ( $dashboard->dashboard_tabs() as $key => $value ) : ?>
 
 				<li class="directorist-tab__nav__item">
 					<a href="#" class="directorist-booking-nav-link directorist-tab__nav__link <?php echo ( $counter == 1 ) ? 'directorist-tab__nav__active' : ''; ?>" target="<?php echo esc_attr( $key ); ?>">
@@ -30,7 +32,7 @@ $counter = 1;
 				</li>
 
 				<?php do_action( 'directorist_dashboard_navigation', $key, $dashboard ); ?>
-				<?php $counter++; ?>
+				<?php ++$counter; ?>
 
 			<?php endforeach; ?>
 

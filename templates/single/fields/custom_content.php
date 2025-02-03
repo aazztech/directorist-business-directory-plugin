@@ -5,15 +5,17 @@
  * @version 7.0.5
  */
 
-if ( ! defined( 'ABSPATH' ) ) exit;
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
 ?>
 
 <div class="directorist-single-info directorist-single-info-custom">
 
-	<?php if ( !empty( $data['label'] ) ): ?>
+	<?php if ( ! empty( $data['label'] ) ) : ?>
 		<div class="directorist-single-info__label">
-			<?php if ( $icon ): ?>
-				<span class="directorist-single-info__label-icon"><?php directorist_icon( $icon );?></span>
+			<?php if ( $icon ) : ?>
+				<span class="directorist-single-info__label-icon"><?php directorist_icon( $icon ); ?></span>
 			<?php endif; ?>
 			<span class="directorist-single-info__label__text"><?php echo esc_html( $data['label'] ); ?></span>
 		</div>

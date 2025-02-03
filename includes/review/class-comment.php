@@ -17,28 +17,28 @@ class Comment {
 
 	public static function init() {
 		// Rating posts.
-		add_filter( 'comments_open', [ __CLASS__, 'comments_open' ], 10, 2 );
-		add_filter( 'preprocess_comment', [ __CLASS__, 'validate_data' ], 0 );
-		add_action( 'comment_post', [ __CLASS__, 'on_comment_post' ], 10, 3 );
+		add_filter( 'comments_open', array( __CLASS__, 'comments_open' ), 10, 2 );
+		add_filter( 'preprocess_comment', array( __CLASS__, 'validate_data' ), 0 );
+		add_action( 'comment_post', array( __CLASS__, 'on_comment_post' ), 10, 3 );
 
 		// Support avatars for `review` comment type.
-		add_filter( 'get_avatar_comment_types', [ __CLASS__, 'set_avater_comment_types' ] );
+		add_filter( 'get_avatar_comment_types', array( __CLASS__, 'set_avater_comment_types' ) );
 
 		// Clear transients.
-		add_action( 'wp_update_comment_count', [ __CLASS__, 'clear_transients'] );
+		add_action( 'wp_update_comment_count', array( __CLASS__, 'clear_transients' ) );
 
 		// Set comment type.
-		add_filter( 'preprocess_comment', [ __CLASS__, 'preprocess_comment_data' ], 1 );
+		add_filter( 'preprocess_comment', array( __CLASS__, 'preprocess_comment_data' ), 1 );
 
 		// Set comment approval
-		add_filter( 'pre_comment_approved', [ __CLASS__, 'set_comment_status' ], 10, 2 );
+		add_filter( 'pre_comment_approved', array( __CLASS__, 'set_comment_status' ), 10, 2 );
 
 		// Count comments.
-		add_filter( 'wp_count_comments', [ __CLASS__, 'wp_count_comments' ], 10, 2 );
+		add_filter( 'wp_count_comments', array( __CLASS__, 'wp_count_comments' ), 10, 2 );
 
 		// Delete comments count cache whenever there is a new comment or a comment status changes.
-		add_action( 'wp_insert_comment', [ __CLASS__, 'delete_comments_count_cache' ] );
-		add_action( 'wp_set_comment_status', [ __CLASS__, 'delete_comments_count_cache' ] );
+		add_action( 'wp_insert_comment', array( __CLASS__, 'delete_comments_count_cache' ) );
+		add_action( 'wp_set_comment_status', array( __CLASS__, 'delete_comments_count_cache' ) );
 	}
 
 	/**
@@ -78,21 +78,24 @@ class Comment {
 				throw new Exception( __( '<strong>Error</strong>: You must login to share review.', 'directorist' ), 401 );
 			}
 			$post_id       = absint( $_POST['comment_post_ID'] ); // @codingStandardsIgnoreLine.
-			$listing       = Directorist_Single_Listing::instance( $post_id );
-			$section_data  = $listing->get_review_section_data();
-			$builder       = Builder::get( $section_data['section_data'] );
+			$listing      = Directorist_Single_Listing::instance( $post_id );
+			$section_data = $listing->get_review_section_data();
+			$builder      = Builder::get( $section_data['section_data'] );
 
 			if ( $builder->is_gdpr_consent() && ! isset( $_POST['directorist-gdpr-consent'] ) ) {
-				throw new Exception( sprintf(
+				throw new Exception(
+					sprintf(
 					/** translators: %1$s gdpr consent label */
-					__( '<strong>Error</strong>: Please agree to - %1$s', 'directorist' ),
-					$builder->gdpr_consent_label()
-				), 400 );
+						__( '<strong>Error</strong>: Please agree to - %1$s', 'directorist' ),
+						$builder->gdpr_consent_label()
+					),
+					400
+				);
 			}
 
-			$user_id       = $comment_data['user_ID'];
-			$author_email  = $comment_data['comment_author_email'];
-			$errors        = array();
+			$user_id      = $comment_data['user_ID'];
+			$author_email = $comment_data['comment_author_email'];
+			$errors       = array();
 
 			if ( isset( $_POST['comment_parent'], $_POST['rating'], $comment_data['comment_type'] ) && // @codingStandardsIgnoreLine.
 				$comment_data['comment_parent'] === 0 && self::is_default_comment_type( $comment_data['comment_type'] ) ) {
@@ -122,7 +125,7 @@ class Comment {
 			}
 
 			do_action( 'directorist_review_validate_data', $comment_data );
-		} catch( Exception $e ) {
+		} catch ( Exception $e ) {
 			wp_die( wp_kses_post( $e->getMessage() ) );
 			exit;
 		}
@@ -220,10 +223,10 @@ class Comment {
 			return $comment_data;
 		}
 
-		$listing       = Directorist_Single_Listing::instance( absint( $_POST['comment_post_ID'] ) );
-		$section_data  = $listing->get_review_section_data();
-		$builder       = Builder::get( $section_data['section_data'] );
-		
+		$listing      = Directorist_Single_Listing::instance( absint( $_POST['comment_post_ID'] ) );
+		$section_data = $listing->get_review_section_data();
+		$builder      = Builder::get( $section_data['section_data'] );
+
 		if ( isset( $_POST['comment_parent'], $_POST['rating'], $comment_data['comment_type'] ) && // @codingStandardsIgnoreLine.
 			$comment_data['comment_parent'] === 0 && self::is_default_comment_type( $comment_data['comment_type'] ) &&
 			( $builder->is_rating_type_single() && ! empty( $_POST['rating'] ) ) ) { // @codingStandardsIgnoreLine.
@@ -251,8 +254,8 @@ class Comment {
 			return $approved;
 		}
 
-		$pending = 0;
-		$approve = 1;
+		$pending   = 0;
+		$approve   = 1;
 		$is_review = ( $comment_data['comment_type'] === 'review' );
 
 		if ( directorist_is_guest_review_enabled() && ! is_user_logged_in() && $is_review ) {
@@ -438,10 +441,10 @@ class Comment {
 			return;
 		}
 
-		$listing       = Directorist_Single_Listing::instance( absint( $comment_data['comment_post_ID'] ) );
-		$section_data  = $listing->get_review_section_data();
-		$builder       = Builder::get( $section_data['section_data'] );
-		$rating  = 0;
+		$listing      = Directorist_Single_Listing::instance( absint( $comment_data['comment_post_ID'] ) );
+		$section_data = $listing->get_review_section_data();
+		$builder      = Builder::get( $section_data['section_data'] );
+		$rating       = 0;
 
 		if ( $builder->is_rating_type_single() ) {
 			$rating = is_array( $posted_data['rating'] ) ? current( $posted_data['rating'] ) : $posted_data['rating'];

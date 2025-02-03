@@ -1,7 +1,6 @@
 <?php
 /**
  * Directorist Taxonomy Field class.
- *
  */
 namespace Directorist\Fields;
 
@@ -13,11 +12,11 @@ abstract class Taxonomy_Field extends Base_Field {
 
 	public $type = 'taxonomy';
 
-	abstract protected function get_taxonomy() : string;
+	abstract protected function get_taxonomy(): string;
 
-	abstract public function user_can_create() : bool;
+	abstract public function user_can_create(): bool;
 
-	public function user_can_select_multiple() : bool {
+	public function user_can_select_multiple(): bool {
 		return (bool) ( $this->__get( 'type' ) === 'multiple' );
 	}
 
@@ -29,7 +28,7 @@ abstract class Taxonomy_Field extends Base_Field {
 		if ( ! in_array( $this->get_taxonomy(), array( ATBDP_TAGS, ATBDP_LOCATION, ATBDP_CATEGORY ), true ) ) {
 			return null;
 		}
-		
+
 		if ( ! isset( $posted_data['tax_input'][ $this->get_taxonomy() ] ) ) {
 			return null;
 		}

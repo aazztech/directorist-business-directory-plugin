@@ -194,11 +194,11 @@ class Locations_Controller extends Terms_Controller {
 						),
 					),
 				),
-				'directory' => array(
+				'directory'   => array(
 					'description' => __( 'Directory type ids for this resource.', 'directorist' ),
 					'type'        => 'array',
-					'items' => array(
-						'type'   => 'integer',
+					'items'       => array(
+						'type' => 'integer',
 					),
 					'context'     => array( 'view', 'edit' ),
 					'arg_options' => array(
@@ -240,12 +240,14 @@ class Locations_Controller extends Terms_Controller {
 			}
 
 			$directory_ids = $request['directory'];
-			$directory     = get_terms( array(
-				'include'                => $directory_ids,
-				'taxonomy'               => ATBDP_TYPE,
-				'update_term_meta_cache' => false,
-				'hide_empty'             => false,
-			) );
+			$directory     = get_terms(
+				array(
+					'include'                => $directory_ids,
+					'taxonomy'               => ATBDP_TYPE,
+					'update_term_meta_cache' => false,
+					'hide_empty'             => false,
+				)
+			);
 
 			if ( is_wp_error( $directory ) || empty( $directory ) ) {
 				return new WP_Error(
@@ -319,9 +321,9 @@ class Locations_Controller extends Terms_Controller {
 
 		if ( directorist_is_multi_directory_enabled() ) {
 			$params['directory'] = array(
-				'description' => __( 'Limit result set to specific directory type ids.', 'directorist' ),
-				'type'        => 'array',
-				'items'       => array(
+				'description'       => __( 'Limit result set to specific directory type ids.', 'directorist' ),
+				'type'              => 'array',
+				'items'             => array(
 					'type' => 'integer',
 				),
 				'validate_callback' => 'rest_validate_request_arg',

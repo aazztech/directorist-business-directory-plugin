@@ -7,6 +7,7 @@
  * @since 7.1.0
  */
 namespace Directorist\Review;
+
 use Directorist\Directorist_Single_Listing;
 
 if ( ! defined( 'ABSPATH' ) ) {
@@ -16,16 +17,16 @@ if ( ! defined( 'ABSPATH' ) ) {
 class Metabox {
 
 	public static function init() {
-		add_action( 'admin_menu', [ __CLASS__, 'add_menu' ] );
-		add_action( 'add_meta_boxes_comment', [ __CLASS__, 'register' ] );
-		add_action( 'edit_comment', [ __CLASS__, 'on_edit_comment' ], 10, 2 );
-		add_action( 'add_meta_boxes', [ __CLASS__, 'update_meta_boxes' ], 20 );
-		add_filter( 'admin_comment_types_dropdown', [ __CLASS__, 'add_comment_types_in_dropdown' ] );
+		add_action( 'admin_menu', array( __CLASS__, 'add_menu' ) );
+		add_action( 'add_meta_boxes_comment', array( __CLASS__, 'register' ) );
+		add_action( 'edit_comment', array( __CLASS__, 'on_edit_comment' ), 10, 2 );
+		add_action( 'add_meta_boxes', array( __CLASS__, 'update_meta_boxes' ), 20 );
+		add_filter( 'admin_comment_types_dropdown', array( __CLASS__, 'add_comment_types_in_dropdown' ) );
 
-		add_action( 'directorist/admin/review/meta_fields', [ __CLASS__, 'render_rating_meta_field' ] );
+		add_action( 'directorist/admin/review/meta_fields', array( __CLASS__, 'render_rating_meta_field' ) );
 
-		add_filter( 'comment_edit_redirect', [ __CLASS__, 'comment_edit_redirect' ], 10, 2 );
-		add_filter( 'wp_update_comment_data', [ __CLASS__, 'update_comment_data' ], 10, 2 );
+		add_filter( 'comment_edit_redirect', array( __CLASS__, 'comment_edit_redirect' ), 10, 2 );
+		add_filter( 'wp_update_comment_data', array( __CLASS__, 'update_comment_data' ), 10, 2 );
 	}
 
 	public static function update_comment_data( $data, $comment ) {
@@ -40,10 +41,12 @@ class Metabox {
 
 	public static function comment_edit_redirect( $location, $comment_id ) {
 		if ( ! current_user_can( 'moderate_comments' ) ) {
-			return add_query_arg( array(
-				'action' => 'editcomment',
-				'c'      => $comment_id,
-			) );
+			return add_query_arg(
+				array(
+					'action' => 'editcomment',
+					'c'      => $comment_id,
+				)
+			);
 		}
 
 		return $location;
@@ -73,7 +76,7 @@ class Metabox {
 			return;
 		}
 
-		$menu_slug    = 'edit.php?post_type='. ATBDP_POST_TYPE;
+		$menu_slug    = 'edit.php?post_type=' . ATBDP_POST_TYPE;
 		$submenu_slug = 'edit-comments.php?post_type=' . ATBDP_POST_TYPE;
 
 		add_submenu_page(
@@ -82,7 +85,7 @@ class Metabox {
 			__( 'Reviews', 'directorist' ),
 			'edit_posts',
 			$submenu_slug
-			);
+		);
 
 		// Make sure "Reviews" menu is active
 		global $submenu, $pagenow;
@@ -154,12 +157,14 @@ class Metabox {
 	}
 
 	public static function render_rating_meta_field( $comment ) {
-		$listing       = Directorist_Single_Listing::instance( $comment->comment_post_ID );
-		$section_data  = $listing->get_review_section_data();
-		$builder       = Builder::get( $section_data['section_data'] );
-		$rating  		= Comment_Meta::get_rating( $comment->comment_ID, 0 );
+		$listing      = Directorist_Single_Listing::instance( $comment->comment_post_ID );
+		$section_data = $listing->get_review_section_data();
+		$builder      = Builder::get( $section_data['section_data'] );
+		$rating       = Comment_Meta::get_rating( $comment->comment_ID, 0 );
 
-		if ( $builder->is_rating_type_single() ) : $r = floor( $rating ); ?>
+		if ( $builder->is_rating_type_single() ) :
+			$r = floor( $rating );
+			?>
 		<tr>
 			<th><?php esc_html_e( 'Rating', 'directorist' ); ?></th>
 			<td>
@@ -173,7 +178,8 @@ class Metabox {
 				</select>
 			</td>
 		</tr>
-		<?php endif;
+			<?php
+		endif;
 	}
 }
 

@@ -19,7 +19,6 @@ if ( ! class_exists( 'ATBDP_Cache_Helper' ) ) :
 		 * @param  boolean $refresh true to force a new version.
 		 * @return string transient version based on time(), 10 digits.
 		 */
-
 		public static function get_transient_version( $group, $refresh = false ) {
 			$transient_name  = $group . '-transient-version';
 			$transient_value = get_transient( $transient_name );

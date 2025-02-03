@@ -17,8 +17,8 @@ require_once __DIR__ . '/includes/class-block-templates-controller.php';
 
 // Check if the current theme is a block theme
 if ( wp_is_block_theme() ) {
-    // Enable widgets support
-    add_theme_support( 'widgets' );
+	// Enable widgets support
+	add_theme_support( 'widgets' );
 }
 
 /**
@@ -44,13 +44,13 @@ function directorist_register_blocks() {
 
 	// wp_set_script_translations( 'directorist-block-editor', 'directorist' );
 
-	$styles = [
+	$styles = array(
 		'directorist-main-style',
 		'directorist-select2-style',
 		'directorist-ez-media-uploader-style',
 		'directorist-swiper-style',
-		'directorist-sweetalert-style'
-	];
+		'directorist-sweetalert-style',
+	);
 
 	if ( AssetHelper::map_type() === 'openstreet' ) {
 		$styles[] = 'directorist-openstreet-map-leaflet';
@@ -126,7 +126,7 @@ if ( version_compare( $wp_version, '5.8', '>=' ) ) {
 /**
  * Single listing dynamic render callback.
  *
- * @param array $atts
+ * @param array  $atts
  * @param string $content
  *
  * @return string
@@ -158,7 +158,7 @@ function directorist_block_render_callback( $attributes, $content, $instance ) {
 	}
 
 	$attributes['is_block_editor'] = true;
-	$output = directorist_do_shortcode_callback( $shortcode, $attributes, $content );
+	$output                        = directorist_do_shortcode_callback( $shortcode, $attributes, $content );
 
 	if ( empty( $output ) && current_user_can( 'edit_posts' ) ) {
 		return sprintf(
@@ -195,7 +195,7 @@ function directorist_do_shortcode_callback( $tag, array $atts = array(), $conten
 /**
  * Enable rest api for all directorist taxonomies.
  *
- * @param array $args Taxonomy arguments
+ * @param array  $args Taxonomy arguments
  * @param string $name Taxonomy slug
  *
  * @return array Modified $args
@@ -212,7 +212,7 @@ add_filter( 'register_taxonomy_args', 'directorist_tax_show_in_rest', 10, 2 );
 /**
  * Enable rest api for directorist post type.
  *
- * @param array $args Post type arguments
+ * @param array  $args Post type arguments
  * @param string $name Post type slug
  *
  * @return array Modified $args
@@ -229,16 +229,16 @@ add_filter( 'register_post_type_args', 'directorist_post_type_show_in_rest', 10,
 /**
  * Disable gutenberg editor or block editor for our directory post type.
  *
- * @param bool $current_status
+ * @param bool   $current_status
  * @param string $post_type
  *
  * @return bool
  */
 function directorist_disable_block_editor( $current_status, $post_type ) {
-    if ( $post_type === ATBDP_POST_TYPE ) {
+	if ( $post_type === ATBDP_POST_TYPE ) {
 		return false;
 	}
-    return $current_status;
+	return $current_status;
 }
 add_filter( 'use_block_editor_for_post_type', 'directorist_disable_block_editor', 10, 2 );
 
@@ -263,7 +263,7 @@ function directorist_add_single_listing_shortcode( $atts = array() ) {
 		}
 
 		return Helper::get_template_contents( 'single-contents' );
-	} catch( Exception $e ) {
+	} catch ( Exception $e ) {
 		if ( current_user_can( 'edit_posts' ) ) {
 			return '<p class="directorist-alert directorist-alert-info" style="text-align:center">' . $e->getMessage() . '</p>';
 		}
@@ -283,12 +283,12 @@ function directorist_account_block_avatar_image( $size = 40 ) {
 			$size,
 			null,
 			null,
-			[
-				'class' => 'rounded-circle'
-			]
+			array(
+				'class' => 'rounded-circle',
+			)
 		);
 	} else {
-		echo sprintf(
+		printf(
 			'<img width="%1$s" src="%2$s" alt="%2$s" class="avatar rounded-circle"/>',
 			$size,
 			esc_url( $image_url ),
@@ -305,8 +305,8 @@ function directorist_register_blocks_common_assets() {
 
 		wp_enqueue_style(
 			'directorist-blocks-common',
-			plugin_dir_url( __FILE__ ) .  'assets/index' . ( is_rtl() ? '-rtl.css' : '.css' ),
-			[],
+			plugin_dir_url( __FILE__ ) . 'assets/index' . ( is_rtl() ? '-rtl.css' : '.css' ),
+			array(),
 			isset( $asset['version'] ) ?? ATBDP_VERSION
 		);
 	}
