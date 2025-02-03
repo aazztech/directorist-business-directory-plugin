@@ -5,7 +5,9 @@
  * @version 7.3.0
  */
 
-if ( ! defined( 'ABSPATH' ) ) exit;
+if (! defined( 'ABSPATH' )) {
+    exit;
+}
 
 $uid          = $dashboard->id;
 $u_pro_pic_id = get_user_meta( $uid, 'pro_pic', true );

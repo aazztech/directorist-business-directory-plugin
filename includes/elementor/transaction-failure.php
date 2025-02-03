@@ -7,7 +7,9 @@ namespace AazzTech\Directorist\Elementor;
 
 use Elementor\Controls_Manager;
 
-if ( ! defined( 'ABSPATH' ) ) exit;
+if (! defined( 'ABSPATH' )) {
+    exit;
+}
 
 class Directorist_Transaction_Failure extends Custom_Widget_Base {
 
@@ -18,23 +20,22 @@ class Directorist_Transaction_Failure extends Custom_Widget_Base {
 	}
 
 
-	public function az_fields(){
-		$fields = array(
-			array(
+	protected function az_fields(): array{
+		return [
+			[
 				'mode'    => 'section_start',
 				'id'      => 'sec_general',
 				'label'   => __( 'General', 'directorist' ),
-			),
-			array(
+			],
+			[
 				'type'      => Controls_Manager::HEADING,
 				'id'        => 'sec_heading',
 				'label'     => $this->az_texts['transaction'],
-			),
-			array(
+			],
+			[
 				'mode' => 'section_end',
-			),
-		);
-		return $fields;
+			],
+		];
 	}
 
 	protected function render() {

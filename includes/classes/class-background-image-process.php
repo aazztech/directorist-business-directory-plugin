@@ -37,7 +37,7 @@ class Background_Image_Process extends Background_Process {
 	 * Restart the background process if not already running
 	 * and data exists in the queue.
 	 */
-	public function handle_cron_healthcheck() {
+	public function handle_cron_healthcheck(): void {
 		if ( $this->is_process_running() ) {
 			// Background process already running.
 			return;

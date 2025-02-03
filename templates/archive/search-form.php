@@ -25,7 +25,7 @@ if (is_numeric($searchform->listing_type)) {
 			</div>
 
 			<div class="directorist-search-modal__contents__body">
-				<input type="hidden" name='directory_type' value='<?php echo !empty($listing_type) ? esc_attr( $listing_type ) : esc_attr( $searchform->listing_type ); ?>'>
+				<input type="hidden" name='directory_type' value='<?php echo empty($listing_type) ? esc_attr( $searchform->listing_type ) : esc_attr( $listing_type ); ?>'>
 				<div class="directorist-advanced-filter__basic">
 					<?php foreach ($searchform->form_data[0]['fields'] as $field) : ?>
 						<div class="directorist-advanced-filter__basic__element"><?php $searchform->field_template($field); ?></div>

@@ -7,7 +7,9 @@ namespace Directorist\Widgets;
 
 use Directorist\Helper;
 
-if ( ! defined( 'ABSPATH' ) ) exit;
+if (! defined( 'ABSPATH' )) {
+    exit;
+}
 
 class Author_Info extends \WP_Widget {
 
@@ -22,7 +24,7 @@ class Author_Info extends \WP_Widget {
 		parent::__construct( $id_base, $name, $widget_options );
 	}
 
-	public function form( $instance ) {
+	public function form( $instance ): void {
 		$defaults = [
 			'title'           => esc_html__( 'Author Info', 'directorist' ),
 		];
@@ -39,23 +41,20 @@ class Author_Info extends \WP_Widget {
 		Widget_Fields::create( $fields, $instance, $this );
 	}
 
-	public function update( $new_instance, $old_instance ) {
-		$instance = [];
+	public function update($new_instance, $old_instance)
+    {
+        return ['title' => empty( $new_instance['title'] ) ? '' : sanitize_text_field( $new_instance['title'] )];
+    }
 
-		$instance['title']            = ! empty( $new_instance['title'] ) ? sanitize_text_field( $new_instance['title'] ) : '';
-
-		return $instance;
-	}
-
-	public function widget( $args, $instance ) {
+	public function widget( $args, $instance ): void {
 		if ( is_singular( ATBDP_POST_TYPE ) ) {
 			echo wp_kses_post( $args['before_widget'] );
 
-			$title = !empty($instance['title']) ? esc_html($instance['title']) : esc_html__('Author Info', 'directorist');
+			$title = empty($instance['title']) ? esc_html__('Author Info', 'directorist') : esc_html($instance['title']);
 			$widget_title = $args['before_title'] . apply_filters( 'widget_title', $title ) . $args['after_title'];
 			echo wp_kses_post( $widget_title );
 
-			Helper::get_template( 'widgets/author-info', compact( 'args', 'instance' ) );
+			Helper::get_template( 'widgets/author-info', ['args' => $args, 'instance' => $instance] );
 
 			echo wp_kses_post( $args['after_widget'] );
 		}

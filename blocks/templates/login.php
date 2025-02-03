@@ -35,20 +35,20 @@ extract( $login_args );
 		<?php if ( directorist_is_email_verification_enabled() && ! empty( $_GET['verification'] ) && is_email( $user_email ) ) : ?>
 			<p class="directorist-alert directorist-alert-success"><span class="p-0 m-0">
 				<?php
-				$send_confirm_mail_url = add_query_arg( array(
+				$send_confirm_mail_url = add_query_arg( [
 					'action'            => 'directorist_send_confirmation_email',
 					'user'              => $user_email,
 					'directorist_nonce' => wp_create_nonce( 'directorist_nonce' ),
-				), admin_url( 'admin-ajax.php' ) );
+				], admin_url( 'admin-ajax.php' ) );
 
-				echo wp_kses( sprintf( __( "Thank you for signing up! To complete the registration, please verify your email address by clicking on the link we have sent to your email.<br><br>If you didn't find the verification email, please check your spam folder. If you still can't find it, click on the <a href='%s'>Resend confirmation email</a> to have a new email sent to you.", 'directorist' ), esc_url( $send_confirm_mail_url ) ), array( 'a' => array( 'href' => array() ), 'br' => array() ) );
+				echo wp_kses( sprintf( __( "Thank you for signing up! To complete the registration, please verify your email address by clicking on the link we have sent to your email.<br><br>If you didn't find the verification email, please check your spam folder. If you still can't find it, click on the <a href='%s'>Resend confirmation email</a> to have a new email sent to you.", 'directorist' ), esc_url( $send_confirm_mail_url ) ), [ 'a' => [ 'href' => [] ], 'br' => [] ] );
 				?>
 			</span></p>
 		<?php endif; ?>
 
 		<?php if ( directorist_is_email_verification_enabled() && ! empty( $_GET['send_verification_email'] ) ) : ?>
 			<p class="directorist-alert directorist-alert-success"><span>
-				<?php echo wp_kses( __( "Thank you for requesting a new verification email. Please check your inbox and verify to complete the registration.<br><br>If you still can't find it, please check your spam folder. And please contact if you are still having trouble.", 'directorist' ), array( 'br' => array() ) ); ?>
+				<?php echo wp_kses( __( "Thank you for requesting a new verification email. Please check your inbox and verify to complete the registration.<br><br>If you still can't find it, please check your spam folder. And please contact if you are still having trouble.", 'directorist' ), [ 'br' => [] ] ); ?>
 			</span></p>
 		<?php endif; ?>
 
@@ -71,8 +71,8 @@ extract( $login_args );
 				} else {
 					if ( ! empty( $_POST['directorist_reset_password'] ) && directorist_verify_nonce( 'directorist-reset-password-nonce', 'reset_password' ) ) :
 						// Ignore password sanitization
-						$password_1 = isset( $_POST['password_1'] ) ? $_POST['password_1'] : ''; // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.MissingUnslash, WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
-						$password_2 = isset( $_POST['password_2'] ) ? $_POST['password_2'] : ''; // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.MissingUnslash, WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
+						$password_1 = $_POST['password_1'] ?? ''; // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.MissingUnslash, WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
+						$password_2 = $_POST['password_2'] ?? ''; // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.MissingUnslash, WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
 
 						if ( empty( $password_1 ) || empty( $password_2 ) ) : ?>
 							<p class="atbd_reset_warning directorist-alert directorist-alert-danger"><?php echo esc_html__( 'Passwords cannot be empty.', 'directorist' ); ?></p>
@@ -86,7 +86,7 @@ extract( $login_args );
 							<p class="atbd_reset_success directorist-alert directorist-alert-success"><?php echo wp_kses( sprintf(
 								__( 'Password changed successfully. Please <a href="%s">click here to login</a>.', 'directorist' ),
 								esc_url( ATBDP_Permalink::get_login_page_url() )
-							), array( 'a' => array( 'href' => array() ) ) ); ?></p>
+							), [ 'a' => [ 'href' => [] ] ] ); ?></p>
 						<?php endif;
 					endif;
 
@@ -105,7 +105,7 @@ extract( $login_args );
 							<?php echo wp_kses( sprintf(
 								__( 'Email verification successful. Please <a href="%s">click here to login</a>.', 'directorist' ),
 								esc_url( ATBDP_Permalink::get_login_page_url() )
-							), array( 'a' => array( 'href' => array() ) ) ); ?>
+							), [ 'a' => [ 'href' => [] ] ] ); ?>
 						</div>
 						<?php
 					}
@@ -198,13 +198,13 @@ extract( $login_args );
 
 				$email = isset( $_POST['user_login'] ) ? sanitize_email( wp_unslash( $_POST['user_login'] ) ) : '';
 
-				if ( empty( $email ) ) {
-					$error = __( 'Email address cannot be empty.', 'directorist' );
-				} else if ( ! is_email( $email ) ) {
-					$error = __( 'Invalid e-mail address.', 'directorist' );
-				} else if ( ! email_exists( $email ) ) {
-					$error = __( 'There is no user registered with that email address.', 'directorist' );
-				} else {
+				if (empty( $email )) {
+                    $error = __( 'Email address cannot be empty.', 'directorist' );
+                } elseif (! is_email( $email )) {
+                    $error = __( 'Invalid e-mail address.', 'directorist' );
+                } elseif (! email_exists( $email )) {
+                    $error = __( 'There is no user registered with that email address.', 'directorist' );
+                } else {
 					$user      = get_user_by( 'email', $email );
 					/* translators: %s: site name */
 					$subject   = esc_html( sprintf( __( '[%s] Reset Your Password', 'directorist' ), get_option( 'blogname', 'display' )  ));
@@ -223,13 +223,13 @@ extract( $login_args );
 						esc_url( directorist_password_reset_url( $user, true ) )
 					);
 
-					$message = wp_kses( $message, array(
-						'br' => array(),
-						'strong' => array(),
-						'a' => array(
-							'href' => array()
-						)
-					) );
+					$message = wp_kses( $message, [
+						'br' => [],
+						'strong' => [],
+						'a' => [
+							'href' => []
+						]
+					] );
 
 					$message = atbdp_email_html( $title, nl2br( $message ) );
 
@@ -244,7 +244,7 @@ extract( $login_args );
 				}
 
 				if ( ! empty( $error ) ) {
-					echo '<div class="message"><p class="error directorist-alert directorist-alert-danger">' . wp_kses( sprintf( __( '<strong>ERROR: </strong> %s', 'directorist' ), esc_html( $error ) ), array( 'strong' => array() ) ) . '</p></div>';
+					echo '<div class="message"><p class="error directorist-alert directorist-alert-danger">' . wp_kses( sprintf( __( '<strong>ERROR: </strong> %s', 'directorist' ), esc_html( $error ) ), [ 'strong' => [] ] ) . '</p></div>';
 				}
 
 				if ( ! empty( $success ) ) {

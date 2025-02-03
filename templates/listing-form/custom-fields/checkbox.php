@@ -5,7 +5,9 @@
  * @version 7.5.4
  */
 
-if ( ! defined( 'ABSPATH' ) ) exit;
+if (! defined( 'ABSPATH' )) {
+    exit;
+}
 
 ?>
 

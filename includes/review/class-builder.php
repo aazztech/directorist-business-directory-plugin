@@ -14,14 +14,19 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 class Builder {
 
-	protected $fields	= array();
-	protected $cookies_consent;
-	protected $gdpr_consent;
-	protected $gdpr_consent_label;
-	protected $rating_type;
-	private static $instance 	= null;
+	protected $fields	= [];
 
-	public static function get( $data ) {
+	protected bool $cookies_consent;
+
+	protected bool $gdpr_consent;
+
+	protected $gdpr_consent_label;
+
+	protected $rating_type;
+
+	private static ?\Directorist\Review\Builder $instance 	= null;
+
+	public static function get( $data ): \Directorist\Review\Builder {
 		if ( is_null( self::$instance ) ) {
 			self::$instance = new self( $data );
 		}
@@ -31,18 +36,18 @@ class Builder {
 
 	private function __construct( $data ) {
 		$this->load_data( $data );
-		$this->cookies_consent 		= ! empty( $data['review_cookies_consent'] ) ? true : false;
-		$this->gdpr_consent    		= ! empty( $data['review_enable_gdpr_consent'] ) ? true : false;
-		$this->rating_type    		= ! empty( $data['rating_type'] ) ? $data['rating_type'] : 'single';
-		$this->gdpr_consent_label	= ! empty( $data['review_gdpr_consent_label'] ) ? $data['review_gdpr_consent_label'] : sprintf(
+		$this->cookies_consent 		= ! empty( $data['review_cookies_consent'] );
+		$this->gdpr_consent    		= ! empty( $data['review_enable_gdpr_consent'] );
+		$this->rating_type    		= empty( $data['rating_type'] ) ? 'single' : $data['rating_type'];
+		$this->gdpr_consent_label	= empty( $data['review_gdpr_consent_label'] ) ? sprintf(
 			__( 'I have read and agree to the <a href="%s" target="_blank">Privacy Policy</a> and <a href="%s" target="_blank">Terms of Service</a>', 'directorist' ),
 			esc_url( ATBDP_Permalink::get_privacy_policy_page_url() ),
 			esc_url( ATBDP_Permalink::get_terms_and_conditions_page_url() )
-		);;
+		) : $data['review_gdpr_consent_label'];;
 	}
 
-	public function load_data( $data )  {
-		$this->fields = $data['fields'] ?? array();
+	public function load_data( $data ): void  {
+		$this->fields = $data['fields'] ?? [];
 	}
 
 	/**
@@ -54,7 +59,7 @@ class Builder {
 		return $this->rating_type;
 	}
 
-	public function is_rating_type_single() {
+	public function is_rating_type_single(): bool {
 		return $this->rating_type === 'single';
 	}
 
@@ -108,24 +113,24 @@ class Builder {
 		return $this->get_field( 'comment', 'placeholder', $default );
 	}
 
-	public function is_cookies_consent_active() {
-		return (bool) $this->cookies_consent;
+	public function is_cookies_consent_active(): bool {
+		return $this->cookies_consent;
 	}
 
-	public function is_gdpr_consent() {
-		return (bool) $this->gdpr_consent;
+	public function is_gdpr_consent(): bool {
+		return $this->gdpr_consent;
 	}
 
 	public function gdpr_consent_label() {
 		return $this->gdpr_consent_label;
 	}
 
-	public function is_website_field_active() {
+	public function is_website_field_active(): bool {
 		return (bool) $this->get_field( 'website', 'enable', false );
 	}
 
 	protected function get_field( $field_key, $attr = 'label', $default = false ) {
-		$field_key = "review_{$field_key}";
+		$field_key = 'review_' . $field_key;
 		return ( ( isset( $this->fields[ $field_key ][ $attr ] ) && $this->fields[ $field_key ][ $attr ] !== '' ) ? $this->fields[ $field_key ][ $attr ] : $default );
 	}
 }

@@ -5,7 +5,9 @@
  * @version 8.0.8
  */
 
-if ( ! defined( 'ABSPATH' ) ) exit;
+if (! defined( 'ABSPATH' )) {
+    exit;
+}
 
 use Directorist\Review\Markup;
 
@@ -44,9 +46,9 @@ $default_icon = 'las la-tags';
                         }
                         $default_image = get_directorist_option( 'default_preview_image', DIRECTORIST_ASSETS . 'images/grid.jpg' );
                         if ( ! empty( $listing_prv_img ) ) {
-                            echo '<img src="' . esc_url( wp_get_attachment_image_url( $listing_prv_img, array( 90, 90 ) ) ) . '" alt="' . esc_attr( get_the_title() ) . '">';
+                            echo '<img src="' . esc_url( wp_get_attachment_image_url( $listing_prv_img, [ 90, 90 ] ) ) . '" alt="' . esc_attr( get_the_title() ) . '">';
                         } elseif ( ! empty( $listing_img[0] ) && empty( $listing_prv_img ) ) {
-                            echo '<img src="' . esc_url( wp_get_attachment_image_url( $listing_img[0], array( 90, 90 ) ) ) . '" alt="' . esc_attr( get_the_title() ) . '">';
+                            echo '<img src="' . esc_url( wp_get_attachment_image_url( $listing_img[0], [ 90, 90 ] ) ) . '" alt="' . esc_attr( get_the_title() ) . '">';
                         } else {
                             echo '<img src="' . esc_url( $default_image ) . '" alt="' . esc_attr( get_the_title() ) . '">';
                         }

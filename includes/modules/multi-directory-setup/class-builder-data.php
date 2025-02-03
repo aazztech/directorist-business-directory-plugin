@@ -7,8 +7,11 @@ use function PHPSTORM_META\type;
 
 class Builder_Data {
     protected static $fields           = [];
+
     protected static $layouts          = [];
+
     protected static $config           = [];
+
     protected static $options          = [];
 
     public function __construct() {
@@ -2896,7 +2899,7 @@ class Builder_Data {
         self::$config = $config;
     }
 
-    protected static function get_assign_to_field( array $args = [] ) {
+    protected static function get_assign_to_field( array $args = [] ): array {
         $default = [
             'type' => 'radio',
             'label' => __('Assign to', 'directorist'),
@@ -2916,7 +2919,10 @@ class Builder_Data {
         return array_merge( $default, $args );
     }
 
-	protected static function get_file_upload_field_options() {
+	/**
+     * @return array{label: mixed, value: mixed}[]
+     */
+    protected static function get_file_upload_field_options(): array {
 		$options = [
 			[
 				'label' => __( 'All types', 'directorist' ),
@@ -2966,7 +2972,7 @@ class Builder_Data {
         return self::$options;
     }
 
-    public static function get() {
+    public static function get(): array {
         self::prepare_data();
         return [
             'fields'  => self::$fields,

@@ -22,7 +22,7 @@ class Comment_Meta {
 		self::FIELD_REPORT,
 	];
 
-	protected static function is_valid_field( $field_key ) {
+	protected static function is_valid_field( $field_key ): bool {
 		return in_array( $field_key, self::$valid_fields, true );
 	}
 
@@ -52,12 +52,14 @@ class Comment_Meta {
 		$field_key = substr( $method, 4 );
 
 		if ( $action === 'get' && isset( $args[0] ) ) {
-			$default = isset( $args[1] ) ? $args[1] : '';
+			$default = $args[1] ?? '';
 			return self::get_data( $args[0], $field_key, $default );
 		}
 
 		if ( $action === 'set' && isset( $args[0], $args[1] ) ) {
 			return self::set_data( $args[0], $field_key, $args[1] );
 		}
+
+        return null;
 	}
 }

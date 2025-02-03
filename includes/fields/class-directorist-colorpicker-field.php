@@ -13,7 +13,7 @@ class Color_Picker_Field extends Base_Field {
 
 	public $type = 'color_picker';
 
-	public function validate( $posted_data ) {
+	public function validate( $posted_data ): bool {
 		$value = $this->get_value( $posted_data );
 
 		if ( sanitize_hex_color( $value ) !== $value ) {

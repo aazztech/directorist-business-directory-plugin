@@ -7,7 +7,9 @@ namespace AazzTech\Directorist\Elementor;
 
 use Elementor\Plugin;
 
-if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
+if (! defined( 'ABSPATH' )) {
+    exit;
+} // Exit if accessed directly
 
 if( class_exists( 'AddonskitForELementor' ) ) {
 	return;
@@ -16,15 +18,17 @@ if( class_exists( 'AddonskitForELementor' ) ) {
 class Widget_Init {
 
 	public $prefix;
+
 	public $category;
+
 	public $widgets;
 
 	protected static $instance;
 
 	private function __construct() {
 		$this->init();
-		add_action( 'elementor/editor/after_enqueue_styles',    array( $this, 'editor_style' ) );
-		add_action( 'elementor/elements/categories_registered', array( $this, 'widget_categoty' ) );
+		add_action( 'elementor/editor/after_enqueue_styles',    [ $this, 'editor_style' ] );
+		add_action( 'elementor/elements/categories_registered', [ $this, 'widget_categoty' ] );
 		// add_action( 'elementor/widgets/register',     array( $this, 'register_widgets' ) );
 	}
 
@@ -32,15 +36,16 @@ class Widget_Init {
 		if ( null == self::$instance ) {
 			self::$instance = new self;
 		}
+
 		return self::$instance;
 	}
 
-	private function init() {
+	private function init(): void {
 		$this->prefix   = 'directorist';
 		$this->category = __( 'Directorist', 'directorist' );
 
 		// Widgets -- filename=>classname
-		$widgets = array(
+		$widgets = [
 			'all-listing'                   => 'Directorist_All_Listing',
 			'all-categories'                => 'Directorist_All_Categories',
 			'all-locations'                 => 'Directorist_All_Locations',
@@ -57,26 +62,26 @@ class Widget_Init {
 			'transaction-failure'           => 'Directorist_Transaction_Failure',
 			'payment-receipt'               => 'Directorist_Payment_Receipt',
 			'checkout'                      => 'Directorist_Checkout',
-		);
+		];
 
 		$this->widgets = apply_filters( 'atbdp_elementor_widgets', $widgets );
 	}
 
-	public function editor_style() {
+	public function editor_style(): void {
 		$img = DIRECTORIST_ASSETS . 'images/elementor-icon.png';
 		wp_add_inline_style( 'elementor-editor', '.elementor-control-type-select2 .elementor-control-input-wrapper {min-width: 130px;}.elementor-element .icon .directorist-el-custom{content: url('.$img.');width: 22px;}' );
 	}
 
-	public function widget_categoty( $class ) {
+	public function widget_categoty( $class ): void {
 		$id         = $this->prefix . '-widgets';
-		$properties = array(
+		$properties = [
 			'title' => $this->category,
-		);
+		];
 
 		Plugin::$instance->elements_manager->add_category( $id, $properties );
 	}
 
-	public function register_widgets() {
+	public function register_widgets(): void {
 		require_once __DIR__ . '/base.php';
 
 		foreach ( $this->widgets as $filename => $class ) {
@@ -107,14 +112,14 @@ class Widget_Init {
 	}
 }
 
-add_action( 'after_setup_theme', function() {
+add_action( 'after_setup_theme', function(): void {
 	if ( did_action( 'elementor/loaded' ) ) {
 		$activated = apply_filters( 'atbdp_elementor_widgets_activated', true );
 		if ( $activated ) {
 			Widget_Init::instance();
 		}
 
-		include_once 'deprecated-notice.php';
+		include_once __DIR__ . '/deprecated-notice.php';
 		$dn = new DeprecatedNotice();
 		add_action( 'admin_notices', [$dn, 'maybe_show_notice_for_required_plugins']  );
 	}
@@ -135,4 +140,5 @@ function directorist_add_custom_single_listing_page_content_from_elementor( $con
 
 	return $content;
 }
+
 add_filter( 'directorist_custom_single_listing_pre_page_content', __NAMESPACE__ . '\\directorist_add_custom_single_listing_page_content_from_elementor', 10, 2 );

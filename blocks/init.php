@@ -23,15 +23,13 @@ if ( wp_is_block_theme() ) {
 
 /**
  * Initialize gutenberg blocks.
- *
- * @return void
  */
-function directorist_register_blocks() {
+function directorist_register_blocks(): void {
 
 	wp_localize_script(
 		'wp-block-editor',
 		'directoristBlockConfig',
-		array(
+		[
 			'tagTax'                => ATBDP_TAGS,
 			'typeTax'               => ATBDP_TYPE,
 			'categoryTax'           => ATBDP_CATEGORY,
@@ -39,7 +37,7 @@ function directorist_register_blocks() {
 			'postType'              => ATBDP_POST_TYPE,
 			'previewUrl'            => plugin_dir_url( __FILE__ ),
 			'multiDirectoryEnabled' => directorist_is_multi_directory_enabled(),
-		)
+		]
 	);
 
 	// wp_set_script_translations( 'directorist-block-editor', 'directorist' );
@@ -63,10 +61,10 @@ function directorist_register_blocks() {
 		$styles[] = 'directorist-unicons';
 	}
 
-	$args = array(
+	$args = [
 		'render_callback' => 'directorist_block_render_callback',
 		'style'           => $styles,
-	);
+	];
 
 	register_block_type( __DIR__ . '/build/listing-form', $args );
 	register_block_type( __DIR__ . '/build/search-form', $args );
@@ -88,6 +86,7 @@ function directorist_register_blocks() {
 	register_block_type( __DIR__ . '/build/account-button' );
 	register_block_type( __DIR__ . '/build/search-modal' );
 }
+
 add_action( 'init', 'directorist_register_blocks' );
 
 /**
@@ -97,15 +96,15 @@ add_action( 'init', 'directorist_register_blocks' );
  *
  * @return array Modified $categories
  */
-function directorist_register_block_category( $categories ) {
+function directorist_register_block_category( $categories ): array {
 	return array_merge(
 		$categories,
-		array(
-			array(
+		[
+			[
 				'slug'  => 'directorist-blocks-collection',
 				'title' => __( 'Directorist', 'directorist' ),
-			),
-		)
+			],
+		]
 	);
 }
 
@@ -132,7 +131,7 @@ if ( version_compare( $wp_version, '5.8', '>=' ) ) {
  * @return string
  */
 function directorist_block_render_callback( $attributes, $content, $instance ) {
-	$shortcode         = str_replace( array( '/', '-' ), '_', $instance->name );
+	$shortcode         = str_replace( [ '/', '-' ], '_', $instance->name );
 	$attributes_schema = $instance->block_type->get_attributes();
 
 	foreach ( $attributes as $key => $value ) {
@@ -182,7 +181,7 @@ function directorist_block_render_callback( $attributes, $content, $instance ) {
  *
  * @return string|bool False on failure, the result of the shortcode on success.
  */
-function directorist_do_shortcode_callback( $tag, array $atts = array(), $content = null ) {
+function directorist_do_shortcode_callback( $tag, array $atts = [], $content = null ) {
 	global $shortcode_tags;
 
 	if ( ! isset( $shortcode_tags[ $tag ] ) ) {
@@ -200,13 +199,14 @@ function directorist_do_shortcode_callback( $tag, array $atts = array(), $conten
  *
  * @return array Modified $args
  */
-function directorist_tax_show_in_rest( $args, $name ) {
-	if ( in_array( $name, array( ATBDP_LOCATION, ATBDP_CATEGORY, ATBDP_TAGS, ATBDP_TYPE ), true ) ) {
+function directorist_tax_show_in_rest( array $args, $name ): array {
+	if ( in_array( $name, [ ATBDP_LOCATION, ATBDP_CATEGORY, ATBDP_TAGS, ATBDP_TYPE ], true ) ) {
 		$args['show_in_rest'] = true;
 	}
 
 	return $args;
 }
+
 add_filter( 'register_taxonomy_args', 'directorist_tax_show_in_rest', 10, 2 );
 
 /**
@@ -217,13 +217,14 @@ add_filter( 'register_taxonomy_args', 'directorist_tax_show_in_rest', 10, 2 );
  *
  * @return array Modified $args
  */
-function directorist_post_type_show_in_rest( $args, $name ) {
+function directorist_post_type_show_in_rest( array $args, $name ): array {
 	if ( $name === ATBDP_POST_TYPE ) {
 		$args['show_in_rest'] = true;
 	}
 
 	return $args;
 }
+
 add_filter( 'register_post_type_args', 'directorist_post_type_show_in_rest', 10, 2 );
 
 /**
@@ -238,16 +239,14 @@ function directorist_disable_block_editor( $current_status, $post_type ) {
     if ( $post_type === ATBDP_POST_TYPE ) {
 		return false;
 	}
+
     return $current_status;
 }
+
 add_filter( 'use_block_editor_for_post_type', 'directorist_disable_block_editor', 10, 2 );
 
-function directorist_add_single_listing_shortcode( $atts = array() ) {
-	if ( ! empty( $atts['is_block_editor'] ) ) {
-		$source = _x( 'block', 'noun', 'directorist' );
-	} else {
-		$source = __( 'shortcode', 'directorist' );
-	}
+function directorist_add_single_listing_shortcode( array $atts = [] ) {
+	$source = empty( $atts['is_block_editor'] ) ? __( 'shortcode', 'directorist' ) : _x( 'block', 'noun', 'directorist' );
 
 	try {
 		if ( ! is_singular( ATBDP_POST_TYPE ) || ! is_main_query() ) {
@@ -263,17 +262,18 @@ function directorist_add_single_listing_shortcode( $atts = array() ) {
 		}
 
 		return Helper::get_template_contents( 'single-contents' );
-	} catch( Exception $e ) {
+	} catch( Exception $exception ) {
 		if ( current_user_can( 'edit_posts' ) ) {
-			return '<p class="directorist-alert directorist-alert-info" style="text-align:center">' . $e->getMessage() . '</p>';
+			return '<p class="directorist-alert directorist-alert-info" style="text-align:center">' . $exception->getMessage() . '</p>';
 		}
 
 		return '';
 	}
 }
+
 add_shortcode( 'directorist_single_listing', 'directorist_add_single_listing_shortcode' );
 
-function directorist_account_block_avatar_image( $size = 40 ) {
+function directorist_account_block_avatar_image( $size = 40 ): void {
 	$image_id  = (int) get_user_meta( get_current_user_id(), 'pro_pic', true );
 	$image_url = wp_get_attachment_image_url( $image_id, 'thumbnail' );
 
@@ -297,7 +297,7 @@ function directorist_account_block_avatar_image( $size = 40 ) {
 	}
 }
 
-function directorist_register_blocks_common_assets() {
+function directorist_register_blocks_common_assets(): void {
 	$asset_file = __DIR__ . '/assets/index.asset.php';
 
 	if ( file_exists( $asset_file ) ) {
@@ -311,9 +311,10 @@ function directorist_register_blocks_common_assets() {
 		);
 	}
 }
+
 add_action( 'enqueue_block_assets', 'directorist_register_blocks_common_assets' );
 
-function _directorist_render_editor_signin_signup_template( $attributes = array() ) {
+function _directorist_render_editor_signin_signup_template( $attributes = [] ) {
 	ob_start();
 	include_once __DIR__ . '/templates/signin-signup.php';
 	return ob_get_clean();

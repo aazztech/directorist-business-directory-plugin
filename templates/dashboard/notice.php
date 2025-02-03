@@ -5,7 +5,9 @@
  * @version 7.4.0
  */
 
-if ( ! defined( 'ABSPATH' ) ) exit;
+if (! defined( 'ABSPATH' )) {
+    exit;
+}
 ?>
 
 <?php if( $renew_token_expired ): ?>

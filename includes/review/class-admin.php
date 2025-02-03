@@ -15,20 +15,20 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 class Metabox {
 
-	public static function init() {
-		add_action( 'admin_menu', [ __CLASS__, 'add_menu' ] );
-		add_action( 'add_meta_boxes_comment', [ __CLASS__, 'register' ] );
-		add_action( 'edit_comment', [ __CLASS__, 'on_edit_comment' ], 10, 2 );
-		add_action( 'add_meta_boxes', [ __CLASS__, 'update_meta_boxes' ], 20 );
-		add_filter( 'admin_comment_types_dropdown', [ __CLASS__, 'add_comment_types_in_dropdown' ] );
+	public static function init(): void {
+		add_action( 'admin_menu', [ self::class, 'add_menu' ] );
+		add_action( 'add_meta_boxes_comment', [ self::class, 'register' ] );
+		add_action( 'edit_comment', [ self::class, 'on_edit_comment' ], 10, 2 );
+		add_action( 'add_meta_boxes', [ self::class, 'update_meta_boxes' ], 20 );
+		add_filter( 'admin_comment_types_dropdown', [ self::class, 'add_comment_types_in_dropdown' ] );
 
-		add_action( 'directorist/admin/review/meta_fields', [ __CLASS__, 'render_rating_meta_field' ] );
+		add_action( 'directorist/admin/review/meta_fields', [ self::class, 'render_rating_meta_field' ] );
 
-		add_filter( 'comment_edit_redirect', [ __CLASS__, 'comment_edit_redirect' ], 10, 2 );
-		add_filter( 'wp_update_comment_data', [ __CLASS__, 'update_comment_data' ], 10, 2 );
+		add_filter( 'comment_edit_redirect', [ self::class, 'comment_edit_redirect' ], 10, 2 );
+		add_filter( 'wp_update_comment_data', [ self::class, 'update_comment_data' ], 10, 2 );
 	}
 
-	public static function update_comment_data( $data, $comment ) {
+	public static function update_comment_data( array $data, array $comment ): array {
 		if ( get_current_user_id() === intval( $comment['user_id'] ) && ! current_user_can( 'moderate_comments' ) ) {
 			$data['comment_approved'] = $comment['comment_approved'];
 			$data['comment_date']     = $comment['comment_date'];
@@ -40,10 +40,10 @@ class Metabox {
 
 	public static function comment_edit_redirect( $location, $comment_id ) {
 		if ( ! current_user_can( 'moderate_comments' ) ) {
-			return add_query_arg( array(
+			return add_query_arg( [
 				'action' => 'editcomment',
 				'c'      => $comment_id,
-			) );
+			] );
 		}
 
 		return $location;
@@ -56,7 +56,7 @@ class Metabox {
 		return $comment_types;
 	}
 
-	public static function update_meta_boxes() {
+	public static function update_meta_boxes(): void {
 		global $post;
 
 		// Comments/Reviews.
@@ -68,7 +68,7 @@ class Metabox {
 		}
 	}
 
-	public static function add_menu() {
+	public static function add_menu(): void {
 		if ( ! directorist_is_review_enabled() ) {
 			return;
 		}
@@ -87,36 +87,32 @@ class Metabox {
 		// Make sure "Reviews" menu is active
 		global $submenu, $pagenow;
 
-		if ( $pagenow === 'edit-comments.php' && isset( $_GET['post_type'] ) && $_GET['post_type'] === ATBDP_POST_TYPE ) {
-			if ( isset( $submenu[ $menu_slug ] ) ) {
-				$_index = -1;
-
-				foreach ( $submenu[ $menu_slug ] as $menu_key => $menu_item ) {
+		if ($pagenow === 'edit-comments.php' && isset( $_GET['post_type'] ) && $_GET['post_type'] === ATBDP_POST_TYPE && isset( $submenu[ $menu_slug ] )) {
+            $_index = -1;
+            foreach ( $submenu[ $menu_slug ] as $menu_key => $menu_item ) {
 					if ( $menu_item[2] === $submenu_slug ) {
 						$_index = $menu_key;
 						break;
 					}
 				}
-
-				if ( $_index !== -1 && isset( $submenu[ $menu_slug ][ $_index ] ) ) {
+            if ( $_index !== -1 && isset( $submenu[ $menu_slug ][ $_index ] ) ) {
 					if ( empty( $submenu[ $menu_slug ][ $_index ][4] ) ) {
 						$submenu[ $menu_slug ][ $_index ][4] = 'current'; // @codingStandardsIgnoreLine.
 					} else {
 						$submenu[ $menu_slug ][ $_index ][4] .= ' current'; // @codingStandardsIgnoreLine.
 					}
 				}
-			}
-		}
+        }
 	}
 
-	public static function on_edit_comment( $comment_id, $comment_data ) {
+	public static function on_edit_comment( $comment_id, array $comment_data ): void {
 		$comment = get_comment( $comment_id );
 
 		if ( get_post_type( $comment->comment_post_ID ) !== ATBDP_POST_TYPE ) {
 			return;
 		}
 
-		$nonce = ! empty( $_POST['directorist_comment_nonce'] ) ? sanitize_key( $_POST['directorist_comment_nonce'] ) : '';
+		$nonce = empty( $_POST['directorist_comment_nonce'] ) ? '' : sanitize_key( $_POST['directorist_comment_nonce'] );
 		if ( ! wp_verify_nonce( $nonce, 'directorist_edit_comment' ) ) {
 			return;
 		}
@@ -125,7 +121,7 @@ class Metabox {
 		Comment::clear_transients( $comment->comment_post_ID );
 	}
 
-	public static function register( $comment ) {
+	public static function register( $comment ): void {
 		if ( get_post_type( $comment->comment_post_ID ) !== ATBDP_POST_TYPE ) {
 			return;
 		}
@@ -134,7 +130,7 @@ class Metabox {
 			add_meta_box(
 				'directorist-comment-mb',
 				__( 'Review Data', 'directorist' ),
-				array( __CLASS__, 'render_meta_fields' ),
+				[ self::class, 'render_meta_fields' ],
 				'comment',
 				'normal',
 				'high'
@@ -142,7 +138,7 @@ class Metabox {
 		}
 	}
 
-	public static function render_meta_fields( $comment ) {
+	public static function render_meta_fields( $comment ): void {
 		wp_nonce_field( 'directorist_edit_comment', 'directorist_comment_nonce' );
 		?>
 		<table class="form-table">
@@ -153,7 +149,7 @@ class Metabox {
 		<?php
 	}
 
-	public static function render_rating_meta_field( $comment ) {
+	public static function render_rating_meta_field( $comment ): void {
 		$listing       = Directorist_Single_Listing::instance( $comment->comment_post_ID );
 		$section_data  = $listing->get_review_section_data();
 		$builder       = Builder::get( $section_data['section_data'] );

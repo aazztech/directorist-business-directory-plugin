@@ -7,7 +7,9 @@
 
 use \Directorist\Helper;
 
-if ( ! defined( 'ABSPATH' ) ) exit;
+if (! defined( 'ABSPATH' )) {
+    exit;
+}
 ?>
 
 <iframe class="directorist-embaded-video embed-responsive-item" src="<?php echo esc_url( Helper::parse_video( $value ) ); ?>" allowfullscreen title="Single Listing Video"></iframe>

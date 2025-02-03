@@ -5,7 +5,9 @@
  * @version 8.0
  */
 
-if ( ! defined( 'ABSPATH' ) ) exit;
+if (! defined( 'ABSPATH' )) {
+    exit;
+}
 
 $loop_fields = $listings->loop['card_fields']['template_data']['grid_view_without_thumbnail'];
 
@@ -34,19 +36,19 @@ $quick_info_field = ob_get_clean();
 
 	<section class="directorist-listing-single__header">
 
-		<?php if ( ! empty( $listing_avatar ) ) : ?>
+		<?php if ( ! ($listing_avatar === '' || $listing_avatar === '0' || $listing_avatar === false) ) : ?>
 			<figure class="directorist-listing-single__header__left">
 				<?php echo $listing_avatar; ?>
 			</figure>
 		<?php endif; ?>
 		
-		<?php if ( ! empty( $listing_title ) ) : ?>
+		<?php if ( ! ($listing_title === '' || $listing_title === '0' || $listing_title === false) ) : ?>
 			<header class="directorist-listing-single__header__title">
 				<?php echo $listing_title; ?>
 			</header>
 		<?php endif; ?>
 		
-		<?php if ( ! empty( $quick_actions_field ) ) : ?>
+		<?php if ( ! ($quick_actions_field === '' || $quick_actions_field === '0' || $quick_actions_field === false) ) : ?>
 			<div class="directorist-listing-single__header__right">
 				<div class="directorist-listing-single__action">
 					<?php echo $quick_actions_field; ?>
@@ -56,7 +58,7 @@ $quick_info_field = ob_get_clean();
 
 	</section>
 
-	<?php if ( ! empty( $quick_info_field ) ) : ?>
+	<?php if ( ! ($quick_info_field === '' || $quick_info_field === '0' || $quick_info_field === false) ) : ?>
 		<div class="directorist-listing-single__info">
 			<?php echo $quick_info_field; ?>
 		</div>

@@ -1,6 +1,8 @@
 <?php
 // Exit if accessed directly
-if ( ! defined( 'ABSPATH' ) ) exit;
+if (! defined( 'ABSPATH' )) {
+    exit;
+}
 
 /**
  * Allows plugins to use their own update API.
@@ -11,15 +13,22 @@ if ( ! defined( 'ABSPATH' ) ) exit;
 class EDD_SL_Plugin_Updater {
 
 	private $api_url     = '';
-	private $api_data    = array();
-	private $name        = '';
-	private $slug        = '';
-	private $version     = '';
-	private $wp_override = false;
-	private $beta 		 = false;
-	private $cache_key   = '';
 
-	private $health_check_timeout = 5;
+	private $api_data    = [];
+
+	private $name        = '';
+
+	private string $slug;
+
+	private $version     = '';
+
+	private bool $wp_override;
+
+	private bool $beta;
+
+	private string $cache_key;
+
+	private int $health_check_timeout = 5;
 
 	/**
 	 * Class constructor.
@@ -40,8 +49,8 @@ class EDD_SL_Plugin_Updater {
 		$this->name        = plugin_basename( $_plugin_file );
 		$this->slug        = basename( $_plugin_file, '.php' );
 		$this->version     = $_api_data['version'];
-		$this->wp_override = isset( $_api_data['wp_override'] ) ? (bool) $_api_data['wp_override'] : false;
-		$this->beta        = ! empty( $this->api_data['beta'] ) ? true : false;
+		$this->wp_override = isset( $_api_data['wp_override'] ) && (bool) $_api_data['wp_override'];
+		$this->beta        = ! empty( $this->api_data['beta'] );
 		$this->cache_key   = 'edd_sl_' . md5( serialize( $this->slug . $this->api_data['license'] . $this->beta ) );
 
 		$edd_plugin_data[ $this->slug ] = $this->api_data;
@@ -61,19 +70,17 @@ class EDD_SL_Plugin_Updater {
 	}
 
 	/**
-	 * Set up WordPress filters to hook into WP's update process.
-	 *
-	 * @uses add_filter()
-	 *
-	 * @return void
-	 */
-	public function init() {
+     * Set up WordPress filters to hook into WP's update process.
+     *
+     * @uses add_filter()
+     */
+    public function init(): void {
 
-		add_filter( 'pre_set_site_transient_update_plugins', array( $this, 'check_update' ) );
-		add_filter( 'plugins_api', array( $this, 'plugins_api_filter' ), 10, 3 );
+		add_filter( 'pre_set_site_transient_update_plugins', [ $this, 'check_update' ] );
+		add_filter( 'plugins_api', [ $this, 'plugins_api_filter' ], 10, 3 );
 		remove_action( 'after_plugin_row_' . $this->name, 'wp_plugin_update_row', 10 );
-		add_action( 'after_plugin_row_' . $this->name, array( $this, 'show_update_notification' ), 10, 2 );
-		add_action( 'admin_init', array( $this, 'show_changelog' ) );
+		add_action( 'after_plugin_row_' . $this->name, [ $this, 'show_update_notification' ], 10, 2 );
+		add_action( 'admin_init', [ $this, 'show_changelog' ] );
 
 	}
 
@@ -109,7 +116,7 @@ class EDD_SL_Plugin_Updater {
 		$version_info = $this->get_cached_version_info();
 
 		if ( false === $version_info ) {
-			$version_info = $this->api_request( 'plugin_latest_version', array( 'slug' => $this->slug, 'beta' => $this->beta ) );
+			$version_info = $this->api_request( [ 'slug' => $this->slug, 'beta' => $this->beta ] );
 
 			$this->set_version_info_cache( $version_info );
 
@@ -140,7 +147,7 @@ class EDD_SL_Plugin_Updater {
 	 * @param string  $file
 	 * @param array   $plugin
 	 */
-	public function show_update_notification( $file, $plugin ) {
+	public function show_update_notification( $file, $plugin ): void {
 
 		if ( is_network_admin() ) {
 			return;
@@ -159,7 +166,7 @@ class EDD_SL_Plugin_Updater {
 		}
 
 		// Remove our filter on the site transient
-		remove_filter( 'pre_set_site_transient_update_plugins', array( $this, 'check_update' ), 10 );
+		remove_filter( 'pre_set_site_transient_update_plugins', [ $this, 'check_update' ], 10 );
 
 		$update_cache = get_site_transient( 'update_plugins' );
 
@@ -170,7 +177,7 @@ class EDD_SL_Plugin_Updater {
 			$version_info = $this->get_cached_version_info();
 
 			if ( false === $version_info ) {
-				$version_info = $this->api_request( 'plugin_latest_version', array( 'slug' => $this->slug, 'beta' => $this->beta ) );
+				$version_info = $this->api_request( [ 'slug' => $this->slug, 'beta' => $this->beta ] );
 
 				// Since we disabled our filter for the transient, we aren't running our object conversion on banners, sections, or icons. Do this now:
 				if ( isset( $version_info->banners ) && ! is_array( $version_info->banners ) ) {
@@ -210,7 +217,7 @@ class EDD_SL_Plugin_Updater {
 		}
 
 		// Restore our filter
-		add_filter( 'pre_set_site_transient_update_plugins', array( $this, 'check_update' ) );
+		add_filter( 'pre_set_site_transient_update_plugins', [ $this, 'check_update' ] );
 
 		if ( ! empty( $update_cache->response[ $this->name ] ) && version_compare( $this->version, $version_info->new_version, '<' ) ) {
 
@@ -243,7 +250,7 @@ class EDD_SL_Plugin_Updater {
 				);
 			}
 
-			do_action( "in_plugin_update_message-{$file}", $plugin, $version_info );
+			do_action( 'in_plugin_update_message-' . $file, $plugin, $version_info );
 
 			echo '</div></td></tr>';
 		}
@@ -273,15 +280,15 @@ class EDD_SL_Plugin_Updater {
 
 		}
 
-		$to_send = array(
+		$to_send = [
 			'slug'   => $this->slug,
 			'is_ssl' => is_ssl(),
-			'fields' => array(
-				'banners' => array(),
+			'fields' => [
+				'banners' => [],
 				'reviews' => false,
-				'icons'   => array(),
-			)
-		);
+				'icons'   => [],
+			]
+		];
 
 		$cache_key = 'edd_api_request_' . md5( serialize( $this->slug . $this->api_data['license'] . $this->beta ) );
 
@@ -291,7 +298,7 @@ class EDD_SL_Plugin_Updater {
 		//If we have no transient-saved value, run the API, set a fresh transient with the API value, and return that value too right now.
 		if ( empty( $edd_api_request_transient ) ) {
 
-			$api_response = $this->api_request( 'plugin_information', $to_send );
+			$api_response = $this->api_request( $to_send );
 
 			// Expires in 3 hours
 			$this->set_version_info_cache( $api_response, $cache_key );
@@ -327,19 +334,17 @@ class EDD_SL_Plugin_Updater {
 	}
 
 	/**
-	 * Convert some objects to arrays when injecting data into the update API
-	 *
-	 * Some data like sections, banners, and icons are expected to be an associative array, however due to the JSON
-	 * decoding, they are objects. This method allows us to pass in the object and return an associative array.
-	 *
-	 * @since 3.6.5
-	 *
-	 * @param stdClass $data
-	 *
-	 * @return array
-	 */
-	private function convert_object_to_array( $data ) {
-		$new_data = array();
+     * Convert some objects to arrays when injecting data into the update API
+     *
+     * Some data like sections, banners, and icons are expected to be an associative array, however due to the JSON
+     * decoding, they are objects. This method allows us to pass in the object and return an associative array.
+     *
+     * @since 3.6.5
+     *
+     * @param stdClass $data
+     */
+    private function convert_object_to_array( $data ): array {
+		$new_data = [];
 		foreach ( $data as $key => $value ) {
 			$new_data[ $key ] = $value;
 		}
@@ -348,34 +353,33 @@ class EDD_SL_Plugin_Updater {
 	}
 
 	/**
-	 * Disable SSL verification in order to prevent download update failures
-	 *
-	 * @param array   $args
-	 * @param string  $url
-	 * @return object $array
-	 */
-	public function http_request_args( $args, $url ) {
+     * Disable SSL verification in order to prevent download update failures
+     *
+     * @param string  $url
+     * @return object $array
+     */
+    public function http_request_args( array $args, $url ): array {
 
 		$verify_ssl = $this->verify_ssl();
 		if ( strpos( $url, 'https://' ) !== false && strpos( $url, 'edd_action=package_download' ) ) {
 			$args['sslverify'] = $verify_ssl;
 		}
+
 		return $args;
 
 	}
 
 	/**
-	 * Calls the API and, if successfull, returns the object delivered by the API.
-	 *
-	 * @uses get_bloginfo()
-	 * @uses wp_remote_post()
-	 * @uses is_wp_error()
-	 *
-	 * @param string  $_action The requested action.
-	 * @param array   $_data   Parameters for the API action.
-	 * @return false|object
-	 */
-	private function api_request( $_action, $_data ) {
+     * Calls the API and, if successfull, returns the object delivered by the API.
+     *
+     * @uses get_bloginfo()
+     * @uses wp_remote_post()
+     * @uses is_wp_error()
+     *
+     * @param array   $_data   Parameters for the API action.
+     * @return false|object
+     */
+    private function api_request( array $_data ) {
 
 		global $wp_version, $edd_plugin_url_available;
 
@@ -386,46 +390,46 @@ class EDD_SL_Plugin_Updater {
 		if ( ! is_array( $edd_plugin_url_available ) || ! isset( $edd_plugin_url_available[ $store_hash ] ) ) {
 			$test_url_parts = parse_url( $this->api_url );
 
-			$scheme = ! empty( $test_url_parts['scheme'] ) ? $test_url_parts['scheme']     : 'http';
-			$host   = ! empty( $test_url_parts['host'] )   ? $test_url_parts['host']       : '';
-			$port   = ! empty( $test_url_parts['port'] )   ? ':' . $test_url_parts['port'] : '';
+			$scheme = empty( $test_url_parts['scheme'] ) ? 'http'     : $test_url_parts['scheme'];
+			$host   = empty( $test_url_parts['host'] )   ? ''       : $test_url_parts['host'];
+			$port   = empty( $test_url_parts['port'] )   ? '' : ':' . $test_url_parts['port'];
 
 			if ( empty( $host ) ) {
 				$edd_plugin_url_available[ $store_hash ] = false;
 			} else {
 				$test_url = $scheme . '://' . $host . $port;
-				$response = wp_remote_get( $test_url, array( 'timeout' => $this->health_check_timeout, 'sslverify' => $verify_ssl ) );
-				$edd_plugin_url_available[ $store_hash ] = is_wp_error( $response ) ? false : true;
+				$response = wp_remote_get( $test_url, [ 'timeout' => $this->health_check_timeout, 'sslverify' => $verify_ssl ] );
+				$edd_plugin_url_available[ $store_hash ] = !(bool) is_wp_error( $response );
 			}
 		}
 
 		if ( false === $edd_plugin_url_available[ $store_hash ] ) {
-			return;
+			return null;
 		}
 
 		$data = array_merge( $this->api_data, $_data );
 
 		if ( $data['slug'] != $this->slug ) {
-			return;
+			return null;
 		}
 
 		if( $this->api_url == trailingslashit ( home_url() ) ) {
 			return false; // Don't allow a plugin to ping itself
 		}
 
-		$api_params = array(
+		$api_params = [
 			'edd_action' => 'get_version',
-			'license'    => ! empty( $data['license'] ) ? $data['license'] : '',
-			'item_name'  => isset( $data['item_name'] ) ? $data['item_name'] : false,
-			'item_id'    => isset( $data['item_id'] ) ? $data['item_id'] : false,
-			'version'    => isset( $data['version'] ) ? $data['version'] : false,
+			'license'    => empty( $data['license'] ) ? '' : $data['license'],
+			'item_name'  => $data['item_name'] ?? false,
+			'item_id'    => $data['item_id'] ?? false,
+			'version'    => $data['version'] ?? false,
 			'slug'       => $data['slug'],
 			'author'     => $data['author'],
 			'url'        => home_url(),
 			'beta'       => ! empty( $data['beta'] ),
-		);
+		];
 
-		$request    = wp_remote_post( $this->api_url, array( 'timeout' => 15, 'sslverify' => $verify_ssl, 'body' => $api_params ) );
+		$request    = wp_remote_post( $this->api_url, [ 'timeout' => 15, 'sslverify' => $verify_ssl, 'body' => $api_params ] );
 
 		if ( ! is_wp_error( $request ) ) {
 			$request = json_decode( wp_remote_retrieve_body( $request ) );
@@ -454,7 +458,7 @@ class EDD_SL_Plugin_Updater {
 		return $request;
 	}
 
-	public function show_changelog() {
+	public function show_changelog(): void {
 
 		global $edd_plugin_data;
 
@@ -471,28 +475,28 @@ class EDD_SL_Plugin_Updater {
 		}
 
 		if( ! current_user_can( 'update_plugins' ) ) {
-			wp_die( __( 'You do not have permission to install plugin updates', 'easy-digital-downloads' ), __( 'Error', 'easy-digital-downloads' ), array( 'response' => 403 ) );
+			wp_die( __( 'You do not have permission to install plugin updates', 'easy-digital-downloads' ), __( 'Error', 'easy-digital-downloads' ), [ 'response' => 403 ] );
 		}
 
 		$data         = $edd_plugin_data[ $_REQUEST['slug'] ];
-		$beta         = ! empty( $data['beta'] ) ? true : false;
+		$beta         = ! empty( $data['beta'] );
 		$cache_key    = md5( 'edd_plugin_' . sanitize_key( $_REQUEST['plugin'] ) . '_' . $beta . '_version_info' );
 		$version_info = $this->get_cached_version_info( $cache_key );
 
 		if( false === $version_info ) {
 
-			$api_params = array(
+			$api_params = [
 				'edd_action' => 'get_version',
-				'item_name'  => isset( $data['item_name'] ) ? $data['item_name'] : false,
-				'item_id'    => isset( $data['item_id'] ) ? $data['item_id'] : false,
+				'item_name'  => $data['item_name'] ?? false,
+				'item_id'    => $data['item_id'] ?? false,
 				'slug'       => $_REQUEST['slug'],
 				'author'     => $data['author'],
 				'url'        => home_url(),
 				'beta'       => ! empty( $data['beta'] )
-			);
+			];
 
 			$verify_ssl = $this->verify_ssl();
-			$request    = wp_remote_post( $this->api_url, array( 'timeout' => 15, 'sslverify' => $verify_ssl, 'body' => $api_params ) );
+			$request    = wp_remote_post( $this->api_url, [ 'timeout' => 15, 'sslverify' => $verify_ssl, 'body' => $api_params ] );
 
 			if ( ! is_wp_error( $request ) ) {
 				$version_info = json_decode( wp_remote_retrieve_body( $request ) );
@@ -544,28 +548,27 @@ class EDD_SL_Plugin_Updater {
 
 	}
 
-	public function set_version_info_cache( $value = '', $cache_key = '' ) {
+	public function set_version_info_cache( $value = '', $cache_key = '' ): void {
 
 		if( empty( $cache_key ) ) {
 			$cache_key = $this->cache_key;
 		}
 
-		$data = array(
+		$data = [
 			'timeout' => strtotime( '+3 hours', time() ),
 			'value'   => json_encode( $value )
-		);
+		];
 
 		update_option( $cache_key, $data, 'no' );
 
 	}
 
 	/**
-	 * Returns if the SSL of the store should be verified.
-	 *
-	 * @since  1.6.13
-	 * @return bool
-	 */
-	private function verify_ssl() {
+     * Returns if the SSL of the store should be verified.
+     *
+     * @since  1.6.13
+     */
+    private function verify_ssl(): bool {
 		return (bool) apply_filters( 'edd_sl_api_request_verify_ssl', true, $this );
 	}
 

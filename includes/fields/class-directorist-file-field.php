@@ -13,7 +13,7 @@ class File_Field extends Base_Field {
 
 	public $type = 'file';
 
-	public function validate( $posted_data ) {
+	public function validate( $posted_data ): bool {
 		return true;
 	}
 

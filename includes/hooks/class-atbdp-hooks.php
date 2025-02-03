@@ -2,6 +2,9 @@
 
 if ( ! class_exists( 'ATBDP_Hooks' ) ) :
     class ATBDP_Hooks {
+        /**
+         * @var mixed[]
+         */
         public $hooks = [];
 
         public function __construct() {
@@ -11,10 +14,8 @@ if ( ! class_exists( 'ATBDP_Hooks' ) ) :
 
         /**
          * Get Action Hooks
-         *
-         * @return array
          */
-        public function get_hooks() {
+        public function get_hooks(): array {
             return [
                 'title_update' => [
                     'name'     => 'the_title',
@@ -28,11 +29,9 @@ if ( ! class_exists( 'ATBDP_Hooks' ) ) :
 
         /**
          * Register Hooks
-         *
-         * @return void
          */
-        private function register_hooks( array $hooks ) {
-            if ( ! count( $hooks ) ) { return; }
+        private function register_hooks( array $hooks ): void {
+            if ( $hooks === [] ) { return; }
 
             foreach ( $hooks as $hook ) {
                 self::add_hook( $hook );
@@ -41,25 +40,19 @@ if ( ! class_exists( 'ATBDP_Hooks' ) ) :
 
         /**
          * Add Hook
-         *
-         * @return void
          */
-        public static function add_hook( array $hook = [] ) {
-            if ( class_exists( $hook['callback'] ) ) {
-                if ( method_exists( $hook['callback'], 'run' ) ) {
-                    $class_name    = $hook['callback'];
-                    $callback      = new $class_name();
-                    $priority      = ( isset( $hook['priority'] ) ) ? $hook['priority'] : 10;
-                    $accepted_args = ( isset( $hook['args'] ) ) ? $hook['args'] : 1;
+        public static function add_hook( array $hook = [] ): void {
+            if (class_exists($hook['callback']) && method_exists( $hook['callback'], 'run' )) {
+                $class_name    = $hook['callback'];
+                $callback      = new $class_name();
+                $priority      = $hook['priority'] ?? 10;
+                $accepted_args = $hook['args'] ?? 1;
+                if ( 'action' === $hook['type'] ) {
+                    add_action( $hook['name'], [$callback, 'run'], $priority, $accepted_args );
+                }
 
-                    if ( 'action' === $hook['type'] ) {
-                        add_action( $hook['name'], [$callback, 'run'], $priority, $accepted_args );
-                    }
-
-                    if ( 'filter' === $hook['type'] ) {
-                        add_filter( $hook['name'], [$callback, 'run'], $priority, $accepted_args );
-                    }
-
+                if ( 'filter' === $hook['type'] ) {
+                    add_filter( $hook['name'], [$callback, 'run'], $priority, $accepted_args );
                 }
             }
         }

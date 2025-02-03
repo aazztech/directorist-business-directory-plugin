@@ -5,7 +5,9 @@
  * @version 6.7
  */
 
-if ( ! defined( 'ABSPATH' ) ) exit;
+if (! defined( 'ABSPATH' )) {
+    exit;
+}
 
 if( is_admin() || $data['value'] ) {
 	return;
@@ -28,7 +30,7 @@ if( is_admin() || $data['value'] ) {
 		<input id="directorist-form-listing-type__featured" type="radio" class="atbdp_radio_input" name="listing_type" value="featured">
 		<label for="directorist-form-listing-type__featured" class="directorist-form-listing-type__featured directorist-radio__label">
 			<?php echo esc_html( $data['featured_label'] ); ?>
-			<small class="atbdp_make_str_green"><?php echo esc_html( ! empty( $data['featured_description'] ) ? $data['featured_description'] : __( 'Promote your listing to the top of search results and listings pages for a specific duration, with an additional payment.', 'directorist' ) ); ?></small>
+			<small class="atbdp_make_str_green"><?php echo esc_html( empty( $data['featured_description'] ) ? __( 'Promote your listing to the top of search results and listings pages for a specific duration, with an additional payment.', 'directorist' ) : $data['featured_description'] ); ?></small>
 		</label>
 
 	</div>

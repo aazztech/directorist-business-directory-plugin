@@ -15,9 +15,9 @@ defined( 'ABSPATH' ) || exit;
  * @param  bool                    $utc  Send false to get local/offset time.
  * @return string|null ISO8601/RFC3339 formatted datetime.
  */
-function directorist_rest_prepare_date_response( $date, $utc = true ) {
+function directorist_rest_prepare_date_response( $date, $utc = true ): ?string {
 	if ( is_numeric( $date ) ) {
-		$date = new Directorist_DateTime( "@$date", new DateTimeZone( 'UTC' ) );
+		$date = new Directorist_DateTime( '@' . $date, new DateTimeZone( 'UTC' ) );
 		$date->setTimezone( new DateTimeZone( directorist_timezone_string() ) );
 	} elseif ( is_string( $date ) ) {
 		$date = new Directorist_DateTime( $date, new DateTimeZone( 'UTC' ) );
@@ -57,7 +57,7 @@ function directorist_timezone_string() {
 
 	// Get UTC offset, if it isn't set then return UTC.
 	$utc_offset = floatval( get_option( 'gmt_offset', 0 ) );
-	if ( ! is_numeric( $utc_offset ) || 0.0 === $utc_offset ) {
+	if ( 0.0 === $utc_offset ) {
 		return 'UTC';
 	}
 
@@ -74,7 +74,7 @@ function directorist_timezone_string() {
 	foreach ( timezone_abbreviations_list() as $abbr ) {
 		foreach ( $abbr as $city ) {
 			// WordPress restrict the use of date(), since it's affected by timezone settings, but in this case is just what we need to guess the correct timezone.
-			if ( (bool) date( 'I' ) === (bool) $city['dst'] && $city['timezone_id'] && intval( $city['offset'] ) === $utc_offset ) { // phpcs:ignore WordPress.DateTime.RestrictedFunctions.date_date
+			if ( (bool) date( 'I' ) === $city['dst'] && $city['timezone_id'] && intval( $city['offset'] ) === $utc_offset ) { // phpcs:ignore WordPress.DateTime.RestrictedFunctions.date_date
 				return $city['timezone_id'];
 			}
 		}
@@ -98,7 +98,7 @@ function directorist_rest_upload_image_from_url( $image_url ) {
 	// Check parsed URL.
 	if ( ! $parsed_url || ! is_array( $parsed_url ) ) {
 		/* translators: %s: image URL */
-		return new WP_Error( 'directorist_rest_invalid_image_url', sprintf( __( 'Invalid URL %s.', 'directorist' ), $image_url ), array( 'status' => 400 ) );
+		return new WP_Error( 'directorist_rest_invalid_image_url', sprintf( __( 'Invalid URL %s.', 'directorist' ), $image_url ), [ 'status' => 400 ] );
 	}
 
 	// Ensure url is valid.
@@ -109,7 +109,7 @@ function directorist_rest_upload_image_from_url( $image_url ) {
 		include_once ABSPATH . 'wp-admin/includes/file.php';
 	}
 
-	$file_array         = array();
+	$file_array         = [];
 	$file_array['name'] = basename( current( explode( '?', $image_url ) ) );
 
 	// Download file to temp location.
@@ -123,7 +123,7 @@ function directorist_rest_upload_image_from_url( $image_url ) {
 			sprintf( __( 'Error getting remote image %s.', 'directorist' ), $image_url ) . ' '
 			/* translators: %s: error message */
 			. sprintf( __( 'Error: %s', 'directorist' ), $file_array['tmp_name']->get_error_message() ),
-			array( 'status' => 400 )
+			[ 'status' => 400 ]
 		);
 	}
 
@@ -141,10 +141,10 @@ function directorist_rest_upload_image_from_url( $image_url ) {
 	// Do the validation and storage stuff.
 	$file = wp_handle_sideload(
 		$file_array,
-		array(
+		[
 			'test_form' => false,
 			'mimes'     => $allowed_mime_types,
-		),
+		],
 		current_time( 'Y/m' )
 	);
 
@@ -152,7 +152,7 @@ function directorist_rest_upload_image_from_url( $image_url ) {
 		@unlink( $file_array['tmp_name'] ); // @codingStandardsIgnoreLine.
 
 		/* translators: %s: error message */
-		return new WP_Error( 'directorist_rest_invalid_image', sprintf( __( 'Invalid image: %s', 'directorist' ), $file['error'] ), array( 'status' => 400 ) );
+		return new WP_Error( 'directorist_rest_invalid_image', sprintf( __( 'Invalid image: %s', 'directorist' ), $file['error'] ), [ 'status' => 400 ] );
 	}
 
 	do_action( 'directorist_rest_api_uploaded_image_from_url', $file, $image_url );
@@ -170,14 +170,14 @@ function directorist_rest_upload_image_from_url( $image_url ) {
 function directorist_rest_allowed_image_mime_types() {
 	return apply_filters(
 		'directorist_rest_allowed_image_mime_types',
-		array(
+		[
 			'jpg|jpeg|jpe' => 'image/jpeg',
 			// 'gif'          => 'image/gif',
 			'png'          => 'image/png',
 			// 'bmp'          => 'image/bmp',
 			// 'tiff|tif'     => 'image/tiff',
 			// 'ico'          => 'image/x-icon',
-		)
+		]
 	);
 }
 
@@ -190,7 +190,7 @@ function directorist_rest_allowed_image_mime_types() {
  * @param int   $id Post ID. Default to 0.
  * @return int Attachment ID
  */
-function directorist_rest_set_uploaded_image_as_attachment( $upload, $id = 0 ) {
+function directorist_rest_set_uploaded_image_as_attachment( array $upload, $id = 0 ) {
 	$info    = wp_check_filetype( $upload['file'] );
 	$title   = '';
 	$content = '';
@@ -204,18 +204,19 @@ function directorist_rest_set_uploaded_image_as_attachment( $upload, $id = 0 ) {
 		if ( trim( $image_meta['title'] ) && ! is_numeric( sanitize_title( $image_meta['title'] ) ) ) {
 			$title = directorist_clean( $image_meta['title'] );
 		}
-		if ( trim( $image_meta['caption'] ) ) {
+
+		if ( trim( $image_meta['caption'] ) !== '' && trim( $image_meta['caption'] ) !== '0' ) {
 			$content = directorist_clean( $image_meta['caption'] );
 		}
 	}
 
-	$attachment = array(
+	$attachment = [
 		'post_mime_type' => $info['type'],
 		'guid'           => $upload['url'],
 		'post_parent'    => $id,
-		'post_title'     => $title ? $title : basename( $upload['file'] ),
+		'post_title'     => $title ?: basename( $upload['file'] ),
 		'post_content'   => $content,
-	);
+	];
 
 	$attachment_id = wp_insert_attachment( $attachment, $upload['file'], $id );
 	if ( ! is_wp_error( $attachment_id ) ) {
@@ -236,13 +237,13 @@ function directorist_rest_set_uploaded_image_as_attachment( $upload, $id = 0 ) {
  * @return bool
  */
 function directorist_rest_check_listing_term_permissions( $taxonomy, $context = 'read', $object_id = 0 ) {
-	$contexts = array(
+	$contexts = [
 		'read'   => 'manage_terms',
 		'create' => 'edit_terms',
 		'edit'   => 'edit_terms',
 		'delete' => 'delete_terms',
 		'batch'  => 'edit_terms',
-	);
+	];
 
 	$cap             = $contexts[ $context ];
 	$taxonomy_object = get_taxonomy( $taxonomy );
@@ -256,9 +257,8 @@ function directorist_rest_check_listing_term_permissions( $taxonomy, $context = 
  *
  * @since 7.1.0
  * @param string|bool $string String to convert. If a bool is passed it will be returned as-is.
- * @return bool
  */
-function directorist_string_to_bool( $string ) {
+function directorist_string_to_bool( $string ): bool {
 	return is_bool( $string ) ? $string : ( 'yes' === strtolower( $string ) || 1 === $string || 'true' === strtolower( $string ) || '1' === $string );
 }
 
@@ -267,13 +267,13 @@ function directorist_string_to_bool( $string ) {
  *
  * @since 7.1.0
  * @param bool|string $bool Bool to convert. If a string is passed it will first be converted to a bool.
- * @return string
  */
-function directorist_bool_to_string( $bool ) {
+function directorist_bool_to_string( $bool ): string {
 	if ( ! is_bool( $bool ) ) {
 		$bool = directorist_string_to_bool( $bool );
 	}
-	return true === $bool ? 'yes' : 'no';
+
+	return $bool ? 'yes' : 'no';
 }
 
 
@@ -287,13 +287,13 @@ function directorist_bool_to_string( $bool ) {
  * @return bool
  */
 function directorist_rest_check_user_permissions( $context = 'read', $object_id = 0 ) {
-	$contexts = array(
+	$contexts = [
 		'read'   => 'edit_user',
 		'create' => 'promote_users',
 		'edit'   => 'edit_user',
 		'delete' => 'delete_users',
 		'batch'  => 'promote_users',
-	);
+	];
 
 	$permission = current_user_can( $contexts[ $context ], $object_id );
 
@@ -315,7 +315,7 @@ function directorist_get_object_terms( $object_id, $taxonomy, $field = null, $in
 	$terms = get_the_terms( $object_id, $taxonomy );
 
 	if ( ! $terms || is_wp_error( $terms ) ) {
-		return array();
+		return [];
 	}
 
 	return is_null( $field ) ? $terms : wp_list_pluck( $terms, $field, $index_key );
@@ -332,13 +332,13 @@ function directorist_get_object_terms( $object_id, $taxonomy, $field = null, $in
  */
 function directorist_rest_check_listing_reviews_permissions( $context = 'read', $object_id = 0 ) {
 	$permission = false;
-	$contexts   = array(
+	$contexts   = [
 		'read'   => 'moderate_comments',
 		'create' => 'moderate_comments',
 		'edit'   => 'moderate_comments',
 		'delete' => 'moderate_comments',
 		'batch'  => 'moderate_comments',
-	);
+	];
 
 	if ( isset( $contexts[ $context ] ) ) {
 		$permission = current_user_can( $contexts[ $context ] );
@@ -355,13 +355,13 @@ function directorist_rest_check_listing_reviews_permissions( $context = 'read', 
  * @return bool
  */
 function directorist_rest_check_user_favorite_permissions( $context = 'read', $object_id = 0 ) {
-	$contexts = array(
+	$contexts = [
 		'read'   => 'read',
 		'create' => 'read',
 		'edit'   => 'read',
 		'delete' => 'read',
 		'batch'  => 'read',
-	);
+	];
 
 	$permission = current_user_can( $contexts[ $context ], $object_id );
 

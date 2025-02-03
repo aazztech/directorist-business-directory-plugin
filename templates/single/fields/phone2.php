@@ -7,12 +7,14 @@
 
 use \Directorist\Helper;
 
-if ( ! defined( 'ABSPATH' ) ) exit;
+if (! defined( 'ABSPATH' )) {
+    exit;
+}
 
-$phone_args = array(
+$phone_args = [
 	'number'    => $value,
 	'whatsapp'  => $listing->has_whatsapp( $data ),
-);
+];
 
 ?>
 <div class="directorist-single-info directorist-single-info-phone2">

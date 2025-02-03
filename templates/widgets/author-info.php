@@ -5,7 +5,9 @@
  * @version 7.7.0
  */
 
-if ( ! defined( 'ABSPATH' ) ) exit;
+if (! defined( 'ABSPATH' )) {
+    exit;
+}
 ?>
 
 <div class="directorist-card__body directorist-widget__author-info">
@@ -17,7 +19,7 @@ if ( ! defined( 'ABSPATH' ) ) exit;
         $author_name = get_the_author_meta('display_name', $author_id);
         $user_registered = get_the_author_meta('user_registered', $author_id);
         $u_pro_pic = get_user_meta($author_id, 'pro_pic', true);
-        $u_pro_pic = !empty($u_pro_pic) ? wp_get_attachment_image_src($u_pro_pic, 'thumbnail') : '';
+        $u_pro_pic = empty($u_pro_pic) ? '' : wp_get_attachment_image_src($u_pro_pic, 'thumbnail');
         $avatar_img = get_avatar($author_id, apply_filters('atbdp_avatar_size', 32));
         ?>
         <div class="directorist-single-author-avatar">
@@ -51,7 +53,7 @@ if ( ! defined( 'ABSPATH' ) ) exit;
             if (!empty($address)) { ?>
                 <li>
                     <?php directorist_icon( 'fas fa-map-marker-alt' ); ?>
-                    <span class="directorist-single-author-contact-info-text"><?php echo !empty($address) ? esc_html($address) : ''; ?></span>
+                    <span class="directorist-single-author-contact-info-text"><?php echo empty($address) ? '' : esc_html($address); ?></span>
                 </li>
             <?php } ?>
 
@@ -66,7 +68,7 @@ if ( ! defined( 'ABSPATH' ) ) exit;
 
             <?php
             $display_email 		= get_user_meta( $author_id, 'directorist_display_author_email', true );
-		    $email_show         = ! empty( $display_email ) ? $display_email : 'public';
+		    $email_show         = empty( $display_email ) ? 'public' : $display_email;
             if ('public' === $email_show) {
                 if (!empty($email)) {
                     ?>
@@ -77,15 +79,17 @@ if ( ! defined( 'ABSPATH' ) ) exit;
                     <?php
                 }
             } elseif ('logged_in' === $email_show) {
-                if (is_user_logged_in()) {
-                    if (!empty($email)) {
-                        ?>
+                if (is_user_logged_in() && !empty($email)) {
+                    ?>
                         <li>
-							<?php directorist_icon( 'fas fa-envelope-open' ); ?>
-                            <span class="directorist-single-author-contact-info-text"><?php echo esc_html($email); ?></span>
+							<?php 
+                    directorist_icon( 'fas fa-envelope-open' );
+                    ?>
+                            <span class="directorist-single-author-contact-info-text"><?php 
+                    echo esc_html($email);
+                    ?></span>
                         </li>
-                        <?php
-                    }
+                        <?php 
                 }
             }
             if (!empty($website)) { ?>
@@ -99,7 +103,7 @@ if ( ! defined( 'ABSPATH' ) ) exit;
         </ul>
     </div>
 
-    <?php if (!empty($facebook || $twitter || $linkedIn || $youtube )): ?>
+    <?php if ($facebook || $twitter || $linkedIn || $youtube): ?>
 
         <ul class="directorist-author-social">
 

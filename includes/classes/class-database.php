@@ -43,14 +43,6 @@ if ( ! class_exists( 'ATBDP_Database' ) ) :
 		public $primary_key;
 
 		/**
-		 * Get things started
-		 *
-		 * @access  public
-		 * @since   1.0
-		 */
-		public function __construct() {}
-
-		/**
 		 * Whitelist of columns
 		 *
 		 * @access  public
@@ -58,7 +50,7 @@ if ( ! class_exists( 'ATBDP_Database' ) ) :
 		 * @return  array
 		 */
 		public function get_columns() {
-			return array();
+			return [];
 		}
 
 		/**
@@ -69,7 +61,7 @@ if ( ! class_exists( 'ATBDP_Database' ) ) :
 		 * @return  array
 		 */
 		public function get_column_defaults() {
-			return array();
+			return [];
 		}
 
 		/**
@@ -81,7 +73,7 @@ if ( ! class_exists( 'ATBDP_Database' ) ) :
 		 */
 		public function get( $row_id ) {
 			global $wpdb;
-			return $wpdb->get_row( $wpdb->prepare( "SELECT * FROM $this->table_name WHERE $this->primary_key = %s LIMIT 1;", $row_id ) );
+			return $wpdb->get_row( $wpdb->prepare( sprintf('SELECT * FROM %s WHERE %s = %%s LIMIT 1;', $this->table_name, $this->primary_key), $row_id ) );
 		}
 
 		/**
@@ -94,7 +86,7 @@ if ( ! class_exists( 'ATBDP_Database' ) ) :
 		 */
 		public function get_all( $limit = -1 ) {
 			global $wpdb;
-			return $wpdb->get_results( $wpdb->prepare( "SELECT * FROM $this->table_name WHERE 1=1 LIMIT %d;", $limit ) );
+			return $wpdb->get_results( $wpdb->prepare( sprintf('SELECT * FROM %s WHERE 1=1 LIMIT %%d;', $this->table_name), $limit ) );
 
 		}
 
@@ -112,7 +104,7 @@ if ( ! class_exists( 'ATBDP_Database' ) ) :
 		public function get_by( $column, $column_value ) {
 			global $wpdb;
 			$column = esc_sql( $column );
-			return $wpdb->get_row( $wpdb->prepare( "SELECT * FROM $this->table_name WHERE $column = %s LIMIT 1;", $column_value ) );
+			return $wpdb->get_row( $wpdb->prepare( sprintf('SELECT * FROM %s WHERE %s = %%s LIMIT 1;', $this->table_name, $column), $column_value ) );
 		}
 
 		/**
@@ -127,7 +119,7 @@ if ( ! class_exists( 'ATBDP_Database' ) ) :
 		public function get_column( $column, $row_id ) {
 			global $wpdb;
 			$column = esc_sql( $column );
-			return $wpdb->get_var( $wpdb->prepare( "SELECT $column FROM $this->table_name WHERE $this->primary_key = %s LIMIT 1;", $row_id ) );
+			return $wpdb->get_var( $wpdb->prepare( sprintf('SELECT %s FROM %s WHERE %s = %%s LIMIT 1;', $column, $this->table_name, $this->primary_key), $row_id ) );
 		}
 
 		/**
@@ -141,7 +133,7 @@ if ( ! class_exists( 'ATBDP_Database' ) ) :
 			global $wpdb;
 			$column_where = esc_sql( $column_where );
 			$column       = esc_sql( $column );
-			return $wpdb->get_var( $wpdb->prepare( "SELECT $column FROM $this->table_name WHERE $column_where = %s LIMIT 1;", $column_value ) );
+			return $wpdb->get_var( $wpdb->prepare( sprintf('SELECT %s FROM %s WHERE %s = %%s LIMIT 1;', $column, $this->table_name, $column_where), $column_value ) );
 		}
 
 
@@ -154,7 +146,7 @@ if ( ! class_exists( 'ATBDP_Database' ) ) :
 		 * @since   1.0
 		 * @return  int
 		 */
-		public function insert( $data, $type = '' ) {
+		public function insert( $data, string $type = '' ) {
 			global $wpdb;
 
 			// Set default values
@@ -190,7 +182,7 @@ if ( ! class_exists( 'ATBDP_Database' ) ) :
 		 * @since   1.0
 		 * @return  bool
 		 */
-		public function update( $row_id, $data = array(), $where = '' ) {
+		public function update( $row_id, $data = [], $where = '' ) {
 
 			global $wpdb;
 
@@ -217,12 +209,7 @@ if ( ! class_exists( 'ATBDP_Database' ) ) :
 			// Reorder $column_formats to match the order of columns given in $data
 			$data_keys = array_keys( $data );
 			$column_formats = array_merge( array_flip( $data_keys ), $column_formats );
-
-			if ( false === $wpdb->update( $this->table_name, $data, array( $where => $row_id ), $column_formats ) ) {
-				return false;
-			}
-
-			return true;
+            return false !== $wpdb->update( $this->table_name, $data, [ $where => $row_id ], $column_formats );
 		}
 
 		/**
@@ -243,11 +230,7 @@ if ( ! class_exists( 'ATBDP_Database' ) ) :
 				return false;
 			}
 
-			if ( false === $wpdb->query( $wpdb->prepare( "DELETE FROM $this->table_name WHERE $this->primary_key = %d", $row_id ) ) ) {
-				return false;
-			}
-
-			return true;
+            return false !== $wpdb->query( $wpdb->prepare( sprintf('DELETE FROM %s WHERE %s = %%d', $this->table_name, $this->primary_key), $row_id ) );
 		}
 
 		/**

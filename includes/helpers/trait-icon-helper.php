@@ -20,18 +20,17 @@ trait Icon_Helper {
 	 *
 	 * @return string Svg file url eg. https:/example.com/.../line-awesome/svgs/home-solid.svg
 	 */
-	public static function get_icon_src( $icon ) {
+	public static function get_icon_src( $icon ): string {
 		$file = self::get_icon_file( $icon );
 
-		if ( ! $file ) {
+		if ( $file === '' || $file === '0' ) {
 			return '';
 		}
 
-		$url = ATBDP_URL . 'assets/icons/' . $file;
-		return $url;
+		return ATBDP_URL . 'assets/icons/' . $file;
 	}
 
-	private static function get_icon_file( $icon ) {
+	private static function get_icon_file( $icon ): string {
 
 		if( empty( $icon ) || ! is_string( $icon ) ) {
 			return '';
@@ -49,13 +48,11 @@ trait Icon_Helper {
 	}
 
 	/**
-	 * FontAwesome 5.15.4
-	 *
-	 * @param string $icon
-	 *
-	 * @return string
-	 */
-	private static function get_font_awesome_file( $icon ) {
+     * FontAwesome 5.15.4
+     *
+     * @param string $icon
+     */
+    private static function get_font_awesome_file( $icon ): string {
 		list( $prefix, $name ) = array_pad( explode( ' ', $icon ), 2, '' );
 
 		if ( ! $name ) { 
@@ -63,7 +60,7 @@ trait Icon_Helper {
 		}
 
 		$filename              = str_replace( 'fa-', '', $name );
-		$filename              = $filename . '.svg';
+		$filename .= '.svg';
 
 		$far_file = 'font-awesome/svgs/regular/' . $filename;
 		$fas_file = 'font-awesome/svgs/solid/' . $filename;
@@ -94,13 +91,11 @@ trait Icon_Helper {
 	}
 
 	/**
-	 * LineAwesome 1.3.0
-	 *
-	 * @param string $icon
-	 *
-	 * @return string
-	 */
-	private static function get_line_awesome_file( $icon ) {
+     * LineAwesome 1.3.0
+     *
+     * @param string $icon
+     */
+    private static function get_line_awesome_file( $icon ): string {
 		list( $prefix, $name ) = array_pad( explode( ' ', $icon ), 2, '' );
 		
 		if ( ! $name ) { 
@@ -114,7 +109,7 @@ trait Icon_Helper {
 
 		if ( $prefix == 'las' ) {
 			return $las_file;
-		} elseif ( in_array( $prefix, array( 'lab', 'lar' ) ) ) {
+		} elseif ( in_array( $prefix, [ 'lab', 'lar' ] ) ) {
 			return $lar_file;
 		} elseif ( $prefix == 'la' ) {
 			return self::get_line_awesome_legacy_file( $filename ); // Legacy 'la' support for v1.2.1
@@ -124,13 +119,11 @@ trait Icon_Helper {
 	}
 
 	/**
-	 * LineAwesome v1.2.1 support
-	 *
-	 * @param string $filename
-	 *
-	 * @return string
-	 */
-	private static function get_line_awesome_legacy_file( $filename ) {
+     * LineAwesome v1.2.1 support
+     *
+     * @param string $filename
+     */
+    private static function get_line_awesome_legacy_file( $filename ): string {
 		$filename = str_replace( '-o', '', $filename );
 
 		$fa_lar_file = 'line-awesome/svgs/' . $filename . '.svg';
@@ -165,15 +158,13 @@ trait Icon_Helper {
 	}
 
 	/**
-	 * Unicons 3.0.3
-	 *
-	 * Unicon svgs are kept only for backward compatibility.
-	 *
-	 * @param string $icon
-	 *
-	 * @return string
-	 */
-	private static function get_unicons_file( $icon ) {
+     * Unicons 3.0.3
+     *
+     * Unicon svgs are kept only for backward compatibility.
+     *
+     * @param string $icon
+     */
+    private static function get_unicons_file( $icon ): string {
 		list( $prefix, $name ) = array_pad( explode( ' ', $icon ), 2, '' );
 		
 		if ( ! $name ) { 

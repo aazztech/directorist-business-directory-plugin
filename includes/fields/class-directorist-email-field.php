@@ -13,7 +13,7 @@ class Email_Field extends Base_Field {
 
 	public $type = 'email';
 
-	public function validate( $posted_data ) {
+	public function validate( $posted_data ): bool {
 		$value = $this->get_value( $posted_data );
 
 		if ( ! is_email( $value ) ) {

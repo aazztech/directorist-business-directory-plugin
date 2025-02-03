@@ -8,21 +8,22 @@ if ( !class_exists('ATBDP_Rewrite') ):
  */
 class ATBDP_Rewrite {
 
-	protected $pages = array();
+	protected $pages = [];
 
 	public function __construct() {
 		// add the rewrite rules to the init hook
-		add_action( 'init', array( $this, 'add_write_rules' ) );
+		add_action( 'init', [ $this, 'add_write_rules' ] );
 
 		$flush_rewrite_rules_on_demand = apply_filters( 'directorist_flush_rewrite_rules_on_demand', false );
 
 		if ( $flush_rewrite_rules_on_demand ) {
-			add_action( 'wp_loaded', array( $this, 'flush_rewrite_rules_on_demand' ) );
+			add_action( 'wp_loaded', [ $this, 'flush_rewrite_rules_on_demand' ] );
 		}
-		add_action( 'directorist_setup_wizard_page_created', array( $this, 'flush_rewrite_rules_on_demand' ) );
-		add_action( 'directorist_setup_wizard_payment_page_created', array( $this, 'flush_rewrite_rules_on_demand' ) );
-		add_action( 'directorist_setup_wizard_completed', array( $this, 'flush_rewrite_rules_on_demand' ) );
-		add_action( 'directorist_options_updated', array( $this, 'flush_rewrite_rules_on_demand' ) );
+
+		add_action( 'directorist_setup_wizard_page_created', [ $this, 'flush_rewrite_rules_on_demand' ] );
+		add_action( 'directorist_setup_wizard_payment_page_created', [ $this, 'flush_rewrite_rules_on_demand' ] );
+		add_action( 'directorist_setup_wizard_completed', [ $this, 'flush_rewrite_rules_on_demand' ] );
+		add_action( 'directorist_options_updated', [ $this, 'flush_rewrite_rules_on_demand' ] );
 	}
 
 	protected function get_pages() {
@@ -30,7 +31,7 @@ class ATBDP_Rewrite {
 			return $this->pages;
 		}
 
-		$pages = array(
+		$pages = [
 			'all_listing_page',
 			'author_profile_page',
 			'checkout_page',
@@ -39,7 +40,7 @@ class ATBDP_Rewrite {
 			'single_category_page',
 			'single_location_page',
 			'single_tag_page',
-		);
+		];
 
 		foreach ( $pages as $page_option_key ) {
 			$this->pages[ $page_option_key ] = (int) get_directorist_option( $page_option_key );
@@ -48,7 +49,7 @@ class ATBDP_Rewrite {
 		return $this->pages;
 	}
 
-	protected function get_page_ids() {
+	protected function get_page_ids(): array {
 		return array_unique( array_values( $this->get_pages() ) );
 	}
 
@@ -66,16 +67,16 @@ class ATBDP_Rewrite {
 		return apply_filters( 'directorist_rewrite_get_page_slug', $slug, $page_id, $default_slug );
 	}
 
-	public function add_write_rules() {
-		$cached_pages = get_pages( array(
+	public function add_write_rules(): void {
+		$cached_pages = get_pages( [
 			'include' => $this->get_page_ids()
-		) );
+		] );
 
 		$page_id = $this->get_page_id( 'all_listing_page' );
 		if ( $page_id ) {
 			$link = $this->get_page_slug( $page_id, 'directory-all-listing' );
 
-			add_rewrite_rule( "$link/page/?([0-9]{1,})/?$", 'index.php?page_id='.$page_id.'&paged=$matches[1]', 'top' );
+			add_rewrite_rule( $link . '/page/?([0-9]{1,})/?$', 'index.php?page_id='.$page_id.'&paged=$matches[1]', 'top' );
 		}
 
 		// Author profile page URL Rewrite
@@ -84,19 +85,19 @@ class ATBDP_Rewrite {
 			$link = $this->get_page_slug( $page_id, 'directory-profile' );
 
 			// Link > Page
-			add_rewrite_rule( "$link/page/(\d+)/?$", 'index.php?page_id='.$page_id.'&paged=$matches[1]', 'top' );
+			add_rewrite_rule( $link . '/page/(\d+)/?$', 'index.php?page_id='.$page_id.'&paged=$matches[1]', 'top' );
 
 			// Link > Author > Page
-			add_rewrite_rule( "$link/([^/]+)/?$", 'index.php?page_id='.$page_id.'&author_id=$matches[1]', 'top' );
-			add_rewrite_rule( "$link/([^/]+)/page/(\d)/?$", 'index.php?page_id='.$page_id.'&author_id=$matches[1]&paged=$matches[2]', 'top' );
+			add_rewrite_rule( $link . '/([^/]+)/?$', 'index.php?page_id='.$page_id.'&author_id=$matches[1]', 'top' );
+			add_rewrite_rule( $link . '/([^/]+)/page/(\d)/?$', 'index.php?page_id='.$page_id.'&author_id=$matches[1]&paged=$matches[2]', 'top' );
 
 			// Link > Author > Directory > Page
-			add_rewrite_rule( "$link/([^/]+)/directory/([^/]+)/?$", 'index.php?page_id='.$page_id.'&author_id=$matches[1]&directory-type=$matches[2]', 'top' );
-			add_rewrite_rule( "$link/([^/]+)/directory/([^/]+)/page/(\d)/?$", 'index.php?page_id='.$page_id.'&author_id=$matches[1]&directory-type=$matches[2]&paged=$matches[3]', 'top' );
+			add_rewrite_rule( $link . '/([^/]+)/directory/([^/]+)/?$', 'index.php?page_id='.$page_id.'&author_id=$matches[1]&directory-type=$matches[2]', 'top' );
+			add_rewrite_rule( $link . '/([^/]+)/directory/([^/]+)/page/(\d)/?$', 'index.php?page_id='.$page_id.'&author_id=$matches[1]&directory-type=$matches[2]&paged=$matches[3]', 'top' );
 
 			// Link > Directory > Page
-			add_rewrite_rule( "$link/directory/([^/]+)/?$", 'index.php?page_id='.$page_id.'&directory-type=$matches[1]', 'top' );
-			add_rewrite_rule( "$link/directory/([^/]+)/page/(\d)/?$", 'index.php?page_id='.$page_id.'&directory-type=$matches[1]&paged=$matches[2]', 'top' );
+			add_rewrite_rule( $link . '/directory/([^/]+)/?$', 'index.php?page_id='.$page_id.'&directory-type=$matches[1]', 'top' );
+			add_rewrite_rule( $link . '/directory/([^/]+)/page/(\d)/?$', 'index.php?page_id='.$page_id.'&directory-type=$matches[1]&paged=$matches[2]', 'top' );
 		}
 
 		// Checkout page URL Rewrite
@@ -104,10 +105,10 @@ class ATBDP_Rewrite {
 		if ( $page_id ) {
 			$link = $this->get_page_slug( $page_id, 'directory-checkout' );
 
-			add_rewrite_rule( "$link/submit/([0-9]{1,})/?$", 'index.php?page_id='.$page_id.'&atbdp_action=submission&atbdp_listing_id=$matches[1]', 'top' );
-			add_rewrite_rule( "$link/promote/([0-9]{1,})/?$", 'index.php?page_id='.$page_id.'&atbdp_action=promotion&atbdp_listing_id=$matches[1]', 'top' );
-			add_rewrite_rule( "$link/paypal-ipn/([0-9]{1,})/?$", 'index.php?page_id='.$page_id.'&atbdp_action=paypal-ipn&atbdp_order_id=$matches[1]', 'top' );
-			add_rewrite_rule( "$link/([^/]+)/([0-9]{1,})/?$", 'index.php?page_id='.$page_id.'&atbdp_action=$matches[1]&atbdp_order_id=$matches[2]', 'top' ); // we can add listing_id instead of order_id if we want.
+			add_rewrite_rule( $link . '/submit/([0-9]{1,})/?$', 'index.php?page_id='.$page_id.'&atbdp_action=submission&atbdp_listing_id=$matches[1]', 'top' );
+			add_rewrite_rule( $link . '/promote/([0-9]{1,})/?$', 'index.php?page_id='.$page_id.'&atbdp_action=promotion&atbdp_listing_id=$matches[1]', 'top' );
+			add_rewrite_rule( $link . '/paypal-ipn/([0-9]{1,})/?$', 'index.php?page_id='.$page_id.'&atbdp_action=paypal-ipn&atbdp_order_id=$matches[1]', 'top' );
+			add_rewrite_rule( $link . '/([^/]+)/([0-9]{1,})/?$', 'index.php?page_id='.$page_id.'&atbdp_action=$matches[1]&atbdp_order_id=$matches[2]', 'top' ); // we can add listing_id instead of order_id if we want.
 		}
 
 		// Payment receipt page
@@ -115,7 +116,7 @@ class ATBDP_Rewrite {
 		if( $page_id ) {
 			$link = $this->get_page_slug( $page_id, 'directory-payment-receipt' );
 
-			add_rewrite_rule( "$link/order/([0-9]{1,})/?$", 'index.php?page_id='.$page_id.'&atbdp_action=order&atbdp_order_id=$matches[1]', 'top' );
+			add_rewrite_rule( $link . '/order/([0-9]{1,})/?$', 'index.php?page_id='.$page_id.'&atbdp_action=order&atbdp_order_id=$matches[1]', 'top' );
 		}
 
 
@@ -124,15 +125,15 @@ class ATBDP_Rewrite {
 		if ( $page_id  ) {
 			$link = $this->get_page_slug( $page_id, 'directory-add-listing' );
 
-			add_rewrite_rule( "$link/([^/]+)/([0-9]{1,})/?$", 'index.php?page_id='.$page_id.'&atbdp_action=$matches[1]&atbdp_listing_id=$matches[2]', 'top' );
+			add_rewrite_rule( $link . '/([^/]+)/([0-9]{1,})/?$', 'index.php?page_id='.$page_id.'&atbdp_action=$matches[1]&atbdp_listing_id=$matches[2]', 'top' );
 		}
 
 		// Single Category page
 		$page_id = $this->get_page_id( 'single_category_page' );
 		if ( $page_id ) {
 			$link = $this->get_page_slug( $page_id, 'directory-single-category' );
-			add_rewrite_rule( "$link/([^/]+)/page/?([0-9]{1,})/?$", 'index.php?page_id='.$page_id.'&atbdp_category=$matches[1]&paged=$matches[2]', 'top' );
-			add_rewrite_rule( "$link/([^/]+)/?$", 'index.php?page_id='.$page_id.'&atbdp_category=$matches[1]', 'top' );
+			add_rewrite_rule( $link . '/([^/]+)/page/?([0-9]{1,})/?$', 'index.php?page_id='.$page_id.'&atbdp_category=$matches[1]&paged=$matches[2]', 'top' );
+			add_rewrite_rule( $link . '/([^/]+)/?$', 'index.php?page_id='.$page_id.'&atbdp_category=$matches[1]', 'top' );
 		}
 
 		// Single Location page
@@ -140,8 +141,8 @@ class ATBDP_Rewrite {
 		if ( $page_id ) {
 			$link = $this->get_page_slug( $page_id, 'directory-single-location' );
 
-			add_rewrite_rule( "$link/([^/]+)/page/?([0-9]{1,})/?$", 'index.php?page_id='.$page_id.'&atbdp_location=$matches[1]&paged=$matches[2]', 'top' );
-			add_rewrite_rule( "$link/([^/]+)/?$", 'index.php?page_id='.$page_id.'&atbdp_location=$matches[1]', 'top' );
+			add_rewrite_rule( $link . '/([^/]+)/page/?([0-9]{1,})/?$', 'index.php?page_id='.$page_id.'&atbdp_location=$matches[1]&paged=$matches[2]', 'top' );
+			add_rewrite_rule( $link . '/([^/]+)/?$', 'index.php?page_id='.$page_id.'&atbdp_location=$matches[1]', 'top' );
 		}
 
 		// Single Tag page
@@ -149,8 +150,8 @@ class ATBDP_Rewrite {
 		if ( $page_id ) {
 			$link = $this->get_page_slug( $page_id, 'directory-single-tag' );
 
-			add_rewrite_rule( "$link/([^/]+)/page/?([0-9]{1,})/?$", 'index.php?page_id='.$page_id.'&atbdp_tag=$matches[1]&paged=$matches[2]', 'top' );
-			add_rewrite_rule( "$link/([^/]+)/?$", 'index.php?page_id='.$page_id.'&atbdp_tag=$matches[1]', 'top' );
+			add_rewrite_rule( $link . '/([^/]+)/page/?([0-9]{1,})/?$', 'index.php?page_id='.$page_id.'&atbdp_tag=$matches[1]&paged=$matches[2]', 'top' );
+			add_rewrite_rule( $link . '/([^/]+)/?$', 'index.php?page_id='.$page_id.'&atbdp_tag=$matches[1]', 'top' );
 		}
 
 		unset( $cached_pages );
@@ -162,8 +163,8 @@ class ATBDP_Rewrite {
 		// otherwise, get_query_var() would return and empty string even if the 'atbdp_action' var is available in the query string.
 		//
 		add_rewrite_tag( '%atbdp_action%', '([^/]+)' );
-		add_rewrite_tag( '%atbdp_order_id%', '([0-9]{1,})' );
-		add_rewrite_tag( '%atbdp_listing_id%', '([0-9]{1,})' );
+		add_rewrite_tag( '%atbdp_order_id%', '(\d{1,})' );
+		add_rewrite_tag( '%atbdp_listing_id%', '(\d{1,})' );
 		add_rewrite_tag( '%author_id%', '([^/]+)' );
 		add_rewrite_tag( '%directory-type%', '([^/]+)' );
 		add_rewrite_tag( '%atbdp_category%', '([^/]+)' );
@@ -177,17 +178,18 @@ class ATBDP_Rewrite {
 	 * @since    3.1.2
 	 * @access   public
 	 */
-	public function flush_rewrite_rules_on_demand() {
+	public function flush_rewrite_rules_on_demand(): void {
 
 		$rewrite_rules = get_option( 'rewrite_rules' );
 
 		if( $rewrite_rules ) {
 
 			global $wp_rewrite;
-			$rewrite_rules_array = array();
+			$rewrite_rules_array = [];
 			foreach( $rewrite_rules as $rule => $rewrite ) {
 				$rewrite_rules_array[$rule]['rewrite'] = $rewrite;
 			}
+
 			$rewrite_rules_array = array_reverse( $rewrite_rules_array, true );
 
 			$maybe_missing = $wp_rewrite->rewrite_rules();
@@ -200,7 +202,7 @@ class ATBDP_Rewrite {
 				}
 			}
 
-			if( true === $missing_rules ) {
+			if( $missing_rules ) {
 				flush_rewrite_rules();
 			}
 

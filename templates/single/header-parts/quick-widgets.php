@@ -7,6 +7,8 @@
 
  use \Directorist\Helper;
 
-if ( ! defined( 'ABSPATH' ) ) exit;
+if (! defined( 'ABSPATH' )) {
+    exit;
+}
 
 Helper::get_template( 'single/top-actions' );

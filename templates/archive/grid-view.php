@@ -7,7 +7,9 @@
 
 use \Directorist\Helper;
 
-if ( ! defined( 'ABSPATH' ) ) exit;
+if (! defined( 'ABSPATH' )) {
+    exit;
+}
 ?>
 
 <div class="directorist-archive-items directorist-archive-grid-view <?php echo esc_attr( $listings->pagination_infinite_scroll_class() ) ?>">

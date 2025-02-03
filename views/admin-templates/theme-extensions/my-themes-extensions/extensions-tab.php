@@ -44,9 +44,9 @@
                                                             $ext_key_alias = $args['ATBDP_Extensions']->get_extension_alias_key( $ext_key );;
                                                             $img           = 'https://via.placeholder.com/44' ;
 
-                                                            if ( ! empty( $args[ 'extension_list' ][ $ext_key ] ) ) {
+                                                            if (! empty( $args[ 'extension_list' ][ $ext_key ] )) {
                                                                 $img = $args['extension_list'][$ext_key]['thumbnail'];
-                                                            } else if ( ! empty( $args[ 'extension_list' ][ $ext_key_alias ] ) ) {
+                                                            } elseif (! empty( $args[ 'extension_list' ][ $ext_key_alias ] )) {
                                                                 $img = $args['extension_list'][$ext_key_alias]['thumbnail'];
                                                             }
                                                         ?>
@@ -138,7 +138,7 @@
                                                     <input type="checkbox" id="<?php echo esc_attr( $extension_base ); ?>" name="<?php echo esc_attr( $extension_base ); ?>" class="extension-name-checkbox">
                                                     <label class="directorist-checkbox__label" for="<?php echo esc_attr( $extension_base ); ?>">
                                                         <?php
-                                                            $img = ! empty( $extension['thumbnail'] ) ? $extension['thumbnail'] : DIRECTORIST_ASSETS . 'images/no-image.png';
+                                                            $img = empty( $extension['thumbnail'] ) ? DIRECTORIST_ASSETS . 'images/no-image.png' : $extension['thumbnail'];
                                                         ?>
                                                         <img src="<?php echo esc_url( $img ); ?>" width="44" height="44" alt=""><?php echo esc_html( $extension['title'] ) ?>
                                                     </label>
@@ -150,10 +150,10 @@
                                             <span class="ext-info">
                                                 <?php
                                                 if (!empty($args['extension_list'][$extension_base])) {
-                                                    esc_html_e($args['extension_list'][$extension_base]['description'], 'directorust');
-                                                } else if (!empty($args['extension_list'][$extension_base_alias])) {
-                                                    esc_html_e($args['extension_list'][$extension_base_alias]['description'], 'directorust');
-                                                }
+                                                            esc_html_e($args['extension_list'][$extension_base]['description'], 'directorust');
+                                                        } elseif (!empty($args['extension_list'][$extension_base_alias])) {
+                                                            esc_html_e($args['extension_list'][$extension_base_alias]['description'], 'directorust');
+                                                        }
                                                 ?>
                                             </span>
                                         </td>
@@ -226,9 +226,9 @@
                                                             }
                                                             
                                                             $img = 'https://via.placeholder.com/44';
-                                                            if ( ! empty( $args['extension_list'][$extension_base] ) ) {
+                                                            if (! empty( $args['extension_list'][$extension_base] )) {
                                                                 $img = $args['extension_list'][$extension_base]['thumbnail'];
-                                                            } else if ( ! empty( $args['extension_list'][$extension_base_alias] ) ) {
+                                                            } elseif (! empty( $args['extension_list'][$extension_base_alias] )) {
                                                                 $img = $args['extension_list'][$extension_base_alias]['thumbnail'];
                                                             }
 
@@ -243,12 +243,11 @@
                                         <td>
                                             <span class="ext-info">
                                                 <?php
-                                                    if ( ! empty($args['extension_list'][$extension_base])) {
-                                                        esc_html_e($args['extension_list'][$extension_base]['description'], 'directorust');
-                                                    }
-                                                    else if ( ! empty($args['extension_list'][$extension_base_alias])) {
-                                                        esc_html_e($args['extension_list'][$extension_base_alias]['description'], 'directorust');
-                                                    }
+                                                    if (! empty($args['extension_list'][$extension_base])) {
+                                                            esc_html_e($args['extension_list'][$extension_base]['description'], 'directorust');
+                                                        } elseif (! empty($args['extension_list'][$extension_base_alias])) {
+                                                            esc_html_e($args['extension_list'][$extension_base_alias]['description'], 'directorust');
+                                                        }
                                                 ?>
                                             </span>
                                         </td>
@@ -263,10 +262,10 @@
                                                 <?php echo $args['is_beta'] ? 'Install Beta' : 'Install'; ?>
                                                 </a>
                                                 <?php else: 
-                                                    $download_link = ( ! empty( $args['extension_list'][$extension_base] ) ) ? $args['extension_list'][$extension_base]['link'] : '';
+                                                    $download_link = ( empty( $args['extension_list'][$extension_base] ) ) ? '' : $args['extension_list'][$extension_base]['link'];
                                                 
                                                     if ( empty( $download_link ) ) {
-                                                        $download_link = ( ! empty( $args['extension_list'][$extension_base_alias] ) ) ? $args['extension_list'][$extension_base_alias]['link'] : ''; 
+                                                        $download_link = ( empty( $args['extension_list'][$extension_base_alias] ) ) ? '' : $args['extension_list'][$extension_base_alias]['link']; 
                                                     }
                                                 ?>
                                                 <a href="<?php echo esc_url( $download_link ); ?>" class="ext-action-btn" target="_blank">

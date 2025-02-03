@@ -8,7 +8,9 @@
 use \Directorist\Helper;
 use \Directorist\Directorist_All_Authors as Authors;
 
-if ( ! defined( 'ABSPATH' ) ) exit;
+if (! defined( 'ABSPATH' )) {
+    exit;
+}
 ?>
 
 <div class="directorist-w-100 directorist-authors-section" id="directorist-all-authors">

@@ -5,16 +5,22 @@ use Directorist\Asset_Loader\Enqueue;
 if ( ! class_exists('ATBDP_Settings_Panel') ) {
 	class ATBDP_Settings_Panel
 	{
-		private $extension_url    = '';
+		private string $extension_url    = '';
+
 		public $fields            = [];
+
 		public $layouts           = [];
+
 		public $config            = [];
+
 		public $default_form      = [];
+
 		public $old_custom_fields = [];
+
 		public $cetagory_options  = [];
 
 		// run
-		public function run()
+		public function run(): void
 		{
 			add_action('directorist_installed', [ $this, 'update_init_options' ] );
 			add_action('directorist_updated', [ $this, 'update_init_options' ] );
@@ -31,13 +37,13 @@ if ( ! class_exists('ATBDP_Settings_Panel') ) {
             $this->extension_url = sprintf("<a target='_blank' href='%s'>%s</a>", esc_url(admin_url('edit.php?post_type=at_biz_dir&page=atbdp-extension')), __('Checkout Awesome Extensions', 'directorist'));
 		}
 
-		public function update_init_options() {
+		public function update_init_options(): void {
 			// Set lazy_load_taxonomy_fields option
-			$enable_lazy_loading = directorist_has_no_listing() ? true : false;
+			$enable_lazy_loading = directorist_has_no_listing();
 			update_directorist_option( 'lazy_load_taxonomy_fields', $enable_lazy_loading );
 		}
 
-        public static function in_settings_page() {
+        public static function in_settings_page(): bool {
             if ( ! is_admin() ) {
                 return false;
             }
@@ -54,7 +60,7 @@ if ( ! class_exists('ATBDP_Settings_Panel') ) {
         }
 
         // register_setting_fields
-        public function register_setting_fields( $fields = [] ) {
+        public function register_setting_fields( array $fields = [] ): array {
             $fields['script_debugging'] = [
                 'type'  => 'toggle',
                 'label' => 'Script debugging',
@@ -125,10 +131,10 @@ if ( ! class_exists('ATBDP_Settings_Panel') ) {
             ];
 
 			$users = get_users(
-				array(
+				[
 					'role__not_in' => 'Administrator',   // Administrator | Subscriber
 					'number'       => apply_filters( 'directorist_announcement_user_query_num', 1000 ),
-				)
+				]
 			);
             $recipient = [];
 
@@ -136,7 +142,7 @@ if ( ! class_exists('ATBDP_Settings_Panel') ) {
                 foreach ( $users as $user ) {
                     $recipient[] = [
                         'value' => $user->user_email,
-                        'label' => ( ! empty( $user->display_name ) ) ? $user->display_name : $user->user_nicename,
+                        'label' => ( empty( $user->display_name ) ) ? $user->user_nicename : $user->display_name,
                     ];
                 }
             }
@@ -165,7 +171,7 @@ if ( ! class_exists('ATBDP_Settings_Panel') ) {
             $e = '</span></b>'; // end color
 
             $description = <<<SWBD
-                You can use the following keywords/placeholder in any of your email bodies/templates or subjects to output dynamic value. **Usage: place the placeholder name between $c == $e and $c == $e . For Example: use {$c}==SITE_NAME=={$e} to output The Your Website Name etc. <br/><br/>
+                You can use the following keywords/placeholder in any of your email bodies/templates or subjects to output dynamic value. **Usage: place the placeholder name between {$c} == {$e} and {$c} == {$e} . For Example: use {$c}==SITE_NAME=={$e} to output The Your Website Name etc. <br/><br/>
                 {$c}==NAME=={$e} : It outputs The listing owner's display name on the site<br/>
                 {$c}==USERNAME=={$e} : It outputs The listing owner's user name on the site<br/>
                 {$c}==SITE_NAME=={$e} : It outputs your site name<br/>
@@ -233,13 +239,13 @@ SWBD;
             ];
 
             $countries = atbdp_country_code_to_name();
-            $items = array();
+            $items = [];
 
             foreach ($countries as $country => $code) {
-                $items[] = array(
+                $items[] = [
                     'value' => $country,
                     'label' => $code,
-                );
+                ];
             }
 
             $fields['restricted_countries'] = [
@@ -295,10 +301,10 @@ SWBD;
 			$default = [ 'path' => '', 'json_decode' => true ];
 			$args = array_merge( $default,  $args );
 
-			$path = ( ! empty( $args['path'] ) ) ? $args['path'] : '';
+			$path = ( empty( $args['path'] ) ) ? '' : $args['path'];
 
 			// $path = 'directory/directory.json'
-			$file = DIRECTORIST_ASSETS_DIR . "sample-data/{$path}";
+			$file = DIRECTORIST_ASSETS_DIR . ('sample-data/' . $path);
 			if ( ! file_exists( $file ) ) { return ''; }
 
 			$data = file_get_contents( $file );
@@ -311,7 +317,7 @@ SWBD;
 		}
 
 		// handle_save_settings_data_request
-		public function handle_save_settings_data_request()
+		public function handle_save_settings_data_request(): void
 		{
 			$status = [ 'success' => false, 'status_log' => [] ];
 
@@ -334,7 +340,7 @@ SWBD;
             }
 
 
-			$field_list = ( ! empty( $_POST['field_list'] ) ) ? Directorist\Helper::maybe_json( sanitize_text_field( wp_unslash( $_POST['field_list'] ) ) ) : [];
+			$field_list = ( empty( $_POST['field_list'] ) ) ? [] : Directorist\Helper::maybe_json( sanitize_text_field( wp_unslash( $_POST['field_list'] ) ) );
 
 			// If field list is empty
 			if ( empty( $field_list ) || ! is_array( $field_list ) ) {
@@ -362,11 +368,14 @@ SWBD;
 		}
 
 		// update_settings_options
-		public function update_settings_options( array $options = [] ) {
+        /**
+         * @return array{success: true, status_log: array{type: 'success', message: mixed}, options: non-empty-array<mixed, mixed>}[]
+         */
+        public function update_settings_options( array $options = [] ): array {
 			$status = [ 'success' => false, 'status_log' => [] ];
 
 			// If field list is empty
-			if ( empty( $options ) || ! is_array( $options ) ) {
+			if ( $options === [] || ! is_array( $options ) ) {
 				$status['status_log'] = [
 					'type' => 'success',
 					'message' => __( 'Nothing to save', 'directorist' ),
@@ -408,9 +417,9 @@ SWBD;
 		}
 
 		// prepare_settings
-		public function prepare_settings()
+		public function prepare_settings(): void
 		{
-			$business_hours_label = sprintf(__('Open Now %s', 'directorist'), !class_exists('BD_Business_Hour') ? '(Requires Business Hours extension)' : '');
+			sprintf(__('Open Now %s', 'directorist'), class_exists('BD_Business_Hour') ? '' : '(Requires Business Hours extension)');
 
 			$bank_transfer_instruction = "
 Please make your payment directly to our bank account and use your ORDER ID (#==ORDER_ID==) as a Reference. Our bank account information is given below.
@@ -1495,7 +1504,7 @@ Please remember that your order may be canceled if you do not make your payment 
                 'map_api_key' => [
                     'type' => 'text',
                     'label' => __('Google Map API key', 'directorist'),
-                    'description' => sprintf(__('Please replace it by your own API. It\'s required to use Google Map. You can find detailed information %s.', 'directorist'), '<a href="https://developers.google.com/maps/documentation/javascript/get-api-key" target="_blank"> <div class="atbdp_shortcodes" style="color: red;">here</div> </a>'),
+                    'description' => sprintf(__("Please replace it by your own API. It's required to use Google Map. You can find detailed information %s.", 'directorist'), '<a href="https://developers.google.com/maps/documentation/javascript/get-api-key" target="_blank"> <div class="atbdp_shortcodes" style="color: red;">here</div> </a>'),
                     'value' => '',
                     'show-if' => [
                         'where' => "select_listing_map",
@@ -2405,7 +2414,7 @@ Please remember that your order may be canceled if you do not make your payment 
                 'single_category_meta_desc'    => [
                     'type'          => 'text',
                     'label'         => __('Single Category Page Meta Description', 'directorist'),
-                    'description'   => __('Leave it blank to set category\'s description as meta description of this page', 'directorist'),
+                    'description'   => __("Leave it blank to set category's description as meta description of this page", 'directorist'),
                     'value'         => '',
                 ],
                 'all_locations_meta_title'    => [
@@ -2428,7 +2437,7 @@ Please remember that your order may be canceled if you do not make your payment 
                 'single_locations_meta_desc'    => [
                     'type'          => 'text',
                     'label'         => __('Single Locations Page Meta Description', 'directorist'),
-                    'description'   => __('Leave it blank to set location\'s description as meta description of this page', 'directorist'),
+                    'description'   => __("Leave it blank to set location's description as meta description of this page", 'directorist'),
                     'value'         => '',
                 ],
                 'registration_meta_title'    => [
@@ -4266,18 +4275,18 @@ Please remember that your order may be canceled if you do not make your payment 
                     'label' => __( 'Import and Export', 'directorist' ),
                     'icon' => '<i class="fa fa-tools directorist_info"></i>',
                     'sections'    => apply_filters('atbdp_listings_import_controls', [
-                        'import_methods' => array(
+                        'import_methods' => [
                             'title'      => __( 'Listings', 'directorist' ),
                             'fields'     => apply_filters('atbdp_csv_import_settings_fields', [
                                 'listing_import_button', 'listing_export_button',
                             ]),
-                        ),
-                        'export_methods' => array(
+                        ],
+                        'export_methods' => [
                             'title'      => __( 'Settings', 'directorist' ),
                             'fields'     => apply_filters('atbdp_csv_export_settings_fields', [
                                 'import_settings', 'export_settings', 'restore_default_settings'
                             ]),
-                        ),
+                        ],
                     ]),
                 ],
 
@@ -4340,7 +4349,7 @@ Please remember that your order may be canceled if you do not make your payment 
 
 
         // add_menu_pages
-        public function add_menu_pages()
+        public function add_menu_pages(): void
         {
             add_submenu_page(
                 'edit.php?post_type=at_biz_dir',
@@ -4354,7 +4363,7 @@ Please remember that your order may be canceled if you do not make your payment 
         }
 
         // menu_page_callback__settings_manager
-        public function menu_page_callback__settings_manager()
+        public function menu_page_callback__settings_manager(): void
         {
             // Prepare Settings
             $this->prepare_settings();
@@ -4397,18 +4406,17 @@ Please remember that your order may be canceled if you do not make your payment 
         }
 
 		/**
-		 * Sanitize Fields Data
-		 *
-		 * @param array $fields
-		 * @return array Fields
-		 */
-		public function sanitize_fields_data( $fields ) {
+         * Sanitize Fields Data
+         *
+         * @return array Fields
+         */
+        public function sanitize_fields_data( array $fields ): array {
 
 			foreach( $fields as $key => $field_args ) {
 
 				foreach( $field_args as $field_args_key => $field_args_value ) {
 
-					$type = isset( $field_args['type'] ) ? $field_args['type'] : 'text';
+					$type = $field_args['type'] ?? 'text';
 
 					if ( 'value' === $field_args_key && 'textarea' === $type ) {
 						$fields[ $key ][ $field_args_key ] = sanitize_textarea_field( $field_args_value );
@@ -4438,30 +4446,33 @@ Please remember that your order may be canceled if you do not make your payment 
          * @return array page names with key value pairs in a multi-dimensional array
          * @since 3.0.0
          */
-        function get_pages_vl_arrays()
+        public function get_pages_vl_arrays(): array
         {
             $pages = get_pages();
-            $pages_options = array();
+            $pages_options = [];
             if ($pages) {
                 foreach ($pages as $page) {
-                    $pages_options[] = array('value' => $page->ID, 'label' => $page->post_title);
+                    $pages_options[] = ['value' => $page->ID, 'label' => $page->post_title];
                 }
             }
 
             return $pages_options;
         }
 
-        function get_user_roles()
+        /**
+         * @return array{value: mixed, label: mixed}[]
+         */
+        public function get_user_roles(): array
         {
             $get_editable_roles = get_editable_roles();
-            $role               = array();
-            $role[]             = array( 'value' => 'all', 'label' => __( 'All', 'directorist' ) );
+            $role               = [];
+            $role[]             = [ 'value' => 'all', 'label' => __( 'All', 'directorist' ) ];
             if( $get_editable_roles ) {
                 foreach( $get_editable_roles as $key => $value ) {
-                    $role[] = array(
+                    $role[] = [
                         'value' => $key,
                         'label' => $value['name']
-                    );
+                    ];
                 }
             }
 
@@ -4478,14 +4489,14 @@ Please remember that your order may be canceled if you do not make your payment 
          * @return array page names with key value pairs in a multi-dimensional array
          * @since 3.0.0
          */
-        function get_pages_with_prev_page()
+        public function get_pages_with_prev_page(): array
         {
             $pages = get_pages();
-            $pages_options = array();
-            $pages_options[] = array( 'value' => 'previous_page', 'label' => 'Previous Page' );
+            $pages_options = [];
+            $pages_options[] = [ 'value' => 'previous_page', 'label' => 'Previous Page' ];
             if ($pages) {
                 foreach ($pages as $page) {
-                    $pages_options[] = array('value' => $page->ID, 'label' => $page->post_title);
+                    $pages_options[] = ['value' => $page->ID, 'label' => $page->post_title];
                 }
             }
 
@@ -4499,48 +4510,48 @@ Please remember that your order may be canceled if you do not make your payment 
          */
         private function default_notifiable_events()
         {
-            return apply_filters('atbdp_default_notifiable_events', array(
-                array(
+            return apply_filters('atbdp_default_notifiable_events', [
+                [
                     'value' => 'order_created',
                     'label' => __('Order Created', 'directorist'),
-                ),
-                array(
+                ],
+                [
                     'value' => 'order_completed',
                     'label' => __('Order Completed', 'directorist'),
-                ),
-                array(
+                ],
+                [
                     'value' => 'listing_submitted',
                     'label' => __('New Listing Submitted', 'directorist'),
-                ),
-                array(
+                ],
+                [
                     'value' => 'listing_published',
                     'label' => __('Listing Approved/Published', 'directorist'),
-                ),
-                array(
+                ],
+                [
                     'value' => 'listing_edited',
                     'label' => __('Listing Edited', 'directorist'),
-                ),
-                array(
+                ],
+                [
                     'value' => 'payment_received',
                     'label' => __('Payment Received', 'directorist'),
-                ),
-                array(
+                ],
+                [
                     'value' => 'listing_deleted',
                     'label' => __('Listing Deleted', 'directorist'),
-                ),
-                array(
+                ],
+                [
                     'value' => 'listing_contact_form',
                     'label' => __('Listing Contact Form', 'directorist'),
-                ),
-                array(
+                ],
+                [
                     'value' => 'listing_review',
                     'label' => __('Listing Review', 'directorist'),
-                ),
-                array(
+                ],
+                [
                     'value' => 'listing_renewed',
                     'label' => __('Listing Renewed', 'directorist'),
-                ),
-            ));
+                ],
+            ]);
         }
 
         /**
@@ -4572,7 +4583,7 @@ Please remember that your order may be canceled if you do not make your payment 
          */
         public function default_events_to_notify_user()
         {
-            return apply_filters('atbdp_default_events_to_notify_user', array(
+            return apply_filters('atbdp_default_events_to_notify_user', [
                 'order_created',
                 'listing_submitted',
                 'payment_received',
@@ -4585,7 +4596,7 @@ Please remember that your order may be canceled if you do not make your payment 
                 'listing_edited',
                 'listing_deleted',
                 'listing_contact_form',
-            ));
+            ]);
         }
 
         /**
@@ -4595,20 +4606,20 @@ Please remember that your order may be canceled if you do not make your payment 
          */
         private function only_user_notifiable_events()
         {
-            return apply_filters('atbdp_only_user_notifiable_events', array(
-                array(
+            return apply_filters('atbdp_only_user_notifiable_events', [
+                [
                     'value' => 'listing_to_expire',
                     'label' => __('Listing nearly Expired', 'directorist'),
-                ),
-                array(
+                ],
+                [
                     'value' => 'listing_expired',
                     'label' => __('Listing Expired', 'directorist'),
-                ),
-                array(
+                ],
+                [
                     'value' => 'remind_to_renew',
                     'label' => __('Remind to renew', 'directorist'),
-                ),
-            ));
+                ],
+            ]);
         }
 
         /**
@@ -4618,7 +4629,7 @@ Please remember that your order may be canceled if you do not make your payment 
          */
         public function default_events_to_notify_admin()
         {
-            return apply_filters('atbdp_default_events_to_notify_admin', array(
+            return apply_filters('atbdp_default_events_to_notify_admin', [
                 'order_created',
                 'order_completed',
                 'listing_submitted',
@@ -4627,7 +4638,7 @@ Please remember that your order may be canceled if you do not make your payment 
                 'listing_deleted',
                 'listing_contact_form',
                 'listing_review'
-            ));
+            ]);
         }
     }
 }

@@ -5,7 +5,9 @@
 
 namespace Directorist\Asset_Loader;
 
-if ( ! defined( 'ABSPATH' ) ) exit;
+if (! defined( 'ABSPATH' )) {
+    exit;
+}
 
 class Scripts {
 
@@ -351,9 +353,8 @@ class Scripts {
         return apply_filters( 'directorist_scripts', $scripts );
 	}
 
-	private static function gmap_url() {
+	private static function gmap_url(): string {
 		$api = get_directorist_option( 'map_api_key', 'AIzaSyCwxELCisw4mYqSv_cBfgOahfrPFjjQLLo' );
-		$url = '//maps.googleapis.com/maps/api/js?key=' . $api . '&libraries=places&callback=Function.prototype';
-		return $url;
+		return '//maps.googleapis.com/maps/api/js?key=' . $api . '&libraries=places&callback=Function.prototype';
 	}
 }

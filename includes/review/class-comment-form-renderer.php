@@ -18,29 +18,27 @@ class Comment_Form_Renderer {
 
 	const AJAX_ACTION = 'directorist_get_comment_edit_form';
 
-	public static function init() {
-		add_action( 'wp_ajax_' . self::AJAX_ACTION, array( __CLASS__, 'render' ) );
-		add_action( 'wp_ajax_nopriv_' . self::AJAX_ACTION, array( __CLASS__, 'render' ) );
+	public static function init(): void {
+		add_action( 'wp_ajax_' . self::AJAX_ACTION, [ self::class, 'render' ] );
+		add_action( 'wp_ajax_nopriv_' . self::AJAX_ACTION, [ self::class, 'render' ] );
 	}
 
 	public static function get_ajax_url() {
-		$url = add_query_arg(
-			array(
+		return add_query_arg(
+			[
 				'action' => self::AJAX_ACTION,
 				'nonce'  => wp_create_nonce( self::AJAX_ACTION ),
 				'cpage'  => get_query_var( 'cpage' )
-			),
+			],
 			admin_url( 'admin-ajax.php', 'relative' )
 		);
-
-		return $url;
 	}
 
-	public static function render() {
+	public static function render(): void {
 		try {
-			$nonce      = ! empty( $_REQUEST['nonce'] ) ? sanitize_key( $_REQUEST['nonce'] ) : '';
-			$post_id    = ! empty( $_REQUEST['post_id'] ) ? absint( $_REQUEST['post_id'] ) : 0;
-			$comment_id = ! empty( $_REQUEST['comment_id'] ) ? absint( $_REQUEST['comment_id'] ) : 0;
+			$nonce      = empty( $_REQUEST['nonce'] ) ? '' : sanitize_key( $_REQUEST['nonce'] );
+			$post_id    = empty( $_REQUEST['post_id'] ) ? 0 : absint( $_REQUEST['post_id'] );
+			$comment_id = empty( $_REQUEST['comment_id'] ) ? 0 : absint( $_REQUEST['comment_id'] );
 
 			if ( ! wp_verify_nonce( $nonce, self::AJAX_ACTION ) ) {
 				throw new Exception( __( 'Invalid request.', 'directorist' ), 400 );
@@ -79,17 +77,17 @@ class Comment_Form_Renderer {
 
 			$form = self::get_form_markup( $comment );
 
-			wp_send_json_success( array(
+			wp_send_json_success( [
 				'error' => '',
 				'html'  => $form,
-			) );
-		} catch ( Exception $e ) {
-			$html = sprintf( '<div class="directorist-alert directorist-alert-danger">%s</div>', $e->getMessage() );
+			] );
+		} catch ( Exception $exception ) {
+			$html = sprintf( '<div class="directorist-alert directorist-alert-danger">%s</div>', $exception->getMessage() );
 
-			wp_send_json_error( array(
-				'error' => $e->getMessage(),
+			wp_send_json_error( [
+				'error' => $exception->getMessage(),
 				'html'  => $html,
-			) );
+			] );
 		}
 	}
 
@@ -115,7 +113,7 @@ class Comment_Form_Renderer {
 			<input type="hidden" value="<?php echo esc_attr( Comment_Form_Processor::AJAX_ACTION ); ?>" name="action">
 			<input type="hidden" value="<?php echo esc_attr( $comment->comment_post_ID ); ?>" name="post_id">
 			<input type="hidden" value="<?php echo esc_attr( $comment->comment_ID ); ?>" name="comment_id">
-			<input type="hidden" value="<?php echo esc_attr( ! empty( $_REQUEST['cpage'] ) ? absint( $_REQUEST['cpage'] ) : 0 ); ?>" name="cpage">
+			<input type="hidden" value="<?php echo esc_attr( empty( $_REQUEST['cpage'] ) ? 0 : absint( $_REQUEST['cpage'] ) ); ?>" name="cpage">
 			<div class="directorist-form-group directorist-mb-0">
 				<?php
 				printf(
@@ -134,8 +132,8 @@ class Comment_Form_Renderer {
 		return ob_get_clean();
 	}
 
-	public static function get_fields( $comment ) {
-		$fields  = array();
+	public static function get_fields( $comment ): array {
+		$fields  = [];
 	
 		$comment_type = __( 'comment', 'directorist' );
 		if ( $comment->comment_type === 'review' ) {
@@ -167,16 +165,14 @@ class Comment_Form_Renderer {
 	}
 
 	/**
-	 * Render review, review reply and comment reply form.
-	 *
-	 * @see comment_form() wp core function. Directly copied from there and renamed filters.
-	 *
-	 * @param array $args
-	 * @param int $post_id
-	 *
-	 * @return void
-	 */
-	public static function comment_form( $args = array(), $post_id = null ) {
+     * Render review, review reply and comment reply form.
+     *
+     * @see comment_form() wp core function. Directly copied from there and renamed filters.
+     *
+     * @param array $args
+     * @param int $post_id
+     */
+    public static function comment_form( $args = [], $post_id = null ): void {
 		if ( null === $post_id ) {
 			$post_id = get_the_ID();
 		}
@@ -208,7 +204,7 @@ class Comment_Form_Renderer {
 		$html_req = ( $req ? " required='required'" : '' );
 		$html5    = 'html5' === $args['format'];
 
-		$fields = array(
+		$fields = [
 			'author' => sprintf(
 				'<p class="comment-form-author">%s %s</p>',
 				sprintf(
@@ -248,7 +244,7 @@ class Comment_Form_Renderer {
 					esc_attr( $commenter['comment_author_url'] )
 				)
 			),
-		);
+		];
 
 		if ( $builder->is_gdpr_consent()  ) {
 			$args['fields']['gdpr_consent'] = sprintf(
@@ -296,7 +292,7 @@ class Comment_Form_Renderer {
 		 */
 		$fields = apply_filters( 'directorist_comment_form_default_fields', $fields );
 
-		$defaults = array(
+		$defaults = [
 			'fields'               => $fields,
 			'comment_field'        => sprintf(
 				'<p class="comment-form-comment">%s %s</p>',
@@ -356,7 +352,7 @@ class Comment_Form_Renderer {
 			'submit_button'        => '<input name="%1$s" type="submit" id="%2$s" class="%3$s" value="%4$s" />',
 			'submit_field'         => '<p class="form-submit">%1$s %2$s</p>',
 			'format'               => 'xhtml',
-		);
+		];
 
 		/**
 		 * Filters the comment form default arguments.
@@ -463,7 +459,7 @@ class Comment_Form_Renderer {
 				endif;
 
 				// Prepare an array of all fields, including the textarea.
-				$comment_fields = array( 'comment' => $args['comment_field'] ) + (array) $args['fields'];
+				$comment_fields = [ 'comment' => $args['comment_field'] ] + (array) $args['fields'];
 
 				/**
 				 * Filters the comment form fields, including the textarea.
@@ -475,7 +471,7 @@ class Comment_Form_Renderer {
 				$comment_fields = apply_filters( 'directorist_comment_form_fields', $comment_fields );
 
 				// Get an array of field names, excluding the textarea.
-				$comment_field_keys = array_diff( array_keys( $comment_fields ), array( 'comment' ) );
+				$comment_field_keys = array_diff( array_keys( $comment_fields ), [ 'comment' ] );
 
 				// Get the first and the last field name, excluding the textarea.
 				$first_field = reset( $comment_field_keys );
@@ -517,7 +513,7 @@ class Comment_Form_Renderer {
 						 *
 						 * @param string $field The HTML-formatted output of the comment form field.
 						 */
-						echo directorist_kses( apply_filters( "comment_form_field_{$name}", $field ) . "\n" );
+						echo directorist_kses( apply_filters( 'comment_form_field_' . $name, $field ) . "\n" );
 
 						if ( $last_field === $name ) {
 							/**

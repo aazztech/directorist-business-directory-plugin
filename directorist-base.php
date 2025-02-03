@@ -26,7 +26,7 @@ final class Directorist_Base
 	 * @var Directorist_Base The one true Directorist_Base
 	 * @since 1.0
 	 */
-	private static $instance;
+	private static ?\Directorist_Base $instance = null;
 
 	/**
 	 * ATBDP_Metabox Object.
@@ -154,7 +154,7 @@ final class Directorist_Base
      * @var Insights
 	 * @since 8.0
      */
-    public $insights = null;
+    public $insights;
 
 	/**
 	 * ATBDP_Single_Templates Object.
@@ -171,7 +171,7 @@ final class Directorist_Base
 	public $review;
 	public $beta;
 
-	public $background_image_process = null;
+	public $background_image_process;
 
 	/**
 	 * Main Directorist_Base Instance.
@@ -188,18 +188,18 @@ final class Directorist_Base
 	 * @see  ATBDP()
 	 * @return object|Directorist_Base The one true Directorist_Base
 	 */
-	public static function instance()
+	public static function instance(): self
 	{
 		if (!isset(self::$instance) && !(self::$instance instanceof Directorist_Base)) {
 			self::$instance = new Directorist_Base();
 			self::$instance->setup_constants();
 
-			add_action( 'plugins_loaded', array( self::$instance, 'redirect_to_setup_wizard' ) );
-			add_action('init', array(self::$instance, 'load_textdomain'));
-			add_action('init', array(self::$instance, 'add_polylang_swicher_support') );
-			add_action('widgets_init', array(self::$instance, 'register_widgets'));
-			add_filter('widget_display_callback', array(self::$instance, 'custom_widget_body_wrapper'), 10, 3);
-			add_action('after_setup_theme', array(self::$instance, 'add_image_sizes'));
+			add_action( 'plugins_loaded', [ self::$instance, 'redirect_to_setup_wizard' ] );
+			add_action('init', [self::$instance, 'load_textdomain']);
+			add_action('init', [self::$instance, 'add_polylang_swicher_support'] );
+			add_action('widgets_init', [self::$instance, 'register_widgets']);
+			add_filter('widget_display_callback', [self::$instance, 'custom_widget_body_wrapper'], 10, 3);
+			add_action('after_setup_theme', [self::$instance, 'add_image_sizes']);
 
 			add_action( 'template_redirect', [ self::$instance, 'check_single_listing_page_restrictions' ] );
 			add_action( 'atbdp_show_flush_messages', [ self::$instance, 'show_flush_messages' ] );
@@ -209,7 +209,7 @@ final class Directorist_Base
 			self::$instance->custom_post = new ATBDP_Custom_Post(); // create custom post
 			self::$instance->taxonomy = new ATBDP_Custom_Taxonomy();
 
-			add_action('init', array( self::$instance, 'on_install_update_actions' ) );
+			add_action('init', [ self::$instance, 'on_install_update_actions' ] );
 
 			Directorist\Asset_Loader\Asset_Loader::init();
 
@@ -264,16 +264,16 @@ final class Directorist_Base
 			//activate rewrite api
 			new ATBDP_Rewrite();
 			//map custom capabilities
-			add_filter('map_meta_cap', array(self::$instance->roles, 'meta_caps'), 10, 4);
+			add_filter('map_meta_cap', [self::$instance->roles, 'meta_caps'], 10, 4);
 			//add dtbdp custom body class
-			add_filter('body_class', array(self::$instance, 'atbdp_body_class'), 99);
+			add_filter('body_class', [self::$instance, 'atbdp_body_class'], 99);
 
 			// Attempt to create listing related custom pages with plugin's custom shortcode to give user best experience.
 			// we can check the database if our custom pages have been installed correctly or not here first.
 			// This way we can minimize the adding of our custom function to the WordPress hooks.
 
 			if (get_option('atbdp_pages_version') < 1) {
-				add_action('wp_loaded', array(self::$instance, 'add_custom_directorist_pages'));
+				add_action('wp_loaded', [self::$instance, 'add_custom_directorist_pages']);
 			}
 
 			// init offline gateway
@@ -283,8 +283,8 @@ final class Directorist_Base
 			// add upgrade feature
 			new ATBDP_Upgrade();
 			// add uninstall menu
-			add_filter('atbdp_settings_menus', array(self::$instance, 'add_uninstall_menu'));
-			add_filter( 'display_post_states', array(self::$instance, 'add_page_states'), 10, 2 );
+			add_filter('atbdp_settings_menus', [self::$instance, 'add_uninstall_menu']);
+			add_filter( 'display_post_states', [self::$instance, 'add_page_states'], 10, 2 );
 			self::init_hooks();
 
 			// Initialize appsero tracking
@@ -314,7 +314,7 @@ final class Directorist_Base
 	}
 
 	// on_install_update_actions
-	public function on_install_update_actions() {
+	public function on_install_update_actions(): void {
 		$install_event_key = get_directorist_option( 'directorist_installed_event_key', '', true );
 
 		// Execute directorist_installed hook if plugin gets installed first time
@@ -338,12 +338,12 @@ final class Directorist_Base
 	}
 
 	// show_flush_messages
-	public function show_flush_messages() {
+	public function show_flush_messages(): void {
 		atbdp_get_flush_messages();
 	}
 
 	// check_single_listing_page_restrictions
-	public function check_single_listing_page_restrictions() {
+	public function check_single_listing_page_restrictions(): void {
 		if ( is_user_logged_in() || ! is_singular( ATBDP_POST_TYPE ) ) {
 			return;
 		}
@@ -357,12 +357,12 @@ final class Directorist_Base
 	}
 
 	// add_polylang_swicher_support
-	public function add_polylang_swicher_support() {
+	public function add_polylang_swicher_support(): void {
 		// beta plugin lookup
 		$plugin_data = get_plugin_data( plugin_dir_path( __FILE__ ) . 'directorist-base.php' );
 
 		if( ! empty( $plugin_data['Version'] ) ) {
-			self::$instance->beta = strpos( $plugin_data['Version'], 'Beta' ) ? true : false;
+			self::$instance->beta = (bool) strpos( $plugin_data['Version'], 'Beta' );
 		}
 
 
@@ -371,7 +371,7 @@ final class Directorist_Base
 			$category_url = $this->get_polylang_swicher_link_for_term([
 				'term_type'            => 'category',
 				'term_default_page_id' => get_directorist_option('single_category_page'),
-				'term_query_var'       => ( ! empty( $_GET['category'] ) ) ? sanitize_text_field( wp_unslash( $_GET['category'] ) ) : get_query_var('atbdp_category'),
+				'term_query_var'       => ( empty( $_GET['category'] ) ) ? get_query_var('atbdp_category') : sanitize_text_field( wp_unslash( $_GET['category'] ) ),
 				'current_lang'         => $current_lang,
 				'url'                  => $url,
 			]);
@@ -382,7 +382,7 @@ final class Directorist_Base
 			$location_url = $this->get_polylang_swicher_link_for_term([
 				'term_type'            => 'location',
 				'term_default_page_id' => get_directorist_option('single_location_page'),
-				'term_query_var'       => ( ! empty( $_GET['location'] ) ) ? sanitize_text_field( wp_unslash( $_GET['location'] ) ) : get_query_var('atbdp_location'),
+				'term_query_var'       => ( empty( $_GET['location'] ) ) ? get_query_var('atbdp_location') : sanitize_text_field( wp_unslash( $_GET['location'] ) ),
 				'current_lang'         => $current_lang,
 				'url'                  => $url,
 			]);
@@ -396,7 +396,7 @@ final class Directorist_Base
 	// get_polylang_swicher_link_for_term
 	public function get_polylang_swicher_link_for_term( $args ) {
 		if ( ! function_exists( 'pll_get_post_language' ) ) {
-			return;
+			return null;
 		}
 
 		$default = [
@@ -428,32 +428,32 @@ final class Directorist_Base
 	}
 
 	/**
-	 * Init Hooks
-	 *
-	 * @access private
-	 * @since 6.4.5
-	 * @return void
-	 */
-	public static function init_hooks()
+     * Init Hooks
+     *
+     * @access private
+     * @since 6.4.5
+     */
+    public static function init_hooks(): void
 	{
 		ATBDP_Cache_Helper::reset_cache();
 	}
 
 	/**
-	 * Setup plugin constants.
-	 *
-	 * @access private
-	 * @since 1.0
-	 * @return void
-	 */
-	private function setup_constants()
+     * Setup plugin constants.
+     *
+     * @access private
+     * @since 1.0
+     */
+    private function setup_constants(): void
 	{
 		// test
 		require_once plugin_dir_path(__FILE__) . '/config.php'; // loads constant from a file so that it can be available on all files.
 	}
 
-	private function autoload( $dir = '' ) {
-		if ( !file_exists( $dir ) ) return;
+	private function autoload( string $dir = '' ): void {
+		if (!file_exists( $dir )) {
+            return;
+        }
 		foreach ( scandir( $dir ) as $file ) {
 			if ( preg_match( "/.php$/i", $file ) ) {
 				require_once( $dir . $file );
@@ -462,13 +462,12 @@ final class Directorist_Base
 	}
 
 	/**
-	 * Include required files.
-	 *
-	 * @access private
-	 * @since 1.0
-	 * @return void
-	 */
-	private function includes()
+     * Include required files.
+     *
+     * @access private
+     * @since 1.0
+     */
+    private function includes(): void
 	{
 		$this->autoload( ATBDP_INC_DIR . 'helpers/' );
 		$this->autoload( ATBDP_INC_DIR . 'asset-loader/' );
@@ -513,15 +512,15 @@ final class Directorist_Base
 	}
 
 	// require_files
-	public static function require_files( array $files = [] ) {
+	public static function require_files( array $files = [] ): void {
 		foreach ( $files as $file ) {
-			if ( file_exists( "{$file}.php" ) ) {
-				require_once "{$file}.php";
+			if ( file_exists( $file . '.php' ) ) {
+				require_once $file . '.php';
 			}
 		}
 	}
 
-	public static function prepare_plugin()
+	public static function prepare_plugin(): void
 	{
 		include ATBDP_INC_DIR . 'classes/class-installation.php';
 		ATBDP_Installation::install();
@@ -557,16 +556,15 @@ final class Directorist_Base
 	}
 
 	/**
-	 * It registers widgets and sidebar support
-	 *
-	 * @since 1.0
-	 * @access public
-	 * @return void
-	 */
-	public function register_widgets()
+     * It registers widgets and sidebar support
+     *
+     * @since 1.0
+     * @access public
+     */
+    public function register_widgets(): void
 	{
 		if (!is_registered_sidebar('right-sidebar-listing')) {
-			register_sidebar(array(
+			register_sidebar([
 				'name' => apply_filters('atbdp_right_sidebar_name', __('Directorist - Listing Right Sidebar', 'directorist')),
 				'id' => 'right-sidebar-listing',
 				'description' => __('Add widgets for the right sidebar on single listing page', 'directorist'),
@@ -574,11 +572,11 @@ final class Directorist_Base
 				'after_widget' => '</div>',
 				'before_title' => '<div class="directorist-card__header directorist-widget__header"><h3 class="directorist-card__header__title directorist-widget__header__title">',
 				'after_title' => '</h3></div>',
-			));
+			]);
 		}
 	}
 
-	public function custom_widget_body_wrapper( $instance, $widget, $args ) {
+	public function custom_widget_body_wrapper( $instance, $widget, array $args ) {
 		// Check if this is the specific sidebar
 		if ( $args['id'] === 'right-sidebar-listing' ) {
 			// Create a wrapper for the widget body
@@ -626,7 +624,7 @@ final class Directorist_Base
 	}
 
 
-	public function add_image_sizes() {
+	public function add_image_sizes(): void {
 		$current_preview_size = get_directorist_option( 'preview_image_quality', 'directorist_preview' );
 
 		if ( $current_preview_size == 'directorist_preview' ) {
@@ -636,21 +634,19 @@ final class Directorist_Base
 	}
 
 	/**
-	 * Handles redirection to the Directorist setup wizard.
-	 *
-	 * This method checks if the user is currently in the WordPress admin area and if the
-	 * _directorist_setup_page_redirect transient exists. If both conditions are met,
-	 * it triggers the redirection to the Directorist setup wizard page.
-	 *
-	 * @return void
-	 */
-	public function redirect_to_setup_wizard() {
+     * Handles redirection to the Directorist setup wizard.
+     *
+     * This method checks if the user is currently in the WordPress admin area and if the
+     * _directorist_setup_page_redirect transient exists. If both conditions are met,
+     * it triggers the redirection to the Directorist setup wizard page.
+     */
+    public function redirect_to_setup_wizard(): void {
 		if ( is_admin() && get_transient( '_directorist_setup_page_redirect' ) ) {
 			directorist_redirect_to_admin_setup_wizard();
 		}
 	}
 
-	public function load_textdomain() {
+	public function load_textdomain(): void {
 		// Determine the current locale
 		$locale = determine_locale();
 		// Allow filters to modify the locale
@@ -661,14 +657,14 @@ final class Directorist_Base
 	}
 
 	/**
-	 * It  loads a template file from the Default template directory.
-	 * @todo; Improve this method in future so that it lets user/developers to change/override any templates this plugin uses
-	 * @param string $name Name of the file that should be loaded from the template directory.
-	 * @param array $args Additional arguments that should be passed to the template file for rendering dynamic  data.
-	 * @param bool $return_path Whether to return the path instead of including it
-	 * @return string|void
-	 */
-	public function load_template( $template_name, $args = array(), $return_path = false )
+     * It  loads a template file from the Default template directory.
+     * @todo; Improve this method in future so that it lets user/developers to change/override any templates this plugin uses
+     * @param string $name Name of the file that should be loaded from the template directory.
+     * @param array $args Additional arguments that should be passed to the template file for rendering dynamic  data.
+     * @param bool $return_path Whether to return the path instead of including it
+     * @return string|null
+     */
+    public function load_template( string $template_name, $args = [], $return_path = false )
 	{
 		$path = ATBDP_VIEWS_DIR . $template_name . '.php';
 		$path = apply_filters( 'directorist_admin_template', $path, $template_name, $args );
@@ -678,9 +674,10 @@ final class Directorist_Base
 		}
 
 		include($path);
+        return null;
 	}
 
-	public function add_custom_directorist_pages()
+	public function add_custom_directorist_pages(): void
 	{
 		$create_permission = apply_filters('atbdp_create_required_pages', true);
 		if ($create_permission){
@@ -694,7 +691,7 @@ final class Directorist_Base
 	* @param array   $post_states An array of post display states.
 	* @param WP_Post $post        The current post object.
 	*/
-	public function add_page_states( $post_states, $post ) {
+	public function add_page_states( array $post_states, $post ): array {
 
 		if ( get_directorist_option( 'add_listing_page' ) === $post->ID ) {
 		   $post_states['directorist_add_listing'] = __( 'Directorist Add Listing', 'directorist' );
@@ -754,40 +751,39 @@ final class Directorist_Base
 	   return $post_states;
    }
 
-	public function add_uninstall_menu($menus) {
-		$menus['uninstall_menu'] = array(
+	public function add_uninstall_menu(array $menus): array {
+		$menus['uninstall_menu'] = [
 			'title' => __('Uninstall', 'directorist'),
 			'name' => 'uninstall_menu',
 			'icon' => 'font-awesome:fa-window-close',
-			'controls' => apply_filters('atbdp_uninstall_settings_controls', array(
-				'currency_section' => array(
+			'controls' => apply_filters('atbdp_uninstall_settings_controls', [
+				'currency_section' => [
 					'type' => 'section',
 					'title' => __('Uninstall Settings', 'directorist'),
 					'fields' => get_uninstall_settings_submenus(),
-				),
-			)),
-		);
-		$menus['csv_import'] = array(
+				],
+			]),
+		];
+		$menus['csv_import'] = [
 			'title' => __('Listings Import', 'directorist'),
 			'name' => 'csv_import',
 			'icon' => 'font-awesome:fa-upload',
-			'controls' => apply_filters('atbdp_csv_import_settings_controls', array(
-				'currency_section' => array(
+			'controls' => apply_filters('atbdp_csv_import_settings_controls', [
+				'currency_section' => [
 					'type' => 'section',
 					'title' => __('Listings Import', 'directorist'),
 					'fields' => get_csv_import_settings_submenus(),
-				),
-			)),
-		);
+				],
+			]),
+		];
 		return $menus;
 	}
 
-	public function show_popular_listing() {
+	public function show_popular_listing(): void {
 		_deprecated_function( 'ATBDP()->show_popular_listing', '7.2.0' );
-		return;
 	}
 
-	public function show_static_rating($post) {
+	public function show_static_rating($post): void {
 		if ( ! directorist_is_review_enabled() ) {
 			return;
 		}
@@ -809,21 +805,23 @@ final class Directorist_Base
 	 *
 	 * @return object WP_Query
 	 */
-	public function get_related_listings($post) {
-		_deprecated_function( __METHOD__, '7.4.3' );
-		return new WP_Query();
-	}
+	public function get_related_listings()
+    {
+        _deprecated_function( __METHOD__, '7.4.3' );
+        return new WP_Query();
+    }
 
-	public function get_related_listings_widget( $post, $count ) {
-		_deprecated_function( __METHOD__, '7.3.1' );
-	}
+	public function get_related_listings_widget(): void
+    {
+        _deprecated_function( __METHOD__, '7.3.1' );
+    }
 
 	/**
 	 * Unused method
 	 *
 	 * @return object WP_Query
 	 */
-	public function add_custom_meta_keys_for_old_listings() {
+	public function add_custom_meta_keys_for_old_listings(): void {
 		_deprecated_function( __METHOD__, '7.4.3' );
 	}
 
@@ -837,8 +835,8 @@ final class Directorist_Base
 	 *
 	 * @deprecated Use parse_video() for video parsing.
 	 */
-	public function atbdp_parse_videos( $url ) {
-		_deprecated_function( __METHOD__, '7.8.0', 'Directorist\Helper::parse_video()' );
+	public function atbdp_parse_videos( $url ): string {
+		_deprecated_function( __METHOD__, '7.8.0', \Directorist\Helper::class . '::parse_video()' );
 
 		return \Directorist\Helper::parse_video( $url );
 	}
@@ -852,17 +850,15 @@ final class Directorist_Base
 	}
 
 	/**
-	 * Initialize appsero tracking.
-	 *
-	 * Removed custom plugins meta data field in 7.0.5.4
-	 * since Appsero made this builtin.
-	 *
-	 * @see https://github.com/Appsero/client
-	 *
-	 * @return void
-	 */
-	public function init_appsero() {
-		if ( ! class_exists( '\Directorist\Appsero\Client' ) ) {
+     * Initialize appsero tracking.
+     *
+     * Removed custom plugins meta data field in 7.0.5.4
+     * since Appsero made this builtin.
+     *
+     * @see https://github.com/Appsero/client
+     */
+    public function init_appsero(): void {
+		if ( ! class_exists( \Directorist\Appsero\Client::class ) ) {
 			require_once ATBDP_INC_DIR . 'modules/appsero/src/Client.php';
 		}
 
@@ -874,7 +870,7 @@ final class Directorist_Base
 		$client->insights()->init();
 	}
 
-	public function init_blocks() {
+	public function init_blocks(): void {
 		require_once ATBDP_DIR . 'blocks/init.php';
 	}
 
@@ -894,10 +890,10 @@ final class Directorist_Base
  * @since 1.0
  * @return object|Directorist_Base The one true Directorist_Base Instance.
  */
-function ATBDP()
+function ATBDP(): \Directorist_Base
 {
 	return Directorist_Base::instance();
 }
 
 ATBDP();
-register_activation_hook(__FILE__, array('Directorist_Base', 'prepare_plugin'));
+register_activation_hook(__FILE__, ['Directorist_Base', 'prepare_plugin']);

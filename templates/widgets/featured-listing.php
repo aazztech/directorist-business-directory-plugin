@@ -5,24 +5,26 @@
  * @version 8.0.8
  */
 
-if ( ! defined( 'ABSPATH' ) ) exit;
+if (! defined( 'ABSPATH' )) {
+    exit;
+}
 
 use Directorist\Review\Markup;
 
-$f_listing_num = !empty($instance['f_listing_num']) ? $instance['f_listing_num'] : 5;
+$f_listing_num = empty($instance['f_listing_num']) ? 5 : $instance['f_listing_num'];
 
-$featured_args = array(
+$featured_args = [
     'post_type' => ATBDP_POST_TYPE,
     'post_status' => 'publish',
     'posts_per_page' => (int)$f_listing_num,
-    'meta_query' => array(
-        array(
+    'meta_query' => [
+        [
             'key' => '_featured',
             'value' => 1,
             'compare' => '='
-        )
-    )
-);
+        ]
+    ]
+];
 /**
  * Filter to modify featured listings arguments.
  *
@@ -58,9 +60,9 @@ $default_icon = 'las la-tags';
                         <?php
                         $default_image = get_directorist_option('default_preview_image', DIRECTORIST_ASSETS . 'images/grid.jpg');
                         if (!empty($listing_prv_img)) {
-                            echo '<a href="'.esc_url( get_the_permalink() ).'"><img src="' . esc_url(wp_get_attachment_image_url($listing_prv_img, array(90, 90))) . '" alt="listing image"></a>';
+                            echo '<a href="'.esc_url( get_the_permalink() ).'"><img src="' . esc_url(wp_get_attachment_image_url($listing_prv_img, [90, 90])) . '" alt="listing image"></a>';
                         } elseif (!empty($listing_img[0]) && empty($listing_prv_img)) {
-                            echo '<a href="'.esc_url( get_the_permalink() ).'"><img src="' . esc_url(wp_get_attachment_image_url($listing_img[0], array(90, 90))) . '" alt="listing image"></a>';
+                            echo '<a href="'.esc_url( get_the_permalink() ).'"><img src="' . esc_url(wp_get_attachment_image_url($listing_img[0], [90, 90])) . '" alt="listing image"></a>';
                         } else {
                             echo '<a href="'.esc_url( get_the_permalink() ).'"><img src="' . esc_url( $default_image ) . '" alt="listing image"></a>';
                         }

@@ -5,7 +5,9 @@
 
 namespace Directorist\Asset_Loader;
 
-if ( ! defined( 'ABSPATH' ) ) exit;
+if (! defined( 'ABSPATH' )) {
+    exit;
+}
 
 class Helper {
 
@@ -15,10 +17,10 @@ class Helper {
 	 * @return bool
 	 */
 	public static function debug_enabled() {
-		return SCRIPT_DEBUG ? SCRIPT_DEBUG : get_directorist_option( 'script_debugging', false, true );
+		return SCRIPT_DEBUG ?: get_directorist_option( 'script_debugging', false, true );
 	}
 
-	public static function instant_search_enabled() {
+	public static function instant_search_enabled(): bool {
 		return true;
 	}
 
@@ -28,7 +30,7 @@ class Helper {
 	 * @param array $script single item of Scripts::get_all_scripts() array.
 	 * @param string $version
 	 */
-	public static function register_all_scripts( $scripts, $version = '' ) {
+	public static function register_all_scripts( $scripts, $version = '' ): void {
 		if ( !$version ) {
 			$version = self::get_script_version();
 		}
@@ -45,7 +47,7 @@ class Helper {
 	 * @param array $script single item of Scripts::get_all_scripts() array.
 	 * @param string $version
 	 */
-	public static function register_single_script( $handle, $script, $version = '' ) {
+	public static function register_single_script( $handle, $script, $version = '' ): void {
         $url = self::script_file_url( $script );
 
         if ( !empty( $script['dep'] ) ) {
@@ -84,8 +86,7 @@ class Helper {
 		include $style_path;
 		$style = ob_get_clean();
 		$style = str_replace( ['<style>', '</style>'], '', $style );
-		$style = self::minify_css( $style );
-		return $style;
+		return self::minify_css( $style );
 	}
 
 	/**
@@ -103,8 +104,7 @@ class Helper {
 		$min  = self::debug_enabled() ? '' : '.min';
 		$rtl  = ( !empty( $script['rtl'] ) && is_rtl() ) ? '.rtl' : '';
 		$ext  = $script['type'] == 'css' ? '.css' : '.js';
-		$url = $script['path'] . $rtl . $min . $ext;
-		return $url;
+		return $script['path'] . $rtl . $min . $ext;
 	}
 
 	/**
@@ -117,9 +117,12 @@ class Helper {
 	 * @return string
 	 */
 	public static function minify_css( $input ) {
-		if(trim($input) === "") return $input;
+		if (trim($input) === "") {
+            return $input;
+        }
+
 		return preg_replace(
-			array(
+			[
 				// Remove comment(s)
 				'#("(?:[^"\\\]++|\\\.)*+"|\'(?:[^\'\\\\]++|\\\.)*+\')|\/\*(?!\!)(?>.*?\*\/)|^\s*|\s*$#s',
 				// Remove unused white-space(s)
@@ -141,8 +144,8 @@ class Helper {
 				'#(?<=[\{;])(border|outline):none(?=[;\}\!])#',
 				// Remove empty selector(s)
 				'#(\/\*(?>.*?\*\/))|(^|[\{\}])(?:[^\s\{\}]+)\{\}#s'
-			),
-			array(
+			],
+			[
 				'$1',
 				'$1$2$3$4$5$6$7',
 				'$1',
@@ -154,7 +157,7 @@ class Helper {
 				'$1$2$3',
 				'$1:0',
 				'$1$2'
-			),
+			],
 			$input);
 	}
 
@@ -199,6 +202,7 @@ class Helper {
 				if ( $screen == 'at_biz_dir_page_atbdp-directory-types' && empty( $_GET['action'] ) ) {
 					$status = true;
 				}
+
 				break;
 
 			case 'builder-edit':
@@ -211,26 +215,28 @@ class Helper {
 					// Multi-directory disabled
 					$status = true;
 				}
+
 				break;
 
 			case 'settings':
 				if ( $screen == 'at_biz_dir_page_atbdp-settings' ) {
 					$status = true;
 				}
+
 				break;
 
 			case 'all_listings':
 				if ( $screen == 'edit' && !empty( $_GET['post_type'] ) && $_GET['post_type'] == 'at_biz_dir' ) {
 					$status = true;
 				}
+
 				break;
 
 			case 'add_listing':
-				if ( $screen == 'post' ) {
-					if ( get_post_type( get_the_ID() ) === 'at_biz_dir' ) {
-						$status = true;
-					}
+				if ( $screen == 'post' && get_post_type( get_the_ID() ) === 'at_biz_dir' ) {
+					$status = true;
 				}
+
 				break;
 
 			case 'taxonomy':
@@ -240,36 +246,42 @@ class Helper {
 						$status = true;
 					}
 				}
+
 				break;
 
 			case 'support':
 				if ( $screen == 'at_biz_dir_page_directorist-status' ) {
 					$status = true;
 				}
+
 				break;
 
 			case 'extensions':
 				if ( $screen == 'at_biz_dir_page_atbdp-extension' ) {
 					$status = true;
 				}
+
 				break;
 
 			case 'import_export':
 				if ( $screen == 'at_biz_dir_page_tools' ) {
 					$status = true;
 				}
+
 				break;
 
 			case 'wp-plugins':
 				if ( $screen == 'plugins' ) {
 					$status = true;
 				}
+
 				break;
 
 			case 'wp-users':
 				if ( $screen == 'users' ) {
 					$status = true;
 				}
+
 				break;
 		}
 

@@ -5,7 +5,9 @@
  * @version 7.0.4
  */
 
-if ( ! defined( 'ABSPATH' ) ) exit;
+if (! defined( 'ABSPATH' )) {
+    exit;
+}
 ?>
 
 <h2 class="directorist-listing-title"><?php echo wp_kses_post( $listings->loop_get_title() );?></h2>

@@ -11,7 +11,7 @@ class ATBDP_System_Info
         include ATBDP_INC_DIR . '/system-status/system-information/system-information-template.php';
     }
 
-    public function get_environment_info() {
+    public function get_environment_info(): array {
 		global $wpdb;
 
 		// Figure out cURL version, if installed.
@@ -31,14 +31,14 @@ class ATBDP_System_Info
 		$user_agent 	= isset( $_SERVER['HTTP_USER_AGENT'] ) ? sanitize_text_field( wp_unslash( $_SERVER['HTTP_USER_AGENT'] ) ) : '';
 		$default_role   = get_option( 'default_role' );
 		// Test POST requests
-		$post_response = wp_safe_remote_post( 'http://api.wordpress.org/core/browse-happy/1.1/', array(
+		$post_response = wp_safe_remote_post( 'http://api.wordpress.org/core/browse-happy/1.1/', [
 			'timeout'     => 10,
 			'user-agent'  => 'WordPress/' . get_bloginfo( 'version' ) . '; ' . home_url(),
 			'httpversion' => '1.1',
-			'body'        => array(
+			'body'        => [
 			    'useragent' => $user_agent,
-			),
-		) );
+			],
+		] );
 
 		$post_response_body = NULL;
 		$post_response_successful = false;
@@ -48,18 +48,18 @@ class ATBDP_System_Info
 		}
 
 		// Test GET requests
-		$get_response = wp_safe_remote_get( 'https://plugins.svn.wordpress.org/directorist/trunk/readme.txt', array(
+		$get_response = wp_safe_remote_get( 'https://plugins.svn.wordpress.org/directorist/trunk/readme.txt', [
 			'timeout'     => 10,
 			'user-agent'  => 'Directorist/' . ATBDP_VERSION,
 			'httpversion' => '1.1',
-		) );
+		] );
 		$get_response_successful = false;
 		if ( ! is_wp_error( $post_response ) && $post_response['response']['code'] >= 200 && $post_response['response']['code'] < 300 ) {
 			$get_response_successful = true;
 		}
 
 		// Return all environment info. Described by JSON Schema.
-		return array(
+		return [
 			'home_url'                  => get_option( 'home' ),
 			'site_url'                  => get_option( 'siteurl' ),
 			'version'                   => ATBDP_VERSION,
@@ -69,7 +69,7 @@ class ATBDP_System_Info
 			'wp_debug_mode'             => ( defined( 'WP_DEBUG' ) && WP_DEBUG ),
 			'wp_cron'                   => ! ( defined( 'DISABLE_WP_CRON' ) && DISABLE_WP_CRON ),
 			'language'                  => get_locale(),
-			'server_info'               => ! empty( $_SERVER['SERVER_SOFTWARE'] ) ? sanitize_text_field( wp_unslash( $_SERVER['SERVER_SOFTWARE'] ) ) : '',
+			'server_info'               => empty( $_SERVER['SERVER_SOFTWARE'] ) ? '' : sanitize_text_field( wp_unslash( $_SERVER['SERVER_SOFTWARE'] ) ),
 			'php_version'               => phpversion(),
 			'php_post_max_size'         => $this->directorist_let_to_num( ini_get( 'post_max_size' ) ),
 			'php_max_execution_time'    => ini_get( 'max_execution_time' ),
@@ -77,7 +77,7 @@ class ATBDP_System_Info
 			'curl_version'              => $curl_version,
 			'suhosin_installed'         => extension_loaded( 'suhosin' ),
 			'max_upload_size'           => wp_max_upload_size(),
-			'mysql_version'             => ( ! empty( $wpdb->is_mysql ) ? $wpdb->db_version() : '' ),
+			'mysql_version'             => ( empty( $wpdb->is_mysql ) ? '' : $wpdb->db_version() ),
 			'default_timezone'          => date_default_timezone_get(),
 			'fsockopen_or_curl_enabled' => ( function_exists( 'fsockopen' ) || function_exists( 'curl_init' ) ),
 			'soapclient_enabled'        => class_exists( 'SoapClient' ),
@@ -88,24 +88,22 @@ class ATBDP_System_Info
 			'remote_post_response'      => ( is_wp_error( $post_response ) ? $post_response->get_error_message() : $post_response['response']['code'] ),
 			'remote_get_successful'     => $get_response_successful,
 			'remote_get_response'       => ( is_wp_error( $get_response ) ? $get_response->get_error_message() : $get_response['response']['code'] ),
-			'platform'       			=> ! empty( $post_response_body['platform'] ) ? $post_response_body['platform'] : '-',
-			'browser_name'       		=> ! empty( $post_response_body['name'] ) ? $post_response_body['name'] : '-',
-			'browser_version'       	=> ! empty( $post_response_body['version'] ) ? $post_response_body['version'] : '-',
+			'platform'       			=> empty( $post_response_body['platform'] ) ? '-' : $post_response_body['platform'],
+			'browser_name'       		=> empty( $post_response_body['name'] ) ? '-' : $post_response_body['name'],
+			'browser_version'       	=> empty( $post_response_body['version'] ) ? '-' : $post_response_body['version'],
 			'user_agent'       			=> $user_agent,
 			'default_role'       		=> $default_role,
-		);
+		];
     }
 
     /**
-	 * Get array of database information. Version, prefix, and table existence.
-	 *
-	 * @return array
-	 */
-	public function get_database_info() {
+     * Get array of database information. Version, prefix, and table existence.
+     */
+    public function get_database_info(): array {
 		global $wpdb;
 
-		$tables        = array();
-		$database_size = array();
+		$tables        = [];
+		$database_size = [];
 
 		// It is not possible to get the database name from some classes that replace wpdb (e.g., HyperDB)
 		// and that is why this if condition is needed.
@@ -127,9 +125,9 @@ class ATBDP_System_Info
 			// WC Core tables to check existence of.
 			$core_tables = apply_filters(
 				'atbdp_database_tables',
-				array(
+				[
 					'atbdp_review',
-				)
+				]
 			);
 
 			/**
@@ -137,22 +135,22 @@ class ATBDP_System_Info
 			 *
 			 * If we changed the tables above to include the prefix, then any filters against that table could break.
 			 */
-			$core_tables = array_map( array( $this, 'add_db_table_prefix' ), $core_tables );
+			$core_tables = array_map( [ $this, 'add_db_table_prefix' ], $core_tables );
 
 			/**
 			 * Organize WooCommerce and non-WooCommerce tables separately for display purposes later.
 			 *
 			 * To ensure we include all WC tables, even if they do not exist, pre-populate the WC array with all the tables.
 			 */
-			$tables = array(
+			$tables = [
 				'directorist' => array_fill_keys( $core_tables, false ),
-				'other'       => array(),
-			);
+				'other'       => [],
+			];
 
-			$database_size = array(
+			$database_size = [
 				'data'  => 0,
 				'index' => 0,
-			);
+			];
 
 			$site_tables_prefix = $wpdb->get_blog_prefix( get_current_blog_id() );
 			$global_tables      = $wpdb->tables( 'global', true );
@@ -161,13 +159,14 @@ class ATBDP_System_Info
 				if ( is_multisite() && 0 !== strpos( $table->name, $site_tables_prefix ) && ! in_array( $table->name, $global_tables, true ) ) {
 					continue;
 				}
+
 				$table_type = in_array( $table->name, $core_tables, true ) ? 'directorist' : 'other';
 
-				$tables[ $table_type ][ $table->name ] = array(
+				$tables[ $table_type ][ $table->name ] = [
 					'data'   => $table->data,
 					'index'  => $table->index,
 					'engine' => $table->engine,
-				);
+				];
 
 				$database_size['data']  += $table->data;
 				$database_size['index'] += $table->index;
@@ -175,12 +174,12 @@ class ATBDP_System_Info
 		}
 
 		// Return all database info. Described by JSON Schema.
-		return array(
+		return [
 			'database_prefix'        => $wpdb->prefix,
 			'maxmind_geoip_database' => '',
 			'database_tables'        => $tables,
 			'database_size'          => $database_size,
-		);
+		];
     }
 
     /**
@@ -189,58 +188,52 @@ class ATBDP_System_Info
 	 * @param string $table table name
 	 * @return strong
 	 */
-	protected function add_db_table_prefix( $table ) {
+	protected function add_db_table_prefix( string $table ): string {
 		global $wpdb;
 		return $wpdb->prefix . $table;
     }
 
     /**
-	 * Get array of counts of objects. Orders, products, etc.
-	 *
-	 * @return array
-	 */
-	public function get_post_type_counts() {
+     * Get array of counts of objects. Orders, products, etc.
+     */
+    public function get_post_type_counts(): array {
 		global $wpdb;
 
-		$post_type_counts = $wpdb->get_results( "SELECT post_type AS 'type', count(1) AS 'count' FROM {$wpdb->posts} GROUP BY post_type;" );
+		$post_type_counts = $wpdb->get_results( sprintf("SELECT post_type AS 'type', count(1) AS 'count' FROM %s GROUP BY post_type;", $wpdb->posts) );
 
-		return is_array( $post_type_counts ) ? $post_type_counts : array();
+		return is_array( $post_type_counts ) ? $post_type_counts : [];
     }
 
      /**
-	 * Returns security tips.
-	 *
-	 * @return array
-	 */
-	public function get_security_info() {
+     * Returns security tips.
+     */
+    public function get_security_info(): array {
 		$check_page = get_home_url();
-		return array(
+		return [
 			'secure_connection' => 'https' === substr( $check_page, 0, 5 ),
 			'hide_errors'       => ! ( defined( 'WP_DEBUG' ) && defined( 'WP_DEBUG_DISPLAY' ) && WP_DEBUG && WP_DEBUG_DISPLAY ) || 0 === intval( ini_get( 'display_errors' ) ),
-		);
+		];
     }
 
     /**
-	 * Get a list of plugins active on the site.
-	 *
-	 * @return array
-	 */
-	public function get_active_plugins() {
+     * Get a list of plugins active on the site.
+     */
+    public function get_active_plugins(): array {
 		require_once( ABSPATH . 'wp-admin/includes/plugin.php' );
 		require_once( ABSPATH . 'wp-admin/includes/update.php' );
 
 		if ( ! function_exists( 'get_plugin_updates' ) ) {
-			return array();
+			return [];
 		}
 
 		// Get both site plugins and network plugins
-		$active_plugins = (array) get_option( 'active_plugins', array() );
+		$active_plugins = (array) get_option( 'active_plugins', [] );
 		if ( is_multisite() ) {
-			$network_activated_plugins = array_keys( get_site_option( 'active_sitewide_plugins', array() ) );
+			$network_activated_plugins = array_keys( get_site_option( 'active_sitewide_plugins', [] ) );
 			$active_plugins            = array_merge( $active_plugins, $network_activated_plugins );
 		}
 
-		$active_plugins_data = array();
+		$active_plugins_data = [];
 		$available_updates   = get_plugin_updates();
 
 		foreach ( $active_plugins as $plugin ) {
@@ -253,7 +246,7 @@ class ATBDP_System_Info
 			$data = get_plugin_data( $plugin_file );
 
 			// convert plugin data to json response format.
-			$active_plugins_data[] = array(
+			$active_plugins_data[] = [
 				'plugin'            => $plugin,
 				'name'              => $data['Name'],
 				'version'           => $data['Version'],
@@ -262,45 +255,43 @@ class ATBDP_System_Info
 				'author_url'        => esc_url_raw( $data['AuthorURI'] ),
 				'network_activated' => $data['Network'],
 				'latest_verison'    => ( $plugin && array_key_exists( $plugin, $available_updates ) ) ? $available_updates[ $plugin ]->update->new_version : $data['Version'],
-			);
+			];
 		}
 
 		return $active_plugins_data;
     }
 
     /**
-	 * Get info on the current active theme, info on parent theme (if present)
-	 * and a list of template overrides.
-	 *
-	 * @return array
-	 */
-	public function get_theme_info() {
+     * Get info on the current active theme, info on parent theme (if present)
+     * and a list of template overrides.
+     */
+    public function get_theme_info(): array {
 		$active_theme = wp_get_theme();
 
 		// Get parent theme info if this theme is a child theme, otherwise
 		// pass empty info in the response.
 		if ( is_child_theme() ) {
 			$parent_theme      = wp_get_theme( $active_theme->template );
-			$parent_theme_info = array(
+			$parent_theme_info = [
 				'parent_name'           => $parent_theme->name,
 				'parent_version'        => $parent_theme->version,
 				'parent_version_latest' => self::get_latest_theme_version( $parent_theme ),
 				'parent_author_url'     => $parent_theme->{'Author URI'},
-			);
+			];
 		} else {
-			$parent_theme_info = array(
+			$parent_theme_info = [
 				'parent_name'           => '',
 				'parent_version'        => '',
 				'parent_version_latest' => '',
 				'parent_author_url'     => '',
-			);
+			];
 		}
 
 		/**
 		 * Scan the theme directory for all templates to see if our theme
 		 * overrides any of them.
 		 */
-		$override_files     = array();
+		$override_files     = [];
 		$outdated_templates = false;
 		$scan_files         = self::scan_template_files( Helper::template_directory() );
 		foreach ( $scan_files as $file ) {
@@ -319,20 +310,19 @@ class ATBDP_System_Info
 			if ( ! empty( $theme_file ) ) {
 				$core_version  = self::get_file_version( ATBDP_DIR . 'templates/' . $file );
 				$theme_version = self::get_file_version( $theme_file );
-				if ( $core_version && ( empty( $theme_version ) || version_compare( $theme_version, $core_version, '<' ) ) ) {
-					if ( ! $outdated_templates ) {
-						$outdated_templates = true;
-					}
+				if ( $core_version && (empty( $theme_version ) || version_compare($theme_version, $core_version, '<')) && ! $outdated_templates ) {
+					$outdated_templates = true;
 				}
-				$override_files[] = array(
+
+				$override_files[] = [
 					'file'         => str_replace( WP_CONTENT_DIR . '/themes/', '', $theme_file ),
 					'version'      => $theme_version,
 					'core_version' => $core_version,
-				);
+				];
 			}
 		}
 
-		$active_theme_info = array(
+		$active_theme_info = [
 			'name'                    => $active_theme->name,
 			'version'                 => $active_theme->version,
 			'version_latest'          => self::get_latest_theme_version( $active_theme ),
@@ -340,7 +330,7 @@ class ATBDP_System_Info
 			'is_child_theme'          => is_child_theme(),
 			'has_outdated_templates'  => $outdated_templates,
 			'overrides'               => $override_files,
-		);
+		];
 
 		return array_merge( $active_theme_info, $parent_theme_info );
     }
@@ -356,23 +346,23 @@ class ATBDP_System_Info
 	public static function get_latest_theme_version( $theme ) {
 		include_once( ABSPATH . 'wp-admin/includes/theme.php' );
 
-		$api = themes_api( 'theme_information', array(
+		$api = themes_api( 'theme_information', [
 			'slug'     => $theme->get_stylesheet(),
-			'fields'   => array(
+			'fields'   => [
 				'sections' => false,
 				'tags'     => false,
-			),
-		) );
+			],
+		] );
 
 		$update_theme_version = 0;
 
 		// Check .org for updates.
 		if ( is_object( $api ) && ! is_wp_error( $api ) ) {
-			if ( isset( $api->version ) ) {
-				$update_theme_version = $api->version;
-			} else if ( isset( $api->stable_version ) ) {
-				$update_theme_version = $api->stable_version;
-			}
+			if (isset( $api->version )) {
+                $update_theme_version = $api->version;
+            } elseif (isset( $api->stable_version )) {
+                $update_theme_version = $api->stable_version;
+            }
 
 		// Check GeoDirectory Theme Version.
 		} elseif ( strstr( $theme->{'Author URI'}, 'aazztech' ) ) {
@@ -382,18 +372,16 @@ class ATBDP_System_Info
 			if ( false === $theme_version_data ) {
 				$theme_changelog = wp_safe_remote_get( 'http://dzv365zjfbd8v.cloudfront.net/changelogs/' . $theme_dir . '/changelog.txt' );
 				$cl_lines  = explode( "\n", wp_remote_retrieve_body( $theme_changelog ) );
-				if ( ! empty( $cl_lines ) ) {
-					foreach ( $cl_lines as $line_num => $cl_line ) {
-						if ( preg_match( '/^[0-9]/', $cl_line ) ) {
+				foreach ( $cl_lines as $line_num => $cl_line ) {
+						if ( preg_match( '/^\d/', $cl_line ) ) {
 							$theme_date         = str_replace( '.', '-', trim( substr( $cl_line, 0, strpos( $cl_line, '-' ) ) ) );
 							$theme_version      = preg_replace( '~[^0-9,.]~', '',stristr( $cl_line, "version" ) );
 							$theme_update       = trim( str_replace( '*', '', $cl_lines[ $line_num + 1 ] ) );
-							$theme_version_data = array( 'date' => $theme_date, 'version' => $theme_version, 'update' => $theme_update, 'changelog' => $theme_changelog );
+							$theme_version_data = [ 'date' => $theme_date, 'version' => $theme_version, 'update' => $theme_update, 'changelog' => $theme_changelog ];
 							set_transient( $theme_dir . '_version_data', $theme_version_data, DAY_IN_SECONDS );
 							break;
 						}
 					}
-				}
 			}
 
 			if ( ! empty( $theme_version_data['version'] ) ) {
@@ -404,9 +392,12 @@ class ATBDP_System_Info
 		return $update_theme_version;
 	}
 
-    public function php_information() {
-		$dump_php = array();
-		$php_vars = array(
+    /**
+     * @return string[]|false[]
+     */
+    public function php_information(): array {
+		$dump_php = [];
+		$php_vars = [
 			'max_execution_time',
 			'open_basedir',
 			'memory_limit',
@@ -432,12 +423,13 @@ class ATBDP_System_Info
 			'session.serialize_handler',
 			'session.use_cookies',
 			'session.use_only_cookies',
-		);
+		];
 
 		$dump_php['Version'] = phpversion();
 		foreach ( $php_vars as $setting ) {
 			$dump_php[ $setting ] = ini_get( $setting );
 		}
+
 		$dump_php['Error Reporting'] = implode( '<br>', $this->_error_reporting() );
 		$extensions                  = get_loaded_extensions();
 		natcasesort( $extensions );
@@ -445,11 +437,14 @@ class ATBDP_System_Info
 		return $dump_php;
 	}
 
-	public function _error_reporting() {
-		$levels          = array();
+	/**
+     * @return 'E_ERROR'[]|'E_WARNING'[]|'E_PARSE'[]|'E_NOTICE'[]|'E_CORE_ERROR'[]|'E_CORE_WARNING'[]|'E_COMPILE_ERROR'[]|'E_COMPILE_WARNING'[]|'E_USER_ERROR'[]|'E_USER_WARNING'[]|'E_USER_NOTICE'[]|'E_STRICT'[]|'E_RECOVERABLE_ERROR'[]|'E_DEPRECATED'[]|'E_USER_DEPRECATED'[]|'E_ALL'[]
+     */
+    public function _error_reporting(): array {
+		$levels          = [];
 		$error_reporting = error_reporting();
 
-		$constants = array(
+		$constants = [
 			'E_ERROR',
 			'E_WARNING',
 			'E_PARSE',
@@ -466,12 +461,12 @@ class ATBDP_System_Info
 			'E_DEPRECATED',
 			'E_USER_DEPRECATED',
 			'E_ALL',
-		);
+		];
 
 		foreach ( $constants as $level ) {
 			if ( defined( $level ) ) {
 				$c = constant( $level );
-				if ( $error_reporting & $c ) {
+				if ( ($error_reporting & $c) !== 0 ) {
 					$levels[ $c ] = $level;
 				}
 			}
@@ -481,20 +476,19 @@ class ATBDP_System_Info
     }
 
     /**
-	 * Scan the template files.
-	 *
-	 * @param  string $template_path Path to the template directory.
-	 * @return array
-	 */
-	public static function scan_template_files( $template_path ) {
+     * Scan the template files.
+     *
+     * @param  string $template_path Path to the template directory.
+     */
+    public static function scan_template_files( string $template_path ): array {
 		$files  = @scandir( $template_path ); // @codingStandardsIgnoreLine.
-		$result = array();
+		$result = [];
 
-		if ( ! empty( $files ) ) {
+		if ( $files !== [] && $files !== false ) {
 
-			foreach ( $files as $key => $value ) {
+			foreach ( $files as $value ) {
 
-				if ( ! in_array( $value, array( '.', '..' ), true ) ) {
+				if ( ! in_array( $value, [ '.', '..' ], true ) ) {
 
 					if ( is_dir( $template_path . DIRECTORY_SEPARATOR . $value ) ) {
 						$sub_files = self::scan_template_files( $template_path . DIRECTORY_SEPARATOR . $value );
@@ -507,6 +501,7 @@ class ATBDP_System_Info
 				}
 			}
 		}
+
 		return $result;
 	}
 
@@ -568,10 +563,11 @@ class ATBDP_System_Info
             case 'K':
                 $ret *= 1024;
         }
+
         return $ret;
     }
 
-    function directorist_help_tip( $tip ) {
+    public function directorist_help_tip( $tip ): string {
 
         $tip = esc_attr( $tip );
 

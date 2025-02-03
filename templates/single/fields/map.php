@@ -5,7 +5,9 @@
  * @version 7.7.0
  */
 
-if ( ! defined( 'ABSPATH' ) ) exit;
+if (! defined( 'ABSPATH' )) {
+    exit;
+}
 ?>
 <div class="directorist-single-map" data-map="<?php echo esc_attr( $listing->map_data() ); ?>"></div>
 <div class="directorist-single-map__location">

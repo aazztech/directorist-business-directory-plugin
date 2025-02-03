@@ -7,7 +7,9 @@ namespace Directorist\Widgets;
 
 use Directorist\Helper;
 
-if ( ! defined( 'ABSPATH' ) ) exit;
+if (! defined( 'ABSPATH' )) {
+    exit;
+}
 
 class Login_Form extends \WP_Widget {
 
@@ -22,7 +24,7 @@ class Login_Form extends \WP_Widget {
 		parent::__construct( $id_base, $name, $widget_options );
 	}
 
-	public function form( $instance ) {
+	public function form( $instance ): void {
 		$defaults = [
 			'title'           => esc_html__( 'Login Form', 'directorist' ),
 			'single_only'     => 1,
@@ -45,26 +47,23 @@ class Login_Form extends \WP_Widget {
 		Widget_Fields::create( $fields, $instance, $this );
 	}
 
-	public function update( $new_instance, $old_instance ) {
-		$instance = [];
+	public function update($new_instance, $old_instance)
+    {
+        return ['title' => empty( $new_instance['title'] ) ? '' : sanitize_text_field( $new_instance['title'] ), 'single_only' => empty( $new_instance['single_only'] ) ? 0 : 1];
+    }
 
-		$instance['title']            = ! empty( $new_instance['title'] ) ? sanitize_text_field( $new_instance['title'] ) : '';
-		$instance['single_only']      = ! empty( $new_instance['single_only'] ) ? 1 : 0;
-
-		return $instance;
-	}
-
-	public function widget( $args, $instance ) {
-        if( ( ! empty( $instance['single_only'] ) && ! is_singular( ATBDP_POST_TYPE ) ) || is_user_logged_in() )
+	public function widget( $args, $instance ): void {
+        if (( ! empty( $instance['single_only'] ) && ! is_singular( ATBDP_POST_TYPE ) ) || is_user_logged_in()) {
             return;
+        }
 
 		echo wp_kses_post( $args['before_widget'] );
 
-		$title = !empty($instance['title']) ? esc_html($instance['title']) : esc_html__('Login Form', 'directorist');
+		$title = empty($instance['title']) ? esc_html__('Login Form', 'directorist') : esc_html($instance['title']);
 		$widget_title = $args['before_title'] . apply_filters( 'widget_title', $title ) . $args['after_title'];
 		echo wp_kses_post( $widget_title );
 
-		Helper::get_template( 'widgets/login-form', compact( 'args', 'instance' ) );
+		Helper::get_template( 'widgets/login-form', ['args' => $args, 'instance' => $instance] );
 
 		echo wp_kses_post( $args['after_widget'] );
 	}

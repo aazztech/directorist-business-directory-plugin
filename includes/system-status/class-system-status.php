@@ -5,34 +5,35 @@
 class ATBDP_Status
 {
 
+    /**
+     * @var \ATBDP_Custom_Url
+     */
     public $custom_url;
 
     public function __construct() {
-        add_action( 'admin_menu', array( $this, 'status_menu' ), 60 );
+        add_action( 'admin_menu', [ $this, 'status_menu' ], 60 );
 
         $this->include();
         $this->custom_url = new ATBDP_Custom_Url();
     }
 
-    public function include() {
+    public function include(): void {
         include ATBDP_INC_DIR . '/system-status/system-information/system-information.php';
         include ATBDP_INC_DIR . '/system-status/custom-url.php';
     }
 
      /**
      * Add system status menu page
-     *
-     * @return void
      */
-    public function status_menu() {
-        add_submenu_page( 'edit.php?post_type=at_biz_dir', __( 'Help & Support', 'directorist' ), __( 'Help & Support', 'directorist' ) , 'manage_options', 'directorist-status', array( $this, 'tools_page' ) );
+    public function status_menu(): void {
+        add_submenu_page( 'edit.php?post_type=at_biz_dir', __( 'Help & Support', 'directorist' ), __( 'Help & Support', 'directorist' ) , 'manage_options', 'directorist-status', [ $this, 'tools_page' ] );
     }
 
-    public function tools_page() {
+    public function tools_page(): void {
         include ATBDP_INC_DIR . '/system-status/template.php';
     }
 
-    public function status_page() { ?>
+    public function status_page(): void { ?>
 
         <div class='postbox'>
         <?php

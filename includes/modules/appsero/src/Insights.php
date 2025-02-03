@@ -40,16 +40,10 @@ class Insights
      */
     protected $client;
 
-    /**
-     * @var bool
-     */
-    private $plugin_data = false;
+    private bool $plugin_data = false;
 
     /**
      * Initialize the class
-     *
-     * @param null $name
-     * @param null $file
      */
     public function __construct($client, $name = null, $file = null)
     {
@@ -67,7 +61,7 @@ class Insights
      *
      * @return \self
      */
-    public function hide_notice()
+    public function hide_notice(): self
     {
         $this->show_notice = false;
 
@@ -79,7 +73,7 @@ class Insights
      *
      * @return \self
      */
-    public function add_plugin_data()
+    public function add_plugin_data(): self
     {
         $this->plugin_data = true;
 
@@ -93,7 +87,7 @@ class Insights
      *
      * @return \self
      */
-    public function add_extra($data = [])
+    public function add_extra($data = []): self
     {
         $this->extra_data = $data;
 
@@ -107,7 +101,7 @@ class Insights
      *
      * @return \self
      */
-    public function notice($text = '')
+    public function notice($text = ''): self
     {
         $this->notice = $text;
 
@@ -116,10 +110,8 @@ class Insights
 
     /**
      * Initialize insights
-     *
-     * @return void
      */
-    public function init()
+    public function init(): void
     {
         if ($this->client->type === 'plugin') {
             $this->init_plugin();
@@ -130,10 +122,8 @@ class Insights
 
     /**
      * Initialize theme hooks
-     *
-     * @return void
      */
-    public function init_theme()
+    public function init_theme(): void
     {
         $this->init_common();
 
@@ -143,10 +133,8 @@ class Insights
 
     /**
      * Initialize plugin hooks
-     *
-     * @return void
      */
-    public function init_plugin()
+    public function init_plugin(): void
     {
         // plugin deactivate popup
         //        if ( ! $this->is_local_server() ) {
@@ -190,10 +178,8 @@ class Insights
      * Send tracking data to AppSero server
      *
      * @param bool $override
-     *
-     * @return void
      */
-    public function send_tracking_data($override = false)
+    public function send_tracking_data($override = false): void
     {
         if (!$this->tracking_allowed() && !$override) {
             return;
@@ -208,7 +194,7 @@ class Insights
 
         $tracking_data = $this->get_tracking_data();
 
-        $response = $this->client->send_request($tracking_data, 'track');
+        $this->client->send_request($tracking_data, 'track');
 
         update_option($this->client->slug . '_tracking_last_send', time());
     }
@@ -232,12 +218,12 @@ class Insights
             ]
         );
 
-        $admin_user = (is_array($users) && !empty($users)) ? $users[0] : false;
+        $admin_user = (is_array($users) && $users !== []) ? $users[0] : false;
         $first_name = '';
         $last_name  = '';
 
         if ($admin_user) {
-            $first_name = $admin_user->first_name ? $admin_user->first_name : $admin_user->display_name;
+            $first_name = $admin_user->first_name ?: $admin_user->display_name;
             $last_name  = $admin_user->last_name;
         }
 
@@ -271,8 +257,8 @@ class Insights
                 }
 
                 $plugins_data[$slug] = [
-                    'name'      => isset($plugin['name']) ? $plugin['name'] : '',
-                    'version'   => isset($plugin['version']) ? $plugin['version'] : '',
+                    'name'      => $plugin['name'] ?? '',
+                    'version'   => $plugin['version'] ?? '',
                 ];
             }
 
@@ -322,10 +308,8 @@ class Insights
 
     /**
      * Explain the user which data we collect
-     *
-     * @return array
      */
-    protected function data_we_collect()
+    protected function data_we_collect(): array
     {
         $data = [
             'Server environment details (php, mysql, server, WordPress versions)',
@@ -345,10 +329,8 @@ class Insights
 
     /**
      * Check if the user has opted into tracking
-     *
-     * @return bool
      */
-    public function tracking_allowed()
+    public function tracking_allowed(): bool
     {
         $allow_tracking = get_option($this->client->slug . '_allow_tracking', 'no');
 
@@ -367,18 +349,11 @@ class Insights
 
     /**
      * Check if the notice has been dismissed or enabled
-     *
-     * @return bool
      */
-    public function notice_dismissed()
+    public function notice_dismissed(): bool
     {
         $hide_notice = get_option($this->client->slug . '_tracking_notice', null);
-
-        if ('hide' === $hide_notice) {
-            return true;
-        }
-
-        return false;
+        return 'hide' === $hide_notice;
     }
 
     /**
@@ -405,10 +380,8 @@ class Insights
 
     /**
      * Schedule the event weekly
-     *
-     * @return void
      */
-    private function schedule_event()
+    private function schedule_event(): void
     {
         $hook_name = wp_unslash($this->client->slug . '_tracker_send_event');
 
@@ -419,20 +392,16 @@ class Insights
 
     /**
      * Clear any scheduled hook
-     *
-     * @return void
      */
-    private function clear_schedule_event()
+    private function clear_schedule_event(): void
     {
         wp_clear_scheduled_hook($this->client->slug . '_tracker_send_event');
     }
 
     /**
      * Display the admin notice to users that have not opted-in or out
-     *
-     * @return void
      */
-    public function admin_notice()
+    public function admin_notice(): void
     {
         if ($this->notice_dismissed()) {
             return;
@@ -483,10 +452,8 @@ class Insights
 
     /**
      * Handle the optin/optout
-     *
-     * @return void
      */
-    public function handle_optin_optout()
+    public function handle_optin_optout(): void
     {
         if (!isset($_GET['_wpnonce'])) {
             return;
@@ -513,10 +480,8 @@ class Insights
 
     /**
      * Tracking optin
-     *
-     * @return void
      */
-    public function optin()
+    public function optin(): void
     {
         update_option($this->client->slug . '_allow_tracking', 'yes');
         update_option($this->client->slug . '_tracking_notice', 'hide');
@@ -533,10 +498,8 @@ class Insights
 
     /**
      * Optout from tracking
-     *
-     * @return void
      */
-    public function optout()
+    public function optout(): void
     {
         update_option($this->client->slug . '_allow_tracking', 'no');
         update_option($this->client->slug . '_tracking_notice', 'hide');
@@ -555,16 +518,14 @@ class Insights
      * Get the number of post counts
      *
      * @param string $post_type
-     *
-     * @return int
      */
-    public function get_post_count($post_type)
+    public function get_post_count($post_type): int
     {
         global $wpdb;
 
         return (int) $wpdb->get_var(
             $wpdb->prepare(
-                "SELECT count(ID) FROM $wpdb->posts WHERE post_type = %s and post_status = %s",
+                sprintf('SELECT count(ID) FROM %s WHERE post_type = %%s and post_status = %%s', $wpdb->posts),
                 [$post_type, 'publish']
             )
         );
@@ -572,10 +533,8 @@ class Insights
 
     /**
      * Get server related info.
-     *
-     * @return array
      */
-    private static function get_server_info()
+    private function get_server_info(): array
     {
         global $wpdb;
 
@@ -603,10 +562,8 @@ class Insights
 
     /**
      * Get WordPress related data.
-     *
-     * @return array
      */
-    private function get_wp_info()
+    private function get_wp_info(): array
     {
         $wp_data = [];
 
@@ -629,10 +586,8 @@ class Insights
 
     /**
      * Get the list of active and inactive plugins
-     *
-     * @return array
      */
-    private function get_all_plugins()
+    private function get_all_plugins(): array
     {
         // Ensure get_plugins function is loaded
         if (!function_exists('get_plugins')) {
@@ -681,10 +636,8 @@ class Insights
 
     /**
      * Get user totals based on user role.
-     *
-     * @return array
      */
-    public function get_user_counts()
+    public function get_user_counts(): array
     {
         $user_count          = [];
         $user_count_data     = count_users();
@@ -705,11 +658,9 @@ class Insights
     /**
      * Add weekly cron schedule
      *
-     * @param array $schedules
      *
-     * @return array
      */
-    public function add_weekly_schedule($schedules)
+    public function add_weekly_schedule(array $schedules): array
     {
         $schedules['weekly'] = [
             'interval' => DAY_IN_SECONDS * 7,
@@ -721,10 +672,8 @@ class Insights
 
     /**
      * Plugin activation hook
-     *
-     * @return void
      */
-    public function activate_plugin()
+    public function activate_plugin(): void
     {
         $allowed = get_option($this->client->slug . '_allow_tracking', 'no');
 
@@ -747,10 +696,8 @@ class Insights
 
     /**
      * Clear our options upon deactivation
-     *
-     * @return void
      */
-    public function deactivation_cleanup()
+    public function deactivation_cleanup(): void
     {
         $this->clear_schedule_event();
 
@@ -765,11 +712,9 @@ class Insights
     /**
      * Hook into action links and modify the deactivate link
      *
-     * @param array $links
      *
-     * @return array
      */
-    public function plugin_action_links($links)
+    public function plugin_action_links(array $links): array
     {
         if (array_key_exists('deactivate', $links)) {
             $links['deactivate'] = str_replace('<a', '<a class="' . $this->client->slug . '-deactivate-link"', $links['deactivate']);
@@ -780,12 +725,10 @@ class Insights
 
     /**
      * Plugin uninstall reasons
-     *
-     * @return array
      */
-    private function get_uninstall_reasons()
+    private function get_uninstall_reasons(): array
     {
-        $reasons = [
+        return [
             [
                 'id'          => 'could-not-understand',
                 'text'        => $this->client->_trans("Couldn't understand"),
@@ -829,16 +772,12 @@ class Insights
                 'icon'        => '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="23" viewBox="0 0 24 6"><g fill="none"><g fill="#3B86FF"><path d="M3 0C4.7 0 6 1.3 6 3 6 4.7 4.7 6 3 6 1.3 6 0 4.7 0 3 0 1.3 1.3 0 3 0ZM12 0C13.7 0 15 1.3 15 3 15 4.7 13.7 6 12 6 10.3 6 9 4.7 9 3 9 1.3 10.3 0 12 0ZM21 0C22.7 0 24 1.3 24 3 24 4.7 22.7 6 21 6 19.3 6 18 4.7 18 3 18 1.3 19.3 0 21 0Z"/></g></g></svg>',
             ],
         ];
-
-        return $reasons;
     }
 
     /**
      * Plugin deactivation uninstall reason submission
-     *
-     * @return void
      */
-    public function uninstall_reason_submission()
+    public function uninstall_reason_submission(): void
     {
         if (!isset($_POST['nonce'])) {
             return;
@@ -872,10 +811,8 @@ class Insights
 
     /**
      * Handle the plugin deactivation feedback
-     *
-     * @return void
      */
-    public function deactivate_scripts()
+    public function deactivate_scripts(): void
     {
         global $pagenow;
 
@@ -1031,10 +968,8 @@ class Insights
      * @param string $new_name
      * @param object $new_theme
      * @param object $old_theme
-     *
-     * @return void
      */
-    public function theme_deactivated($new_name, $new_theme, $old_theme)
+    public function theme_deactivated($new_name, $new_theme, $old_theme): void
     {
         // Make sure this is appsero theme
         if ($old_theme->get_template() === $this->client->slug) {
@@ -1045,7 +980,7 @@ class Insights
     /**
      * Get user IP Address
      */
-    private function get_user_ip_address()
+    private function get_user_ip_address(): string
     {
         $response = wp_remote_get('https://icanhazip.com/');
 
@@ -1084,7 +1019,7 @@ class Insights
     /**
      * Send request to appsero if user skip to send tracking data
      */
-    private function send_tracking_skipped_request()
+    private function send_tracking_skipped_request(): void
     {
         $skipped = get_option($this->client->slug . '_tracking_skipped');
 
@@ -1105,7 +1040,7 @@ class Insights
     /**
      * Deactivation modal styles
      */
-    private function deactivation_modal_styles()
+    private function deactivation_modal_styles(): void
     {
     ?>
         <style type="text/css">

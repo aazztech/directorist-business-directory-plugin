@@ -9,8 +9,8 @@ if ( ! defined( 'ABSPATH' ) ) {
     exit;
 }
 
-$tag = tag_escape( $before ? $before : 'div' );
-$closing_tag = tag_escape( $after ? $after : 'div' );
+$tag = tag_escape( $before ?: 'div' );
+$closing_tag = tag_escape( $after ?: 'div' );
 
 ?>
 <<?php echo $tag; ?> class="directorist-listing-card-checkbox">

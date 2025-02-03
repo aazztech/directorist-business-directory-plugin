@@ -13,9 +13,9 @@ use Exception;
 
 class Fields {
 
-	private static $fields = array();
+	private static array $fields = [];
 
-	public static function register( $field ) {
+	public static function register( $field ): void {
 		try {
 			if ( ! is_subclass_of( $field, Base_Field::class ) ) {
 				throw new Exception( 'Must be a subclass of <code>' . Base_Field::class . '</code>' );
@@ -30,12 +30,12 @@ class Fields {
 			}
 
 			self::$fields[ $field->type ] = $field;
-		} catch ( Exception $e ) {
-			wp_die( $e->getMessage() );
+		} catch ( Exception $exception ) {
+			wp_die( $exception->getMessage() );
 		}
 	}
 
-	public static function exists( $field_type ) {
+	public static function exists( $field_type ): bool {
 		return isset( self::$fields[ $field_type ] );
 	}
 
@@ -45,7 +45,7 @@ class Fields {
 	 * @return Base_Field
 	 */
 	public static function get( $field_type ) {
-		return isset( self::$fields[ $field_type ] ) ? self::$fields[ $field_type ] : false;
+		return self::$fields[ $field_type ] ?? false;
 	}
 
 	/**
@@ -53,7 +53,7 @@ class Fields {
 	 *
 	 * @return Base_Field[]
 	 */
-	public static function get_all() {
+	public static function get_all(): array {
 		return self::$fields;
 	}
 
@@ -65,11 +65,7 @@ class Fields {
 	 * @return Base_Field | bool
 	 */
 	public static function create( $properties ) {
-		if ( $properties instanceof Base_Field ) {
-			$type = $properties->type;
-		} else {
-			$type = isset( $properties['widget_name'] ) ? $properties['widget_name'] : '';
-		}
+		$type = $properties instanceof Base_Field ? $properties->type : $properties['widget_name'] ?? '';
 
 		$type = self::translate_key_to_field( $type );
 
@@ -79,13 +75,12 @@ class Fields {
 
 		$class      = self::$fields[ $type ];
 		$class_name = get_class( $class );
-		$field      = new $class_name( $properties );
 
-		return $field;
+		return new $class_name( $properties );
 	}
 
 	public static function translate_key_to_field( $type ) {
-		$map = array(
+		$map = [
 			'address'            => 'text',
 			'category'           => 'categories',
 			'color'              => 'color_picker',
@@ -123,10 +118,10 @@ class Fields {
 			'drestaurant_feature_list'    => 'textarea',
 			'onelisting_feature_list'     => 'textarea',
 			'pricing-period'              => 'checkbox',
-		);
+		];
 
 		$map = apply_filters( 'directorist_listing_form_fields_class_map', $map );
 
-		return isset( $map[ $type ] ) ? $map[ $type ] : $type;
+		return $map[ $type ] ?? $type;
 	}
 }

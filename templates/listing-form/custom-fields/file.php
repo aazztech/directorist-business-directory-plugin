@@ -5,24 +5,22 @@
  * @version 7.3.3
  */
 
-if ( ! defined( 'ABSPATH' ) ) exit;
+if (! defined( 'ABSPATH' )) {
+    exit;
+}
 
-$post_id    = ! empty( $data['field_key'] ) ? $data['field_key'] : rand();
+$post_id    = empty( $data['field_key'] ) ? random_int(0, mt_getrandmax()) : $data['field_key'];
 $file_types = 'all_types';
 
 if ( ! empty( $data['file_type'] ) ) {
 	$groups = directorist_get_supported_file_types_groups();
 
-	if ( isset( $groups[ $data['file_type'] ] ) ) {
-		$file_types = implode( ',', $groups[ $data['file_type'] ] );
-	} else {
-		$file_types = $data['file_type'];
-	}
+	$file_types = isset( $groups[ $data['file_type'] ] ) ? implode( ',', $groups[ $data['file_type'] ] ) : $data['file_type'];
 }
 
-$file_size         = ! empty( $data['file_size'] ) ? $data['file_size'] : '2mb';
+$file_size         = empty( $data['file_size'] ) ? '2mb' : $data['file_size'];
 // place js config array for plupload
-$plupload_init = array(
+$plupload_init = [
 	'runtimes'            => 'html5,silverlight,html4',
 	'browse_button'       => 'plupload-browse-button', // will be adjusted per uploader
 	'container'           => 'plupload-upload-ui', // will be adjusted per uploader
@@ -33,26 +31,26 @@ $plupload_init = array(
 	'url'                 => admin_url( 'admin-ajax.php' ),
 	'flash_swf_url'       => includes_url( 'js/plupload/plupload.flash.swf' ),
 	'silverlight_xap_url' => includes_url( 'js/plupload/plupload.silverlight.xap' ),
-	'filters'             => array(
-		array(
+	'filters'             => [
+		[
 			'title'      => __( 'Allowed Files', 'directorist' ),
 			'extensions' => '*',
-		),
-	),
+		],
+	],
 	'multipart'           => true,
 	'urlstream_upload'    => true,
 	'multi_selection'     => false, // will be added per uploader
 	// additional post data to send to our ajax hook
-	'multipart_params'    => array(
+	'multipart_params'    => [
 		'_ajax_nonce' => wp_create_nonce( 'atbdp_attachment_upload' ),   // will be added per uploader
 		'action'      => 'atbdp_post_attachment_upload',                 // the ajax action name
 		// Do not delete or modify 'imgid' we are running backend validation based on this id.
 		'imgid'       => 0,                                              // will be added per uploader
 		'directory'   => $data['form']->current_listing_type,
-	),
-);
+	],
+];
 
-$text_value    = array(
+$text_value    = [
 	'atbdp_allowed_img_types' => implode( ',', directorist_get_supported_file_types_groups( 'image' ) ),
 	'txt_all_files'           => __( 'Allowed files', 'directorist' ),
 	'err_max_file_size'       => __( 'File size error : You tried to upload a file over %s', 'directorist' ),
@@ -61,8 +59,8 @@ $text_value    = array(
 	'err_pkg_upload_limit'    => __( 'You may only upload %s files with this package, please try again.', 'directorist' ),
 	'action_remove'           => __( 'Remove', 'directorist' ),
 	'button_set'              => __( 'Set', 'directorist' ),
-);
-$thumb_img_arr = array();
+];
+$thumb_img_arr = [];
 
 if ( isset( $_REQUEST['pid'] ) && $_REQUEST['pid'] != '' ) {
 	$thumb_img_arr = atbdp_get_images( sanitize_text_field( wp_unslash( $_REQUEST['pid'] ) ) );
@@ -74,12 +72,12 @@ if ( ! empty( $thumb_img_arr ) ) {
 	$totImg = count( $thumb_img_arr );
 }
 $base_plupload_config = json_encode( $plupload_init );
-$gd_plupload_init     = array(
+$gd_plupload_init     = [
 	'base_plupload_config' => $base_plupload_config,
 	'totalImg'             => 0,
 	'image_limit'          => 0,
 	// 'upload_img_size' => $file_size
-);
+];
 
 
 Directorist\Helper::add_hidden_data_to_dom( 'atbdp_plupload_params', $gd_plupload_init );
@@ -99,7 +97,7 @@ $multiple           = false;
 
 	<div class="directorist-custom-field-file-upload__wrapper">
 		<div class="" id="<?php echo esc_attr( $id ); ?>dropbox">
-			<input type="hidden" name="<?php echo esc_attr( $data['field_key'] ); ?>" id="<?php echo esc_attr( $post_id ); ?>" value="<?php echo !empty( $data['value'] ) ? esc_attr( $data['value'] ) : '' ; ?>"
+			<input type="hidden" name="<?php echo esc_attr( $data['field_key'] ); ?>" id="<?php echo esc_attr( $post_id ); ?>" value="<?php echo empty( $data['value'] ) ? '' : esc_attr( $data['value'] ) ; ?>"
 			/>
 			<input type="hidden" name="<?php echo esc_attr( $id ); ?>image_limit" id="<?php echo esc_attr( $id ); ?>image_limit"
 				   value="<?php echo esc_attr( $image_limit ); ?>"/>

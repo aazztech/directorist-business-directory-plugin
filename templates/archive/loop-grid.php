@@ -5,7 +5,9 @@
  * @version 8.0
  */
 
-if ( ! defined( 'ABSPATH' ) ) exit;
+if (! defined( 'ABSPATH' )) {
+    exit;
+}
 
 $loop_fields = $listings->loop['card_fields']['template_data']['grid_view_with_thumbnail'];
 ?>

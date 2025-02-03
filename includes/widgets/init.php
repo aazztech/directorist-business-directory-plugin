@@ -7,11 +7,13 @@
 
 namespace Directorist\Widgets;
 
-if ( ! defined( 'ABSPATH' ) ) exit;
+if (! defined( 'ABSPATH' )) {
+    exit;
+}
 
 class Init {
 
-	protected static $instance = null;
+	protected static $instance;
 
 	private function __construct() {
         add_action( 'widgets_init', [ $this , 'register_widgets' ] );
@@ -22,22 +24,23 @@ class Init {
 		if ( null == self::$instance ) {
 			self::$instance = new self;
 		}
+
 		return self::$instance;
 	}
 
-	public function register_widgets() {
-        register_widget( 'Directorist\Widgets\Popular_Listings' );
-		register_widget( 'Directorist\Widgets\Listing_Video' );
-		register_widget( 'Directorist\Widgets\Contact_Form' );
-		register_widget( 'Directorist\Widgets\Submit_Listing' );
-		register_widget( 'Directorist\Widgets\Login_Form' );
-		register_widget( 'Directorist\Widgets\All_Categories' );
-		register_widget( 'Directorist\Widgets\All_Locations' );
-		register_widget( 'Directorist\Widgets\All_Tags' );
-		register_widget( 'Directorist\Widgets\Search_Form' );
-		register_widget( 'Directorist\Widgets\Single_Map' );
-		register_widget( 'Directorist\Widgets\Similar_Listing' );
-		register_widget( 'Directorist\Widgets\Author_Info' );
-		register_widget( 'Directorist\Widgets\Featured_Listing' );
+	public function register_widgets(): void {
+        register_widget( \Directorist\Widgets\Popular_Listings::class );
+		register_widget( \Directorist\Widgets\Listing_Video::class );
+		register_widget( \Directorist\Widgets\Contact_Form::class );
+		register_widget( \Directorist\Widgets\Submit_Listing::class );
+		register_widget( \Directorist\Widgets\Login_Form::class );
+		register_widget( \Directorist\Widgets\All_Categories::class );
+		register_widget( \Directorist\Widgets\All_Locations::class );
+		register_widget( \Directorist\Widgets\All_Tags::class );
+		register_widget( \Directorist\Widgets\Search_Form::class );
+		register_widget( \Directorist\Widgets\Single_Map::class );
+		register_widget( \Directorist\Widgets\Similar_Listing::class );
+		register_widget( \Directorist\Widgets\Author_Info::class );
+		register_widget( \Directorist\Widgets\Featured_Listing::class );
 	}
 }

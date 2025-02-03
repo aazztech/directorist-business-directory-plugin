@@ -28,47 +28,47 @@ class User_Favorites_Controller extends Abstract_Controller {
 	/**
 	 * Register the routes for terms.
 	 */
-	public function register_routes() {
+	public function register_routes(): void {
 		register_rest_route( $this->namespace, '/' . $this->rest_base,
-			array(
-				array(
+			[
+				[
 					'methods'             => WP_REST_Server::CREATABLE,
-					'callback'            => array( $this, 'create_item' ),
-					'permission_callback' => array( $this, 'create_item_permissions_check' ),
+					'callback'            => [ $this, 'create_item' ],
+					'permission_callback' => [ $this, 'create_item_permissions_check' ],
 					'args'                => array_merge(
 						$this->get_endpoint_args_for_item_schema( WP_REST_Server::CREATABLE ),
-						array(
-							'id' => array(
+						[
+							'id' => [
 								'type'        => 'integer',
 								'description' => __( 'Directory listing id.', 'directorist' ),
 								'required'    => true,
-							),
-						)
+							],
+						]
 					),
-				),
-				'schema' => array( $this, 'get_public_item_schema' ),
-			)
+				],
+				'schema' => [ $this, 'get_public_item_schema' ],
+			]
 		);
 
-		register_rest_route( $this->namespace, '/' . $this->rest_base . '/(?P<id>[\d]+)', array(
-			'args' => array(
-				'user_id' => array(
+		register_rest_route( $this->namespace, '/' . $this->rest_base . '/(?P<id>[\d]+)', [
+			'args' => [
+				'user_id' => [
 					'description' => __( 'User id.', 'directorist' ),
 					'type'        => 'integer',
-				),
-				'id' => array(
+				],
+				'id' => [
 					'description' => __( 'Listing id.', 'directorist' ),
 					'type'        => 'integer',
-				),
-			),
-			array(
+				],
+			],
+			[
 				'methods'             => WP_REST_Server::DELETABLE,
-				'callback'            => array( $this, 'delete_item' ),
-				'permission_callback' => array( $this, 'delete_item_permissions_check' ),
-				'args'                => array(),
-			),
-			'schema' => array( $this, 'get_public_item_schema' ),
-		) );
+				'callback'            => [ $this, 'delete_item' ],
+				'permission_callback' => [ $this, 'delete_item_permissions_check' ],
+				'args'                => [],
+			],
+			'schema' => [ $this, 'get_public_item_schema' ],
+		] );
 	}
 
 	/**
@@ -84,7 +84,7 @@ class User_Favorites_Controller extends Abstract_Controller {
 		}
 
 		if ( ! $permissions ) {
-			return new WP_Error( 'directorist_rest_cannot_create', __( 'Sorry, you are not allowed to favorite resources.', 'directorist' ), array( 'status' => rest_authorization_required_code() ) );
+			return new WP_Error( 'directorist_rest_cannot_create', __( 'Sorry, you are not allowed to favorite resources.', 'directorist' ), [ 'status' => rest_authorization_required_code() ] );
 		}
 
 		return true;
@@ -103,7 +103,7 @@ class User_Favorites_Controller extends Abstract_Controller {
 		}
 
 		if ( ! $permissions ) {
-			return new WP_Error( 'directorist_rest_cannot_delete', __( 'Sorry, you are not allowed to delete this resource.', 'directorist' ), array( 'status' => rest_authorization_required_code() ) );
+			return new WP_Error( 'directorist_rest_cannot_delete', __( 'Sorry, you are not allowed to delete this resource.', 'directorist' ), [ 'status' => rest_authorization_required_code() ] );
 		}
 
 		return true;
@@ -119,11 +119,11 @@ class User_Favorites_Controller extends Abstract_Controller {
 	protected function check_permissions( $request, $context = 'read' ) {
 		// Check permissions for a single user.
 		$id = intval( $request['user_id'] );
-		if ( $id ) {
+		if ( $id !== 0 ) {
 			$user = get_userdata( $id );
 
 			if ( empty( $user ) ) {
-				return new WP_Error( 'directorist_rest_user_invalid', __( 'Resource does not exist.', 'directorist' ), array( 'status' => 404 ) );
+				return new WP_Error( 'directorist_rest_user_invalid', __( 'Resource does not exist.', 'directorist' ), [ 'status' => 404 ] );
 			}
 
 			return directorist_rest_check_user_favorite_permissions( $context, $user->ID );
@@ -159,11 +159,11 @@ class User_Favorites_Controller extends Abstract_Controller {
 		$old_favorites = directorist_get_user_favorites( $user_id );
 		$new_favorites = directorist_add_user_favorites( $user_id, $listing_id );
 
-		$data = array(
+		$data = [
 			'id'            => $listing_id,
 			'old_favorites' => $old_favorites,
 			'new_favorites' => $new_favorites,
-		);
+		];
 
 		/**
 		 * Fires after a user favorite is created or updated via the REST API.
@@ -181,9 +181,7 @@ class User_Favorites_Controller extends Abstract_Controller {
 
 		do_action( 'directorist_rest_after_query', 'create_user_favorites_item', $request, $user_id );
 
-		$response = apply_filters( 'directorist_rest_response', $response, 'create_user_favorites_item', $request, $data );
-
-		return $response;
+		return apply_filters( 'directorist_rest_response', $response, 'create_user_favorites_item', $request, $data );
 	}
 
 	/**
@@ -216,11 +214,11 @@ class User_Favorites_Controller extends Abstract_Controller {
 
 		$new_favorites = directorist_get_user_favorites( $user_id );
 
-		$data = array(
+		$data = [
 			'id'            => $listing_id,
 			'old_favorites' => $old_favorites,
 			'new_favorites' => $new_favorites,
-		);
+		];
 
 		$request->set_param( 'context', 'edit' );
 		$response = $this->prepare_item_for_response( $data, $request );
@@ -236,9 +234,7 @@ class User_Favorites_Controller extends Abstract_Controller {
 
 		do_action( 'directorist_rest_after_query', 'delete_user_favorites_item', $request, $user_id, $listing_id );
 
-		$response = apply_filters( 'directorist_rest_response', $response, 'create_user_favorites_item', $request, $data );
-
-		return $response;
+		return apply_filters( 'directorist_rest_response', $response, 'create_user_favorites_item', $request, $data );
 	}
 
 	/**
@@ -249,9 +245,10 @@ class User_Favorites_Controller extends Abstract_Controller {
 	 * @return WP_REST_Response Response object.
 	 */
 	public function prepare_item_for_response( $data, $request ) {
-		$context  = ! empty( $request['context'] ) ? $request['context'] : 'view';
+		$context  = empty( $request['context'] ) ? 'view' : $request['context'];
 		$data     = $this->add_additional_fields_to_object( $data, $request );
 		$data     = $this->filter_response_by_context( $data, $context );
+
 		$response = rest_ensure_response( $data );
 
 		/**
@@ -270,21 +267,22 @@ class User_Favorites_Controller extends Abstract_Controller {
 	 * @return array
 	 */
 	public function get_item_schema() {
-		$schema = array(
+		$schema = [
 			'$schema'    => 'http://json-schema.org/draft-04/schema#',
 			'title'      => 'favorites',
 			'type'       => 'object',
-			'properties' => array(
-				'id' => array(
+			'properties' => [
+				'id' => [
 					'description' => __( 'User favorite listing id.', 'directorist' ),
 					'type'        => 'integer',
-					'context'     => array( 'view', 'edit' ),
-				),
-			),
-		);
+					'context'     => [ 'view', 'edit' ],
+				],
+			],
+		];
 
 		return $this->add_additional_fields_schema( $schema );
 	}
 }
+
 /* This code is retrieving the user meta data for the user ID of the user that is logged
 in. */

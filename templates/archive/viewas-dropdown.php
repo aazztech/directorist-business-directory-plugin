@@ -5,7 +5,9 @@
  * @version 8.0.1
  */
 
-if ( ! defined( 'ABSPATH' ) ) exit;
+if (! defined( 'ABSPATH' )) {
+    exit;
+}
 ?>
 
 <div class="directorist-viewas">
@@ -16,7 +18,7 @@ if ( ! defined( 'ABSPATH' ) ) exit;
 			Filter
 		</button>
 	<?php endif; ?>
-	<?php foreach ( array_unique($listings->get_view_as_link_list(), SORT_REGULAR) as $key => $value ): ?>
+	<?php foreach ( array_unique($listings->get_view_as_link_list(), SORT_REGULAR) as $value ): ?>
 
 		<a class="directorist-viewas__item directorist-viewas__item--<?php echo esc_attr( strtolower( $value['label'] ) ) ?> <?php echo esc_attr( $value['active_class'] ); ?>" href="<?php echo esc_attr( $value['link'] ); ?>" aria-label="<?php echo esc_attr( strtolower( $value['label'] ) ) ?> view">
 			<?php if ( strpos( $value['link'], 'grid' ) ): ?>

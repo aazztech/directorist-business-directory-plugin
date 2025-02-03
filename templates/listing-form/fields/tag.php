@@ -11,7 +11,7 @@ $data_new    = $data['allow_new'] ?? '';
 $multiple    = $data['type'] === 'multiple' ? 'multiple' : '';
 
 $lazy_load      = $data['lazy_load'];
-$all_tags       = ( ! $lazy_load ) ? get_terms( ATBDP_TAGS, array( 'hide_empty' => 0 ) ) : [];
+$all_tags       = ( $lazy_load ) ? [] : get_terms( ATBDP_TAGS, [ 'hide_empty' => 0 ] );
 
 
 $current_terms = $listing_form->add_listing_terms( ATBDP_TAGS );
@@ -42,7 +42,7 @@ $current_labels_as_string = implode( ',', $current_labels );
 
 		if ( ! $lazy_load ) {
 			foreach ($all_tags as $tag) {
-				$current = in_array($tag->term_id, $current_ids) ? true : false;
+				$current = in_array($tag->term_id, $current_ids);
 				?>
 				<option <?php selected( $current, true, true ); ?> value='<?php echo esc_attr($tag->name); ?>'><?php echo esc_html($tag->name) ?></option>
 				<?php

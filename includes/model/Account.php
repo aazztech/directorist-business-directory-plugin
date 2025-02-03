@@ -7,11 +7,13 @@ namespace Directorist;
 
 use \ATBDP_Permalink;
 
-if ( ! defined( 'ABSPATH' ) ) exit;
+if (! defined( 'ABSPATH' )) {
+    exit;
+}
 
 class Directorist_Account {
 
-	protected static $instance = null;
+	protected static $instance;
 
 	private function __construct() {
 
@@ -21,6 +23,7 @@ class Directorist_Account {
 		if ( null == self::$instance ) {
 			self::$instance = new self();
 		}
+
 		return self::$instance;
 	}
 
@@ -32,7 +35,7 @@ class Directorist_Account {
 			return ob_get_clean();
 		}
 
-		$atts = shortcode_atts( array(
+		$atts = shortcode_atts( [
 			'active_form'          => 'signin',
 			'user_role'            => get_directorist_option( 'display_user_type', false ) ? 'yes' : 'no',
 			'author_role_label'    => __( 'I am an author', 'directorist' ),
@@ -77,9 +80,9 @@ class Directorist_Account {
 			'recovery_password_email_placeholder' => get_directorist_option( 'recpass_placeholder', __( 'eg. mail@example.com', 'directorist' ) ),
 			'recovery_password_button_label'      => get_directorist_option( 'recpass_button', __( 'Get New Password', 'directorist' ) ),
 			'user_type'                           => ''
-		), $atts );
+		], $atts );
 
-		$user_type = ! empty( $_REQUEST['user_type'] ) ? sanitize_text_field( wp_unslash( $_REQUEST['user_type'] ) ) : $atts['user_type'];
+		$user_type = empty( $_REQUEST['user_type'] ) ? $atts['user_type'] : sanitize_text_field( wp_unslash( $_REQUEST['user_type'] ) );
 		$active_form = ( isset( $_GET['signup'] ) && directorist_is_user_registration_enabled() ) ? 'signup' : $atts['active_form'];
 
 		$data = [

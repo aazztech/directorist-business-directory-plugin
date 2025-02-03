@@ -5,7 +5,9 @@
  * @version 8.0.6
  */
 
-if ( ! defined( 'ABSPATH' ) ) exit;
+if (! defined( 'ABSPATH' )) {
+    exit;
+}
 ?>
 
 <section class="directorist-card directorist-card-general-section <?php echo esc_attr( $class );?>" 

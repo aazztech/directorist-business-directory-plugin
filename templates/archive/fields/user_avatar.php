@@ -5,9 +5,11 @@
  * @version 7.3.1
  */
 
-if ( ! defined( 'ABSPATH' ) ) exit;
+if (! defined( 'ABSPATH' )) {
+    exit;
+}
 
-$alignment =  !empty( $data['align'] ) ? $data['align'] : '' ;
+$alignment =  empty( $data['align'] ) ? '' : $data['align'] ;
 ?>
 <div class="directorist-thumb-listing-author directorist-alignment-<?php echo esc_attr( $alignment ) ?>">
 	<a href="<?php echo esc_url( $listings->loop['author_link'] ); ?>" aria-label="Author Image" class="<?php echo esc_attr( $listings->loop['author_link_class'] ); ?>">

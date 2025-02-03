@@ -40,16 +40,16 @@ class Tags_Controller extends Terms_Controller {
 	 * @return WP_REST_Response
 	 */
 	public function prepare_item_for_response( $item, $request ) {
-		$data = array(
+		$data = [
 			'id'          => (int) $item->term_id,
 			'name'        => $item->name,
 			'slug'        => $item->slug,
 			'parent'      => (int) $item->parent,
 			'description' => $item->description,
 			'count'       => (int) $item->count,
-		);
+		];
 
-		$context = ! empty( $request['context'] ) ? $request['context'] : 'view';
+		$context = empty( $request['context'] ) ? 'view' : $request['context'];
 		$data    = $this->add_additional_fields_to_object( $data, $request );
 		$data    = $this->filter_response_by_context( $data, $context );
 
@@ -66,7 +66,7 @@ class Tags_Controller extends Terms_Controller {
 		 * @param object            $item      The original term object.
 		 * @param WP_REST_Request   $request   Request used to generate the response.
 		 */
-		return apply_filters( "directorist_rest_prepare_{$this->taxonomy}", $response, $item, $request );
+		return apply_filters( 'directorist_rest_prepare_' . $this->taxonomy, $response, $item, $request );
 	}
 
 	/**
@@ -75,49 +75,49 @@ class Tags_Controller extends Terms_Controller {
 	 * @return array
 	 */
 	public function get_item_schema() {
-		$schema = array(
+		$schema = [
 			'$schema'    => 'http://json-schema.org/draft-04/schema#',
 			'title'      => $this->taxonomy,
 			'type'       => 'object',
-			'properties' => array(
-				'id'          => array(
+			'properties' => [
+				'id'          => [
 					'description' => __( 'Unique identifier for the resource.', 'directorist' ),
 					'type'        => 'integer',
-					'context'     => array( 'view', 'edit' ),
+					'context'     => [ 'view', 'edit' ],
 					'readonly'    => true,
-				),
-				'name'        => array(
+				],
+				'name'        => [
 					'description' => __( 'Tag name.', 'directorist' ),
 					'type'        => 'string',
-					'context'     => array( 'view', 'edit' ),
-					'arg_options' => array(
+					'context'     => [ 'view', 'edit' ],
+					'arg_options' => [
 						'sanitize_callback' => 'sanitize_text_field',
-					),
-				),
-				'slug'        => array(
+					],
+				],
+				'slug'        => [
 					'description' => __( 'An alphanumeric identifier for the resource unique to its type.', 'directorist' ),
 					'type'        => 'string',
-					'context'     => array( 'view', 'edit' ),
-					'arg_options' => array(
+					'context'     => [ 'view', 'edit' ],
+					'arg_options' => [
 						'sanitize_callback' => 'sanitize_title',
-					),
-				),
-				'description' => array(
+					],
+				],
+				'description' => [
 					'description' => __( 'HTML description of the resource.', 'directorist' ),
 					'type'        => 'string',
-					'context'     => array( 'view', 'edit' ),
-					'arg_options' => array(
+					'context'     => [ 'view', 'edit' ],
+					'arg_options' => [
 						'sanitize_callback' => 'wp_filter_post_kses',
-					),
-				),
-				'count'       => array(
+					],
+				],
+				'count'       => [
 					'description' => __( 'Number of published listings for the resource.', 'directorist' ),
 					'type'        => 'integer',
-					'context'     => array( 'view', 'edit' ),
+					'context'     => [ 'view', 'edit' ],
 					'readonly'    => true,
-				),
-			),
-		);
+				],
+			],
+		];
 
 		return $this->add_additional_fields_schema( $schema );
 	}

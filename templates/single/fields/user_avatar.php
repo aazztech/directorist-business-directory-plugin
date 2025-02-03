@@ -5,7 +5,9 @@
  * @version 7.7.0
  */
 
-if ( ! defined( 'ABSPATH' ) ) exit;
+if (! defined( 'ABSPATH' )) {
+    exit;
+}
 ?>
 <div class="map-listing-card-single__author">
 	<a href="<?php echo esc_url( $author_link ); ?>" aria-label="<?php echo esc_attr( $author_full_name ); ?>">

@@ -227,7 +227,7 @@ global $wpdb;
 			</td>
 		</tr>
 		<?php
-		$rows = apply_filters( 'geodir_system_status_environment_rows', array() );
+		$rows = apply_filters( 'geodir_system_status_environment_rows', [] );
 		foreach ( $rows as $row ) {
 			if ( ! empty( $row['success'] ) ) {
 				$css_class = 'yes';
@@ -242,7 +242,7 @@ global $wpdb;
 				<td class="help"><?php echo isset( $row['help'] ) ? wp_kses_post( $row['help'] ) : ''; ?></td>
 				<td>
 					<mark class="<?php echo esc_attr( $css_class ); ?>">
-						<?php echo wp_kses_data( $icon ); ?>  <?php echo wp_kses_data( ! empty( $row['note'] ) ? $row['note'] : '' ); ?>
+						<?php echo wp_kses_data( $icon ); ?>  <?php echo wp_kses_data( empty( $row['note'] ) ? '' : $row['note'] ); ?>
 					</mark>
 				</td>
 			</tr><?php
@@ -293,7 +293,7 @@ global $wpdb;
             foreach ($atbdp_option as $name => $value) {
             ?>
             <tr>
-                <td data-export-label="<?php echo esc_attr( ! empty( $name ) ? $name: '' ); ?>"> <?php echo esc_attr( ! empty( $name ) ? $name : '' ); ?> </td>
+                <td data-export-label="<?php echo esc_attr( empty( $name ) ? '': $name ); ?>"> <?php echo esc_attr( empty( $name ) ? '' : $name ); ?> </td>
                 <td> <?php print_r( $value ) ?> </td>
             </tr>
             <?php 
@@ -547,7 +547,7 @@ global $wpdb;
 							for ( $i = 0; $i < $total_overrides; $i++ ) {
 								$override = $theme['overrides'][ $i ];
 								if ( $override['core_version'] && ( empty( $override['version'] ) || version_compare( $override['version'], $override['core_version'], '<' ) ) ) {
-									$current_version = $override['version'] ? $override['version'] : '-';
+									$current_version = $override['version'] ?: '-';
 									printf(
 										esc_html__( '%1$s version %2$s is out of date. The core version is %3$s', 'directorist' ),
 										'<code>' . esc_attr( $override['file'] ) . '</code>',

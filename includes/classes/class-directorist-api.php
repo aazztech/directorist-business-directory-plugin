@@ -24,6 +24,7 @@ class API {
 
 		$promotion  = static::get( 'v1/get-promo' );
 		$promotion = json_decode( $promotion );
+
 		$end_time  = static::get_promotion_end_time( $promotion );
 
 		set_transient( 'directorist_promotion', $promotion, $end_time );
@@ -40,9 +41,8 @@ class API {
 
 		$promotion = (object) $promotion;
 		$end_time  = is_numeric( $promotion->promo_end_date ) ? (int) $promotion->promo_end_date : strtotime( $promotion->promo_end_date );
-		$end_time  = $end_time - time();
 
-		return $end_time;
+		return $end_time - time();
 	}
 
 	/**
@@ -58,10 +58,10 @@ class API {
 		$products = static::get( 'v1/get-remote-products' );
 
 		if ( empty( $products ) ) {
-			return array(
-				'themes' => array(),
-				'extensions' => array(),
-			);
+			return [
+				'themes' => [],
+				'extensions' => [],
+			];
 		}
 
 		$products = json_decode( $products, true );
@@ -71,27 +71,24 @@ class API {
 		return $products;
 	}
 
-	/**
-	 * @return array
-	 */
-	protected static function get_request_args() {
-		return array(
+	protected static function get_request_args(): array {
+		return [
 			'method'      => 'GET',
 			'timeout'     => 30,
 			'redirection' => 5,
-			'headers'     => array(
+			'headers'     => [
 				'user-agent' => 'Directorist/' . ATBDP_VERSION,
 				'Accept'     => 'application/json',
-			),
-			'cookies'     => array(),
-		);
+			],
+			'cookies'     => [],
+		];
 	}
 
 	/**
 	 *
 	 * @return string
 	 */
-	public static function get( $endpoint = '' ) {
+	public static function get( string $endpoint = '' ) {
 		$url = static::URL . $endpoint;
 		$response = wp_remote_get( $url, static::get_request_args() );
 

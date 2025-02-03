@@ -27,14 +27,14 @@ function atbdp_get_payment_status($status = '')
  * @param $payment_id
  * @param $status
  */
-function atbdp_update_payment_status($payment_id, $status)
+function atbdp_update_payment_status($payment_id, $status): void
 {
 
 }
 
-function atbdp_purchase_form_required_fields()
+function atbdp_purchase_form_required_fields(): array
 {
-    return array();
+    return [];
 }
 
 /**
@@ -47,14 +47,14 @@ function atbdp_purchase_form_required_fields()
 function atbdp_get_payment_statuses()
 {
 
-    $statuses = array(
+    $statuses = [
         'created' => __("Created", 'directorist'),
         'pending' => __("Pending", 'directorist'),
         'completed' => __("Completed", 'directorist'),
         'failed' => __("Failed", 'directorist'),
         'cancelled' => __("Cancelled", 'directorist'),
         'refunded' => __("Refunded", 'directorist'),
-    );
+    ];
 
     return apply_filters('atbdp_payment_statuses', $statuses);
 
@@ -70,14 +70,14 @@ function atbdp_get_payment_statuses()
 function atbdp_get_payment_bulk_actions()
 {
 
-    $actions = array(
+    $actions = [
         'set_to_created' => __("Set Status to Created", 'directorist'),
         'set_to_pending' => __("Set Status to Pending", 'directorist'),
         'set_to_completed' => __("Set Status to Completed", 'directorist'),
         'set_to_failed' => __("Set Status to Failed", 'directorist'),
         'set_to_cancelled' => __("Set Status to Cancelled", 'directorist'),
         'set_to_refunded' => __("Set Status to Refunded", 'directorist'),
-    );
+    ];
 
     return apply_filters('atbdp_order_bulk_actions', $actions);
 
@@ -99,7 +99,7 @@ function atbdp_get_payment_bulk_actions()
  *
  * @return   string     $amount               Newly formatted amount or Price Not Available
  */
-function atbdp_format_amount( $amount, $decimals = true, $currency_settings = array() ) {
+function atbdp_format_amount( $amount, $decimals = true, $currency_settings = [] ) {
 
     return apply_filters( 'atbdp_format_amount', number_format_i18n( ( float ) $amount, 2 ), $amount, $decimals, $currency_settings );
 
@@ -133,13 +133,13 @@ function atbdp_get_payment_currency_settings()
 {
 
     // Get the payment currency settings, and use the general currency settings if the payment currency setting is empty.
-    $currency_settings = array(
+    $currency_settings = [
         'currency' => get_directorist_option('payment_currency', directorist_get_currency() ),
         'thousands_separator' => get_directorist_option('payment_thousand_separator', get_directorist_option('g_thousand_separator', ',')),
         'decimal_separator' => get_directorist_option('payment_decimal_separator', get_directorist_option('g_decimal_separator', '.')),
         'position' => get_directorist_option('payment_currency_position', directorist_get_currency_position() ),
 
-    );
+    ];
 
     return apply_filters('atbdp_payment_currency_settings', $currency_settings); // return the currency settings array
 
@@ -199,12 +199,16 @@ function atbdp_payment_currency_filter($price = '')
  * @param    array $currency_settings Currency Settings.
  * @return   string    $formatted            Formatted amount with currency.
  */
-function atbdp_currency_filter($price = '', $currency_settings = array())
+function atbdp_currency_filter($price = '', $currency_settings = [])
 {
 
-    !is_array($currency_settings) || extract($currency_settings); // @codingStandardsIgnoreLine. if it is an array then extract it. Using the magic of OR CONDITION's FLOW
-    $currency = !empty($currency) ? $currency : directorist_get_currency();
-    $position = !empty($position) ? $position : directorist_get_currency_position();
+    if (is_array($currency_settings)) {
+        extract($currency_settings);
+    }
+
+     // @codingStandardsIgnoreLine. if it is an array then extract it. Using the magic of OR CONDITION's FLOW
+    $currency = empty($currency) ? directorist_get_currency() : $currency;
+    $position = empty($position) ? directorist_get_currency_position() : $position;
 
     $negative = $price < 0;
 
@@ -294,15 +298,17 @@ function atbdp_currency_symbol($currency = '')
         case "EUR" :
             $symbol = '&euro;';
             break;
-        case "JPY" :
+        case "JPY":
+        case "RMB" :
             $symbol = '&yen;';
             break;
         case "RUPEE" :
         case "INR" :
             $symbol = '&#8377;';
             break;
-        case "PHP" :
-            $symbol = '&#8369;'; // Mexican and Philippine Peso Sign
+        case "PHP":
+        case "CUP" :
+            $symbol = '&#8369;';
             break;
         case "BDT" :
             $symbol = '&#2547;';
@@ -342,7 +348,8 @@ function atbdp_currency_symbol($currency = '')
         case "CVE" :
             $symbol = '&#36;';
             break;
-        case "AWG" :
+        case "AWG":
+        case "ANG" :
             $symbol = '&#402;';
             break;
         case "AZN" :
@@ -363,7 +370,8 @@ function atbdp_currency_symbol($currency = '')
         case "BWP" :
             $symbol = '&#80;';
             break;
-        case "BGN" :
+        case "BGN":
+        case "KGS" :
             $symbol = '&#1083;&#1074;';
             break;
         case "KHR" :
@@ -378,13 +386,13 @@ function atbdp_currency_symbol($currency = '')
         case "HRK" :
             $symbol = '&#107;&#110;';
             break;
-        case "CUP" :
-            $symbol = '&#8369;';
-            break;
         case "CZK" :
             $symbol = '&#75;&#269;';
             break;
-        case "DKK" :
+        case "DKK":
+        case "ISK":
+        case "NOK":
+        case "SEK" :
             $symbol = '&#107;&#114;';
             break;
         case "DOP" :
@@ -414,9 +422,6 @@ function atbdp_currency_symbol($currency = '')
         case "HUF" :
             $symbol = '&#70;&#116;';
             break;
-        case "ISK" :
-            $symbol = '&#107;&#114;';
-            break;
         case "IDR" :
             $symbol = '&#82;&#112;';
             break;
@@ -437,9 +442,6 @@ function atbdp_currency_symbol($currency = '')
         case "KPW" :
         case "KRW" :
             $symbol = '&#8361;';
-            break;
-        case "KGS" :
-            $symbol = '&#1083;&#1074;';
             break;
         case "LAK" :
             $symbol = '&#8365;';
@@ -463,17 +465,11 @@ function atbdp_currency_symbol($currency = '')
         case "MUR" :
             $symbol = '&#8360;';
             break;
-        case "ANG" :
-            $symbol = '&#402;';
-            break;
         case "NIO" :
             $symbol = '&#67;&#36;';
             break;
         case "NGN" :
             $symbol = '&#8358;';
-            break;
-        case "NOK" :
-            $symbol = '&#107;&#114;';
             break;
         case "PAB" :
             $symbol = '&#66;&#47;&#46;';
@@ -502,16 +498,14 @@ function atbdp_currency_symbol($currency = '')
         case "ZAR" :
             $symbol = '&#82;';
             break;
-        case "SEK" :
-            $symbol = '&#107;&#114;';
-            break;
         case "CHF" :
             $symbol = '&#67;&#72;&#70;';
             break;
         case "TWD" :
             $symbol = '&#78;&#84;&#36;';
             break;
-        case "THB" :
+        case "THB":
+        case "BTC" :
             $symbol = '&#3647;';
             break;
         case "TTD" :
@@ -557,9 +551,6 @@ function atbdp_currency_symbol($currency = '')
         case "KMF" :
         case "RWF" :
             $symbol = 'Fr';
-            break;
-        case "BTC" :
-            $symbol = '&#3647;';
             break;
         case "BTN" :
             $symbol = 'Nu.';
@@ -618,7 +609,8 @@ function atbdp_currency_symbol($currency = '')
         case "MGA" :
             $symbol = 'Ar';
             break;
-        case "MMK" :
+        case "MMK":
+        case "PGK" :
             $symbol = 'K';
             break;
         case "MOP" :
@@ -636,17 +628,11 @@ function atbdp_currency_symbol($currency = '')
         case "OMR" :
             $symbol = '&#x631;.&#x639;.';
             break;
-        case "PGK" :
-            $symbol = 'K';
-            break;
         case "PRB" :
             $symbol = '&#x440;.';
             break;
         case "QAR" :
             $symbol = '&#x631;.&#x642;';
-            break;
-        case "RMB" :
-            $symbol = '&yen;';
             break;
         case "SDG" :
             $symbol = '&#x62c;.&#x633;.';
@@ -731,8 +717,8 @@ function atbdp_get_payment_status_i18n($status)
  * @since    3.1.0
  * @return   string    The currency code.
  */
-function atbdp_get_payment_currency()
+function atbdp_get_payment_currency(): string
 {
     $cs = atbdp_get_payment_currency_settings();
-    return !empty($cs['currency']) ? strtoupper($cs['currency']) : 'USD';
+    return empty($cs['currency']) ? 'USD' : strtoupper($cs['currency']);
 }

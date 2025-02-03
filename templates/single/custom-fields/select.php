@@ -5,7 +5,9 @@
  * @version 7.0.5.2
  */
 
-if ( ! defined( 'ABSPATH' ) ) exit;
+if (! defined( 'ABSPATH' )) {
+    exit;
+}
 
 $value = $listing->get_custom_field_value( 'select', $data );
 ?>

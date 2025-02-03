@@ -7,7 +7,9 @@
 
 use \Directorist\Helper;
 
-if ( ! defined( 'ABSPATH' ) ) exit;
+if (! defined( 'ABSPATH' )) {
+    exit;
+}
 
 $action_url = isset( $_SERVER['REQUEST_URI'] ) ? esc_url_raw( wp_unslash( $_SERVER['REQUEST_URI'] ) ): '';
 ?>
@@ -18,7 +20,7 @@ $action_url = isset( $_SERVER['REQUEST_URI'] ) ? esc_url_raw( wp_unslash( $_SERV
         <form action="<?php echo esc_url( $action_url ); ?>" method="post" id="directorist-add-listing-form">
             <div class="directorist-add-listing-form">
                 <input type="hidden" name="add_listing_form" value="1">
-                <input type="hidden" name="listing_id" value="<?php echo !empty($p_id) ? esc_attr($p_id) : ''; ?>">
+                <input type="hidden" name="listing_id" value="<?php echo empty($p_id) ? '' : esc_attr($p_id); ?>">
                 <!-- MultiStep Wizard Start -->
                 <div class="multistep-wizard default-add-listing"> 
 
@@ -26,15 +28,15 @@ $action_url = isset( $_SERVER['REQUEST_URI'] ) ? esc_url_raw( wp_unslash( $_SERV
 
                         <div class="multistep-wizard__nav">
                             <?php
-                                foreach ( $form_data as $key => $section ) {
+                                foreach ( $form_data as $section ) {
                                     $label              = $section['label'] ?? '';
                                     $id                 = str_replace(' ', '-', strtolower( $label ) );
                                     $listing_type       = isset( $section['fields']['listing_type'] ) ? $section['fields']['listing_type']['widget_name'] : '';
-                                    $section['fields']  = array_filter( $section['fields'], function( $field ) {
+                                    $section['fields']  = array_filter( $section['fields'], function( $field ): bool {
                                         return empty( $field['only_for_admin'] );
                                     });
 
-                                    if ( empty( $listing_type ) && ! empty( $section['fields'] ) ) {
+                                    if ( empty( $listing_type ) && (isset($section['fields']) && $section['fields'] !== []) ) {
                                         printf( '<a href="#add-listing-content-%s" id="add-listing-nav-%s" class="multistep-wizard__nav__btn">%s %s</a>', esc_attr( $id ), esc_attr( $id ), ( isset( $section['icon'] ) ? directorist_icon( $section['icon'], false ) : directorist_icon( 'fas fa-circle', false ) ), $section['label'] );
                                     }
                                 }

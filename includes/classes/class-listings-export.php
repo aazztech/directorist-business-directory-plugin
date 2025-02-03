@@ -3,9 +3,9 @@ namespace Directorist;
 class Listings_Exporter {
 
     // get_prepared_listings_export_file
-    public static function get_prepared_listings_export_file() {
+    public static function get_prepared_listings_export_file(): array {
         $filename      = "listings-export-data";
-        $file_name     = "{$filename}.csv";
+        $file_name     = $filename . '.csv';
         $file_contents = self::get_listings_data_as_csv_content();
 
         $old_file_id = get_directorist_option( 'directorist_export_attachent_id', '', true );
@@ -24,12 +24,12 @@ class Listings_Exporter {
         file_put_contents( $file, $file_contents );
 
         $wp_filetype = wp_check_filetype( $file_name, null );
-        $attachment = array(
+        $attachment = [
             'post_mime_type' => $wp_filetype['type'],
             'post_title'     => sanitize_file_name( $filename ),
             'post_content'   => '',
             'post_status'    => 'inherit'
-        );
+        ];
 
         $attach_id = wp_insert_attachment( $attachment, $file );
         $attach_url = wp_get_attachment_url( $attach_id );
@@ -40,7 +40,7 @@ class Listings_Exporter {
     }
 
     // get_listings_data_as_csv_content
-    public static function get_listings_data_as_csv_content() {
+    public static function get_listings_data_as_csv_content(): string {
         $contents = '';
 
         $listings_data = self::get_listings_data();
@@ -51,17 +51,17 @@ class Listings_Exporter {
 
         foreach ( $listings_data as $index => $row ) {
             if ( $index === 0 ) {
-                $contents .= join( ',', array_keys( $row ) ) . "\n";
+                $contents .= implode( ',', array_keys( $row ) ) . "\n";
             }
 
             $row_content = '';
 
-            foreach ( $row as $row_key => $row_value ) {
+            foreach ( $row as $row_value ) {
 
                 $row_content__ = '';
 
 				// $accepted_types = [ 'string', 'integer', 'double', 'boolean' ];
-                if ( is_bool( $row_value ) || is_int( $row_value ) || is_double( $row_value ) || is_string( $row_value ) ) {
+                if ( is_bool( $row_value ) || is_int( $row_value ) || is_float( $row_value ) || is_string( $row_value ) ) {
                     $row_content__ = $row_value;
                 }
 
@@ -73,6 +73,7 @@ class Listings_Exporter {
                 $row_content__ = '"' . $row_content__ . '",';
                 $row_content .= $row_content__;
             }
+
             $contents .= rtrim( $row_content, ',' )  . "\n";
         }
 
@@ -150,21 +151,21 @@ class Listings_Exporter {
                 $tr_lengths   [] = $max_row_length;
                 $listings_data[] = $row;
             }
+
             wp_reset_postdata();
         }
 
-        $listings_data = self::justifyDataTableRow( $listings_data, $tr_lengths );
-
-        return $listings_data;
+        return self::justifyDataTableRow( $listings_data, $tr_lengths );
     }
 
     // justifyDataRow
     public static function justifyDataTableRow( $data_table = [], $tr_lengths = [] ) {
         if ( empty( $data_table ) ) { return $data_table; }
+
         if ( ! is_array( $data_table ) ) { return $data_table; }
 
         $max_tr_val   = max($tr_lengths);
-        $max_tr_index = array_search($max_tr_val, $tr_lengths);
+        $max_tr_index = array_search($max_tr_val, $tr_lengths, true);
         $modal_tr     = $data_table[ $max_tr_index ];
 
         $justify_table = [];
@@ -172,7 +173,7 @@ class Listings_Exporter {
             $tr = [];
 
             foreach ( $modal_tr as $row_key => $row_value ) {
-                $tr[ $row_key ] = ( isset( $row[ $row_key ] ) ) ? $row[ $row_key ] : '';
+                $tr[ $row_key ] = $row[ $row_key ] ?? '';
             }
 
             $justify_table[] = $tr;
@@ -186,20 +187,21 @@ class Listings_Exporter {
     // verifyNativeField
     public static function verifyNativeField( $args = [] ) {
         if ( ! is_array( $args ) ) { return false; }
+
         if ( empty( $args['widget_group'] ) ) { return false; }
+
         if ( empty( $args['widget_name'] ) ) { return false; }
+
         if ( empty( $args['field_key'] ) ) { return false; }
+
         if ( 'preset' !== $args['widget_group'] ) { return false; }
 
         $native_fields = [ 'listing_title', 'listing_content' ];
-
-        if ( ! in_array( $args['field_key'], $native_fields ) ) { return false; }
-
-        return true;
+        return in_array( $args['field_key'], $native_fields );
     }
 
     // updateNativeFieldData
-    public static function updateNativeFieldData( array $row = [], string $field_key = '', array $field_args = [] ) {
+    public static function updateNativeFieldData( array $row = [], string $field_key = '', array $field_args = [] ): array {
         $field_data_map = [
             'listing_title'   => 'get_the_title',
             'listing_content' => 'get_the_content',
@@ -217,20 +219,21 @@ class Listings_Exporter {
     // verifyTaxonomyField
     public static function verifyTaxonomyField( $args = [] ) {
         if ( ! is_array( $args ) ) { return false; }
+
         if ( empty( $args['widget_group'] ) ) { return false; }
+
         if ( empty( $args['widget_name'] ) ) { return false; }
+
         if ( empty( $args['field_key'] ) ) { return false; }
+
         if ( 'preset' !== $args['widget_group'] ) { return false; }
 
         $taxonomy = [ 'category', 'location', 'tag' ];
-
-        if ( ! in_array( $args['widget_name'], $taxonomy ) ) { return false; }
-
-        return true;
+        return in_array( $args['widget_name'], $taxonomy );
     }
 
     // updateTaxonomyFieldData
-    public static function updateTaxonomyFieldData( array $row = [], string $field_key = '', array $field_args = [] ) {
+    public static function updateTaxonomyFieldData( array $row = [], string $field_key = '', array $field_args = [] ): array {
         $term_map = [
             'category' => ATBDP_CATEGORY,
             'location' => ATBDP_LOCATION,
@@ -245,21 +248,27 @@ class Listings_Exporter {
     // verifyListingImageModuleField
     public static function verifyListingImageModuleField( $args = [] ) {
         if ( ! is_array( $args ) ) { return false; }
-        if ( empty( $args['widget_group'] ) ) { return false; }
-        if ( empty( $args['widget_name'] ) ) { return false; }
-        if ( empty( $args['field_key'] ) ) { return false; }
-        if ( 'preset' !== $args['widget_group'] ) { return false; }
-        if ( 'listing_img' !== $args['field_key'] ) { return false; }
 
-        return true;
+        if ( empty( $args['widget_group'] ) ) { return false; }
+
+        if ( empty( $args['widget_name'] ) ) { return false; }
+
+        if ( empty( $args['field_key'] ) ) { return false; }
+
+        if ( 'preset' !== $args['widget_group'] ) { return false; }
+
+        return 'listing_img' === $args['field_key'];
     }
 
     // updateListingImageModuleFieldsData
-    public static function updateListingImageModuleFieldsData( array $row = [], string $field_key = '', array $field_args = [] ) {
+    /**
+     * @return mixed[]
+     */
+    public static function updateListingImageModuleFieldsData( array $row = [], string $field_key = '', array $field_args = [] ): array {
         $preview_image  = directorist_get_listing_preview_image( get_the_ID() );
         $gallery_images = directorist_get_listing_gallery_images( get_the_ID() );
 
-        if ( empty( $preview_image ) && empty( $gallery_images ) ) {
+        if ( empty( $preview_image ) && ($gallery_images === null || $gallery_images === []) ) {
             return $row;
         }
 
@@ -289,15 +298,16 @@ class Listings_Exporter {
     // verifyMetaKeyField
     public static function verifyMetaKeyField( $args = [] ) {
         if ( ! is_array( $args ) ) { return false; }
-        if ( empty( $args['widget_group'] ) ) { return false; }
-        if ( empty( $args['widget_name'] ) ) { return false; }
-        if ( empty( $args['field_key'] ) ) { return false; }
 
-        return true;
+        if ( empty( $args['widget_group'] ) ) { return false; }
+
+        if ( empty( $args['widget_name'] ) ) { return false; }
+
+        return !empty($args['field_key']);
     }
 
     // updateMetaKeyFieldData
-    public static function updateMetaKeyFieldData( array $row = [], string $field_key = '', array $field_args = [] ) {
+    public static function updateMetaKeyFieldData( array $row = [], string $field_key = '', array $field_args = [] ): array {
         $value = get_post_meta( get_the_id(), '_' . $field_args['field_key'], true );
         $row[ 'publish_date' ] = get_the_date( 'Y-m-d H:i:s', get_the_ID() );
         $row[ $field_args['field_key'] ] = self::escape_data( $value );
@@ -308,15 +318,16 @@ class Listings_Exporter {
     // verifyPriceModuleField
     public static function verifyPriceModuleField( $args = [] ) {
         if ( ! is_array( $args ) ) { return false; }
-        if ( empty( $args['widget_group'] ) ) { return false; }
-        if ( empty( $args['widget_name'] ) ) { return false; }
-        if ( 'pricing' !== $args['widget_name'] ) { return false; }
 
-        return true;
+        if ( empty( $args['widget_group'] ) ) { return false; }
+
+        if ( empty( $args['widget_name'] ) ) { return false; }
+
+        return 'pricing' === $args['widget_name'];
     }
 
     // updatePriceModuleFieldData
-    public static function updatePriceModuleFieldData( array $row = [], string $field_key = '', array $field_args = [] ) {
+    public static function updatePriceModuleFieldData( array $row = [], string $field_key = '', array $field_args = [] ): array {
         $row[ 'price' ] = self::escape_data( get_post_meta( get_the_id(), '_price', true ) );
         $row[ 'price_range' ] = self::escape_data( get_post_meta( get_the_id(), '_price_range', true ) );
         $row[ 'atbd_listing_pricing' ] = self::escape_data( get_post_meta( get_the_id(), '_atbd_listing_pricing', true ) );
@@ -328,15 +339,16 @@ class Listings_Exporter {
     // verifyMapModuleField
     public static function verifyMapModuleField( $args = [] ) {
         if ( ! is_array( $args ) ) { return false; }
-        if ( empty( $args['widget_group'] ) ) { return false; }
-        if ( empty( $args['widget_name'] ) ) { return false; }
-        if ( 'map' !== $args['widget_name'] ) { return false; }
 
-        return true;
+        if ( empty( $args['widget_group'] ) ) { return false; }
+
+        if ( empty( $args['widget_name'] ) ) { return false; }
+
+        return 'map' === $args['widget_name'];
     }
 
     // updateMapModuleFieldData
-    public static function updateMapModuleFieldData( array $row = [], string $field_key = '', array $field_args = [] ) {
+    public static function updateMapModuleFieldData( array $row = [], string $field_key = '', array $field_args = [] ): array {
         $row[ 'hide_map' ] = get_post_meta( get_the_id(), '_hide_map', true );
         $row[ 'manual_lat' ] = self::escape_data( get_post_meta( get_the_id(), '_manual_lat', true ) );
         $row[ 'manual_lng' ] = self::escape_data( get_post_meta( get_the_id(), '_manual_lng', true ) );
@@ -349,21 +361,20 @@ class Listings_Exporter {
     // get_directory_slug_by_id
     public static function get_directory_slug_by_id( $id = 0 ) {
         $directory_type_id   = get_post_meta( $id, '_directory_type', true );
-        $directory_type      = ( ! empty( $directory_type_id ) ) ? get_term_by( 'id', $directory_type_id, ATBDP_DIRECTORY_TYPE ) : '';
-        $directory_type_slug = ( ! empty( $directory_type ) && is_object( $directory_type ) ) ? $directory_type->slug : '';
+        $directory_type      = ( empty( $directory_type_id ) ) ? '' : get_term_by( 'id', $directory_type_id, ATBDP_DIRECTORY_TYPE );
 
-        return $directory_type_slug;
+        return ( ! empty( $directory_type ) && is_object( $directory_type ) ) ? $directory_type->slug : '';
     }
 
     // get_term_names
-    public static function get_term_names( $post_id = 0, $taxonomy = '' ) {
+    public static function get_term_names( $post_id = 0, $taxonomy = '' ): string {
         $terms = get_the_terms( $post_id, $taxonomy );
 
         if ( is_wp_error( $terms ) || empty( $terms ) ) {
             return '';
         }
 
-        return join( ',', wp_list_pluck( $terms, 'name' ) );
+        return implode( ',', wp_list_pluck( $terms, 'name' ) );
     }
 
 	/**
@@ -388,7 +399,7 @@ class Listings_Exporter {
             return $data;
         }
 
-		$active_content_triggers = array( '=', '+', '-', '@' );
+		$active_content_triggers = [ '=', '+', '-', '@' ];
 
 		if ( in_array( mb_substr( $data, 0, 1 ), $active_content_triggers, true ) ) {
 			$data = "'" . $data;

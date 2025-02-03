@@ -7,10 +7,12 @@
 
 use \Directorist\Helper;
 
-if ( ! defined( 'ABSPATH' ) ) exit;
-$hide_contact_form 			= $dashboard->user_info( 'hide_contact_form' ) ? $dashboard->user_info( 'hide_contact_form' ) : 'no';
-$display_author_email 		= $dashboard->user_info( 'display_author_email' ) ? $dashboard->user_info( 'display_author_email' ) : 'public';
-$contact_owner_recipient 	= $dashboard->user_info( 'contact_owner_recipient' ) ? $dashboard->user_info( 'contact_owner_recipient' ) : 'author';
+if (! defined( 'ABSPATH' )) {
+    exit;
+}
+$hide_contact_form 			= $dashboard->user_info( 'hide_contact_form' ) ?: 'no';
+$display_author_email 		= $dashboard->user_info( 'display_author_email' ) ?: 'public';
+$contact_owner_recipient 	= $dashboard->user_info( 'contact_owner_recipient' ) ?: 'author';
 ?>
 
 <form action="#" id="user_preferences" method="post">

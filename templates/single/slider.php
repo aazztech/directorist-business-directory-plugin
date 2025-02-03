@@ -5,7 +5,9 @@
  * @version 8.0
  */
 
-if ( ! defined( 'ABSPATH' ) ) exit;
+if (! defined( 'ABSPATH' )) {
+    exit;
+}
 
 ?>
 <section id="directorist-single-listing-slider-wrap" class="directorist-single-listing-slider-wrap background-<?php echo esc_attr( $data['background-size'] ); ?>"

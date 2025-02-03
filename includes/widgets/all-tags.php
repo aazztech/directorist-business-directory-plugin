@@ -7,7 +7,9 @@ namespace Directorist\Widgets;
 
 use Directorist\Helper;
 
-if ( ! defined( 'ABSPATH' ) ) exit;
+if (! defined( 'ABSPATH' )) {
+    exit;
+}
 
 class All_Tags extends \WP_Widget {
 
@@ -22,7 +24,7 @@ class All_Tags extends \WP_Widget {
 		parent::__construct( $id_base, $name, $widget_options );
 	}
 
-	public function form( $instance ) {
+	public function form( $instance ): void {
 		$defaults = [
 			'title'                 => esc_html__( 'Tags', 'directorist' ),
 			'display_as'            => 'list',
@@ -91,51 +93,42 @@ class All_Tags extends \WP_Widget {
 		Widget_Fields::create( $fields, $instance, $this );
 	}
 
-	public function update( $new_instance, $old_instance ) {
-		$instance = [];
+	public function update($new_instance, $old_instance)
+    {
+        return ['title' => empty( $new_instance['title'] ) ? '' : sanitize_text_field( $new_instance['title'] ), 'display_as' => empty( $new_instance['display_as'] ) ? 'list' : sanitize_text_field( $new_instance['display_as'] ), 'order_by' => empty( $new_instance['order_by'] ) ? 'id' : sanitize_text_field( $new_instance['order_by'] ), 'order' => empty( $new_instance['order'] ) ? 'asc' : sanitize_text_field( $new_instance['order'] ), 'hide_empty' => empty( $new_instance['hide_empty'] ) ? 0 : 1, 'show_count' => empty( $new_instance['show_count'] ) ? 0 : 1, 'display_single_tag' => empty( $new_instance['display_single_tag'] ) ? 0 : 1, 'max_number' => empty( $new_instance['max_number'] ) ? '' : $new_instance['max_number']];
+    }
 
-		$instance['title']              = ! empty( $new_instance['title'] ) ? sanitize_text_field( $new_instance['title'] ) : '';
-		$instance['display_as']         = ! empty( $new_instance['display_as'] ) ? sanitize_text_field( $new_instance['display_as'] ) : 'list';
-        $instance['order_by']           = ! empty( $new_instance['order_by'] ) ? sanitize_text_field( $new_instance['order_by'] ) : 'id';
-        $instance['order']              = ! empty( $new_instance['order'] ) ? sanitize_text_field( $new_instance['order'] ) : 'asc';
-        $instance['hide_empty']         = ! empty( $new_instance['hide_empty'] ) ? 1 : 0;
-        $instance['show_count']         = ! empty( $new_instance['show_count'] ) ? 1 : 0;
-        $instance['display_single_tag'] = ! empty( $new_instance['display_single_tag'] ) ? 1 : 0;
-        $instance['max_number']         = ! empty( $new_instance['max_number'] ) ? $new_instance['max_number'] : '';
-
-		return $instance;
-	}
-
-	public function widget( $args, $instance ) {
+	public function widget( $args, $instance ): void {
         $allowWidget = apply_filters('atbdp_allow_tags_widget', true);
         $check_tag   = get_the_terms(get_the_ID(), ATBDP_TAGS);
 
-        if( ( ! empty( $instance['display_single_tag'] ) && ! is_singular( ATBDP_POST_TYPE ) && ! $check_tag ) || ! $allowWidget)
+        if (( ! empty( $instance['display_single_tag'] ) && ! is_singular( ATBDP_POST_TYPE ) && ! $check_tag ) || ! $allowWidget) {
             return;
+        }
 
 		echo wp_kses_post( $args['before_widget'] );
 
-		$title = !empty($instance['title']) ? esc_html($instance['title']) : esc_html__('Tags', 'directorist');
+		$title = empty($instance['title']) ? esc_html__('Tags', 'directorist') : esc_html($instance['title']);
 		$widget_title = $args['before_title'] . apply_filters( 'widget_title', $title ) . $args['after_title'];
 		echo wp_kses_post( $widget_title );
 
-        $query_args = array(
-            'template'               => !empty( $instance['display_as'] ) ? sanitize_text_field( $instance['display_as'] ) : 'list',
-            'parent'                 => !empty( $instance['parent'] ) ? (int) $instance['parent'] : 0,
-            'term_id'                => !empty( $instance['parent'] ) ? (int) $instance['parent'] : 0,
-            'hide_empty'             => !empty( $instance['hide_empty'] ) ? 1 : 0,
-            'orderby'                => !empty( $instance['order_by'] ) ? sanitize_text_field( $instance['order_by'] ) : 'id',
-            'order'                  => !empty( $instance['order'] ) ? sanitize_text_field( $instance['order'] ) : 'asc',
-            'show_count'             => !empty( $instance['show_count'] ) ? 1 : 0,
-            'display_single_tag'     => !empty( $instance['display_single_tag'] ) ? 1 : 0,
+        $query_args = [
+            'template'               => empty( $instance['display_as'] ) ? 'list' : sanitize_text_field( $instance['display_as'] ),
+            'parent'                 => empty( $instance['parent'] ) ? 0 : (int) $instance['parent'],
+            'term_id'                => empty( $instance['parent'] ) ? 0 : (int) $instance['parent'],
+            'hide_empty'             => empty( $instance['hide_empty'] ) ? 0 : 1,
+            'orderby'                => empty( $instance['order_by'] ) ? 'id' : sanitize_text_field( $instance['order_by'] ),
+            'order'                  => empty( $instance['order'] ) ? 'asc' : sanitize_text_field( $instance['order'] ),
+            'show_count'             => empty( $instance['show_count'] ) ? 0 : 1,
+            'display_single_tag'     => empty( $instance['display_single_tag'] ) ? 0 : 1,
             'pad_counts'             => true,
-            'immediate_category'     => !empty( $instance['immediate_category'] ) ? 1 : 0,
-            'max_number'             => !empty( $instance['max_number'] ) ? $instance['max_number'] : '',
+            'immediate_category'     => empty( $instance['immediate_category'] ) ? 0 : 1,
+            'max_number'             => empty( $instance['max_number'] ) ? '' : $instance['max_number'],
             'active_term_id'         => 0,
-            'ancestors'              => array()
-        );
+            'ancestors'              => []
+        ];
 
-        if( $query_args['immediate_category'] ) {
+        if( $query_args['immediate_category'] !== 0 ) {
 
             $term_slug = get_query_var( ATBDP_TAGS );
 
@@ -156,7 +149,7 @@ class All_Tags extends \WP_Widget {
             $tags = $this->directorist_tags_list( $query_args );
         }
 
-		Helper::get_template( 'widgets/all-tags', compact( 'args', 'instance', 'query_args', 'tags' ) );
+		Helper::get_template( 'widgets/all-tags', ['args' => $args, 'instance' => $instance, 'query_args' => $query_args, 'tags' => $tags] );
 
 		echo wp_kses_post( $args['after_widget'] );
 	}
@@ -175,29 +168,30 @@ class All_Tags extends \WP_Widget {
                     $html .= '</a>';
                     $html .= '</li>';
                 }
+
                 $html .= '</ul>';
             }
         } else {
             if ( $settings['immediate_category'] &&
 				( $settings['term_id'] > $settings['parent'] ) &&
 				! in_array( $settings['term_id'], $settings['ancestors'] ) ) {
-				return;
+				return null;
             }
 
-            $args = array(
+            $args = [
                 'taxonomy'     => ATBDP_TAGS,
                 'orderby'      => $settings['orderby'],
                 'order'        => $settings['order'],
                 'hide_empty'   => $settings['hide_empty'],
-                'parent'       => !empty($settings['term_id']) ? $settings['term_id'] : '',
-                'hierarchical' => !empty($settings['hide_empty']) ? true : false,
-                'number'       => !empty($settings['max_number']) ? $settings['max_number'] : ''
-            );
+                'parent'       => empty($settings['term_id']) ? '' : $settings['term_id'],
+                'hierarchical' => !empty($settings['hide_empty']),
+                'number'       => empty($settings['max_number']) ? '' : $settings['max_number']
+            ];
 
             $terms = get_terms( $args );
 
 			if ( is_wp_error( $terms ) ) {
-				return;
+				return null;
 			}
 
             $html = '';
@@ -244,23 +238,23 @@ class All_Tags extends \WP_Widget {
             if ( $settings['immediate_category'] &&
 				( $settings['term_id'] > $settings['parent'] ) &&
 				! in_array( $settings['term_id'], $settings['ancestors'] ) ) {
-				return;
+				return null;
             }
 
-            $args = array(
+            $args = [
 				'taxonomy'     => ATBDP_TAGS,
 				'orderby'      => $settings['orderby'],
 				'order'        => $settings['order'],
 				'hide_empty'   => $settings['hide_empty'],
-				'parent'       => !empty($settings['term_id']) ? $settings['term_id'] : '',
-				'hierarchical' => !empty($settings['hide_empty']) ? true : false,
-				'number'       => !empty($settings['max_number']) ? $settings['max_number'] : ''
-			);
+				'parent'       => empty($settings['term_id']) ? '' : $settings['term_id'],
+				'hierarchical' => !empty($settings['hide_empty']),
+				'number'       => empty($settings['max_number']) ? '' : $settings['max_number']
+			];
 
             $terms = get_terms( $args );
 
 			if ( is_wp_error( $terms ) ) {
-				return;
+				return null;
 			}
 
             $html = '';

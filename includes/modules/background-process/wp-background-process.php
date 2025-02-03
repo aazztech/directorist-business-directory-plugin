@@ -13,7 +13,11 @@
  */
 abstract class WP_Background_Process extends WP_Async_Request {
 
-	/**
+	public $queue_lock_time;
+
+    public $cron_interval;
+
+    /**
 	 * Action
 	 *
 	 * (default value: 'background_process')
@@ -39,7 +43,7 @@ abstract class WP_Background_Process extends WP_Async_Request {
 	 * @var mixed
 	 * @access protected
 	 */
-	protected $cron_hook_identifier;
+	protected string $cron_hook_identifier;
 
 	/**
 	 * Cron_interval_identifier
@@ -47,7 +51,7 @@ abstract class WP_Background_Process extends WP_Async_Request {
 	 * @var mixed
 	 * @access protected
 	 */
-	protected $cron_interval_identifier;
+	protected string $cron_interval_identifier;
 
 	/**
 	 * Initiate new background process
@@ -58,8 +62,8 @@ abstract class WP_Background_Process extends WP_Async_Request {
 		$this->cron_hook_identifier     = $this->identifier . '_cron';
 		$this->cron_interval_identifier = $this->identifier . '_cron_interval';
 
-		add_action( $this->cron_hook_identifier, array( $this, 'handle_cron_healthcheck' ) );
-		add_filter( 'cron_schedules', array( $this, 'schedule_cron_healthcheck' ) );
+		add_action( $this->cron_hook_identifier, [ $this, 'handle_cron_healthcheck' ] );
+		add_filter( 'cron_schedules', [ $this, 'schedule_cron_healthcheck' ] );
 	}
 
 	/**
@@ -144,7 +148,7 @@ abstract class WP_Background_Process extends WP_Async_Request {
 	 * @return string
 	 */
 	protected function generate_key( $length = 64 ) {
-		$unique  = md5( microtime() . rand() );
+		$unique  = md5( microtime() . random_int(0, mt_getrandmax()) );
 		$prepend = $this->identifier . '_batch_';
 
 		return substr( $prepend . $unique, 0, $length );
@@ -156,7 +160,7 @@ abstract class WP_Background_Process extends WP_Async_Request {
 	 * Checks whether data exists within the queue and that
 	 * the process is not already running.
 	 */
-	public function maybe_handle() {
+	public function maybe_handle(): void {
 		// Don't lock up other requests while processing
 		session_write_close();
 
@@ -197,7 +201,7 @@ abstract class WP_Background_Process extends WP_Async_Request {
 
 		$count = $wpdb->get_var( $wpdb->prepare( "SELECT COUNT(*) FROM %s WHERE %s LIKE %s", $table, $column, $key ) );
 
-		return ( $count > 0 ) ? false : true;
+		return $count <= 0;
 	}
 
 	/**
@@ -206,14 +210,11 @@ abstract class WP_Background_Process extends WP_Async_Request {
 	 * Check whether the current process is already running
 	 * in a background process.
 	 */
-	protected function is_process_running() {
-		if ( get_site_transient( $this->identifier . '_process_lock' ) ) {
-			// Process already running.
-			return true;
-		}
-
-		return false;
-	}
+	protected function is_process_running()
+    {
+        // Process already running.
+        return (bool) get_site_transient($this->identifier . '_process_lock');
+    }
 
 	/**
 	 * Lock process
@@ -355,12 +356,7 @@ abstract class WP_Background_Process extends WP_Async_Request {
 	 * @return int
 	 */
 	protected function get_memory_limit() {
-		if ( function_exists( 'ini_get' ) ) {
-			$memory_limit = ini_get( 'memory_limit' );
-		} else {
-			// Sensible default.
-			$memory_limit = '128M';
-		}
+		$memory_limit = function_exists( 'ini_get' ) ? ini_get( 'memory_limit' ) : '128M';
 
 		if ( ! $memory_limit || - 1 === intval( $memory_limit ) ) {
 			// Unlimited, set to 32GB.
@@ -409,7 +405,7 @@ abstract class WP_Background_Process extends WP_Async_Request {
 	 *
 	 * @return mixed
 	 */
-	public function schedule_cron_healthcheck( $schedules ) {
+	public function schedule_cron_healthcheck( array $schedules ) {
 		$interval = apply_filters( $this->identifier . '_cron_interval', 5 );
 
 		if ( property_exists( $this, 'cron_interval' ) ) {
@@ -417,10 +413,10 @@ abstract class WP_Background_Process extends WP_Async_Request {
 		}
 
 		// Adds every 5 minutes to the existing schedules.
-		$schedules[ $this->identifier . '_cron_interval' ] = array(
+		$schedules[ $this->identifier . '_cron_interval' ] = [
 			'interval' => MINUTE_IN_SECONDS * $interval,
 			'display'  => sprintf( __( 'Every %d Minutes' ), $interval ),
-		);
+		];
 
 		return $schedules;
 	}
@@ -431,7 +427,7 @@ abstract class WP_Background_Process extends WP_Async_Request {
 	 * Restart the background process if not already running
 	 * and data exists in the queue.
 	 */
-	public function handle_cron_healthcheck() {
+	public function handle_cron_healthcheck(): void {
 		if ( $this->is_process_running() ) {
 			// Background process already running.
 			exit;
@@ -474,7 +470,7 @@ abstract class WP_Background_Process extends WP_Async_Request {
 	 * Stop processing queue items, clear cronjob and delete batch.
 	 *
 	 */
-	public function cancel_process() {
+	public function cancel_process(): void {
 		if ( ! $this->is_queue_empty() ) {
 			$batch = $this->get_batch();
 

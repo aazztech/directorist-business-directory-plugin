@@ -5,7 +5,9 @@
  * @version 7.4.0
  */
 
-if ( ! defined( 'ABSPATH' ) ) exit;
+if (! defined( 'ABSPATH' )) {
+    exit;
+}
 
 $p_id               = $listing_form->add_listing_id;
 $address            = get_post_meta( $p_id, '_address', true );
@@ -14,9 +16,9 @@ $manual_lat         = get_post_meta( $p_id, '_manual_lat', true );
 $manual_lng         = get_post_meta( $p_id, '_manual_lng', true );
 $default_latitude   = get_directorist_option( 'default_latitude', '40.7127753' );
 $default_longitude  = get_directorist_option( 'default_longitude', '-74.0059728' );
-$latitude           = !empty( $manual_lat ) ? $manual_lat : $default_latitude;
-$longitude          = !empty( $manual_lng ) ? $manual_lng : $default_longitude;
-$hide_map           = !empty( get_post_meta( $p_id, '_hide_map', true ) ) ? true : false;
+$latitude           = empty( $manual_lat ) ? $default_latitude : $manual_lat;
+$longitude          = empty( $manual_lng ) ? $default_longitude : $manual_lng;
+$hide_map           = !empty( get_post_meta( $p_id, '_hide_map', true ) );
 
 $map_data = $listing_form->get_map_data();
 Directorist\Helper::add_hidden_data_to_dom( 'map_data', $map_data );

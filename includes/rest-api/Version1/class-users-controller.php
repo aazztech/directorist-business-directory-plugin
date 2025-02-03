@@ -29,79 +29,79 @@ class Users_Controller extends Abstract_Controller {
 	/**
 	 * Register the routes for terms.
 	 */
-	public function register_routes() {
-		register_rest_route( $this->namespace, '/' . $this->rest_base, array(
-			array(
+	public function register_routes(): void {
+		register_rest_route( $this->namespace, '/' . $this->rest_base, [
+			[
 				'methods'             => WP_REST_Server::READABLE,
-				'callback'            => array( $this, 'get_items' ),
-				'permission_callback' => array( $this, 'get_items_permissions_check' ),
+				'callback'            => [ $this, 'get_items' ],
+				'permission_callback' => [ $this, 'get_items_permissions_check' ],
 				'args'                => $this->get_collection_params(),
-			),
-			array(
+			],
+			[
 				'methods'             => WP_REST_Server::CREATABLE,
-				'callback'            => array( $this, 'create_item' ),
-				'permission_callback' => array( $this, 'create_item_permissions_check' ),
-				'args'                => array_merge( $this->get_endpoint_args_for_item_schema( WP_REST_Server::CREATABLE ), array(
-					'email' => array(
+				'callback'            => [ $this, 'create_item' ],
+				'permission_callback' => [ $this, 'create_item_permissions_check' ],
+				'args'                => array_merge( $this->get_endpoint_args_for_item_schema( WP_REST_Server::CREATABLE ), [
+					'email' => [
 						'required' => true,
 						'type'     => 'string',
 						'description' => __( 'New user email address.', 'directorist' ),
-					),
-					'username' => array(
+					],
+					'username' => [
 						'required' => false,
 						'description' => __( 'New user username.', 'directorist' ),
 						'type'     => 'string',
-					),
-					'password' => array(
+					],
+					'password' => [
 						'required' => true,
 						'description' => __( 'New user password.', 'directorist' ),
 						'type'     => 'string',
-					),
-				) ),
-			),
-			'schema' => array( $this, 'get_public_item_schema' ),
-		) );
+					],
+				] ),
+			],
+			'schema' => [ $this, 'get_public_item_schema' ],
+		] );
 
-		register_rest_route( $this->namespace, '/' . $this->rest_base . '/(?P<id>[\d]+)', array(
-			'args' => array(
-				'id' => array(
+		register_rest_route( $this->namespace, '/' . $this->rest_base . '/(?P<id>[\d]+)', [
+			'args' => [
+				'id' => [
 					'description' => __( 'Unique identifier for the resource.', 'directorist' ),
 					'type'        => 'integer',
-				),
-			),
-			array(
+				],
+			],
+			[
 				'methods'             => WP_REST_Server::READABLE,
-				'callback'            => array( $this, 'get_item' ),
-				'permission_callback' => array( $this, 'get_item_permissions_check' ),
-				'args'                => array(
-					'context' => $this->get_context_param( array( 'default' => 'view' ) ),
-				),
-			),
-			array(
+				'callback'            => [ $this, 'get_item' ],
+				'permission_callback' => [ $this, 'get_item_permissions_check' ],
+				'args'                => [
+					'context' => $this->get_context_param( [ 'default' => 'view' ] ),
+				],
+			],
+			[
 				'methods'             => WP_REST_Server::EDITABLE,
-				'callback'            => array( $this, 'update_item' ),
-				'permission_callback' => array( $this, 'update_item_permissions_check' ),
+				'callback'            => [ $this, 'update_item' ],
+				'permission_callback' => [ $this, 'update_item_permissions_check' ],
 				'args'                => $this->get_endpoint_args_for_item_schema( WP_REST_Server::EDITABLE ),
-			),
-			array(
+			],
+			[
 				'methods'             => WP_REST_Server::DELETABLE,
-				'callback'            => array( $this, 'delete_item' ),
-				'permission_callback' => array( $this, 'delete_item_permissions_check' ),
-				'args'                => array(
-					'force' => array(
+				'callback'            => [ $this, 'delete_item' ],
+				'permission_callback' => [ $this, 'delete_item_permissions_check' ],
+				'args'                => [
+					'force' => [
 						'default'     => false,
 						'type'        => 'boolean',
 						'description' => __( 'Required to be true, as resource does not support trashing.', 'directorist' ),
-					),
-					'reassign' => array(
+					],
+					'reassign' => [
 						'default'     => 0,
 						'type'        => 'integer',
 						'description' => __( 'ID to reassign posts to.', 'directorist' ),
-					),
-				),
-			),
-			'schema' => array( $this, 'get_public_item_schema' ),
-		) );
+					],
+				],
+			],
+			'schema' => [ $this, 'get_public_item_schema' ],
+		] );
 	}
 
 	/**
@@ -117,7 +117,7 @@ class Users_Controller extends Abstract_Controller {
 		}
 
 		if ( ! $permissions ) {
-			return new WP_Error( 'directorist_rest_cannot_view', __( 'Sorry, you cannot list resources.', 'directorist' ), array( 'status' => rest_authorization_required_code() ) );
+			return new WP_Error( 'directorist_rest_cannot_view', __( 'Sorry, you cannot list resources.', 'directorist' ), [ 'status' => rest_authorization_required_code() ] );
 		}
 
 		return $permissions;
@@ -136,7 +136,7 @@ class Users_Controller extends Abstract_Controller {
 		}
 
 		if ( ! $permissions || ! get_option( 'users_can_register' ) ) {
-			return new WP_Error( 'directorist_rest_cannot_create', __( 'Sorry, you are not allowed to create resources.', 'directorist' ), array( 'status' => rest_authorization_required_code() ) );
+			return new WP_Error( 'directorist_rest_cannot_create', __( 'Sorry, you are not allowed to create resources.', 'directorist' ), [ 'status' => rest_authorization_required_code() ] );
 		}
 
 		return $permissions;
@@ -155,7 +155,7 @@ class Users_Controller extends Abstract_Controller {
 		}
 
 		if ( ! $permissions ) {
-			return new WP_Error( 'directorist_rest_cannot_view', __( 'Sorry, you cannot view this resource.', 'directorist' ), array( 'status' => rest_authorization_required_code() ) );
+			return new WP_Error( 'directorist_rest_cannot_view', __( 'Sorry, you cannot view this resource.', 'directorist' ), [ 'status' => rest_authorization_required_code() ] );
 		}
 
 		return $permissions;
@@ -174,7 +174,7 @@ class Users_Controller extends Abstract_Controller {
 		}
 
 		if ( ! $permissions ) {
-			return new WP_Error( 'directorist_rest_cannot_edit', __( 'Sorry, you are not allowed to edit this resource.', 'directorist' ), array( 'status' => rest_authorization_required_code() ) );
+			return new WP_Error( 'directorist_rest_cannot_edit', __( 'Sorry, you are not allowed to edit this resource.', 'directorist' ), [ 'status' => rest_authorization_required_code() ] );
 		}
 
 		return $permissions;
@@ -193,7 +193,7 @@ class Users_Controller extends Abstract_Controller {
 		}
 
 		if ( ! $permissions ) {
-			return new WP_Error( 'directorist_rest_cannot_delete', __( 'Sorry, you are not allowed to delete this resource.', 'directorist' ), array( 'status' => rest_authorization_required_code() ) );
+			return new WP_Error( 'directorist_rest_cannot_delete', __( 'Sorry, you are not allowed to delete this resource.', 'directorist' ), [ 'status' => rest_authorization_required_code() ] );
 		}
 
 		return $permissions;
@@ -209,11 +209,11 @@ class Users_Controller extends Abstract_Controller {
 	protected function check_permissions( $request, $context = 'read' ) {
 		// Check permissions for a single user.
 		$id = intval( $request['id'] );
-		if ( $id ) {
+		if ( $id !== 0 ) {
 			$user = get_userdata( $id );
 
 			if ( empty( $user ) ) {
-				return new WP_Error( 'directorist_rest_user_invalid', __( 'Resource does not exist.', 'directorist' ), array( 'status' => 404 ) );
+				return new WP_Error( 'directorist_rest_user_invalid', __( 'Resource does not exist.', 'directorist' ), [ 'status' => 404 ] );
 			}
 
 			return directorist_rest_check_user_permissions( $context, $user->ID );
@@ -229,7 +229,7 @@ class Users_Controller extends Abstract_Controller {
 	 * @return WP_Error|WP_REST_Response
 	 */
 	public function get_items( $request ) {
-		$prepared_args = array();
+		$prepared_args = [];
 		$prepared_args['exclude'] = $request['exclude'];
 		$prepared_args['include'] = $request['include'];
 		$prepared_args['order']   = $request['order'];
@@ -239,6 +239,7 @@ class Users_Controller extends Abstract_Controller {
 		} else {
 			$prepared_args['offset'] = ( $request['page'] - 1 ) * $prepared_args['number'];
 		}
+
 		$orderby_possibles = $this->get_orderby_possibles();
 		$prepared_args['orderby'] = $orderby_possibles[ $request['orderby'] ];
 		$prepared_args['search']  = $request['search'];
@@ -250,7 +251,7 @@ class Users_Controller extends Abstract_Controller {
 		// Filter by email.
 		if ( ! empty( $request['email'] ) ) {
 			$prepared_args['search']         = $request['email'];
-			$prepared_args['search_columns'] = array( 'user_email' );
+			$prepared_args['search_columns'] = [ 'user_email' ];
 		}
 
 		// Filter by role.
@@ -275,7 +276,7 @@ class Users_Controller extends Abstract_Controller {
 
 		$query = new WP_User_Query( $prepared_args );
 
-		$users = array();
+		$users = [];
 		foreach ( $query->results as $user ) {
 			$data = $this->prepare_item_for_response( $user, $request );
 			$users[] = $this->prepare_response_for_collection( $data );
@@ -296,6 +297,7 @@ class Users_Controller extends Abstract_Controller {
 			$count_query = new WP_User_Query( $prepared_args );
 			$total_users = $count_query->get_total();
 		}
+
 		$response->header( 'X-WP-Total', (int) $total_users );
 		$max_pages = ceil( $total_users / $per_page );
 		$response->header( 'X-WP-TotalPages', (int) $max_pages );
@@ -306,9 +308,11 @@ class Users_Controller extends Abstract_Controller {
 			if ( $prev_page > $max_pages ) {
 				$prev_page = $max_pages;
 			}
+
 			$prev_link = add_query_arg( 'page', $prev_page, $base );
 			$response->link_header( 'prev', $prev_link );
 		}
+
 		if ( $max_pages > $page ) {
 			$next_page = $page + 1;
 			$next_link = add_query_arg( 'page', $next_page, $base );
@@ -317,9 +321,7 @@ class Users_Controller extends Abstract_Controller {
 
 		do_action( 'directorist_rest_after_query', 'get_user_items', $request, $prepared_args );
 
-		$response = apply_filters( 'directorist_rest_response', $response, 'get_user_items', $request, $prepared_args );
-
-		return $response;
+		return apply_filters( 'directorist_rest_response', $response, 'get_user_items', $request, $prepared_args );
 	}
 
 	/**
@@ -338,11 +340,11 @@ class Users_Controller extends Abstract_Controller {
 		}
 
 		// Create user.
-		$user_data = array(
+		$user_data = [
 			'user_email' => $request['email'],
 			'user_pass'  => $request['password'],
 			'role'       => 'subscriber',
-		);
+		];
 
 		if ( isset( $request['username'] ) ) {
 			$user_data['user_login'] = $request['username'];
@@ -389,9 +391,7 @@ class Users_Controller extends Abstract_Controller {
 
 		do_action( 'directorist_rest_after_query', 'create_user_item', $request );
 
-		$response = apply_filters( 'directorist_rest_response', $response, 'create_user_item', $request );
-
-		return $response;
+		return apply_filters( 'directorist_rest_response', $response, 'create_user_item', $request );
 	}
 
 	/**
@@ -407,8 +407,8 @@ class Users_Controller extends Abstract_Controller {
 
 		$user_data = get_userdata( $id );
 
-		if ( empty( $id ) || empty( $user_data->ID ) ) {
-			return new WP_Error( 'directorist_rest_invalid_id', __( 'Invalid resource ID.', 'directorist' ), array( 'status' => 404 ) );
+		if ( $id === 0 || empty( $user_data->ID ) ) {
+			return new WP_Error( 'directorist_rest_invalid_id', __( 'Invalid resource ID.', 'directorist' ), [ 'status' => 404 ] );
 		}
 
 		$user_data = $this->prepare_item_for_response( $user_data, $request );
@@ -416,9 +416,7 @@ class Users_Controller extends Abstract_Controller {
 
 		do_action( 'directorist_rest_after_query', 'get_user_item', $request, $id );
 
-		$response = apply_filters( 'directorist_rest_response', $response, 'get_user_item', $request, $id );
-
-		return $response;
+		return apply_filters( 'directorist_rest_response', $response, 'get_user_item', $request, $id );
 	}
 
 	/**
@@ -446,9 +444,9 @@ class Users_Controller extends Abstract_Controller {
 			return new WP_Error( 'directorist_rest_user_invalid_argument', __( "Username isn't editable.", 'directorist' ), 400 );
 		}
 
-		$updated_user_data = array(
+		$updated_user_data = [
 			'ID' => $user_data->ID
-		);
+		];
 
 		// User email.
 		if ( isset( $request['email'] ) ) {
@@ -485,9 +483,7 @@ class Users_Controller extends Abstract_Controller {
 
 		do_action( 'directorist_rest_after_query', 'update_user_item', $request, $id );
 
-		$response = apply_filters( 'directorist_rest_response', $response, 'update_user_item', $request );
-
-		return $response;
+		return apply_filters( 'directorist_rest_response', $response, 'update_user_item', $request );
 	}
 
 	/**
@@ -499,7 +495,7 @@ class Users_Controller extends Abstract_Controller {
 	public function delete_item( $request ) {
 		$id       = (int) $request['id'];
 		$reassign = false === $request['reassign'] ? null : absint( $request['reassign'] );
-		$force    = isset( $request['force'] ) ? (bool) $request['force'] : false;
+		$force    = isset( $request['force'] ) && (bool) $request['force'];
 
 		// We don't support trashing for this type, error out.
 		if ( ! $force ) {
@@ -507,7 +503,7 @@ class Users_Controller extends Abstract_Controller {
 				'directorist_rest_trash_not_supported',
 				/* translators: %s: force=true */
 				sprintf( __( "Users do not support trashing. Set '%s' to delete.", 'directorist' ), 'force=true' ),
-				array( 'status' => 501 )
+				[ 'status' => 501 ]
 			);
 		}
 
@@ -515,13 +511,11 @@ class Users_Controller extends Abstract_Controller {
 
 		$user_data = get_userdata( $id );
 		if ( ! $user_data ) {
-			return new WP_Error( 'directorist_rest_invalid_id', __( 'Invalid resource id.', 'directorist' ), array( 'status' => 400 ) );
+			return new WP_Error( 'directorist_rest_invalid_id', __( 'Invalid resource id.', 'directorist' ), [ 'status' => 400 ] );
 		}
 
-		if ( ! empty( $reassign ) ) {
-			if ( $reassign === $id || ! get_userdata( $reassign ) ) {
-				return new WP_Error( 'directorist_rest_user_invalid_reassign', __( 'Invalid resource id for reassignment.', 'directorist' ), array( 'status' => 400 ) );
-			}
+		if ( !empty( $reassign ) && ($reassign === $id || ! get_userdata( $reassign )) ) {
+			return new WP_Error( 'directorist_rest_user_invalid_reassign', __( 'Invalid resource id for reassignment.', 'directorist' ), [ 'status' => 400 ] );
 		}
 
 		$request->set_param( 'context', 'edit' );
@@ -536,7 +530,7 @@ class Users_Controller extends Abstract_Controller {
 			return new WP_Error(
 				'directorist_rest_cannot_delete',
 				__( 'The resource cannot be deleted.', 'directorist' ),
-				array( 'status' => 500 )
+				[ 'status' => 500 ]
 			);
 		}
 
@@ -551,9 +545,7 @@ class Users_Controller extends Abstract_Controller {
 
 		do_action( 'directorist_rest_after_query', 'delete_user_item', $request, $id );
 
-		$response = apply_filters( 'directorist_rest_response', $response, 'delete_user_item', $request );
-
-		return $response;
+		return apply_filters( 'directorist_rest_response', $response, 'delete_user_item', $request );
 	}
 
 	/**
@@ -566,7 +558,7 @@ class Users_Controller extends Abstract_Controller {
 	public function prepare_item_for_response( $user, $request ) {
 		$id     = $user->ID;
 		$schema = $this->get_item_schema();
-		$data   = array(
+		$data   = [
 			'id'             => $id,
 			'date_created'   => directorist_rest_prepare_date_response( $user->user_registered ),
 			'name'           => $user->display_name,
@@ -585,24 +577,24 @@ class Users_Controller extends Abstract_Controller {
 			'favorite'       => null,
 			'roles'          => null, //array_values( $user->roles ),
 			'listings_count' => (int) count_user_posts( $id, ATBDP_POST_TYPE, true ),
-		);
+		];
 
 		foreach ( array_keys( $schema['properties']['social_links']['properties'] ) as $field ) {
 			$value = get_user_meta( $id, 'atbdp_' . $field, true );
-			$data['social_links'][ $field ] = ( ! empty( $value ) ? $value : null );
+			$data['social_links'][ $field ] = ( empty( $value ) ? null : $value );
 		}
 
 		// User 'avatar'.
 		$image_id = get_user_meta( $id, 'pro_pic', true );
 		if ( $image_id && ! empty( $attachment = get_post( $image_id ) ) ) {
-			$data['avatar'] = array(
+			$data['avatar'] = [
 				'id'                => (int) $image_id,
 				'date_created'      => directorist_rest_prepare_date_response( $attachment->post_date ),
 				'date_created_gmt'  => directorist_rest_prepare_date_response( $attachment->post_date_gmt ),
 				'date_modified'     => directorist_rest_prepare_date_response( $attachment->post_modified ),
 				'date_modified_gmt' => directorist_rest_prepare_date_response( $attachment->post_modified_gmt ),
 				'src'               => wp_get_attachment_url( $image_id ),
-			);
+			];
 
 			$data['avater'] = $data['avatar'];
 		}
@@ -613,9 +605,10 @@ class Users_Controller extends Abstract_Controller {
 			$data['favorite'] = $favorites;
 		}
 
-		$context  = ! empty( $request['context'] ) ? $request['context'] : 'view';
+		$context  = empty( $request['context'] ) ? 'view' : $request['context'];
 		$data     = $this->add_additional_fields_to_object( $data, $request );
 		$data     = $this->filter_response_by_context( $data, $context );
+
 		$response = rest_ensure_response( $data );
 
 		$response->add_links( $this->prepare_links( $user ) );
@@ -695,6 +688,8 @@ class Users_Controller extends Abstract_Controller {
 				delete_term_meta( $id, 'pro_pic' );
 			}
 		}
+
+        return null;
 	}
 
 	/**
@@ -704,16 +699,14 @@ class Users_Controller extends Abstract_Controller {
 	 * @return array Links for the given user.
 	 */
 	protected function prepare_links( $user ) {
-		$links = array(
-			'self' => array(
+		return [
+			'self' => [
 				'href' => rest_url( sprintf( '/%s/%s/%d', $this->namespace, $this->rest_base, $user->ID ) ),
-			),
-			'collection' => array(
+			],
+			'collection' => [
 				'href' => rest_url( sprintf( '/%s/%s', $this->namespace, $this->rest_base ) ),
-			),
-		);
-
-		return $links;
+			],
+		];
 	}
 
 	/**
@@ -722,223 +715,223 @@ class Users_Controller extends Abstract_Controller {
 	 * @return array
 	 */
 	public function get_item_schema() {
-		$schema = array(
+		$schema = [
 			'$schema'    => 'http://json-schema.org/draft-04/schema#',
 			'title'      => 'user',
 			'type'       => 'object',
-			'properties' => array(
-				'id' => array(
+			'properties' => [
+				'id' => [
 					'description' => __( 'Unique identifier for the resource.', 'directorist' ),
 					'type'        => 'integer',
-					'context'     => array( 'view', 'edit' ),
+					'context'     => [ 'view', 'edit' ],
 					'readonly'    => true,
-				),
-				'date_created'    => array(
+				],
+				'date_created'    => [
 					'description' => __( 'The date the user was created, as GMT.', 'directorist' ),
 					'type'        => 'string',
 					'format'      => 'date-time',
-					'context'     => array( 'view', 'edit' ),
+					'context'     => [ 'view', 'edit' ],
 					'readonly'    => true,
-				),
-				'name'           => array(
+				],
+				'name'           => [
 					'description' => __( 'The display name for the user.', 'directorist' ),
 					'type'        => 'string',
-					'context'     => array( 'view' ),
-				),
-				'username' => array(
+					'context'     => [ 'view' ],
+				],
+				'username' => [
 					'description' => __( 'User login name.', 'directorist' ),
 					'type'        => 'string',
-					'context'     => array( 'view', 'edit' ),
-					'arg_options' => array(
+					'context'     => [ 'view', 'edit' ],
+					'arg_options' => [
 						'sanitize_callback' => 'sanitize_user',
-					),
-				),
-				'nickname'           => array(
+					],
+				],
+				'nickname'           => [
 					'description' => __( 'The nickname for the user.', 'directorist' ),
 					'type'        => 'string',
-					'context'     => array( 'view' ),
-				),
-				'first_name' => array(
+					'context'     => [ 'view' ],
+				],
+				'first_name' => [
 					'description' => __( 'User first name.', 'directorist' ),
 					'type'        => 'string',
-					'context'     => array( 'view', 'edit' ),
-					'arg_options' => array(
+					'context'     => [ 'view', 'edit' ],
+					'arg_options' => [
 						'sanitize_callback' => 'sanitize_text_field',
-					),
-				),
-				'last_name' => array(
+					],
+				],
+				'last_name' => [
 					'description' => __( 'User last name.', 'directorist' ),
 					'type'        => 'string',
-					'context'     => array( 'view', 'edit' ),
-					'arg_options' => array(
+					'context'     => [ 'view', 'edit' ],
+					'arg_options' => [
 						'sanitize_callback' => 'sanitize_text_field',
-					),
-				),
-				'description'        => array(
+					],
+				],
+				'description'        => [
 					'description' => __( 'Description of the user.', 'directorist' ),
 					'type'        => 'string',
-					'context'     => array( 'view', 'edit' ),
-				),
-				'email' => array(
+					'context'     => [ 'view', 'edit' ],
+				],
+				'email' => [
 					'description' => __( 'The email address for the user.', 'directorist' ),
 					'type'        => 'string',
 					'format'      => 'email',
-					'context'     => array( 'view', 'edit' ),
-				),
-				'url' => array(
+					'context'     => [ 'view', 'edit' ],
+				],
+				'url' => [
 					'description' => __( 'The website url for the user.', 'directorist' ),
 					'type'        => 'string',
 					'format'      => 'url',
-					'context'     => array( 'view', 'edit' ),
-				),
-				'password' => array(
+					'context'     => [ 'view', 'edit' ],
+				],
+				'password' => [
 					'description' => __( 'User password.', 'directorist' ),
 					'type'        => 'string',
-					'context'     => array( 'edit' ),
-				),
-				'address'        => array(
+					'context'     => [ 'edit' ],
+				],
+				'address'        => [
 					'description' => __( 'Address of the user.', 'directorist' ),
 					'type'        => 'string',
-					'context'     => array( 'view', 'edit' ),
-				),
-				'phone'        => array(
+					'context'     => [ 'view', 'edit' ],
+				],
+				'phone'        => [
 					'description' => __( 'Phone number of the user.', 'directorist' ),
 					'type'        => 'string',
-					'context'     => array( 'view', 'edit' ),
-				),
-				'avatar'       => array(
+					'context'     => [ 'view', 'edit' ],
+				],
+				'avatar'       => [
 					'description' => __( 'User avatar image data.', 'directorist' ),
 					'type'        => 'object',
-					'context'     => array( 'view', 'edit' ),
-					'properties'  => array(
-						'id'                => array(
+					'context'     => [ 'view', 'edit' ],
+					'properties'  => [
+						'id'                => [
 							'description' => __( 'Image ID.', 'directorist' ),
 							'type'        => 'integer',
-							'context'     => array( 'view', 'edit' ),
-						),
-						'date_created'      => array(
+							'context'     => [ 'view', 'edit' ],
+						],
+						'date_created'      => [
 							'description' => __( "The date the image was created, in the site's timezone.", 'directorist' ),
 							'type'        => 'date-time',
-							'context'     => array( 'view', 'edit' ),
+							'context'     => [ 'view', 'edit' ],
 							'readonly'    => true,
-						),
-						'date_created_gmt'  => array(
+						],
+						'date_created_gmt'  => [
 							'description' => __( 'The date the image was created, as GMT.', 'directorist' ),
 							'type'        => 'date-time',
-							'context'     => array( 'view', 'edit' ),
+							'context'     => [ 'view', 'edit' ],
 							'readonly'    => true,
-						),
-						'date_modified'     => array(
+						],
+						'date_modified'     => [
 							'description' => __( "The date the image was last modified, in the site's timezone.", 'directorist' ),
 							'type'        => 'date-time',
-							'context'     => array( 'view', 'edit' ),
+							'context'     => [ 'view', 'edit' ],
 							'readonly'    => true,
-						),
-						'date_modified_gmt' => array(
+						],
+						'date_modified_gmt' => [
 							'description' => __( 'The date the image was last modified, as GMT.', 'directorist' ),
 							'type'        => 'date-time',
-							'context'     => array( 'view', 'edit' ),
+							'context'     => [ 'view', 'edit' ],
 							'readonly'    => true,
-						),
-						'src'               => array(
+						],
+						'src'               => [
 							'description' => __( 'Image URL.', 'directorist' ),
 							'type'        => 'string',
 							'format'      => 'uri',
-							'context'     => array( 'view', 'edit' ),
-						),
-					),
-				),
-				'avater'       => array(
+							'context'     => [ 'view', 'edit' ],
+						],
+					],
+				],
+				'avater'       => [
 					'description' => __( 'User avatar image data.', 'directorist' ),
 					'type'        => 'object',
-					'context'     => array( 'view', 'edit' ),
-					'properties'  => array(
-						'id'                => array(
+					'context'     => [ 'view', 'edit' ],
+					'properties'  => [
+						'id'                => [
 							'description' => __( 'Image ID.', 'directorist' ),
 							'type'        => 'integer',
-							'context'     => array( 'view', 'edit' ),
-						),
-						'date_created'      => array(
+							'context'     => [ 'view', 'edit' ],
+						],
+						'date_created'      => [
 							'description' => __( "The date the image was created, in the site's timezone.", 'directorist' ),
 							'type'        => 'date-time',
-							'context'     => array( 'view', 'edit' ),
+							'context'     => [ 'view', 'edit' ],
 							'readonly'    => true,
-						),
-						'date_created_gmt'  => array(
+						],
+						'date_created_gmt'  => [
 							'description' => __( 'The date the image was created, as GMT.', 'directorist' ),
 							'type'        => 'date-time',
-							'context'     => array( 'view', 'edit' ),
+							'context'     => [ 'view', 'edit' ],
 							'readonly'    => true,
-						),
-						'date_modified'     => array(
+						],
+						'date_modified'     => [
 							'description' => __( "The date the image was last modified, in the site's timezone.", 'directorist' ),
 							'type'        => 'date-time',
-							'context'     => array( 'view', 'edit' ),
+							'context'     => [ 'view', 'edit' ],
 							'readonly'    => true,
-						),
-						'date_modified_gmt' => array(
+						],
+						'date_modified_gmt' => [
 							'description' => __( 'The date the image was last modified, as GMT.', 'directorist' ),
 							'type'        => 'date-time',
-							'context'     => array( 'view', 'edit' ),
+							'context'     => [ 'view', 'edit' ],
 							'readonly'    => true,
-						),
-						'src'               => array(
+						],
+						'src'               => [
 							'description' => __( 'Image URL.', 'directorist' ),
 							'type'        => 'string',
 							'format'      => 'uri',
-							'context'     => array( 'view', 'edit' ),
-						),
-					),
-				),
-				'social_links' => array(
+							'context'     => [ 'view', 'edit' ],
+						],
+					],
+				],
+				'social_links' => [
 					'description' => __( 'User social links.', 'directorist' ),
 					'type'        => 'object',
-					'context'     => array( 'view', 'edit' ),
-					'properties'  => array(
-						'facebook' => array(
+					'context'     => [ 'view', 'edit' ],
+					'properties'  => [
+						'facebook' => [
 							'description' => __( 'Facebook profile link.', 'directorist' ),
 							'type'        => 'string',
 							'format'      => 'uri',
-							'context'     => array( 'view', 'edit' ),
-						),
-						'twitter' => array(
+							'context'     => [ 'view', 'edit' ],
+						],
+						'twitter' => [
 							'description' => __( 'Twitter profile link.', 'directorist' ),
 							'type'        => 'string',
 							'format'      => 'uri',
-							'context'     => array( 'view', 'edit' ),
-						),
-						'linkedin' => array(
+							'context'     => [ 'view', 'edit' ],
+						],
+						'linkedin' => [
 							'description' => __( 'LinkedIn profile link.', 'directorist' ),
 							'type'        => 'string',
 							'format'      => 'uri',
-							'context'     => array( 'view', 'edit' ),
-						),
-						'youtube' => array(
+							'context'     => [ 'view', 'edit' ],
+						],
+						'youtube' => [
 							'description' => __( 'Youtube profile link.', 'directorist' ),
 							'type'        => 'string',
 							'format'      => 'uri',
-							'context'     => array( 'view', 'edit' ),
-						),
-					),
-				),
-				'favorite' =>  array(
+							'context'     => [ 'view', 'edit' ],
+						],
+					],
+				],
+				'favorite' =>  [
 					'description' => __( 'User favorite listing ids.', 'directorist' ),
 					'type'        => 'array',
-					'items'       => array(
+					'items'       => [
 						'type' => 'integer',
-					),
-					'context'     => array( 'view' ),
+					],
+					'context'     => [ 'view' ],
 					'readonly'    => true,
-				),
-				'listings_count' => array(
+				],
+				'listings_count' => [
 					'description' => __( 'Quantity of listings created by the user.', 'directorist' ),
 					'type'        => 'integer',
 					'default'     => 0,
-					'context'     => array( 'view', 'edit' ),
+					'context'     => [ 'view', 'edit' ],
 					'readonly'    => true,
-				),
-			),
-		);
+				],
+			],
+		];
 
 		return $this->add_additional_fields_schema( $schema );
 	}
@@ -960,73 +953,73 @@ class Users_Controller extends Abstract_Controller {
 	 * @return array
 	 */
 	public function get_collection_params() {
-		$params = parent::get_collection_params();
+		$params = null;
 
 		$params['context']['default'] = 'view';
 
-		$params['exclude'] = array(
+		$params['exclude'] = [
 			'description'       => __( 'Ensure result set excludes specific IDs.', 'directorist' ),
 			'type'              => 'array',
-			'items'             => array(
+			'items'             => [
 				'type'          => 'integer',
-			),
-			'default'           => array(),
+			],
+			'default'           => [],
 			'sanitize_callback' => 'wp_parse_id_list',
-		);
-		$params['include'] = array(
+		];
+		$params['include'] = [
 			'description'       => __( 'Limit result set to specific IDs.', 'directorist' ),
 			'type'              => 'array',
-			'items'             => array(
+			'items'             => [
 				'type'          => 'integer',
-			),
-			'default'           => array(),
+			],
+			'default'           => [],
 			'sanitize_callback' => 'wp_parse_id_list',
-		);
-		$params['offset'] = array(
+		];
+		$params['offset'] = [
 			'description'        => __( 'Offset the result set by a specific number of items.', 'directorist' ),
 			'type'               => 'integer',
 			'sanitize_callback'  => 'absint',
 			'validate_callback'  => 'rest_validate_request_arg',
-		);
-		$params['order'] = array(
+		];
+		$params['order'] = [
 			'default'            => 'asc',
 			'description'        => __( 'Order sort attribute ascending or descending.', 'directorist' ),
-			'enum'               => array( 'asc', 'desc' ),
+			'enum'               => [ 'asc', 'desc' ],
 			'sanitize_callback'  => 'sanitize_key',
 			'type'               => 'string',
 			'validate_callback'  => 'rest_validate_request_arg',
-		);
-		$params['orderby'] = array(
+		];
+		$params['orderby'] = [
 			'default'            => 'name',
 			'description'        => __( 'Sort collection by object attribute.', 'directorist' ),
 			'enum'               => array_keys( $this->get_orderby_possibles() ),
 			'sanitize_callback'  => 'sanitize_key',
 			'type'               => 'string',
 			'validate_callback'  => 'rest_validate_request_arg',
-		);
-		$params['email'] = array(
+		];
+		$params['email'] = [
 			'description'        => __( 'Limit result set to resources with a specific email.', 'directorist' ),
 			'type'               => 'string',
 			'format'             => 'email',
 			'validate_callback'  => 'rest_validate_request_arg',
-		);
-		$params['role'] = array(
+		];
+		$params['role'] = [
 			'description'        => __( 'Limit result set to resources with a specific role.', 'directorist' ),
 			'type'               => 'string',
 			'default'            => 'all',
-			'enum'               => array_merge( array( 'all' ), $this->get_role_names() ),
+			'enum'               => array_merge( [ 'all' ], $this->get_role_names() ),
 			'validate_callback'  => 'rest_validate_request_arg',
-		);
+		];
 		return $params;
 	}
 
 	protected function get_orderby_possibles() {
-		return array(
+		return [
 			'id'              => 'ID',
 			'include'         => 'include',
 			'name'            => 'display_name',
 			'registered_date' => 'registered',
 			// 'listings_count'  => 'listings_count',
-		);
+		];
 	}
 }

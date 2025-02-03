@@ -5,7 +5,9 @@
  * @version 7.3.1
  */
 
-if ( ! defined( 'ABSPATH' ) ) exit;
+if (! defined( 'ABSPATH' )) {
+    exit;
+}
 
 $id = (array_key_exists('id', $args)) ? $args['id'] : $index; ?>
 

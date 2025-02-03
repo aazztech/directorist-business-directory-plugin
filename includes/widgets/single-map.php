@@ -7,7 +7,9 @@ namespace Directorist\Widgets;
 
 use Directorist\Helper;
 
-if ( ! defined( 'ABSPATH' ) ) exit;
+if (! defined( 'ABSPATH' )) {
+    exit;
+}
 
 class Single_Map extends \WP_Widget {
 
@@ -22,7 +24,7 @@ class Single_Map extends \WP_Widget {
 		parent::__construct( $id_base, $name, $widget_options );
 	}
 
-	public function form( $instance ) {
+	public function form( $instance ): void {
 		$defaults = [
 			'title'    => esc_html__( 'Map', 'directorist' ),
 			'zoom'     => 16,
@@ -44,37 +46,35 @@ class Single_Map extends \WP_Widget {
 		Widget_Fields::create( $fields, $instance, $this );
 	}
 
-	public function update( $new_instance, $old_instance ) {
-		$instance = [];
+	public function update($new_instance, $old_instance)
+    {
+        return ['title' => empty( $new_instance['title'] ) ? '' : sanitize_text_field( $new_instance['title'] ), 'zoom' => empty( $new_instance['zoom'] ) ? 16 : sanitize_text_field( $new_instance['zoom'] )];
+    }
 
-		$instance['title']            = ! empty( $new_instance['title'] ) ? sanitize_text_field( $new_instance['title'] ) : '';
-		$instance['zoom']             = ! empty( $new_instance['zoom'] ) ? sanitize_text_field( $new_instance['zoom'] ) : 16;
-
-		return $instance;
-	}
-
-	public function widget( $args, $instance ) {
-        if( ! is_singular( ATBDP_POST_TYPE ) )
+	public function widget( $args, $instance ): void {
+        if (! is_singular( ATBDP_POST_TYPE )) {
             return;
+        }
 
 		echo wp_kses_post( $args['before_widget'] );
 
-		$title = !empty($instance['title']) ? esc_html($instance['title']) : esc_html__('Popular Listings', 'directorist');
+		$title = empty($instance['title']) ? esc_html__('Popular Listings', 'directorist') : esc_html($instance['title']);
 		$widget_title = $args['before_title'] . apply_filters( 'widget_title', $title ) . $args['after_title'];
 		echo wp_kses_post( $widget_title );
 
-		$map_zoom_level = !empty( $instance['zoom'] ) ? (int) $instance['zoom'] : get_directorist_option('map_zoom_level', 16 );
+		$map_zoom_level = empty( $instance['zoom'] ) ? get_directorist_option('map_zoom_level', 16 ) : (int) $instance['zoom'];
 
         $manual_lat = get_post_meta( get_the_ID(), '_manual_lat', true );
         $manual_lng = get_post_meta( get_the_ID(), '_manual_lng', true );
         $tagline    = get_post_meta( get_the_ID(), '_tagline', true );
         $address    = get_post_meta( get_the_ID(), '_address', true );
         $t          = get_the_title();
-        $t          = !empty($t) ? $t : __('No Title', 'directorist');
-        $info_content = "<div class='map_info_window'> <h3>{$t}</h3>";
-        $info_content .= "<p> {$tagline} </p>";
-        $info_content .= "<address>{$address}</address>";
-        $info_content .= "<a href='http://www.google.com/maps/place/{$manual_lat},{$manual_lng}' target='_blank'> " . __('View On Google Maps', 'directorist') . "</a></div>";
+        $t          = empty($t) ? __('No Title', 'directorist') : $t;
+
+        $info_content = sprintf("<div class='map_info_window'> <h3>%s</h3>", $t);
+        $info_content .= sprintf('<p> %s </p>', $tagline);
+        $info_content .= sprintf('<address>%s</address>', $address);
+        $info_content .= sprintf("<a href='http://www.google.com/maps/place/%s,%s' target='_blank'> ", $manual_lat, $manual_lng) . __('View On Google Maps', 'directorist') . "</a></div>";
 
 		$listing = \Directorist\Directorist_Single_Listing::instance();
 		$map_data = json_decode( $listing->map_data() );
@@ -82,7 +82,7 @@ class Single_Map extends \WP_Widget {
 		//$map_data->info_content = $info_content;
 		$map_data = json_encode( $map_data );
 
-		Helper::get_template( 'widgets/single-map', compact( 'args', 'instance', 'map_data' ) );
+		Helper::get_template( 'widgets/single-map', ['args' => $args, 'instance' => $instance, 'map_data' => $map_data] );
 
 		echo wp_kses_post( $args['after_widget'] );
 	}

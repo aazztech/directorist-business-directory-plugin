@@ -5,16 +5,14 @@
 
 namespace Directorist;
 
-if ( ! defined( 'ABSPATH' ) ) exit;
+if (! defined( 'ABSPATH' )) {
+    exit;
+}
 
 class Directorist_All_Authors {
 
-	public function __construct() {
-
-	}
-
 	public function render_shortcode_all_authors() {
-		return Helper::get_template_contents( 'all-authors', array( 'authors' => $this ) );
+		return Helper::get_template_contents( 'all-authors', [ 'authors' => $this ] );
 	}
 
 	public static function user_image_src( $user ) {
@@ -22,7 +20,7 @@ class Directorist_All_Authors {
 		$image_id  	  = get_user_meta( $id, 'pro_pic', true );
 		$image_data   = wp_get_attachment_image_src( $image_id, 'full' ); // @kowsar @todo size
 		$image_src    = $image_data ? $image_data[0] : get_avatar_url( $id );
-		return $image_src ? $image_src : '';
+		return $image_src ?: '';
 	}
 
 	public function display_sorting() {
@@ -38,7 +36,7 @@ class Directorist_All_Authors {
 	}
 
 	public function contact_info() {
-		return get_directorist_option( 'all_authors_contact', array( 'phone', 'address', 'website' ) );
+		return get_directorist_option( 'all_authors_contact', [ 'phone', 'address', 'website' ] );
 	}
 
 	public function display_description() {
@@ -61,21 +59,21 @@ class Directorist_All_Authors {
 		return get_directorist_option( 'all_authors_button_text', 'View All Listings' );
 	}
 
-	public function get_columns() {
+	public function get_columns(): float {
 		return floor( 12 / get_directorist_option( 'all_authors_columns', 3 ) );
 	}
 
-	public function display_pagination() {
+	public function display_pagination(): bool {
 		_deprecated_function( __METHOD__, '8.0' );
 		return true;
 	}
 
 	public function author_list( $type = '' ) {
-		$args = array();
+		$args = [];
 		$all_authors_select_role = get_directorist_option( 'all_authors_select_role', 'all' );
 		$all_authors_per_page	 = get_directorist_option( 'all_authors_per_page', 9 );
 
-		$paged					 = ! empty( $_REQUEST['paged'] ) ? sanitize_text_field( wp_unslash( $_REQUEST['paged'] ) ) : atbdp_get_paged_num();
+		$paged					 = empty( $_REQUEST['paged'] ) ? atbdp_get_paged_num() : sanitize_text_field( wp_unslash( $_REQUEST['paged'] ) );
 		$offset 				 = ( $paged - 1 ) * $all_authors_per_page;
 		$args['paged'] 			 = $paged;
 		$args['offset'] 		 = $offset;
@@ -87,23 +85,23 @@ class Directorist_All_Authors {
 		$args['orderby'] 		 = 'display_name';
 
 		if ( 'author' == $all_authors_select_role ) {
-			$meta_query = array(
-				array(
+			$meta_query = [
+				[
 					'key'     => '_user_type',
 					'value'   => 'author',
 					'compare' => '='
-				)
-			);
+				]
+			];
 			$args['meta_query'] = $meta_query;
 		} elseif ( 'all' != $all_authors_select_role ) {
-			$args['role__in'] = array( $all_authors_select_role );
+			$args['role__in'] = [ $all_authors_select_role ];
 		}
 
 		// $args['has_published_posts'] = [ ATBDP_POST_TYPE ];
 
 		if( ! empty( $_REQUEST['alphabet'] ) && 'ALL' != $_REQUEST['alphabet'] ) {
 			$args['search'] 		= sanitize_text_field( wp_unslash( $_REQUEST['alphabet'] ) ) . '*';
-			$args['search_columns'] = array('display_name');
+			$args['search_columns'] = ['display_name'];
 		}
 
 		return get_users( $args );
@@ -112,20 +110,18 @@ class Directorist_All_Authors {
 	public function author_pagination( $base = '', $paged = '' ) {
 		$all_authors_per_page	 = get_directorist_option( 'all_authors_per_page', 9 );
 		$query 					 = $this->author_list('pagination');
-		$paged 					 = ! empty( $_REQUEST['paged'] ) ? sanitize_text_field( wp_unslash( $_REQUEST['paged'] ) ) : atbdp_get_paged_num();
+		$paged 					 = empty( $_REQUEST['paged'] ) ? atbdp_get_paged_num() : sanitize_text_field( wp_unslash( $_REQUEST['paged'] ) );
 		$big   					 = 999999999;
 		$total_pages 			 = ceil( count( $query ) / $all_authors_per_page );
 
-		$links = paginate_links( array(
+		return paginate_links( [
 			'base'      => ! empty( $_REQUEST['paged'] ) || ! empty( $_REQUEST['alphabet'] ) ? 'page/%#%' : str_replace( $big, '%#%', esc_url( get_pagenum_link( $big ) ) ),
 			'format'    => '?paged=%#%',
 			'current'   => max( 1, $paged ),
 			'total'     => $total_pages,
 			'prev_text' => directorist_icon( 'las la-arrow-left', false ),
 			'next_text' => directorist_icon( 'las la-arrow-right', false ),
-		) );
-
-		return $links;
+		] );
 	}
 
 }

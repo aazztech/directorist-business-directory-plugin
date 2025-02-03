@@ -27,12 +27,12 @@ class Block_Template_Utils {
 	 *     @var string TEMPLATE_PARTS_DIR_NAME  Directory name of the block template parts directory.
 	 * }
 	 */
-	const DIRECTORY_NAMES = array(
+	const DIRECTORY_NAMES = [
 		'DEPRECATED_TEMPLATES'      => 'block-templates',
 		'DEPRECATED_TEMPLATE_PARTS' => 'block-template-parts',
 		'TEMPLATES'                 => 'templates',
 		'TEMPLATE_PARTS'            => 'parts',
-	);
+	];
 
 	/**
 	 * Directorist plugin slug
@@ -51,12 +51,13 @@ class Block_Template_Utils {
 	 *
 	 * @return array block references to the passed blocks and their inner blocks.
 	 */
-	public static function gutenberg_flatten_blocks( &$blocks ) {
-		$all_blocks = array();
-		$queue      = array();
+	public static function gutenberg_flatten_blocks( &$blocks ): array {
+		$all_blocks = [];
+		$queue      = [];
 		foreach ( $blocks as &$block ) {
 			$queue[] = &$block;
 		}
+
 		$queue_count = count( $queue );
 
 		while ( $queue_count > 0 ) {
@@ -145,7 +146,7 @@ class Block_Template_Utils {
 		$template->status         = $post->post_status;
 		$template->has_theme_file = $has_theme_file;
 		$template->is_custom      = false;
-		$template->post_types     = array(); // Don't appear in any Edit Post template selector dropdown.
+		$template->post_types     = []; // Don't appear in any Edit Post template selector dropdown.
 
 		if ( 'wp_template_part' === $post->post_type ) {
 			$type_terms = get_the_terms( $post, 'wp_template_part_area' );
@@ -169,7 +170,7 @@ class Block_Template_Utils {
 	 *
 	 * @return \WP_Block_Template Template.
 	 */
-	public static function gutenberg_build_template_result_from_file( $template_file, $template_type ) {
+	public static function gutenberg_build_template_result_from_file( $template_file, $template_type ): \WP_Block_Template {
 		$template_file = (object) $template_file;
 
 		// If the theme has an archive-products.html template but does not have product taxonomy templates
@@ -184,18 +185,19 @@ class Block_Template_Utils {
 		$template->theme   = $template_is_from_theme ? $theme_name : self::PLUGIN_SLUG;
 		$template->content = self::gutenberg_inject_theme_attribute_in_content( $template_content );
 		// Plugin was agreed as a valid source value despite existing inline docs at the time of creating: https://github.com/WordPress/gutenberg/issues/36597#issuecomment-976232909.
-		$template->source         = $template_file->source ? $template_file->source : 'plugin';
+		$template->source         = $template_file->source ?: 'plugin';
 		$template->slug           = $template_file->slug;
 		$template->type           = $template_type;
-		$template->title          = ! empty( $template_file->title ) ? $template_file->title : self::convert_slug_to_title( $template_file->slug );
+		$template->title          = empty( $template_file->title ) ? self::convert_slug_to_title( $template_file->slug ) : $template_file->title;
 		$template->status         = 'publish';
 		$template->has_theme_file = true;
 		$template->origin         = $template_file->source;
 		$template->is_custom      = false; // Templates loaded from the filesystem aren't custom, ones that have been edited and loaded from the DB are.
-		$template->post_types     = array(); // Don't appear in any Edit Post template selector dropdown.
+		$template->post_types     = []; // Don't appear in any Edit Post template selector dropdown.
 		if ( 'wp_template_part' === $template_type ) {
 			$template->area = 'uncategorized';
 		}
+
 		return $template;
 	}
 
@@ -209,10 +211,10 @@ class Block_Template_Utils {
 	 *
 	 * @return object Block template object.
 	 */
-	public static function create_new_block_template_object( $template_file, $template_type, $template_slug, $template_is_from_theme = false ) {
+	public static function create_new_block_template_object( $template_file, $template_type, string $template_slug, $template_is_from_theme = false ) {
 		$theme_name = wp_get_theme()->get( 'TextDomain' );
 
-		$new_template_item = array(
+		$new_template_item = [
 			'slug'        => $template_slug,
 			'id'          => $template_is_from_theme ? $theme_name . '//' . $template_slug : self::PLUGIN_SLUG . '//' . $template_slug,
 			'path'        => $template_file,
@@ -222,8 +224,8 @@ class Block_Template_Utils {
 			'source'      => $template_is_from_theme ? 'theme' : 'plugin',
 			'title'       => self::convert_slug_to_title( $template_slug ),
 			'description' => '',
-			'post_types'  => array(), // Don't appear in any Edit Post template selector dropdown.
-		);
+			'post_types'  => [], // Don't appear in any Edit Post template selector dropdown.
+		];
 
 		return (object) $new_template_item;
 	}
@@ -234,8 +236,8 @@ class Block_Template_Utils {
 	 * @param string $base_directory The theme's file path.
 	 * @return array $path_list A list of paths to all template part files.
 	 */
-	public static function gutenberg_get_template_paths( $base_directory ) {
-		$path_list = array();
+	public static function gutenberg_get_template_paths( $base_directory ): array {
+		$path_list = [];
 		if ( file_exists( $base_directory ) ) {
 			$nested_files      = new \RecursiveIteratorIterator( new \RecursiveDirectoryIterator( $base_directory ) );
 			$nested_html_files = new \RegexIterator( $nested_files, '/^.+\.html$/i', \RecursiveRegexIterator::GET_MATCH );
@@ -243,6 +245,7 @@ class Block_Template_Utils {
 				$path_list[] = $path;
 			}
 		}
+
 		return $path_list;
 	}
 
@@ -268,7 +271,7 @@ class Block_Template_Utils {
 	 * @param string $directory_name The template's directory name.
 	 * @return string slug
 	 */
-	public static function generate_template_slug_from_path( $path, $directory_name = 'block-templates' ) {
+	public static function generate_template_slug_from_path( $path, string $directory_name = 'block-templates' ): string {
 		return substr(
 			$path,
 			strpos( $path, $directory_name . DIRECTORY_SEPARATOR ) + 1 + strlen( $directory_name ),
@@ -277,40 +280,30 @@ class Block_Template_Utils {
 	}
 
 	/**
-	 * Check if the theme has a template. So we know if to load our own in or not.
-	 *
-	 * @param string $template_name name of the template file without .html extension e.g. 'single-listing'.
-	 * @return boolean
-	 */
-	public static function theme_has_template( $template_name ) {
+     * Check if the theme has a template. So we know if to load our own in or not.
+     *
+     * @param string $template_name name of the template file without .html extension e.g. 'single-listing'.
+     */
+    public static function theme_has_template( string $template_name ): bool {
 		return is_readable( get_template_directory() . '/block-templates/' . $template_name . '.html' ) ||
 			is_readable( get_stylesheet_directory() . '/block-templates/' . $template_name . '.html' );
 	}
 
 	/**
-	 * Check if the theme has a template. So we know if to load our own in or not.
-	 *
-	 * @param string $template_name name of the template file without .html extension e.g. 'single-LISTIN'.
-	 * @return boolean
-	 */
-	public static function theme_has_template_part( $template_name ) {
+     * Check if the theme has a template. So we know if to load our own in or not.
+     *
+     * @param string $template_name name of the template file without .html extension e.g. 'single-LISTIN'.
+     */
+    public static function theme_has_template_part( string $template_name ): bool {
 		return is_readable( get_template_directory() . '/block-template-parts/' . $template_name . '.html' ) ||
 			is_readable( get_stylesheet_directory() . '/block-template-parts/' . $template_name . '.html' );
 	}
 
 	/**
-	 * Checks to see if they are using a compatible version of WP, or if not they have a compatible version of the Gutenberg plugin installed.
-	 *
-	 * @return boolean
-	 */
-	public static function supports_block_templates() {
-		if (
-			( ! function_exists( 'wp_is_block_theme' ) || ! wp_is_block_theme() ) &&
-			( ! function_exists( 'gutenberg_supports_block_templates' ) || ! gutenberg_supports_block_templates() )
-		) {
-			return false;
-		}
-
-		return true;
-	}
+     * Checks to see if they are using a compatible version of WP, or if not they have a compatible version of the Gutenberg plugin installed.
+     */
+    public static function supports_block_templates(): bool
+    {
+        return !((! function_exists( 'wp_is_block_theme' ) || ! wp_is_block_theme()) && (! function_exists( 'gutenberg_supports_block_templates' ) || ! gutenberg_supports_block_templates()));
+    }
 }

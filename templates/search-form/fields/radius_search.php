@@ -5,12 +5,14 @@
  * @version 8.0.2
  */
 
-if (!defined('ABSPATH')) exit;
+if (!defined('ABSPATH')) {
+    exit;
+}
 
 $min_distance     = '0';
 $default_distance = $data['default_radius_distance'] ?? 0;
 $max_distance     = $data['max_radius_distance'] ?? 1000;
-$value            = ! empty( $_REQUEST['miles'] ) ? sanitize_text_field( wp_unslash( $_REQUEST['miles'] ) ) : $min_distance . '-' . $max_distance;
+$value            = empty( $_REQUEST['miles'] ) ? $min_distance . '-' . $max_distance : sanitize_text_field( wp_unslash( $_REQUEST['miles'] ) );
 
 if ( ! empty( $_REQUEST['miles'] ) ) {
 	$distance =	directorist_get_distance_range( $_REQUEST['miles'] );

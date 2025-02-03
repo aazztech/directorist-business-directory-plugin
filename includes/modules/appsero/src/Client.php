@@ -80,24 +80,18 @@ class Client {
 
     /**
      * The Object of Insights Class
-     *
-     * @var object
      */
-    private $insights;
+    private ?\Directorist\Appsero\Insights $insights = null;
 
     /**
      * The Object of Updater Class
-     *
-     * @var object
      */
-    private $updater;
+    private ?\Directorist\Appsero\Updater $updater = null;
 
     /**
      * The Object of License Class
-     *
-     * @var object
      */
-    private $license;
+    private ?\Directorist\Appsero\License $license = null;
 
     /**
      * Initialize the class
@@ -116,16 +110,14 @@ class Client {
 
     /**
      * Initialize insights class
-     *
-     * @return Directorist\Appsero\Insights
      */
-    public function insights() {
+    public function insights(): \Directorist\Appsero\Insights {
         if ( ! class_exists( __NAMESPACE__ . '\Insights' ) ) {
             require_once __DIR__ . '/Insights.php';
         }
 
         // if already instantiated, return the cached one
-        if ( $this->insights ) {
+        if ( $this->insights instanceof \Directorist\Appsero\Insights ) {
             return $this->insights;
         }
 
@@ -136,16 +128,14 @@ class Client {
 
     /**
      * Initialize plugin/theme updater
-     *
-     * @return Directorist\Appsero\Updater
      */
-    public function updater() {
+    public function updater(): \Directorist\Appsero\Updater {
         if ( ! class_exists( __NAMESPACE__ . '\Updater' ) ) {
             require_once __DIR__ . '/Updater.php';
         }
 
         // if already instantiated, return the cached one
-        if ( $this->updater ) {
+        if ( $this->updater instanceof \Directorist\Appsero\Updater ) {
             return $this->updater;
         }
 
@@ -156,16 +146,14 @@ class Client {
 
     /**
      * Initialize license checker
-     *
-     * @return Directorist\Appsero\License
      */
-    public function license() {
+    public function license(): \Directorist\Appsero\License {
         if ( ! class_exists( __NAMESPACE__ . '\License' ) ) {
             require_once __DIR__ . '/License.php';
         }
 
         // if already instantiated, return the cached one
-        if ( $this->license ) {
+        if ( $this->license instanceof \Directorist\Appsero\License ) {
             return $this->license;
         }
 
@@ -220,11 +208,10 @@ class Client {
      * Send request to remote endpoint
      *
      * @param array  $params
-     * @param string $route
      *
      * @return array|WP_Error array of results including HTTP headers or WP_Error if the request failed
      */
-    public function send_request( $params, $route, $blocking = false ) {
+    public function send_request( $params, string $route, $blocking = false ) {
         $url = $this->endpoint() . $route;
 
         $headers = [
@@ -232,7 +219,7 @@ class Client {
             'Accept'     => 'application/json',
         ];
 
-        $response = wp_remote_post(
+        return wp_remote_post(
             $url,
             [
                 'method'      => 'POST',
@@ -245,8 +232,6 @@ class Client {
                 'cookies'     => [],
             ]
         );
-
-        return $response;
     }
 
     /**
@@ -264,7 +249,7 @@ class Client {
      * Translate function _e()
      */
     // phpcs:ignore
-    public function _etrans( $text ) {
+    public function _etrans( $text ): void {
         call_user_func( '_e', $text, $this->textdomain );
     }
 
@@ -279,7 +264,7 @@ class Client {
     /**
      * Set project textdomain
      */
-    public function set_textdomain( $textdomain ) {
+    public function set_textdomain( $textdomain ): void {
         $this->textdomain = $textdomain;
     }
 }

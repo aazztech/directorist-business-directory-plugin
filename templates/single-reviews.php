@@ -26,10 +26,10 @@ Bootstrap::load_walker();
 $listing       = Directorist_Single_Listing::instance( get_the_ID() );
 $section_data  = $listing->get_review_section_data();
 $builder       = Builder::get( $section_data['section_data'] );
-$section_id    = isset( $section_data['id'] ) ? $section_data['id'] : '';
-$section_class = isset( $section_data['class'] ) ? $section_data['class'] : '';
-$section_icon  = isset( $section_data['icon'] ) ? $section_data['icon'] : '';
-$section_label = isset( $section_data['label'] ) ? $section_data['label'] : '';
+$section_id    = $section_data['id'] ?? '';
+$section_class = $section_data['class'] ?? '';
+$section_icon  = $section_data['icon'] ?? '';
+$section_label = $section_data['label'] ?? '';
 ?>
 <section id="<?php echo esc_attr( $section_id ); ?>" class="directorist-review-container <?php echo esc_attr( $section_class ); ?>">
 	<div class="directorist-card directorist-review-content">
@@ -45,7 +45,7 @@ $section_label = isset( $section_data['label'] ) ? $section_data['label'] : '';
 			<?php if ( directorist_can_current_user_review() || directorist_can_guest_review() ) : ?>
 				<a href="#respond" rel="nofollow" class="directorist-btn"><?php directorist_icon( 'las la-star' ); ?><?php esc_attr_e( 'Write a Review', 'directorist' ); ?></a>
 			<?php elseif ( ! is_user_logged_in() ) : ?>
-				<a href="<?php echo esc_url( ATBDP_Permalink::get_login_page_url( array( 'redirect' => get_the_permalink(), 'scope' => 'review' ) ) ); ?>" rel="nofollow" class="directorist-btn"><?php directorist_icon( 'las la-star' ); ?><?php esc_attr_e( 'Login to Write Your Review', 'directorist' ); ?></a>
+				<a href="<?php echo esc_url( ATBDP_Permalink::get_login_page_url( [ 'redirect' => get_the_permalink(), 'scope' => 'review' ] ) ); ?>" rel="nofollow" class="directorist-btn"><?php directorist_icon( 'las la-star' ); ?><?php esc_attr_e( 'Login to Write Your Review', 'directorist' ); ?></a>
 			<?php endif; ?>
 		</div><!-- ends: .directorist-review-content__header -->
 
@@ -67,11 +67,11 @@ $section_label = isset( $section_data['label'] ) ? $section_data['label'] : '';
 			</div><!-- ends: .directorist-review-content__overview -->
 
 			<ul class="commentlist directorist-review-content__reviews">
-				<?php wp_list_comments( array(
+				<?php wp_list_comments( [
 					'avatar_size' => 50,
 					'format'      => 'html5',
 					'walker'      => new Review_Walker(),
-				) );?>
+				] );?>
 			</ul>
 		<?php endif;?>
 	</div><!-- ends: .directorist-review-content -->
@@ -81,12 +81,12 @@ $section_label = isset( $section_data['label'] ) ? $section_data['label'] : '';
 			<?php
 			$prev_text = directorist_icon( 'las la-arrow-left', false );
 			$next_text = directorist_icon( 'las la-arrow-right', false );
-			paginate_comments_links( array(
+			paginate_comments_links( [
 				'prev_text'    => $prev_text,
 				'next_text'    => $next_text,
 				'type'         => 'plain',
 				'add_fragment' => '#' . $section_id,
-			) );
+			] );
 			?>
 		</nav>
 	<?php endif;?>
@@ -97,7 +97,7 @@ $section_label = isset( $section_data['label'] ) ? $section_data['label'] : '';
 		$req       = get_option( 'require_name_email' );
 		$html_req  = ( $req ? " required='required'" : '' );
 
-		$fields = array(
+		$fields = [
 			'author' => sprintf(
 				'<div class="directorist-form-group form-group-author">%s %s</div>',
 				sprintf(
@@ -126,7 +126,7 @@ $section_label = isset( $section_data['label'] ) ? $section_data['label'] : '';
 					$html_req
 				)
 			),
-		);
+		];
 
 		if ( $builder->is_website_field_active() ) {
 			$fields['url'] = sprintf(
@@ -144,7 +144,7 @@ $section_label = isset( $section_data['label'] ) ? $section_data['label'] : '';
 			$fields['cookies'] = '';
 		}
 
-		$comment_fields = array();
+		$comment_fields = [];
 		$comment_fields['rating'] = '<div class="directorist-review-criteria">' . Markup::get_rating( 0 ) . '</div>';
 
 		$comment_fields['content'] = sprintf(
@@ -166,7 +166,7 @@ $section_label = isset( $section_data['label'] ) ? $section_data['label'] : '';
 			$container_class .= ' directorist-review-submit--hidden';
 		}
 
-		$args = array(
+		$args = [
 			'fields'             => $fields,
 			'comment_field'      => implode( "\n", $comment_fields ),
 			'logged_in_as'       => '',
@@ -181,7 +181,7 @@ $section_label = isset( $section_data['label'] ) ? $section_data['label'] : '';
 			'format'             => 'html5',
 			'submit_field'       => '<div class="directorist-form-group directorist-mb-0">%1$s %2$s</div>',
 			'submit_button'      => '<button name="%1$s" type="submit" id="%2$s" class="%3$s" value="%4$s">%4$s</button>',
-		);
+		];
 
 		Comment_Form_Renderer::comment_form( apply_filters( 'directorist/review_form/comment_form_args', $args ) );
 	}

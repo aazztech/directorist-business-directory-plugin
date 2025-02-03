@@ -5,7 +5,9 @@
  * @version 7.4.0
  */
 
-if ( ! defined( 'ABSPATH' ) ) exit;
+if (! defined( 'ABSPATH' )) {
+    exit;
+}
 
 $maxlength = $data['max'] ?? '';
 ?>
@@ -26,11 +28,11 @@ $maxlength = $data['max'] ?? '';
 			$data['field_key'],
 			apply_filters(
 				'atbdp_add_listing_wp_editor_settings',
-				array(
+				[
 					'media_buttons' => false,
 					'quicktags'     => true,
 					'editor_height' => 200,
-				)
+				]
 			)
 		);
 	}

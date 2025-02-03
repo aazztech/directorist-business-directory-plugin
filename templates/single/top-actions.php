@@ -7,7 +7,9 @@
 
 use \Directorist\Directorist_Single_Listing;
 
-if ( ! defined( 'ABSPATH' ) ) exit;
+if (! defined( 'ABSPATH' )) {
+    exit;
+}
 
 $listing = Directorist_Single_Listing::instance();
 ?>

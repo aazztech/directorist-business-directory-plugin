@@ -13,7 +13,7 @@ class Video_Field extends Base_Field {
 
 	public $type = 'video';
 
-	public function validate( $posted_data ) {
+	public function validate( $posted_data ): bool {
 		$value = $this->get_value( $posted_data );
 
 		if ( ! wp_http_validate_url( $value ) ) {
@@ -24,11 +24,7 @@ class Video_Field extends Base_Field {
 			$this->add_error( __( 'Vimeo and Youtube video allowed only.', 'directorist' ) );
 		}
 
-		if ( $this->has_error() ) {
-			return false;
-		}
-
-		return true;
+        return !$this->has_error();
 	}
 
 	public function sanitize( $posted_data ) {

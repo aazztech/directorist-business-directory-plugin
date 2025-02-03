@@ -10,7 +10,7 @@ require_once trailingslashit( __DIR__ ) . 'functions.php';
 require_once trailingslashit( __DIR__ ) . 'class-datetime.php';
 require_once trailingslashit( __DIR__ ) . 'filter-functions.php';
 
-function register_controllers() {
+function register_controllers(): void {
 	$dir = trailingslashit( __DIR__ );
 
 	// Base controller.
@@ -74,4 +74,5 @@ function register_controllers() {
 	$directories = new \Directorist\Rest_Api\Controllers\Version1\Directories_Controller();
 	$directories->register_routes();
 }
+
 add_action( 'rest_api_init', __NAMESPACE__ . '\\register_controllers' );

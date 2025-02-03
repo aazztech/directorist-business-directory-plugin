@@ -5,7 +5,9 @@
  * @version 7.3.0
  */
 
-if ( ! defined( 'ABSPATH' ) ) exit;
+if (! defined( 'ABSPATH' )) {
+    exit;
+}
 ?>
 
 <div class="directorist-form-group directorist-custom-field-color">

@@ -15,30 +15,30 @@ use Directorist\Directorist_Single_Listing;
 
 class Comment {
 
-	public static function init() {
+	public static function init(): void {
 		// Rating posts.
-		add_filter( 'comments_open', [ __CLASS__, 'comments_open' ], 10, 2 );
-		add_filter( 'preprocess_comment', [ __CLASS__, 'validate_data' ], 0 );
-		add_action( 'comment_post', [ __CLASS__, 'on_comment_post' ], 10, 3 );
+		add_filter( 'comments_open', [ self::class, 'comments_open' ], 10, 2 );
+		add_filter( 'preprocess_comment', [ self::class, 'validate_data' ], 0 );
+		add_action( 'comment_post', [ self::class, 'on_comment_post' ], 10, 3 );
 
 		// Support avatars for `review` comment type.
-		add_filter( 'get_avatar_comment_types', [ __CLASS__, 'set_avater_comment_types' ] );
+		add_filter( 'get_avatar_comment_types', [ self::class, 'set_avater_comment_types' ] );
 
 		// Clear transients.
-		add_action( 'wp_update_comment_count', [ __CLASS__, 'clear_transients'] );
+		add_action( 'wp_update_comment_count', [ self::class, 'clear_transients'] );
 
 		// Set comment type.
-		add_filter( 'preprocess_comment', [ __CLASS__, 'preprocess_comment_data' ], 1 );
+		add_filter( 'preprocess_comment', [ self::class, 'preprocess_comment_data' ], 1 );
 
 		// Set comment approval
-		add_filter( 'pre_comment_approved', [ __CLASS__, 'set_comment_status' ], 10, 2 );
+		add_filter( 'pre_comment_approved', [ self::class, 'set_comment_status' ], 10, 2 );
 
 		// Count comments.
-		add_filter( 'wp_count_comments', [ __CLASS__, 'wp_count_comments' ], 10, 2 );
+		add_filter( 'wp_count_comments', [ self::class, 'wp_count_comments' ], 10, 2 );
 
 		// Delete comments count cache whenever there is a new comment or a comment status changes.
-		add_action( 'wp_insert_comment', [ __CLASS__, 'delete_comments_count_cache' ] );
-		add_action( 'wp_set_comment_status', [ __CLASS__, 'delete_comments_count_cache' ] );
+		add_action( 'wp_insert_comment', [ self::class, 'delete_comments_count_cache' ] );
+		add_action( 'wp_set_comment_status', [ self::class, 'delete_comments_count_cache' ] );
 	}
 
 	/**
@@ -77,6 +77,7 @@ class Comment {
 			if ( ! directorist_is_guest_review_enabled() && ! is_user_logged_in() ) {
 				throw new Exception( __( '<strong>Error</strong>: You must login to share review.', 'directorist' ), 401 );
 			}
+
 			$post_id       = absint( $_POST['comment_post_ID'] ); // @codingStandardsIgnoreLine.
 			$listing       = Directorist_Single_Listing::instance( $post_id );
 			$section_data  = $listing->get_review_section_data();
@@ -92,7 +93,7 @@ class Comment {
 
 			$user_id       = $comment_data['user_ID'];
 			$author_email  = $comment_data['comment_author_email'];
-			$errors        = array();
+			$errors        = [];
 
 			if ( isset( $_POST['comment_parent'], $_POST['rating'], $comment_data['comment_type'] ) && // @codingStandardsIgnoreLine.
 				$comment_data['comment_parent'] === 0 && self::is_default_comment_type( $comment_data['comment_type'] ) ) {
@@ -116,14 +117,14 @@ class Comment {
 					$errors[] = __( '<strong>Error</strong>: You already shared a review.', 'directorist' );
 				}
 
-				if ( count( $errors ) > 0 ) {
+				if ( $errors !== [] ) {
 					throw new Exception( implode( '<br>', $errors ), 400 );
 				}
 			}
 
 			do_action( 'directorist_review_validate_data', $comment_data );
-		} catch( Exception $e ) {
-			wp_die( wp_kses_post( $e->getMessage() ) );
+		} catch( Exception $exception ) {
+			wp_die( wp_kses_post( $exception->getMessage() ) );
 			exit;
 		}
 
@@ -136,7 +137,7 @@ class Comment {
 	 * will be regenerated next time Comment::wp_count_comments()
 	 * is called.
 	 */
-	public static function delete_comments_count_cache() {
+	public static function delete_comments_count_cache(): void {
 		delete_transient( 'directorist_count_comments' );
 	}
 
@@ -154,10 +155,10 @@ class Comment {
 			$stats = get_transient( 'directorist_count_comments' );
 
 			if ( ! $stats ) {
-				$stats = array(
+				$stats = [
 					'total_comments' => 0,
 					'all'            => 0,
-				);
+				];
 
 				$count = $wpdb->get_results(
 					"
@@ -169,22 +170,23 @@ class Comment {
 					ARRAY_A
 				);
 
-				$approved = array(
+				$approved = [
 					'0'            => 'moderated',
 					'1'            => 'approved',
 					'spam'         => 'spam',
 					'trash'        => 'trash',
 					'post-trashed' => 'post-trashed',
-				);
+				];
 
 				foreach ( (array) $count as $row ) {
 					// Don't count post-trashed toward totals.
-					if ( ! in_array( $row['comment_approved'], array( 'post-trashed', 'trash', 'spam' ), true ) ) {
+					if ( ! in_array( $row['comment_approved'], [ 'post-trashed', 'trash', 'spam' ], true ) ) {
 						$stats['all']            += $row['num_comments'];
 						$stats['total_comments'] += $row['num_comments'];
-					} elseif ( ! in_array( $row['comment_approved'], array( 'post-trashed', 'trash' ), true ) ) {
+					} elseif ( ! in_array( $row['comment_approved'], [ 'post-trashed', 'trash' ], true ) ) {
 						$stats['total_comments'] += $row['num_comments'];
 					}
+
 					if ( isset( $approved[ $row['comment_approved'] ] ) ) {
 						$stats[ $approved[ $row['comment_approved'] ] ] = $row['num_comments'];
 					}
@@ -206,13 +208,12 @@ class Comment {
 	}
 
 	/**
-	 * Make sure WP displays avatars for comments with the `review` type.
-	 *
-	 * @param  array $comment_types Comment types.
-	 * @return array
-	 */
-	public static function set_avater_comment_types( $comment_types ) {
-		return array_merge( $comment_types, array( 'review' ) );
+     * Make sure WP displays avatars for comments with the `review` type.
+     *
+     * @param  array $comment_types Comment types.
+     */
+    public static function set_avater_comment_types( $comment_types ): array {
+		return array_merge( $comment_types, [ 'review' ] );
 	}
 
 	public static function preprocess_comment_data( $comment_data ) {
@@ -230,23 +231,20 @@ class Comment {
 			$comment_data['comment_type'] = 'review';
 		}
 
-		$comment_data = apply_filters( 'directorist/review/preprocess_comment_data', $comment_data );
-
-		return $comment_data;
+		return apply_filters( 'directorist/review/preprocess_comment_data', $comment_data );
 	}
 
 	/**
-	 * Set comment status.
-	 *
-	 * Apporoved pending comment immediately when "Approve Immediately?" is enabled,
-	 * ignore trash and spam status.
-	 *
-	 * @param mixed $approved
-	 * @param array $comment_data
-	 *
-	 * @return mixed
-	 */
-	public static function set_comment_status( $approved, $comment_data ) {
+     * Set comment status.
+     *
+     * Apporoved pending comment immediately when "Approve Immediately?" is enabled,
+     * ignore trash and spam status.
+     *
+     * @param mixed $approved
+     *
+     * @return mixed
+     */
+    public static function set_comment_status( $approved, array $comment_data ) {
 		if ( is_admin() || ATBDP_POST_TYPE !== get_post_type( $comment_data['comment_post_ID'] ) ) {
 			return $approved;
 		}
@@ -271,19 +269,18 @@ class Comment {
 	}
 
 	/**
-	 * Determines if a comment is of the default type.
-	 *
-	 * Prior to WordPress 5.5, '' was the default comment type.
-	 * As of 5.5, the default type is 'comment'.
-	 *
-	 * @param string $comment_type Comment type.
-	 * @return bool
-	 */
-	private static function is_default_comment_type( $comment_type ) {
+     * Determines if a comment is of the default type.
+     *
+     * Prior to WordPress 5.5, '' was the default comment type.
+     * As of 5.5, the default type is 'comment'.
+     *
+     * @param string $comment_type Comment type.
+     */
+    private static function is_default_comment_type( $comment_type ): bool {
 		return ( '' === $comment_type || 'comment' === $comment_type );
 	}
 
-	public static function on_comment_post( $comment_id, $comment_approved, $comment_data ) {
+	public static function on_comment_post( $comment_id, $comment_approved, array $comment_data ): void {
 		$post_id = isset( $_POST['comment_post_ID'] ) ? absint( $_POST['comment_post_ID'] ) : 0; // WPCS: input var ok, CSRF ok.
 
 		if ( $post_id && ATBDP_POST_TYPE === get_post_type( $post_id ) ) {
@@ -299,14 +296,14 @@ class Comment {
 	 *
 	 * @param int $post_id Post ID.
 	 */
-	public static function clear_transients( $post_id ) {
+	public static function clear_transients( $post_id ): void {
 		if ( ATBDP_POST_TYPE === get_post_type( $post_id ) ) {
 			// Make sure to maintain the sequence. Update review count before updating the rating
 			self::maybe_clear_transients( $post_id );
 		}
 	}
 
-	public static function maybe_clear_transients( $listing_id ) {
+	public static function maybe_clear_transients( $listing_id ): void {
 		Review_Meta::update_rating_counts( $listing_id, self::get_rating_counts_for_listing( $listing_id ) );
 		Review_Meta::update_review_count( $listing_id, self::get_review_count_for_listing( $listing_id ) );
 		Review_Meta::update_rating( $listing_id, self::get_average_rating_for_listing( $listing_id ) );
@@ -321,7 +318,7 @@ class Comment {
 	 * @return int
 	 */
 	public static function get_review_count_for_listing( $post_id ) {
-		$counts = self::get_review_counts_for_listing_ids( array( $post_id ) );
+		$counts = self::get_review_counts_for_listing_ids( [ $post_id ] );
 
 		return $counts[ $post_id ];
 	}
@@ -332,10 +329,10 @@ class Comment {
 	 * @param $post_id.
 	 * @return int[]
 	 */
-	public static function get_rating_counts_for_listing( $post_id ) {
+	public static function get_rating_counts_for_listing( $post_id ): array {
 		global $wpdb;
 
-		$counts     = array();
+		$counts     = [];
 		$raw_counts = $wpdb->get_results(
 			$wpdb->prepare(
 				"
@@ -393,17 +390,15 @@ class Comment {
 	}
 
 	/**
-	 * Utility function for getting review counts for multiple listings in one query. This is not cached.
-	 *
-	 * @param array $listing_ids Array of listing IDs.
-	 *
-	 * @return array
-	 */
-	public static function get_review_counts_for_listing_ids( $listing_ids ) {
+     * Utility function for getting review counts for multiple listings in one query. This is not cached.
+     *
+     * @param array $listing_ids Array of listing IDs.
+     */
+    public static function get_review_counts_for_listing_ids( $listing_ids ): array {
 		global $wpdb;
 
 		if ( empty( $listing_ids ) ) {
-			return array();
+			return [];
 		}
 
 		$listing_id_string_placeholder = substr( str_repeat( ',%s', count( $listing_ids ) ), 1 );
@@ -416,7 +411,7 @@ class Comment {
 					FROM $wpdb->comments
 					WHERE
 						comment_parent = 0
-						AND comment_post_ID IN ( $listing_id_string_placeholder )
+						AND comment_post_ID IN ( {$listing_id_string_placeholder} )
 						AND comment_approved = '1'
 						AND comment_type = 'review'
 					GROUP BY listing_id
@@ -433,7 +428,7 @@ class Comment {
 		return $counts;
 	}
 
-	public static function post_rating( $comment_id, $comment_data, $posted_data ) {
+	public static function post_rating( $comment_id, array $comment_data, $posted_data ): void {
 		if ( $comment_data['comment_type'] !== 'review' || empty( $posted_data['rating'] ) ) {
 			return;
 		}
@@ -459,7 +454,7 @@ class Comment {
 		do_action( 'directorist_review_rating_updated', $rating, $comment_data );
 	}
 
-	public static function get_rating( $comment_id ) {
+	public static function get_rating( $comment_id ): float {
 		return (float) Comment_Meta::get_rating( $comment_id, 0 );
 	}
 }

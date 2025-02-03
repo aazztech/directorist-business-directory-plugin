@@ -10,7 +10,9 @@
  */
 
 // Exit if accessed directly
-if (!defined('ABSPATH')) die('You do not have permission to access this page directly.');
+if (!defined('ABSPATH')) {
+    die('You do not have permission to access this page directly.');
+}
 
 /**
  * Determines if we're currently on the Checkout page
@@ -48,7 +50,7 @@ function atbdp_is_checkout()
  * @return bool Can user checkout?
  * @since 3.0.0
  */
-function atbdp_can_checkout()
+function atbdp_can_checkout(): bool
 {
     $can_checkout = true; // Always true for now
 
@@ -98,15 +100,15 @@ function atbdp_is_success_page()
  *
  * @param string $query_string
  * @access      public
- * @return      void
  * @since      3.0.0
  */
-function atbdp_send_to_success_page($query_string = null)
+function atbdp_send_to_success_page($query_string = null): void
 {
     $redirect = atbdp_get_success_page_uri();
 
-    if ($query_string)
+    if ($query_string) {
         $redirect .= $query_string;
+    }
 
     $gateway = isset($_REQUEST['atbdp-gateway']) ? sanitize_text_field( wp_unslash( $_REQUEST['atbdp-gateway'] ) ) : '';
 
@@ -121,15 +123,16 @@ function atbdp_send_to_success_page($query_string = null)
  * @return mixed Full URL to the checkout page, if present | null if it doesn't exist
  * @since 3.0.0
  */
-function atbdp_get_checkout_uri($args = array())
+function atbdp_get_checkout_uri($args = [])
 {
     $uri = get_directorist_option('purchase_page');
     $uri = isset( $uri ) ? trailingslashit( get_permalink( $uri ) ) : null;
 
     if (!empty($args)) {
         // Check for backward compatibility
-        if (is_string($args))
+        if (is_string($args)) {
             $args = str_replace('?', '', $args);
+        }
 
         $args = wp_parse_args($args);
 
@@ -138,7 +141,7 @@ function atbdp_get_checkout_uri($args = array())
 
     $scheme = defined('FORCE_SSL_ADMIN') && FORCE_SSL_ADMIN ? 'https' : 'admin';
 
-    $ajax_url = admin_url('admin-ajax.php', $scheme);
+    admin_url('admin-ajax.php', $scheme);
 
     /*@todo; work on this to complete*/
 
@@ -154,22 +157,23 @@ function atbdp_get_checkout_uri($args = array())
  *
  * @param array $args
  * @access public
- * @return Void
  * @since  3.0.0
  */
-function atbdp_send_back_to_checkout($args = array())
+function atbdp_send_back_to_checkout($args = []): void
 {
     $redirect = atbdp_get_checkout_uri();
 
     if (!empty($args)) {
         // Check for backward compatibility
-        if (is_string($args))
+        if (is_string($args)) {
             $args = str_replace('?', '', $args);
+        }
 
         $args = wp_parse_args($args);
 
         $redirect = add_query_arg($args, $redirect);
     }
+
     wp_redirect(apply_filters('atbdp_send_back_to_checkout', $redirect, $args));
     wp_die();
 }
@@ -184,10 +188,11 @@ function atbdp_send_back_to_checkout($args = array())
 function atbdp_get_failed_transaction_uri($extras = false)
 {
     $uri = get_directorist_option('failure_page', '');
-    $uri = !empty($uri) ? trailingslashit(get_permalink($uri)) : home_url();
+    $uri = empty($uri) ? home_url() : trailingslashit(get_permalink($uri));
 
-    if ($extras)
+    if ($extras) {
         $uri .= $extras;
+    }
 
     return apply_filters('atbdp_get_failed_transaction_uri', $uri);
 }
@@ -210,10 +215,9 @@ function atbdp_is_failed_transaction_page()
  * Mark payments as Failed when returning to the Failed Transaction page
  *
  * @access      public
- * @return      void
  * @since       3.0.0
  */
-function atbdp_listen_for_failed_payments()
+function atbdp_listen_for_failed_payments(): void
 {
 
     $failed_page = get_directorist_option('failure_page', 0);
@@ -242,10 +246,9 @@ add_action('template_redirect', 'atbdp_listen_for_failed_payments');
  *
  * @param string $field
  * @access      public
- * @return      bool
  * @since      3.0.0*
  */
-function atbdp_field_is_required($field = '')
+function atbdp_field_is_required($field = ''): bool
 {
     $required_fields = atbdp_purchase_form_required_fields();
     return array_key_exists($field, $required_fields);
@@ -259,7 +262,7 @@ function atbdp_field_is_required($field = '')
  */
 function atbdp_get_banned_emails()
 {
-    $emails = array_map('trim', get_directorist_option('banned_emails', array()));
+    $emails = array_map('trim', get_directorist_option('banned_emails', []));
 
     return apply_filters('atbdp_get_banned_emails', $emails);
 }
@@ -275,14 +278,14 @@ function atbdp_is_email_banned($email = '')
 {
 
     $email = trim($email);
-    if (empty($email)) {
+    if ($email === '' || $email === '0') {
         return false;
     }
 
     $email = strtolower($email);
     $banned_emails = atbdp_get_banned_emails();
 
-    if (!is_array($banned_emails) || empty($banned_emails)) {
+    if (!is_array($banned_emails) || $banned_emails === []) {
         return false;
     }
 
@@ -294,21 +297,21 @@ function atbdp_is_email_banned($email = '')
         if (is_email($banned_email)) {
 
             // Complete email address
-            $return = ($banned_email == $email ? true : false);
+            $return = ($banned_email === $email);
 
         } elseif (strpos($banned_email, '.') === 0) {
 
             // TLD block
-            $return = (substr($email, (strlen($banned_email) * -1)) == $banned_email) ? true : false;
+            $return = substr($email, (strlen($banned_email) * -1)) === $banned_email;
 
         } else {
 
             // Domain block
-            $return = (stristr($email, $banned_email) ? true : false);
+            $return = ((bool) stristr($email, $banned_email));
 
         }
 
-        if (true === $return) {
+        if ($return) {
             break;
         }
     }
@@ -327,15 +330,13 @@ function atbdp_validate_card_number_format($number = 0)
 {
 
     $number = trim($number);
-    if (empty($number)) {
+    if ($number === '' || $number === '0') {
         return false;
     }
 
     if (!is_numeric($number)) {
         return false;
     }
-
-    $is_valid_format = false;
 
     // First check if it passes with the passed method, Luhn by default
     $is_valid_format = atbdp_validate_card_number_format_luhn($number);
@@ -346,7 +347,7 @@ function atbdp_validate_card_number_format($number = 0)
     if (true === $is_valid_format) {
         // We've passed our method check, onto card specific checks
         $card_type = atbdp_detect_cc_type($number);
-        $is_valid_format = !empty($card_type) ? true : false;
+        $is_valid_format = !empty($card_type);
     }
 
     return apply_filters('atbdp_cc_is_valid_format', $is_valid_format, $number);
@@ -368,10 +369,9 @@ function directorist_payment_guard(){
  * Validate credit card number based on the luhn algorithm
  *
  * @param string $number
- * @return bool
  * @since  3.0.0
  */
-function atbdp_validate_card_number_format_luhn($number)
+function atbdp_validate_card_number_format_luhn($number): bool
 {
 
     // Strip any non-digits (useful for credit card numbers with spaces and hyphens)
@@ -387,7 +387,7 @@ function atbdp_validate_card_number_format_luhn($number)
         $digit = $number[$i];
 
         // Multiply alternate digits by two
-        if ($i % 2 == $parity) {
+        if ($i % 2 === $parity) {
             $digit *= 2;
 
             // If the sum is two digits, add them together (in effect)
@@ -401,7 +401,7 @@ function atbdp_validate_card_number_format_luhn($number)
     }
 
     // If the total mod 10 equals 0, the number is valid
-    return ($total % 10 == 0) ? true : false;
+    return $total % 10 == 0;
 
 }
 
@@ -418,58 +418,58 @@ function atbdp_detect_cc_type($number)
 
     $return = false;
 
-    $card_types = array(
-        array(
+    $card_types = [
+        [
             'name' => 'amex',
             'pattern' => '/^3[4|7]/',
-            'valid_length' => array(15),
-        ),
-        array(
+            'valid_length' => [15],
+        ],
+        [
             'name' => 'diners_club_carte_blanche',
             'pattern' => '/^30[0-5]/',
-            'valid_length' => array(14),
-        ),
-        array(
+            'valid_length' => [14],
+        ],
+        [
             'name' => 'diners_club_international',
             'pattern' => '/^36/',
-            'valid_length' => array(14),
-        ),
-        array(
+            'valid_length' => [14],
+        ],
+        [
             'name' => 'jcb',
-            'pattern' => '/^35(2[89]|[3-8][0-9])/',
-            'valid_length' => array(16),
-        ),
-        array(
+            'pattern' => '/^35(2[89]|[3-8]\d)/',
+            'valid_length' => [16],
+        ],
+        [
             'name' => 'laser',
             'pattern' => '/^(6304|670[69]|6771)/',
-            'valid_length' => array(16, 17, 18, 19),
-        ),
-        array(
+            'valid_length' => [16, 17, 18, 19],
+        ],
+        [
             'name' => 'visa_electron',
             'pattern' => '/^(4026|417500|4508|4844|491(3|7))/',
-            'valid_length' => array(16),
-        ),
-        array(
+            'valid_length' => [16],
+        ],
+        [
             'name' => 'visa',
             'pattern' => '/^4/',
-            'valid_length' => array(16),
-        ),
-        array(
+            'valid_length' => [16],
+        ],
+        [
             'name' => 'mastercard',
             'pattern' => '/^5[1-5]/',
-            'valid_length' => array(16),
-        ),
-        array(
+            'valid_length' => [16],
+        ],
+        [
             'name' => 'maestro',
             'pattern' => '/^(5018|5020|5038|6304|6759|676[1-3])/',
-            'valid_length' => array(12, 13, 14, 15, 16, 17, 18, 19),
-        ),
-        array(
+            'valid_length' => [12, 13, 14, 15, 16, 17, 18, 19],
+        ],
+        [
             'name' => 'discover',
-            'pattern' => '/^(6011|622(12[6-9]|1[3-9][0-9]|[2-8][0-9]{2}|9[0-1][0-9]|92[0-5]|64[4-9])|65)/',
-            'valid_length' => array(16),
-        ),
-    );
+            'pattern' => '/^(6011|622(12[6-9]|1[3-9]\d|[2-8]\d{2}|9[0-1]\d|92[0-5]|64[4-9])|65)/',
+            'valid_length' => [16],
+        ],
+    ];
 
     $card_types = apply_filters('atbdp_cc_card_types', $card_types);
 
@@ -498,11 +498,9 @@ function atbdp_detect_cc_type($number)
  * Validate credit card expiration date
  *
  * @param string $exp_month
- * @param string $exp_year
- * @return bool
  * @since  3.0.0
  */
-function atbdp_purchase_form_validate_cc_exp_date($exp_month, $exp_year)
+function atbdp_purchase_form_validate_cc_exp_date($exp_month, string $exp_year): bool
 {
 
     $month_name = date('M', mktime(0, 0, 0, $exp_month, 10));

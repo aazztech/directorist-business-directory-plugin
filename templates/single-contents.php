@@ -8,7 +8,9 @@
 use \Directorist\Directorist_Single_Listing;
 use \Directorist\Helper;
 
-if ( ! defined( 'ABSPATH' ) ) exit;
+if (! defined( 'ABSPATH' )) {
+    exit;
+}
 
 $listing = Directorist_Single_Listing::instance();
 ?>
@@ -23,7 +25,7 @@ $listing = Directorist_Single_Listing::instance();
 
 				<?php 
 				
-				$disable_single_listing = get_directorist_option( 'disable_single_listing') ? true : false;
+				$disable_single_listing = (bool) get_directorist_option( 'disable_single_listing');
 
 				if( !$disable_single_listing ){ ?>
 

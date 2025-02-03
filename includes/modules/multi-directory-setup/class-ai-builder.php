@@ -44,12 +44,12 @@ class AI_Builder {
 		'video'       => 'video',
 	];
 
-	public static function init() {
-		add_action( 'wp_ajax_directorist_ai_directory_form', [ __CLASS__, 'form_handler' ] );
-        add_action( 'wp_ajax_directorist_ai_directory_creation', [ __CLASS__, 'create_directory' ] );
+	public static function init(): void {
+		add_action( 'wp_ajax_directorist_ai_directory_form', [ self::class, 'form_handler' ] );
+        add_action( 'wp_ajax_directorist_ai_directory_creation', [ self::class, 'create_directory' ] );
 	}
 
-	public static function form_handler() {
+	public static function form_handler(): void {
 		if ( ! current_user_can( 'manage_options' ) ) {
 			wp_send_json_error( 'You are not authorized.', 401 );
 		}
@@ -63,8 +63,8 @@ class AI_Builder {
 		wp_send_json_success( ['form' => $form ] );
 	}
 
-	protected static function prepare_keywords( $keywords ) {
-		$keywords = array_map( static function( $keyword ) {
+	protected static function prepare_keywords( $keywords ): string {
+		$keywords = array_map( static function( $keyword ): string {
 			return '"' . trim( $keyword ) . '"';
 		}, explode( ',', $keywords ) );
 
@@ -72,17 +72,17 @@ class AI_Builder {
 	}
 
 	// handle step one
-	public static function create_directory() {
+	public static function create_directory(): void {
 		if ( ! current_user_can( 'manage_options' ) ) {
 			wp_send_json_error( 'You are not authorized.', 401 );
 		}
 
-		$prompt     = ! empty( $_POST['prompt'] ) ? sanitize_textarea_field( $_POST['prompt'] ) : '';
-		$keywords   = ! empty( $_POST['keywords'] ) ? static::prepare_keywords( $_POST['keywords'] ) : '';
-		$pinned     = ! empty( $_POST['pinned'] ) ? $_POST['pinned'] : '';
-		$step       = ! empty( $_POST['step'] ) ? absint( $_POST['step'] ) : '';
-		$name       = ! empty( $_POST['name'] ) ? sanitize_text_field( $_POST['name'] ) : '';
-		$fields     = ! empty( $_POST['fields'] ) ? $_POST['fields'] : [];
+		$prompt     = empty( $_POST['prompt'] ) ? '' : sanitize_textarea_field( $_POST['prompt'] );
+		$keywords   = empty( $_POST['keywords'] ) ? '' : static::prepare_keywords( $_POST['keywords'] );
+		$pinned     = empty( $_POST['pinned'] ) ? '' : $_POST['pinned'];
+		$step       = empty( $_POST['step'] ) ? '' : absint( $_POST['step'] );
+		$name       = empty( $_POST['name'] ) ? '' : sanitize_text_field( $_POST['name'] );
+		$fields     = empty( $_POST['fields'] ) ? [] : $_POST['fields'];
 
 		if ( 1 === $step ) {
 			$response = static::ai_create_keywords( $prompt );
@@ -113,7 +113,7 @@ class AI_Builder {
 		if ( 3 === $step ) {
 			$data = static::build_directory( $name, $fields );
 
-			$id = ! empty( $data['id'] ) ? $data['id'] : '';
+			$id = empty( $data['id'] ) ? '' : $data['id'];
 
 			wp_send_json_success( [
 				'url' => esc_url_raw( admin_url( 'edit.php?post_type=at_biz_dir&page=atbdp-directory-types&listing_type_id=' . $id . '&action=edit' ) ),
@@ -121,7 +121,7 @@ class AI_Builder {
 		}
 	}
 
-	public static function merge_new_fields($existing_config, $new_fields) {
+	public static function merge_new_fields(array $existing_config, $new_fields): array {
 		$new_fields_array = json_decode(stripslashes($new_fields), true);
 
 		if (is_null($new_fields_array)) {
@@ -139,11 +139,11 @@ class AI_Builder {
 				$type_counts[$type]++;
 			}
 			$suffix = $type_counts[$type] > 0 ? '-' . $type_counts[$type] : '';
-			$field_key = "custom-{$type}{$suffix}";
+			$field_key = sprintf('custom-%s%s', $type, $suffix);
 
 			// Handle specific structures for checkbox, radio, and select fields
 			if (in_array($type, ['checkbox', 'radio', 'select']) && isset($field['options']) && is_array($field['options'])) {
-				$field['options'] = array_map(function ($option) {
+				$field['options'] = array_map(function ($option): array {
 					if (is_array($option)) {
 						return [
 							'option_value' => $option['option_value'] ?? $option['value'],
@@ -204,7 +204,7 @@ class AI_Builder {
 		// Update the single listing layout to use the new fields
 		$single_listing_fields = array_merge(
 			$existing_config['single_listings_contents']['fields'] ?? [],
-			array_map(function ($field) {
+			array_map(function ($field): array {
 				return [
 					'icon' => $field['icon'] ?? '',
 					'widget_group' => $field['widget_group'],
@@ -221,17 +221,20 @@ class AI_Builder {
 		return $existing_config;
 	}
 
-	public static function merge_new_fields_v2( $structure, $new_fields ) {
+	/**
+     * @return mixed[]
+     */
+    public static function merge_new_fields_v2( array $structure, $new_fields ): array {
 
 		$new_fields_array = json_decode(stripslashes($new_fields), true);
 
 		if (is_null($new_fields_array)) {
 			return [];
 		}
-		array_walk($new_fields_array, function (&$field, $key) {
+		array_walk($new_fields_array, function (&$field, $key): void {
 			// Generate the field_key dynamically by type and prefix "custom-"
 			$type = strtolower($field['type']);
-			$field_key = "custom-{$type}";
+			$field_key = 'custom-' . $type;
 
 			$field = array_merge($field, [
 				'widget_group' => 'custom',
@@ -273,7 +276,7 @@ class AI_Builder {
 		return $structure;
 	}
 
-	public static function build_directory( $name, $fields ) {
+	public static function build_directory( $name, $fields ): array {
 		$directory_config_file = DIRECTORIST_ASSETS_DIR . 'sample-data/directory/directory.json';
 		$directory_config      = json_decode( file_get_contents( $directory_config_file ), 1 );
 
@@ -294,11 +297,7 @@ class AI_Builder {
 			'is_json'        => false
 		] );
 
-		if ( $directory['status']['success'] ) {
-			$term_id = $directory['term_id'];
-		} else {
-			$term_id = $directory['status']['term_id'];
-		}
+		$term_id = $directory['status']['success'] ? $directory['term_id'] : $directory['status']['term_id'];
 
 		return [
 			'structure'      => $directory_config,
@@ -328,7 +327,7 @@ class AI_Builder {
 
 		ob_start();
 
-		if ( ! empty( $response['response']['fields'] ) ) {
+		if ( isset($response['response']['fields']) && $response['response']['fields'] !== [] ) {
 			static::render_fields( $response['response']['fields'] );
 		}
 
@@ -364,7 +363,7 @@ class AI_Builder {
 		];
 	}
 
-	protected static function prepare_form_fields( $fields ) {
+	protected static function prepare_form_fields( $fields ): array {
 		$form_fields_file = DIRECTORIST_ASSETS_DIR . 'sample-data/listing-form-fields.json';
 		$form_fields      = json_decode( file_get_contents( $form_fields_file ), 1 );
 
@@ -398,7 +397,7 @@ class AI_Builder {
 				if ( in_array( $field['type'], [ 'select', 'radio', 'checkbox' ], true ) &&
 					isset( $field['options'] ) &&
 					is_array( $field['options'] ) ) {
-					$_field['options'] = array_map( static function( $option ) {
+					$_field['options'] = array_map( static function( $option ): array {
 						return [
 							'option_value' => $option,
 							'option_label' => $option
@@ -448,7 +447,7 @@ class AI_Builder {
 		];
 	}
 
-	protected static function prepare_single_fields( $form_fields ) {
+	protected static function prepare_single_fields( array $form_fields ): array {
 		$fields           = [];
 		$ignorable_fields = [
 			'title'        => false,
@@ -492,7 +491,7 @@ class AI_Builder {
 		foreach ( $form_fields['groups'] as $group ) {
 			$group_fields = array_diff( $group['fields'], $ignorable_field_keys );
 
-			if ( ! $group_fields ) {
+			if ( $group_fields === [] ) {
 				continue;
 			}
 
@@ -582,7 +581,7 @@ class AI_Builder {
 		];
 	}
 
-	protected static function prepare_single_header_fields( $header_fields ) {
+	protected static function prepare_single_header_fields( array $header_fields ): array {
 		$fields = [
 			'quick-widgets-placeholder' => [
 				'type'           => 'placeholder_group',
@@ -721,7 +720,7 @@ class AI_Builder {
 	}
 
 	protected static function render_fields( $fields ) {
-		$icons_map = array(
+		$icons_map = [
             'title'         => 'las la-text-height',
             'description'   => 'uil uil-align-left',
             'tagline'       => 'uil uil-text-fields',
@@ -753,7 +752,7 @@ class AI_Builder {
             'checkbox'      => 'uil uil-check-square',
             'radio'         => 'uil uil-dot-circle',
             'file_upload'   => 'uil uil-file-upload'
-        );
+        ];
 
 		foreach ( $fields as $field ) {
 			$label   = $field['label'] ?? '';
@@ -762,7 +761,7 @@ class AI_Builder {
 			?>
 			<div class="directorist-ai-generate-box__item">
 				<div class="directorist-ai-generate-dropdown" aria-expanded="false">
-					<div class="directorist-ai-generate-dropdown__header <?php echo ! empty( $options ) ? 'has-options' : ''; ?>">
+					<div class="directorist-ai-generate-dropdown__header <?php echo empty( $options ) ? '' : 'has-options'; ?>">
 						<div class="directorist-ai-generate-dropdown__header-title">
 							<div class="directorist-ai-generate-dropdown__pin-icon">
 								<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none">
@@ -815,21 +814,21 @@ class AI_Builder {
 		return static::request( 'fields', $params );
 	}
 
-	protected static function request( $endpoint = 'keywords', $params = array() ) {
-		$headers = array(
+	protected static function request( string $endpoint = 'keywords', $params = [] ) {
+		$headers = [
 			'user-agent'    => 'Directorist\\' . ATBDP_VERSION,
 			'Accept'        => 'application/json',
 			'Content-Type'  => 'application/json'
-		);
+		];
 
-		$config = array(
+		$config = [
 			'method'      => 'POST',
 			'timeout'     => 30,
 			'redirection' => 5,
 			'httpversion' => '1.0',
 			'headers'     => $headers,
 			'body'        => json_encode( $params ),
-		);
+		];
 
 		$response = wp_remote_post( static::API_URL . $endpoint, $config );
 
@@ -856,11 +855,11 @@ class AI_Builder {
 		return $response;
 	}
 
-	protected static function is_response_error( $response ) {
+	protected static function is_response_error( $response ): bool {
 		return ( isset( $response['code'] ) || isset( $response['message'] ) );
 	}
 
-	protected static function get_response_wp_error( $response ) {
+	protected static function get_response_wp_error( array $response ) {
 		return new WP_Error( $response['code'], $response['message'], $response['data'] );
 	}
 }
