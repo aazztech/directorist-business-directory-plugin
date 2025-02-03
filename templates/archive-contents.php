@@ -5,10 +5,17 @@
  * @version 7.7.0
  */
 
-if ( ! defined( 'ABSPATH' ) ) exit;
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
 ?>
 
-<div <?php $listings->wrapper_class(); $listings->data_atts(); ?>>
+<div 
+<?php
+$listings->wrapper_class();
+$listings->data_atts();
+?>
+>
 	<div class="directorist-archive-contents__top">
 		<?php
 			$listings->mobile_view_filter_template();

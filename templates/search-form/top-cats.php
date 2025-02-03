@@ -5,7 +5,9 @@
  * @version 7.4.0
  */
 
-if ( ! defined( 'ABSPATH' ) ) exit;
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
 ?>
 
 <div class="directorist-listing-category-top">
@@ -13,7 +15,7 @@ if ( ! defined( 'ABSPATH' ) ) exit;
 	<h3><?php echo esc_html( $title ); ?></h3>
 
 	<ul>
-		<?php foreach ( $top_categories as $cat ): ?>
+		<?php foreach ( $top_categories as $cat ) : ?>
 
 			<li>
 				<a href="<?php echo esc_url( ATBDP_Permalink::atbdp_get_category_page( $cat ) ); ?>">

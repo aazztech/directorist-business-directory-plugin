@@ -8,11 +8,13 @@ namespace AazzTech\Directorist\Elementor;
 use Elementor\Controls_Manager;
 use Directorist\Helper;
 
-if ( ! defined( 'ABSPATH' ) ) exit;
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
 
 class Directorist_Add_Listing extends Custom_Widget_Base {
 
-	public function __construct( $data = [], $args = null ) {
+	public function __construct( $data = array(), $args = null ) {
 		$this->az_name = __( 'Add Listing Form', 'directorist' );
 		$this->az_base = 'directorist_add_listing';
 		parent::__construct( $data, $args );
@@ -28,26 +30,26 @@ class Directorist_Add_Listing extends Custom_Widget_Base {
 		return wp_list_pluck( $directories, 'name', 'slug' );
 	}
 
-	public function az_fields(){
+	public function az_fields() {
 		$fields = array(
 			array(
-				'mode'    => 'section_start',
-				'id'      => 'sec_general',
-				'label'   => __( 'General', 'directorist' ),
+				'mode'  => 'section_start',
+				'id'    => 'sec_general',
+				'label' => __( 'General', 'directorist' ),
 			),
 			array(
 				'type'      => Controls_Manager::HEADING,
 				'id'        => 'sec_heading',
 				'label'     => __( 'This widget works only in Add Listing page. It has no additional elementor settings.', 'directorist' ),
-				'condition' => ! directorist_is_multi_directory_enabled() ? '' : ['nocondition' => true],
+				'condition' => ! directorist_is_multi_directory_enabled() ? '' : array( 'nocondition' => true ),
 			),
 			array(
-				'type'     => Controls_Manager::SELECT2,
-				'id'       => 'type',
-				'label'    => __( 'Directory Types', 'directorist' ),
-				'multiple' => true,
-				'options'  => $this->az_listing_types(),
-				'condition' => directorist_is_multi_directory_enabled() ? '' : ['nocondition' => true],
+				'type'      => Controls_Manager::SELECT2,
+				'id'        => 'type',
+				'label'     => __( 'Directory Types', 'directorist' ),
+				'multiple'  => true,
+				'options'   => $this->az_listing_types(),
+				'condition' => directorist_is_multi_directory_enabled() ? '' : array( 'nocondition' => true ),
 			),
 			array(
 				'mode' => 'section_end',
@@ -59,7 +61,7 @@ class Directorist_Add_Listing extends Custom_Widget_Base {
 	protected function render() {
 		$settings = $this->get_settings_for_display();
 
-		$atts = [];
+		$atts = array();
 
 		if ( directorist_is_multi_directory_enabled() ) {
 			if ( $settings['type'] ) {

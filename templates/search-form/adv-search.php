@@ -5,7 +5,9 @@
  * @version 7.7.0
  */
 
-if ( ! defined( 'ABSPATH' ) ) exit;
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
 
 $fields = $searchform->get_advance_fields();
 ?>
@@ -18,13 +20,17 @@ $fields = $searchform->get_advance_fields();
 		<span class="directorist-search-modal__minimizer"></span>
 	</div>
 	<div class="directorist-search-modal__contents__body">
-		<?php if ( ! empty( $fields ) ) :
-			foreach ( $fields as $field ): ?>
-				<div class="directorist-advanced-filter__advanced__element directorist-search-field-<?php echo esc_attr( $field['widget_name'] )?>">
+		<?php
+		if ( ! empty( $fields ) ) :
+			foreach ( $fields as $field ) :
+				?>
+				<div class="directorist-advanced-filter__advanced__element directorist-search-field-<?php echo esc_attr( $field['widget_name'] ); ?>">
 					<?php $searchform->field_template( $field ); ?>
 				</div>
-			<?php endforeach;
-		endif; ?>
+				<?php
+			endforeach;
+		endif;
+		?>
 	</div>
 	<div class="directorist-search-modal__contents__footer">
 		<?php $searchform->buttons_template(); ?>

@@ -1,8 +1,8 @@
 <?php
 defined( 'ABSPATH' ) || die( 'Direct access is not allowed.' );
 
-use \Directorist\Helper;
-use \Directorist\Directorist_All_Authors;
+use Directorist\Helper;
+use Directorist\Directorist_All_Authors;
 
 if ( ! class_exists( 'ATBDP_Ajax_Handler' ) ) :
 
@@ -117,18 +117,17 @@ if ( ! class_exists( 'ATBDP_Ajax_Handler' ) ) :
 			add_action( 'wp_ajax_nopriv_directorist_instant_search', array( $this, 'instant_search' ) );
 
 			// user verification
-			add_action('wp_ajax_directorist_send_confirmation_email', [$this, 'send_confirm_email'] );
-			add_action('wp_ajax_nopriv_directorist_send_confirmation_email', [$this, 'send_confirm_email'] );
+			add_action( 'wp_ajax_directorist_send_confirmation_email', array( $this, 'send_confirm_email' ) );
+			add_action( 'wp_ajax_nopriv_directorist_send_confirmation_email', array( $this, 'send_confirm_email' ) );
 
 			// zipcode search
 			add_action( 'wp_ajax_directorist_zipcode_search', array( $this, 'zipcode_search' ) );
 			add_action( 'wp_ajax_nopriv_directorist_zipcode_search', array( $this, 'zipcode_search' ) );
 
-			add_action( 'wp_ajax_directorist_generate_nonce', [ $this, 'handle_generate_nonce' ] );
+			add_action( 'wp_ajax_directorist_generate_nonce', array( $this, 'handle_generate_nonce' ) );
 
-			add_action( 'wp_ajax_directorist_taxonomy_pagination', [ $this, 'directorist_taxonomy_pagination' ] );
-			add_action( 'wp_ajax_nopriv_directorist_taxonomy_pagination', [ $this, 'directorist_taxonomy_pagination' ] );
-
+			add_action( 'wp_ajax_directorist_taxonomy_pagination', array( $this, 'directorist_taxonomy_pagination' ) );
+			add_action( 'wp_ajax_nopriv_directorist_taxonomy_pagination', array( $this, 'directorist_taxonomy_pagination' ) );
 		}
 
 		public function directorist_taxonomy_pagination() {
@@ -141,50 +140,58 @@ if ( ! class_exists( 'ATBDP_Ajax_Handler' ) ) :
 				);
 			}
 
-			$page = isset($_REQUEST['page']) ? absint($_REQUEST['page']) : '';
-			$atts = !empty( $_REQUEST['attrs'] ) && is_array($_REQUEST['attrs']) ? $_REQUEST['attrs'] : [];
-			$type = is_array($atts) && isset($atts['type']) ? $atts['type'] : '';
+			$page = isset( $_REQUEST['page'] ) ? absint( $_REQUEST['page'] ) : '';
+			$atts = ! empty( $_REQUEST['attrs'] ) && is_array( $_REQUEST['attrs'] ) ? $_REQUEST['attrs'] : array();
+			$type = is_array( $atts ) && isset( $atts['type'] ) ? $atts['type'] : '';
 
-			$taxonomy = new Directorist\Directorist_Listing_Taxonomy($atts, $type );
-			$taxonomy->set_terms($page);
+			$taxonomy = new Directorist\Directorist_Listing_Taxonomy( $atts, $type );
+			$taxonomy->set_terms( $page );
 
-			wp_send_json_success(array('content' => $taxonomy->render_shortcode( $atts )));
+			wp_send_json_success( array( 'content' => $taxonomy->render_shortcode( $atts ) ) );
 		}
 
 		public function send_confirm_email() {
 			if ( ! check_ajax_referer( 'directorist_nonce', 'directorist_nonce', false ) ) {
-				wp_send_json_error([
-					'code' => 'invalid_nonce',
-					'message'  => __( 'Invalid Nonce', 'directorist' )
-				]);
+				wp_send_json_error(
+					array(
+						'code'    => 'invalid_nonce',
+						'message' => __( 'Invalid Nonce', 'directorist' ),
+					)
+				);
 				exit;
 			}
 
 			if ( ! directorist_is_email_verification_enabled() ) {
-				wp_send_json_error([
-					'code' => 'invalid_request',
-					'message'  => __( 'Invalid Request', 'directorist' )
-				]);
+				wp_send_json_error(
+					array(
+						'code'    => 'invalid_request',
+						'message' => __( 'Invalid Request', 'directorist' ),
+					)
+				);
 				exit;
 			}
 
 			$email = isset( $_REQUEST['user'] ) ? sanitize_email( wp_unslash( $_REQUEST['user'] ) ) : '';
 			if ( ! is_email( $email ) ) {
-				wp_send_json_error([
-					'code' => 'invalid_email',
-					'message'  => __( 'Invalid email address', 'directorist' )
-				]);
+				wp_send_json_error(
+					array(
+						'code'    => 'invalid_email',
+						'message' => __( 'Invalid email address', 'directorist' ),
+					)
+				);
 				exit;
 			}
 
-			$user  = get_user_by( 'email', $email );
+			$user = get_user_by( 'email', $email );
 			if ( $user instanceof \WP_User && get_user_meta( $user->ID, 'directorist_user_email_unverified', true ) ) {
 				ATBDP()->email->send_user_confirmation_email( $user );
 			}
 
-			$args = ATBDP_Permalink::get_signin_signup_page_link( array(
-				'send_verification_email' => true
-			) );
+			$args = ATBDP_Permalink::get_signin_signup_page_link(
+				array(
+					'send_verification_email' => true,
+				)
+			);
 
 			wp_safe_redirect( $args );
 			exit;
@@ -199,20 +206,22 @@ if ( ! class_exists( 'ATBDP_Ajax_Handler' ) ) :
 				);
 			}
 			$google_api = get_directorist_option( 'map_api_key' );
-			$zipcode = ! empty( $_POST['zipcode'] ) ? sanitize_text_field( $_POST['zipcode'] ) : '';
-			$url      = 'https://maps.googleapis.com/maps/api/place/textsearch/json?query=postcode+' . $zipcode . '&key=' . $google_api;
-			$data     = wp_remote_get( $url );
-			$response = wp_remote_retrieve_body( $data );
-			$json     = $response ? json_decode( $response, true ) : array();
-			$lat_long = ! empty( $json['results'][0]['geometry']['location'] ) ? directorist_clean( $json['results'][0]['geometry']['location'] ) : array();
-			if( ! empty( $lat_long ) ) {
+			$zipcode    = ! empty( $_POST['zipcode'] ) ? sanitize_text_field( $_POST['zipcode'] ) : '';
+			$url        = 'https://maps.googleapis.com/maps/api/place/textsearch/json?query=postcode+' . $zipcode . '&key=' . $google_api;
+			$data       = wp_remote_get( $url );
+			$response   = wp_remote_retrieve_body( $data );
+			$json       = $response ? json_decode( $response, true ) : array();
+			$lat_long   = ! empty( $json['results'][0]['geometry']['location'] ) ? directorist_clean( $json['results'][0]['geometry']['location'] ) : array();
+			if ( ! empty( $lat_long ) ) {
 				wp_send_json( $lat_long );
 			} else {
 				wp_send_json_error(
 					array(
 						'error_message' => sprintf(
-							__( '<div class="error_message">%s <p>%s</p></div>', 'directorist' ),
-							directorist_icon('fas fa-info-circle', false), __( 'Please enter a valid zip code.', 'directorist' ) )
+							__( '<div class="error_message">%1$s <p>%2$s</p></div>', 'directorist' ),
+							directorist_icon( 'fas fa-info-circle', false ),
+							__( 'Please enter a valid zip code.', 'directorist' )
+						),
 					)
 				);
 			}
@@ -236,7 +245,7 @@ if ( ! class_exists( 'ATBDP_Ajax_Handler' ) ) :
 				$args = directorist_clean( (array) wp_unslash( $_POST['data_atts'] ) );
 			}
 
-			if( ! empty( $args['_current_page'] ) && 'search_result' == $args['_current_page'] ) {
+			if ( ! empty( $args['_current_page'] ) && 'search_result' == $args['_current_page'] ) {
 				$type = 'search_result';
 			} else {
 				$type = 'instant_search';
@@ -250,7 +259,7 @@ if ( ! class_exists( 'ATBDP_Ajax_Handler' ) ) :
 			$listings = new Directorist\Directorist_Listings( $args, $type );
 
 			ob_start();
-			if( 'list' === $listings->view ) {
+			if ( 'list' === $listings->view ) {
 				$listings->render_list_view( $listings->post_ids() );
 			} else {
 				$listings->render_grid_view( $listings->post_ids() );
@@ -259,26 +268,26 @@ if ( ! class_exists( 'ATBDP_Ajax_Handler' ) ) :
 
 			ob_start();
 			$listings->archive_view_template();
-			$archive_view 			= ob_get_clean();
+			$archive_view = ob_get_clean();
 
 			$display_listings_count = get_directorist_option( 'display_listings_count', true );
-			$category_id 			= ! empty( $_POST['in_cat'] ) ? absint( $_POST['in_cat'] ) : 0;
-			$category 				= get_term_by( 'id', $category_id, ATBDP_CATEGORY );
-			$location_id			= ! empty( $_POST['in_loc'] ) ? absint( $_POST['in_loc'] ) : 0;
-			$location 				= get_term_by( 'id', $location_id, ATBDP_LOCATION );
+			$category_id            = ! empty( $_POST['in_cat'] ) ? absint( $_POST['in_cat'] ) : 0;
+			$category               = get_term_by( 'id', $category_id, ATBDP_CATEGORY );
+			$location_id            = ! empty( $_POST['in_loc'] ) ? absint( $_POST['in_loc'] ) : 0;
+			$location               = get_term_by( 'id', $location_id, ATBDP_LOCATION );
 
 			wp_send_json(
 				array(
-					'search_result'  => $archive_view,
-					'directory_type' => $listings->render_shortcode(),
-					'view_as'        => $archive_view,
-					'count'          => $listings->query_results->total,
-					'header_title'   => $display_listings_count ? $listings->listings_header_title() : '',
-					'category_name'	 => $category ? $category->name : '',
-					'location_name'	 => $location ? $location->name : '',
+					'search_result'   => $archive_view,
+					'directory_type'  => $listings->render_shortcode(),
+					'view_as'         => $archive_view,
+					'count'           => $listings->query_results->total,
+					'header_title'    => $display_listings_count ? $listings->listings_header_title() : '',
+					'category_name'   => $category ? $category->name : '',
+					'location_name'   => $location ? $location->name : '',
 
 					'render_listings' => $render_listings,
-					'view' => $listings->view
+					'view'            => $listings->view,
 				)
 			);
 		}
@@ -315,11 +324,13 @@ if ( ! class_exists( 'ATBDP_Ajax_Handler' ) ) :
 			$password   = ! empty( $_POST['password'] ) ? $_POST['password'] : ''; // @codingStandardsIgnoreLine.WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
 			$rememberme = ! empty( $_POST['rememberme'] ) ? boolval( $_POST['rememberme'] ) : false;
 
-			$user = wp_signon( array(
-				'user_login'    => $username,
-				'user_password' => $password,
-				'remember'      => $rememberme,
-			) );
+			$user = wp_signon(
+				array(
+					'user_login'    => $username,
+					'user_password' => $password,
+					'remember'      => $rememberme,
+				)
+			);
 
 			if ( is_wp_error( $user ) ) {
 				wp_send_json(
@@ -517,36 +528,43 @@ if ( ! class_exists( 'ATBDP_Ajax_Handler' ) ) :
 				$selector  = isset( $selectors[ $listing_layout ] ) ? $selectors[ $listing_layout ] : 'no_sidebar';
 				$form_type = 'search_result';
 			} else {
-				$selector = $selectors['search_home'];
+				$selector  = $selectors['search_home'];
 				$form_type = 'search_form';
 			}
 
 			if ( ! empty( $atts ) ) {
-				$atts = array_filter( $atts, static function( $key ) {
-					return substr( $key, 0, 7 ) == 'filter_';
-				}, ARRAY_FILTER_USE_KEY );
+				$atts = array_filter(
+					$atts,
+					static function ( $key ) {
+						return substr( $key, 0, 7 ) == 'filter_';
+					},
+					ARRAY_FILTER_USE_KEY
+				);
 			}
 
 			$search_form = new \Directorist\Directorist_Listing_Search_Form( $form_type, $directory_id, $atts );
 
 			// search form
 			ob_start();
-				if ( $form_type === 'search_form' ) :
-					$search_form->advanced_search_form_fields_template();
-				else: ?>
+			if ( $form_type === 'search_form' ) :
+				$search_form->advanced_search_form_fields_template();
+				else : ?>
 					<input type="hidden" name="directory_type" value="<?php echo esc_attr( $directory_slug ); ?>">
 					<?php foreach ( $search_form->form_data[1]['fields'] as $field ) : ?>
-						<div class="directorist-advanced-filter__advanced__element directorist-search-field-<?php echo esc_attr( $field['widget_name'] ) ?>">
+						<div class="directorist-advanced-filter__advanced__element directorist-search-field-<?php echo esc_attr( $field['widget_name'] ); ?>">
 							<?php $search_form->field_template( $field ); ?>
 						</div>
-					<?php endforeach;
+						<?php
+					endforeach;
 				endif;
-			$markup = ob_get_clean();
+				$markup = ob_get_clean();
 
-			wp_send_json( array(
-				'search_form' => $markup,
-				'container'   => $selector,
-			) );
+				wp_send_json(
+					array(
+						'search_form' => $markup,
+						'container'   => $selector,
+					)
+				);
 		}
 
 		public function atbdp_listing_default_type() {
@@ -563,10 +581,12 @@ if ( ! class_exists( 'ATBDP_Ajax_Handler' ) ) :
 
 			do_action( 'directorist_before_set_default_directory_type', $default_directory_id, $current_language );
 
-			$directory_types = directorist_get_directories( array(
-				'fields'  => 'ids',
-				'exclude' => $default_directory_id,
-			) );
+			$directory_types = directorist_get_directories(
+				array(
+					'fields'  => 'ids',
+					'exclude' => $default_directory_id,
+				)
+			);
 
 			if ( ! empty( $directory_types ) || ! is_wp_error( $directory_types ) ) {
 				foreach ( $directory_types as $directory_type ) {
@@ -588,7 +608,7 @@ if ( ! class_exists( 'ATBDP_Ajax_Handler' ) ) :
 			if ( ! directorist_verify_nonce() ) {
 				wp_send_json(
 					array(
-						'error'=> __( 'Session expired, please reload the window and try again.', 'directorist' ),
+						'error' => __( 'Session expired, please reload the window and try again.', 'directorist' ),
 					)
 				);
 			}
@@ -629,7 +649,7 @@ if ( ! class_exists( 'ATBDP_Ajax_Handler' ) ) :
 
 		public function ajax_callback_custom_fields() {
 			if ( ! directorist_verify_nonce() ) {
-				wp_send_json_error( __( 'Invalid request!', 'directorist'), 400 );
+				wp_send_json_error( __( 'Invalid request!', 'directorist' ), 400 );
 			}
 
 			$directory_id = ! empty( $_POST['directory_id'] ) ? sanitize_text_field( wp_unslash( $_POST['directory_id'] ) ) : 0;
@@ -671,7 +691,7 @@ if ( ! class_exists( 'ATBDP_Ajax_Handler' ) ) :
 
 					\Directorist\Directorist_Listing_Form::instance()->add_listing_category_custom_field_template( $field_properties, $listing_id );
 
-					$result[ $field_key ]= ob_get_clean();
+					$result[ $field_key ] = ob_get_clean();
 				}
 			}
 
@@ -694,7 +714,7 @@ if ( ! class_exists( 'ATBDP_Ajax_Handler' ) ) :
 				$data = array(
 					'status'      => false,
 					'status_code' => 'nonce_varification_failed',
-					'message'     => __('The session has expired, please reload and try again.', 'directorist' ),
+					'message'     => __( 'The session has expired, please reload and try again.', 'directorist' ),
 					'data'        => array(
 						'error_log' => $error_log,
 					),
@@ -825,7 +845,7 @@ if ( ! class_exists( 'ATBDP_Ajax_Handler' ) ) :
 				echo json_encode(
 					array(
 						'loggedin' => false,
-						'message'  => $user_signon->get_error_message()
+						'message'  => $user_signon->get_error_message(),
 					)
 				);
 			} else {
@@ -1031,7 +1051,7 @@ if ( ! class_exists( 'ATBDP_Ajax_Handler' ) ) :
 			if ( ! empty( $_POST['user'] ) ) {
 
 				if ( ! empty( $_POST['profile_picture_meta'] ) && count( $_POST['profile_picture_meta'] ) ) {
-					$meta_data = ( ! empty( $_POST['profile_picture_meta'][0] ) ) ? directorist_clean( wp_unslash( $_POST['profile_picture_meta'][0] ) ) : [];
+					$meta_data = ( ! empty( $_POST['profile_picture_meta'][0] ) ) ? directorist_clean( wp_unslash( $_POST['profile_picture_meta'][0] ) ) : array();
 
 					if ( 'true' !== $meta_data['oldFile'] ) {
 						foreach ( $_FILES as $file => $array ) {
@@ -1054,7 +1074,6 @@ if ( ! class_exists( 'ATBDP_Ajax_Handler' ) ) :
 			}
 
 			wp_send_json_error( array( 'message' => __( 'Ops! something went wrong. Try again.', 'directorist' ) ) );
-
 		}
 
 		public function update_user_preferences() {
@@ -1070,9 +1089,9 @@ if ( ! class_exists( 'ATBDP_Ajax_Handler' ) ) :
 				wp_send_json_error( array( 'message' => __( 'Ops! something went wrong. Try again.', 'directorist' ) ) );
 			}
 
-			$hide_contact_form 		= isset( $_POST['directorist_hide_contact_form'] ) ? sanitize_text_field( $_POST['directorist_hide_contact_form'] ) : 'no';
-			$display_author_email 	= isset( $_POST['directorist_display_author_email'] ) ? sanitize_text_field( $_POST['directorist_display_author_email'] ) : '';
-			$contact_owner_recipient 	= isset( $_POST['directorist_contact_owner_recipient'] ) ? sanitize_text_field( $_POST['directorist_contact_owner_recipient'] ) : '';
+			$hide_contact_form       = isset( $_POST['directorist_hide_contact_form'] ) ? sanitize_text_field( $_POST['directorist_hide_contact_form'] ) : 'no';
+			$display_author_email    = isset( $_POST['directorist_display_author_email'] ) ? sanitize_text_field( $_POST['directorist_display_author_email'] ) : '';
+			$contact_owner_recipient = isset( $_POST['directorist_contact_owner_recipient'] ) ? sanitize_text_field( $_POST['directorist_contact_owner_recipient'] ) : '';
 
 			// Save the sanitized value to user meta
 			if ( ! empty( $hide_contact_form ) ) {
@@ -1083,13 +1102,12 @@ if ( ! class_exists( 'ATBDP_Ajax_Handler' ) ) :
 				update_user_meta( $user_id, 'directorist_display_author_email', $display_author_email );
 			}
 
-			if( ! empty( $contact_owner_recipient ) ) {
+			if ( ! empty( $contact_owner_recipient ) ) {
 				update_user_meta( $user_id, 'directorist_contact_owner_recipient', $contact_owner_recipient );
 			}
 
 			// Return a success message
 			wp_send_json_success( array( 'message' => __( 'Preferences updated successfully.', 'directorist' ) ) );
-
 		}
 
 		private function insert_attachment( $file_handler, $post_id, $setthumb = 'false' ) {
@@ -1434,7 +1452,7 @@ if ( ! class_exists( 'ATBDP_Ajax_Handler' ) ) :
 			$name          = ( ! empty( $_POST['atbdp-contact-name'] ) ) ? sanitize_text_field( wp_unslash( $_POST['atbdp-contact-name'] ) ) : '';
 			$email         = ! empty( $_POST['atbdp-contact-email'] ) ? sanitize_email( wp_unslash( $_POST['atbdp-contact-email'] ) ) : '';
 			$listing_email = get_post_meta( $post_id, '_email', true );
-			$message       = ( ! empty( $_POST['atbdp-contact-message']  ) ) ? stripslashes( sanitize_textarea_field( wp_unslash( $_POST['atbdp-contact-message'] ) ) ) : '';
+			$message       = ( ! empty( $_POST['atbdp-contact-message'] ) ) ? stripslashes( sanitize_textarea_field( wp_unslash( $_POST['atbdp-contact-message'] ) ) ) : '';
 			// vars
 			$post_author_id        = get_post_field( 'post_author', $post_id );
 			$user                  = get_userdata( $post_author_id );
@@ -1448,7 +1466,7 @@ if ( ! class_exists( 'ATBDP_Ajax_Handler' ) ) :
 			$current_time          = current_time( 'timestamp' );
 			$contact_email_subject = get_directorist_option( 'email_sub_listing_contact_email' );
 			$contact_email_body    = get_directorist_option( 'email_tmpl_listing_contact_email' );
-			$contact_recipient 	   = get_user_meta( $post_author_id, 'directorist_contact_owner_recipient', true );
+			$contact_recipient     = get_user_meta( $post_author_id, 'directorist_contact_owner_recipient', true );
 			$user_email            = ! empty( $contact_recipient ) ? $contact_recipient : 'author';
 
 			$placeholders = array(
@@ -1471,11 +1489,16 @@ if ( ! class_exists( 'ATBDP_Ajax_Handler' ) ) :
 			} else {
 				$to = $user->user_email;
 			}
-			$subject  = strtr( $contact_email_subject, $placeholders );
-			$message  = strtr( $contact_email_body, $placeholders );
-			$message  = nl2br( $message );
-			$headers  = ATBDP()->email->get_email_headers( [ 'name' => $name, 'email' => $email ] );
-			$message  = atbdp_email_html( $subject, $message );
+			$subject = strtr( $contact_email_subject, $placeholders );
+			$message = strtr( $contact_email_body, $placeholders );
+			$message = nl2br( $message );
+			$headers = ATBDP()->email->get_email_headers(
+				array(
+					'name'  => $name,
+					'email' => $email,
+				)
+			);
+			$message = atbdp_email_html( $subject, $message );
 			// return true or false, based on the result
 			$is_sent = ATBDP()->email->send_mail( $to, $subject, $message, $headers ) ? true : false;
 
@@ -1591,10 +1614,13 @@ if ( ! class_exists( 'ATBDP_Ajax_Handler' ) ) :
 		 */
 		public function ajax_callback_send_contact_email() {
 			if ( ! directorist_verify_nonce() ) {
-				wp_send_json( [
-					'error' => 1,
-					'message' => __( 'Something is wrong! Please refresh and retry.', 'directorist' )
-				], 200 );
+				wp_send_json(
+					array(
+						'error'   => 1,
+						'message' => __( 'Something is wrong! Please refresh and retry.', 'directorist' ),
+					),
+					200
+				);
 			}
 
 			/**
@@ -1606,14 +1632,14 @@ if ( ! class_exists( 'ATBDP_Ajax_Handler' ) ) :
 
 			$disable_all_email = get_directorist_option( 'disable_email_notification' );
 
-			$error_response = [
-				'error' => 1,
-				'message' => __( 'Sorry! Please try again.', 'directorist' )
-			];
+			$error_response = array(
+				'error'   => 1,
+				'message' => __( 'Sorry! Please try again.', 'directorist' ),
+			);
 
 			// is admin disabled all the notification
 			if ( $disable_all_email ) {
-				echo wp_json_encode($error_response);
+				echo wp_json_encode( $error_response );
 				die();
 			}
 
@@ -1622,7 +1648,7 @@ if ( ! class_exists( 'ATBDP_Ajax_Handler' ) ) :
 
 			// is admin disabled both notification
 			if ( ! $sendOwner && ! $sendAdmin ) {
-				echo wp_json_encode($error_response);
+				echo wp_json_encode( $error_response );
 				die();
 			}
 
@@ -1630,7 +1656,7 @@ if ( ! class_exists( 'ATBDP_Ajax_Handler' ) ) :
 			if ( $sendOwner ) {
 				$send_to_owner = $this->atbdp_email_listing_owner_listing_contact();
 				if ( ! $send_to_owner ) {
-					echo wp_json_encode($error_response);
+					echo wp_json_encode( $error_response );
 					die();
 				}
 			}
@@ -1638,7 +1664,7 @@ if ( ! class_exists( 'ATBDP_Ajax_Handler' ) ) :
 			if ( $sendAdmin ) {
 				$send_to_admin = $this->atbdp_email_admin_listing_contact();
 				if ( ! $send_to_admin ) {
-					echo wp_json_encode($error_response);
+					echo wp_json_encode( $error_response );
 					die();
 				}
 			}
@@ -1650,10 +1676,12 @@ if ( ! class_exists( 'ATBDP_Ajax_Handler' ) ) :
 			 */
 			do_action( 'atbdp_listing_contact_owner_submitted' );
 
-			echo wp_json_encode( [
-				'error' => 1,
-				'message' => __( 'Your message sent successfully.', 'directorist' )
-			] );
+			echo wp_json_encode(
+				array(
+					'error'   => 1,
+					'message' => __( 'Your message sent successfully.', 'directorist' ),
+				)
+			);
 			die();
 		}
 
@@ -1728,7 +1756,7 @@ if ( ! class_exists( 'ATBDP_Ajax_Handler' ) ) :
 					'name'       => 'atbdp_custom_fields',
 					'query_args' => $args,
 					'cache'      => apply_filters( 'atbdp_cache_custom_fields', true ),
-					'value'      => function( $data ) {
+					'value'      => function ( $data ) {
 						return get_posts( $data['query_args'] );
 					},
 				)
@@ -1746,12 +1774,14 @@ if ( ! class_exists( 'ATBDP_Ajax_Handler' ) ) :
 		public function handle_generate_nonce() {
 			// Ensure the user is logged in
 			if ( ! is_user_logged_in() ) {
-				wp_send_json_error( [ 'message' => __( 'User not logged in.', 'directorist' ) ] );
+				wp_send_json_error( array( 'message' => __( 'User not logged in.', 'directorist' ) ) );
 			}
 
-			wp_send_json_success( [
-				'directorist_nonce' => wp_create_nonce( directorist_get_nonce_key() )
-			] );
+			wp_send_json_success(
+				array(
+					'directorist_nonce' => wp_create_nonce( directorist_get_nonce_key() ),
+				)
+			);
 		}
 	}
 

@@ -5,10 +5,17 @@
  * @version 8.0
  */
 
-if ( ! defined( 'ABSPATH' ) ) exit;
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
 ?>
 
-<div <?php $listings->wrapper_class(); $listings->data_atts(); ?>>
+<div 
+<?php
+$listings->wrapper_class();
+$listings->data_atts();
+?>
+>
 	<div class="listing-with-sidebar">
 		<div class="directorist-container">
 			<div class="listing-with-sidebar__wrapper">
@@ -18,7 +25,7 @@ if ( ! defined( 'ABSPATH' ) ) exit;
 					?>
 				</div>
 
-				<?php if( ! $listings->hide_top_search_bar_on_sidebar_layout() ) : ?>
+				<?php if ( ! $listings->hide_top_search_bar_on_sidebar_layout() ) : ?>
 
 					<div class="listing-with-sidebar__searchform">
 						<?php
@@ -28,7 +35,7 @@ if ( ! defined( 'ABSPATH' ) ) exit;
 
 				<?php endif; ?>
 
-				<?php if( $listings->header ) : ?>
+				<?php if ( $listings->header ) : ?>
 				
 					<div class="listing-with-sidebar__header">
 						<?php

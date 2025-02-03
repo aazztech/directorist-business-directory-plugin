@@ -8,39 +8,41 @@ namespace AazzTech\Directorist\Elementor;
 use Elementor\Controls_Manager;
 use Directorist\Helper;
 
-if ( ! defined( 'ABSPATH' ) ) exit;
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
 
 class Directorist_All_Listing extends Custom_Widget_Base {
 
-	public function __construct( $data = [], $args = null ) {
+	public function __construct( $data = array(), $args = null ) {
 		$this->az_name = __( 'All Listings', 'directorist' );
 		$this->az_base = 'directorist_all_listing';
 		parent::__construct( $data, $args );
 	}
 
 	private function az_listing_categories() {
-		$result = array();
+		$result     = array();
 		$categories = get_terms( ATBDP_CATEGORY );
 		foreach ( $categories as $category ) {
-			$result[$category->slug] = $category->name;
+			$result[ $category->slug ] = $category->name;
 		}
 		return $result;
 	}
 
 	private function az_listing_tags() {
 		$result = array();
-		$tags = get_terms( ATBDP_TAGS );
+		$tags   = get_terms( ATBDP_TAGS );
 		foreach ( $tags as $tag ) {
-			$result[$tag->slug] = $tag->name;
+			$result[ $tag->slug ] = $tag->name;
 		}
 		return $result;
 	}
 
 	private function az_listing_locations() {
-		$result = array();
+		$result    = array();
 		$locations = get_terms( ATBDP_LOCATION );
 		foreach ( $locations as $location ) {
-			$result[$location->slug] = $location->name;
+			$result[ $location->slug ] = $location->name;
 		}
 		return $result;
 	}
@@ -55,24 +57,24 @@ class Directorist_All_Listing extends Custom_Widget_Base {
 		return wp_list_pluck( $directories, 'name', 'slug' );
 	}
 
-	public function az_fields(){
+	public function az_fields() {
 		$fields = array(
 			array(
-				'mode'    => 'section_start',
-				'id'      => 'sec_general',
-				'label'   => __( 'General', 'directorist' ),
+				'mode'  => 'section_start',
+				'id'    => 'sec_general',
+				'label' => __( 'General', 'directorist' ),
 			),
 			array(
-				'type'      => Controls_Manager::SWITCHER,
-				'id'        => 'header',
-				'label'     => __( 'Show Header?', 'directorist' ),
-				'default'   => 'yes',
+				'type'    => Controls_Manager::SWITCHER,
+				'id'      => 'header',
+				'label'   => __( 'Show Header?', 'directorist' ),
+				'default' => 'yes',
 			),
 			array(
-				'type'      => Controls_Manager::TEXT,
-				'id'        => 'header_title',
-				'label'     => __( 'Total Listings Found Title', 'directorist' ),
-				'default'   => __( 'Listings Found', 'directorist' ),
+				'type'    => Controls_Manager::TEXT,
+				'id'      => 'header_title',
+				'label'   => __( 'Total Listings Found Title', 'directorist' ),
+				'default' => __( 'Listings Found', 'directorist' ),
 			),
 			array(
 				'type'      => Controls_Manager::SWITCHER,
@@ -102,47 +104,47 @@ class Directorist_All_Listing extends Custom_Widget_Base {
 				'condition' => array( 'view' => array( 'map' ) ),
 			),
 			array(
-				'type'    => Controls_Manager::SELECT,
-				'id'      => 'columns',
-				'label'   => __( 'Listings Per Row', 'directorist' ),
-				'options' => array(
-					'6' => __( '6 Items / Row', 'directorist'  ),
-					'4' => __( '4 Items / Row', 'directorist'  ),
-					'3' => __( '3 Items / Row', 'directorist'  ),
-					'2' => __( '2 Items / Row', 'directorist'  ),
+				'type'      => Controls_Manager::SELECT,
+				'id'        => 'columns',
+				'label'     => __( 'Listings Per Row', 'directorist' ),
+				'options'   => array(
+					'6' => __( '6 Items / Row', 'directorist' ),
+					'4' => __( '4 Items / Row', 'directorist' ),
+					'3' => __( '3 Items / Row', 'directorist' ),
+					'2' => __( '2 Items / Row', 'directorist' ),
 				),
-				'default' => '3',
+				'default'   => '3',
 				'condition' => array( 'view' => 'grid' ),
 			),
 			array(
-				'type'      => Controls_Manager::NUMBER,
-				'id'        => 'listing_number',
-				'label'     => __( 'Number of Listings to Show', 'directorist' ),
-				'min'       => 1,
-				'max'       => 100,
-				'step'      => 1,
-				'default'   => 6,
+				'type'    => Controls_Manager::NUMBER,
+				'id'      => 'listing_number',
+				'label'   => __( 'Number of Listings to Show', 'directorist' ),
+				'min'     => 1,
+				'max'     => 100,
+				'step'    => 1,
+				'default' => 6,
 			),
 			array(
-				'type'      => Controls_Manager::SWITCHER,
-				'id'        => 'preview',
-				'label'     => __( 'Show Preview Image?', 'directorist' ),
-				'default'   => 'yes',
+				'type'    => Controls_Manager::SWITCHER,
+				'id'      => 'preview',
+				'label'   => __( 'Show Preview Image?', 'directorist' ),
+				'default' => 'yes',
 			),
 			array(
-				'type'     => Controls_Manager::SELECT2,
-				'id'       => 'type',
-				'label'    => __( 'Directory Types', 'directorist' ),
-				'multiple' => true,
-				'options'  => $this->az_listing_types(),
-				'condition' => directorist_is_multi_directory_enabled() ? '' : ['nocondition' => true],
+				'type'      => Controls_Manager::SELECT2,
+				'id'        => 'type',
+				'label'     => __( 'Directory Types', 'directorist' ),
+				'multiple'  => true,
+				'options'   => $this->az_listing_types(),
+				'condition' => directorist_is_multi_directory_enabled() ? '' : array( 'nocondition' => true ),
 			),
 			array(
-				'type'     => Controls_Manager::SELECT2,
-				'id'       => 'default_type',
-				'label'    => __( 'Default Directory Types', 'directorist' ),
-				'options'  => $this->az_listing_types(),
-				'condition' => directorist_is_multi_directory_enabled() ? '' : ['nocondition' => true],
+				'type'      => Controls_Manager::SELECT2,
+				'id'        => 'default_type',
+				'label'     => __( 'Default Directory Types', 'directorist' ),
+				'options'   => $this->az_listing_types(),
+				'condition' => directorist_is_multi_directory_enabled() ? '' : array( 'nocondition' => true ),
 			),
 			array(
 				'type'     => Controls_Manager::SELECT2,
@@ -166,22 +168,22 @@ class Directorist_All_Listing extends Custom_Widget_Base {
 				'options'  => $this->az_listing_locations(),
 			),
 			array(
-				'type'      => Controls_Manager::SWITCHER,
-				'id'        => 'featured',
-				'label'     => __( 'Show Featured Only?', 'directorist' ),
-				'default'   => 'no',
+				'type'    => Controls_Manager::SWITCHER,
+				'id'      => 'featured',
+				'label'   => __( 'Show Featured Only?', 'directorist' ),
+				'default' => 'no',
 			),
 			array(
-				'type'      => Controls_Manager::SWITCHER,
-				'id'        => 'popular',
-				'label'     => __( 'Show Popular Only?', 'directorist' ),
-				'default'   => 'no',
+				'type'    => Controls_Manager::SWITCHER,
+				'id'      => 'popular',
+				'label'   => __( 'Show Popular Only?', 'directorist' ),
+				'default' => 'no',
 			),
 			array(
-				'type'      => Controls_Manager::SWITCHER,
-				'id'        => 'user',
-				'label'     => __( 'Only For Logged In User?', 'directorist' ),
-				'default'   => 'no',
+				'type'    => Controls_Manager::SWITCHER,
+				'id'      => 'user',
+				'label'   => __( 'Only For Logged In User?', 'directorist' ),
+				'default' => 'no',
 			),
 			array(
 				'type'    => Controls_Manager::SELECT,
@@ -205,10 +207,10 @@ class Directorist_All_Listing extends Custom_Widget_Base {
 				'default' => 'desc',
 			),
 			array(
-				'type'      => Controls_Manager::SWITCHER,
-				'id'        => 'show_pagination',
-				'label'     => __( 'Show Pagination?', 'directorist' ),
-				'default'   => 'no',
+				'type'    => Controls_Manager::SWITCHER,
+				'id'      => 'show_pagination',
+				'label'   => __( 'Show Pagination?', 'directorist' ),
+				'default' => 'no',
 			),
 			array(
 				'mode' => 'section_end',
@@ -254,8 +256,8 @@ class Directorist_All_Listing extends Custom_Widget_Base {
 		 *
 		 * @since 7.4.2
 		 *
-		 * @param array 	$atts 		Available atts in the widgers
-		 * @param array 	$settings 	All the settings of the widget
+		 * @param array     $atts       Available atts in the widgers
+		 * @param array     $settings   All the settings of the widget
 		 */
 
 		$atts = apply_filters( 'directorist_all_listings_elementor_widget_atts', $atts, $settings );

@@ -30,78 +30,89 @@ class Users_Controller extends Abstract_Controller {
 	 * Register the routes for terms.
 	 */
 	public function register_routes() {
-		register_rest_route( $this->namespace, '/' . $this->rest_base, array(
+		register_rest_route(
+			$this->namespace,
+			'/' . $this->rest_base,
 			array(
-				'methods'             => WP_REST_Server::READABLE,
-				'callback'            => array( $this, 'get_items' ),
-				'permission_callback' => array( $this, 'get_items_permissions_check' ),
-				'args'                => $this->get_collection_params(),
-			),
-			array(
-				'methods'             => WP_REST_Server::CREATABLE,
-				'callback'            => array( $this, 'create_item' ),
-				'permission_callback' => array( $this, 'create_item_permissions_check' ),
-				'args'                => array_merge( $this->get_endpoint_args_for_item_schema( WP_REST_Server::CREATABLE ), array(
-					'email' => array(
-						'required' => true,
-						'type'     => 'string',
-						'description' => __( 'New user email address.', 'directorist' ),
+				array(
+					'methods'             => WP_REST_Server::READABLE,
+					'callback'            => array( $this, 'get_items' ),
+					'permission_callback' => array( $this, 'get_items_permissions_check' ),
+					'args'                => $this->get_collection_params(),
+				),
+				array(
+					'methods'             => WP_REST_Server::CREATABLE,
+					'callback'            => array( $this, 'create_item' ),
+					'permission_callback' => array( $this, 'create_item_permissions_check' ),
+					'args'                => array_merge(
+						$this->get_endpoint_args_for_item_schema( WP_REST_Server::CREATABLE ),
+						array(
+							'email'    => array(
+								'required'    => true,
+								'type'        => 'string',
+								'description' => __( 'New user email address.', 'directorist' ),
+							),
+							'username' => array(
+								'required'    => false,
+								'description' => __( 'New user username.', 'directorist' ),
+								'type'        => 'string',
+							),
+							'password' => array(
+								'required'    => true,
+								'description' => __( 'New user password.', 'directorist' ),
+								'type'        => 'string',
+							),
+						)
 					),
-					'username' => array(
-						'required' => false,
-						'description' => __( 'New user username.', 'directorist' ),
-						'type'     => 'string',
-					),
-					'password' => array(
-						'required' => true,
-						'description' => __( 'New user password.', 'directorist' ),
-						'type'     => 'string',
-					),
-				) ),
-			),
-			'schema' => array( $this, 'get_public_item_schema' ),
-		) );
+				),
+				'schema' => array( $this, 'get_public_item_schema' ),
+			)
+		);
 
-		register_rest_route( $this->namespace, '/' . $this->rest_base . '/(?P<id>[\d]+)', array(
-			'args' => array(
-				'id' => array(
-					'description' => __( 'Unique identifier for the resource.', 'directorist' ),
-					'type'        => 'integer',
-				),
-			),
+		register_rest_route(
+			$this->namespace,
+			'/' . $this->rest_base . '/(?P<id>[\d]+)',
 			array(
-				'methods'             => WP_REST_Server::READABLE,
-				'callback'            => array( $this, 'get_item' ),
-				'permission_callback' => array( $this, 'get_item_permissions_check' ),
-				'args'                => array(
-					'context' => $this->get_context_param( array( 'default' => 'view' ) ),
-				),
-			),
-			array(
-				'methods'             => WP_REST_Server::EDITABLE,
-				'callback'            => array( $this, 'update_item' ),
-				'permission_callback' => array( $this, 'update_item_permissions_check' ),
-				'args'                => $this->get_endpoint_args_for_item_schema( WP_REST_Server::EDITABLE ),
-			),
-			array(
-				'methods'             => WP_REST_Server::DELETABLE,
-				'callback'            => array( $this, 'delete_item' ),
-				'permission_callback' => array( $this, 'delete_item_permissions_check' ),
-				'args'                => array(
-					'force' => array(
-						'default'     => false,
-						'type'        => 'boolean',
-						'description' => __( 'Required to be true, as resource does not support trashing.', 'directorist' ),
-					),
-					'reassign' => array(
-						'default'     => 0,
+				'args'   => array(
+					'id' => array(
+						'description' => __( 'Unique identifier for the resource.', 'directorist' ),
 						'type'        => 'integer',
-						'description' => __( 'ID to reassign posts to.', 'directorist' ),
 					),
 				),
-			),
-			'schema' => array( $this, 'get_public_item_schema' ),
-		) );
+				array(
+					'methods'             => WP_REST_Server::READABLE,
+					'callback'            => array( $this, 'get_item' ),
+					'permission_callback' => array( $this, 'get_item_permissions_check' ),
+					'args'                => array(
+						'context' => $this->get_context_param( array( 'default' => 'view' ) ),
+					),
+				),
+				array(
+					'methods'             => WP_REST_Server::EDITABLE,
+					'callback'            => array( $this, 'update_item' ),
+					'permission_callback' => array( $this, 'update_item_permissions_check' ),
+					'args'                => $this->get_endpoint_args_for_item_schema( WP_REST_Server::EDITABLE ),
+				),
+				array(
+					'methods'             => WP_REST_Server::DELETABLE,
+					'callback'            => array( $this, 'delete_item' ),
+					'permission_callback' => array( $this, 'delete_item_permissions_check' ),
+					'args'                => array(
+						'force'    => array(
+							'default'     => false,
+							'type'        => 'boolean',
+							'description' => __( 'Required to be true, as resource does not support trashing.', 'directorist' ),
+						),
+						'reassign' => array(
+							'default'     => 0,
+							'type'        => 'integer',
+							'description' => __( 'ID to reassign posts to.', 'directorist' ),
+						),
+					),
+				),
+				'schema' => array( $this, 'get_public_item_schema' ),
+			)
+		);
 	}
 
 	/**
@@ -229,7 +240,7 @@ class Users_Controller extends Abstract_Controller {
 	 * @return WP_Error|WP_REST_Response
 	 */
 	public function get_items( $request ) {
-		$prepared_args = array();
+		$prepared_args            = array();
 		$prepared_args['exclude'] = $request['exclude'];
 		$prepared_args['include'] = $request['include'];
 		$prepared_args['order']   = $request['order'];
@@ -239,7 +250,7 @@ class Users_Controller extends Abstract_Controller {
 		} else {
 			$prepared_args['offset'] = ( $request['page'] - 1 ) * $prepared_args['number'];
 		}
-		$orderby_possibles = $this->get_orderby_possibles();
+		$orderby_possibles        = $this->get_orderby_possibles();
 		$prepared_args['orderby'] = $orderby_possibles[ $request['orderby'] ];
 		$prepared_args['search']  = $request['search'];
 
@@ -259,7 +270,7 @@ class Users_Controller extends Abstract_Controller {
 		}
 
 		// Limit users to having published listings only
-		$prepared_args['has_published_posts'] = [ ATBDP_POST_TYPE ];
+		$prepared_args['has_published_posts'] = array( ATBDP_POST_TYPE );
 
 		/**
 		 * Filter arguments, before passing to WP_User_Query, when querying users via the REST API.
@@ -277,7 +288,7 @@ class Users_Controller extends Abstract_Controller {
 
 		$users = array();
 		foreach ( $query->results as $user ) {
-			$data = $this->prepare_item_for_response( $user, $request );
+			$data    = $this->prepare_item_for_response( $user, $request );
 			$users[] = $this->prepare_response_for_collection( $data );
 		}
 
@@ -285,7 +296,7 @@ class Users_Controller extends Abstract_Controller {
 
 		// Store pagination values for headers then unset for count query.
 		$per_page = (int) $prepared_args['number'];
-		$page = ceil( ( ( (int) $prepared_args['offset'] ) / $per_page ) + 1 );
+		$page     = ceil( ( ( (int) $prepared_args['offset'] ) / $per_page ) + 1 );
 
 		$prepared_args['fields'] = 'ID';
 
@@ -350,12 +361,12 @@ class Users_Controller extends Abstract_Controller {
 			$username = sanitize_user( current( explode( '@', $request['email'] ) ), true );
 
 			// Ensure username is unique.
-			$append = 1;
+			$append     = 1;
 			$o_username = $username;
 
 			while ( username_exists( $username ) ) {
 				$username = $o_username . $append;
-				$append++;
+				++$append;
 			}
 
 			$user_data['user_login'] = $username;
@@ -447,7 +458,7 @@ class Users_Controller extends Abstract_Controller {
 		}
 
 		$updated_user_data = array(
-			'ID' => $user_data->ID
+			'ID' => $user_data->ID,
 		);
 
 		// User email.
@@ -570,8 +581,8 @@ class Users_Controller extends Abstract_Controller {
 			'id'             => $id,
 			'date_created'   => directorist_rest_prepare_date_response( $user->user_registered ),
 			'name'           => $user->display_name,
-			'username'       => null, //$user->user_login,
-			'nickname'       => null, //$user->nickname,
+			'username'       => null, // $user->user_login,
+			'nickname'       => null, // $user->nickname,
 			'first_name'     => $user->first_name,
 			'last_name'      => $user->last_name,
 			'description'    => $user->description,
@@ -583,12 +594,12 @@ class Users_Controller extends Abstract_Controller {
 			'avatar'         => null,
 			'social_links'   => null,
 			'favorite'       => null,
-			'roles'          => null, //array_values( $user->roles ),
+			'roles'          => null, // array_values( $user->roles ),
 			'listings_count' => (int) count_user_posts( $id, ATBDP_POST_TYPE, true ),
 		);
 
 		foreach ( array_keys( $schema['properties']['social_links']['properties'] ) as $field ) {
-			$value = get_user_meta( $id, 'atbdp_' . $field, true );
+			$value                          = get_user_meta( $id, 'atbdp_' . $field, true );
 			$data['social_links'][ $field ] = ( ! empty( $value ) ? $value : null );
 		}
 
@@ -633,7 +644,7 @@ class Users_Controller extends Abstract_Controller {
 	/**
 	 * Update user meta fields.
 	 *
-	 * @param WP_User $user
+	 * @param WP_User         $user
 	 * @param WP_REST_Request $request
 	 */
 	protected function update_user_meta_fields( $user, $request ) {
@@ -705,7 +716,7 @@ class Users_Controller extends Abstract_Controller {
 	 */
 	protected function prepare_links( $user ) {
 		$links = array(
-			'self' => array(
+			'self'       => array(
 				'href' => rest_url( sprintf( '/%s/%s/%d', $this->namespace, $this->rest_base, $user->ID ) ),
 			),
 			'collection' => array(
@@ -727,13 +738,13 @@ class Users_Controller extends Abstract_Controller {
 			'title'      => 'user',
 			'type'       => 'object',
 			'properties' => array(
-				'id' => array(
+				'id'             => array(
 					'description' => __( 'Unique identifier for the resource.', 'directorist' ),
 					'type'        => 'integer',
 					'context'     => array( 'view', 'edit' ),
 					'readonly'    => true,
 				),
-				'date_created'    => array(
+				'date_created'   => array(
 					'description' => __( 'The date the user was created, as GMT.', 'directorist' ),
 					'type'        => 'string',
 					'format'      => 'date-time',
@@ -745,7 +756,7 @@ class Users_Controller extends Abstract_Controller {
 					'type'        => 'string',
 					'context'     => array( 'view' ),
 				),
-				'username' => array(
+				'username'       => array(
 					'description' => __( 'User login name.', 'directorist' ),
 					'type'        => 'string',
 					'context'     => array( 'view', 'edit' ),
@@ -753,12 +764,12 @@ class Users_Controller extends Abstract_Controller {
 						'sanitize_callback' => 'sanitize_user',
 					),
 				),
-				'nickname'           => array(
+				'nickname'       => array(
 					'description' => __( 'The nickname for the user.', 'directorist' ),
 					'type'        => 'string',
 					'context'     => array( 'view' ),
 				),
-				'first_name' => array(
+				'first_name'     => array(
 					'description' => __( 'User first name.', 'directorist' ),
 					'type'        => 'string',
 					'context'     => array( 'view', 'edit' ),
@@ -766,7 +777,7 @@ class Users_Controller extends Abstract_Controller {
 						'sanitize_callback' => 'sanitize_text_field',
 					),
 				),
-				'last_name' => array(
+				'last_name'      => array(
 					'description' => __( 'User last name.', 'directorist' ),
 					'type'        => 'string',
 					'context'     => array( 'view', 'edit' ),
@@ -774,24 +785,24 @@ class Users_Controller extends Abstract_Controller {
 						'sanitize_callback' => 'sanitize_text_field',
 					),
 				),
-				'description'        => array(
+				'description'    => array(
 					'description' => __( 'Description of the user.', 'directorist' ),
 					'type'        => 'string',
 					'context'     => array( 'view', 'edit' ),
 				),
-				'email' => array(
+				'email'          => array(
 					'description' => __( 'The email address for the user.', 'directorist' ),
 					'type'        => 'string',
 					'format'      => 'email',
 					'context'     => array( 'view', 'edit' ),
 				),
-				'url' => array(
+				'url'            => array(
 					'description' => __( 'The website url for the user.', 'directorist' ),
 					'type'        => 'string',
 					'format'      => 'url',
 					'context'     => array( 'view', 'edit' ),
 				),
-				'password' => array(
+				'password'       => array(
 					'description' => __( 'User password.', 'directorist' ),
 					'type'        => 'string',
 					'context'     => array( 'edit' ),
@@ -801,12 +812,12 @@ class Users_Controller extends Abstract_Controller {
 					'type'        => 'string',
 					'context'     => array( 'view', 'edit' ),
 				),
-				'phone'        => array(
+				'phone'          => array(
 					'description' => __( 'Phone number of the user.', 'directorist' ),
 					'type'        => 'string',
 					'context'     => array( 'view', 'edit' ),
 				),
-				'avatar'       => array(
+				'avatar'         => array(
 					'description' => __( 'User avatar image data.', 'directorist' ),
 					'type'        => 'object',
 					'context'     => array( 'view', 'edit' ),
@@ -848,7 +859,7 @@ class Users_Controller extends Abstract_Controller {
 						),
 					),
 				),
-				'avater'       => array(
+				'avater'         => array(
 					'description' => __( 'User avatar image data.', 'directorist' ),
 					'type'        => 'object',
 					'context'     => array( 'view', 'edit' ),
@@ -890,7 +901,7 @@ class Users_Controller extends Abstract_Controller {
 						),
 					),
 				),
-				'social_links' => array(
+				'social_links'   => array(
 					'description' => __( 'User social links.', 'directorist' ),
 					'type'        => 'object',
 					'context'     => array( 'view', 'edit' ),
@@ -901,7 +912,7 @@ class Users_Controller extends Abstract_Controller {
 							'format'      => 'uri',
 							'context'     => array( 'view', 'edit' ),
 						),
-						'twitter' => array(
+						'twitter'  => array(
 							'description' => __( 'Twitter profile link.', 'directorist' ),
 							'type'        => 'string',
 							'format'      => 'uri',
@@ -913,7 +924,7 @@ class Users_Controller extends Abstract_Controller {
 							'format'      => 'uri',
 							'context'     => array( 'view', 'edit' ),
 						),
-						'youtube' => array(
+						'youtube'  => array(
 							'description' => __( 'Youtube profile link.', 'directorist' ),
 							'type'        => 'string',
 							'format'      => 'uri',
@@ -921,7 +932,7 @@ class Users_Controller extends Abstract_Controller {
 						),
 					),
 				),
-				'favorite' =>  array(
+				'favorite'       => array(
 					'description' => __( 'User favorite listing ids.', 'directorist' ),
 					'type'        => 'array',
 					'items'       => array(
@@ -968,7 +979,7 @@ class Users_Controller extends Abstract_Controller {
 			'description'       => __( 'Ensure result set excludes specific IDs.', 'directorist' ),
 			'type'              => 'array',
 			'items'             => array(
-				'type'          => 'integer',
+				'type' => 'integer',
 			),
 			'default'           => array(),
 			'sanitize_callback' => 'wp_parse_id_list',
@@ -977,45 +988,45 @@ class Users_Controller extends Abstract_Controller {
 			'description'       => __( 'Limit result set to specific IDs.', 'directorist' ),
 			'type'              => 'array',
 			'items'             => array(
-				'type'          => 'integer',
+				'type' => 'integer',
 			),
 			'default'           => array(),
 			'sanitize_callback' => 'wp_parse_id_list',
 		);
-		$params['offset'] = array(
-			'description'        => __( 'Offset the result set by a specific number of items.', 'directorist' ),
-			'type'               => 'integer',
-			'sanitize_callback'  => 'absint',
-			'validate_callback'  => 'rest_validate_request_arg',
+		$params['offset']  = array(
+			'description'       => __( 'Offset the result set by a specific number of items.', 'directorist' ),
+			'type'              => 'integer',
+			'sanitize_callback' => 'absint',
+			'validate_callback' => 'rest_validate_request_arg',
 		);
-		$params['order'] = array(
-			'default'            => 'asc',
-			'description'        => __( 'Order sort attribute ascending or descending.', 'directorist' ),
-			'enum'               => array( 'asc', 'desc' ),
-			'sanitize_callback'  => 'sanitize_key',
-			'type'               => 'string',
-			'validate_callback'  => 'rest_validate_request_arg',
+		$params['order']   = array(
+			'default'           => 'asc',
+			'description'       => __( 'Order sort attribute ascending or descending.', 'directorist' ),
+			'enum'              => array( 'asc', 'desc' ),
+			'sanitize_callback' => 'sanitize_key',
+			'type'              => 'string',
+			'validate_callback' => 'rest_validate_request_arg',
 		);
 		$params['orderby'] = array(
-			'default'            => 'name',
-			'description'        => __( 'Sort collection by object attribute.', 'directorist' ),
-			'enum'               => array_keys( $this->get_orderby_possibles() ),
-			'sanitize_callback'  => 'sanitize_key',
-			'type'               => 'string',
-			'validate_callback'  => 'rest_validate_request_arg',
+			'default'           => 'name',
+			'description'       => __( 'Sort collection by object attribute.', 'directorist' ),
+			'enum'              => array_keys( $this->get_orderby_possibles() ),
+			'sanitize_callback' => 'sanitize_key',
+			'type'              => 'string',
+			'validate_callback' => 'rest_validate_request_arg',
 		);
-		$params['email'] = array(
-			'description'        => __( 'Limit result set to resources with a specific email.', 'directorist' ),
-			'type'               => 'string',
-			'format'             => 'email',
-			'validate_callback'  => 'rest_validate_request_arg',
+		$params['email']   = array(
+			'description'       => __( 'Limit result set to resources with a specific email.', 'directorist' ),
+			'type'              => 'string',
+			'format'            => 'email',
+			'validate_callback' => 'rest_validate_request_arg',
 		);
-		$params['role'] = array(
-			'description'        => __( 'Limit result set to resources with a specific role.', 'directorist' ),
-			'type'               => 'string',
-			'default'            => 'all',
-			'enum'               => array_merge( array( 'all' ), $this->get_role_names() ),
-			'validate_callback'  => 'rest_validate_request_arg',
+		$params['role']    = array(
+			'description'       => __( 'Limit result set to resources with a specific role.', 'directorist' ),
+			'type'              => 'string',
+			'default'           => 'all',
+			'enum'              => array_merge( array( 'all' ), $this->get_role_names() ),
+			'validate_callback' => 'rest_validate_request_arg',
 		);
 		return $params;
 	}

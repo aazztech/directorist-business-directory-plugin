@@ -29,26 +29,28 @@ function directorist_710_migrate_reviews_table_to_comments_table() {
 
 	if ( ! empty( $reviews ) ) {
 		foreach ( $reviews as $review ) {
-			wp_insert_comment( array(
-				'comment_type'         => ( ( isset( $review->rating ) && $review->rating > 0 ) ? 'review' : 'comment' ),
-				'comment_post_ID'      => $review->post_id,
-				'comment_author'       => $review->name,
-				'comment_author_email' => $review->email,
-				'comment_content'      => $review->content,
-				'comment_date'         => $review->date_created,
-				'comment_date_gmt'     => $review->date_created,
-				'user_id'              => ! empty( $review->by_user_id ) ? absint( $review->by_user_id ) : 0,
-				'comment_approved'     => 1,
-				'comment_meta'         => array(
-					'rating' => $review->rating
+			wp_insert_comment(
+				array(
+					'comment_type'         => ( ( isset( $review->rating ) && $review->rating > 0 ) ? 'review' : 'comment' ),
+					'comment_post_ID'      => $review->post_id,
+					'comment_author'       => $review->name,
+					'comment_author_email' => $review->email,
+					'comment_content'      => $review->content,
+					'comment_date'         => $review->date_created,
+					'comment_date_gmt'     => $review->date_created,
+					'user_id'              => ! empty( $review->by_user_id ) ? absint( $review->by_user_id ) : 0,
+					'comment_approved'     => 1,
+					'comment_meta'         => array(
+						'rating' => $review->rating,
+					),
 				)
-			) );
+			);
 		}
 	}
 
 	update_option( 'directorist_old_reviews_table_migrated', 1, false );
 
-	//Delete review table
+	// Delete review table
 	// TODO: Delete this table in future.
 	// $wpdb->query( "DROP TABLE IF EXISTS {$review_table}" );
 }
@@ -79,26 +81,28 @@ function directorist_710_migrate_posts_table_to_comments_table() {
 
 	if ( ! empty( $reviews ) ) {
 		foreach ( $reviews as $review ) {
-			wp_insert_comment( array(
-				'comment_type'         => ( ( isset( $review->rating ) && $review->rating > 0 ) ? 'review' : 'comment' ),
-				'comment_post_ID'      => $review->post_id,
-				'comment_author'       => $review->author,
-				'comment_author_email' => $review->author_email,
-				'comment_content'      => $review->comment,
-				'comment_date'         => $review->comment_date,
-				'comment_date_gmt'     => $review->comment_date,
-				'user_id'              => ! empty( $review->user_id ) ? absint( $review->user_id ) : 0,
-				'comment_approved'     => _directorist_get_comment_status_by_review_status( $review->status ),
-				'comment_meta'         => array(
-					'rating' => $review->rating
+			wp_insert_comment(
+				array(
+					'comment_type'         => ( ( isset( $review->rating ) && $review->rating > 0 ) ? 'review' : 'comment' ),
+					'comment_post_ID'      => $review->post_id,
+					'comment_author'       => $review->author,
+					'comment_author_email' => $review->author_email,
+					'comment_content'      => $review->comment,
+					'comment_date'         => $review->comment_date,
+					'comment_date_gmt'     => $review->comment_date,
+					'user_id'              => ! empty( $review->user_id ) ? absint( $review->user_id ) : 0,
+					'comment_approved'     => _directorist_get_comment_status_by_review_status( $review->status ),
+					'comment_meta'         => array(
+						'rating' => $review->rating,
+					),
 				)
-			) );
+			);
 		}
 
 		// Delete review type posts
 		// TODO: Delete this in the future
 		// foreach ( $reviews as $review ) {
-		// 	wp_delete_post( $review->post_id, true );
+		// wp_delete_post( $review->post_id, true );
 		// }
 	}
 
@@ -155,23 +159,27 @@ function directorist_7100_clean_falsy_never_expire_meta() {
 }
 
 function directorist_7100_migrate_expired_meta_to_expired_status( $updater ) {
-	$listings = new \WP_Query( array(
-		'post_status'    => 'private',
-		'post_type'      => ATBDP_POST_TYPE,
-		'posts_per_page' => 10,
-		'cache_results'  => false,
-		'nopaging'       => true,
-		'meta_key'       => '_listing_status',
-		'meta_value'     => 'expired',
-	) );
+	$listings = new \WP_Query(
+		array(
+			'post_status'    => 'private',
+			'post_type'      => ATBDP_POST_TYPE,
+			'posts_per_page' => 10,
+			'cache_results'  => false,
+			'nopaging'       => true,
+			'meta_key'       => '_listing_status',
+			'meta_value'     => 'expired',
+		)
+	);
 
 	while ( $listings->have_posts() ) {
 		$listings->the_post();
 
-		wp_update_post( array(
-			'ID'          => get_the_ID(),
-			'post_status' => 'expired',
-		) );
+		wp_update_post(
+			array(
+				'ID'          => get_the_ID(),
+				'post_status' => 'expired',
+			)
+		);
 	}
 	wp_reset_postdata();
 
@@ -182,7 +190,7 @@ function directorist_7100_clean_listing_status_expired_meta() {
 	global $wpdb;
 
 	$table_name = $wpdb->prefix . 'postmeta';
-	$meta_key = '_listing_status';
+	$meta_key   = '_listing_status';
 	$meta_value = 'expired';
 
 	$wpdb->query(
@@ -237,5 +245,5 @@ function directorist_7123_update_db_version() {
 }
 
 function directorist_800_update_db_version() {
-    \ATBDP_Installation::update_db_version( '8.0.0' );
+	\ATBDP_Installation::update_db_version( '8.0.0' );
 }

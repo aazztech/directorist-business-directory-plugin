@@ -5,9 +5,11 @@
  * @version 7.4.0
  */
 
-use \Directorist\Helper;
+use Directorist\Helper;
 
-if ( ! defined( 'ABSPATH' ) ) exit;
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
 
 if ( $query->have_posts() ) {
 
@@ -39,7 +41,7 @@ if ( $query->have_posts() ) {
 
 			<?php do_action( 'directorist_dashboard_listing_td_2', $dashboard ); ?>
 
-			<?php if ( directorist_is_multi_directory_enabled() ): ?>
+			<?php if ( directorist_is_multi_directory_enabled() ) : ?>
 				<td><span class="directorist-listing-plan"><?php echo esc_html( $dashboard->get_listing_type() ); ?></span></td>
 			<?php endif; ?>
 
@@ -52,7 +54,7 @@ if ( $query->have_posts() ) {
 			<td>
 				<div class="directorist-actions">
 
-					<a href="<?php echo esc_url(ATBDP_Permalink::get_edit_listing_page_link(get_the_ID())); ?>" class="directorist-link-btn"><?php directorist_icon( 'las la-edit' ); ?><?php esc_html_e( 'Edit', 'directorist' ); ?></a>
+					<a href="<?php echo esc_url( ATBDP_Permalink::get_edit_listing_page_link( get_the_ID() ) ); ?>" class="directorist-link-btn"><?php directorist_icon( 'las la-edit' ); ?><?php esc_html_e( 'Edit', 'directorist' ); ?></a>
 
 					<div class="directorist-dropdown">
 
@@ -64,8 +66,8 @@ if ( $query->have_posts() ) {
 								<?php
 								$dropdown_items = $dashboard->get_action_dropdown_item();
 
-								if( $dropdown_items ) {
-									foreach( $dropdown_items as $item ) {
+								if ( $dropdown_items ) {
+									foreach ( $dropdown_items as $item ) {
 										?>
 										<a class="directorist-dropdown-item <?php echo esc_attr( $item['class'] ); ?>" <?php echo wp_kses_post( $item['data_attr'] ); ?> href="<?php echo esc_url( $item['link'] ); ?>"><?php echo wp_kses_post( $item['icon'] ); ?><?php echo wp_kses_post( $item['label'] ); ?></a>
 										<?php
@@ -87,8 +89,7 @@ if ( $query->have_posts() ) {
 		<?php
 	}
 	wp_reset_postdata();
-}
-else {
+} else {
 	?>
 	<tr><td colspan="5"><?php esc_html_e( 'No items found', 'directorist' ); ?></td></tr>
 	<?php

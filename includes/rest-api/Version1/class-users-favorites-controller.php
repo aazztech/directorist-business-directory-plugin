@@ -29,7 +29,9 @@ class User_Favorites_Controller extends Abstract_Controller {
 	 * Register the routes for terms.
 	 */
 	public function register_routes() {
-		register_rest_route( $this->namespace, '/' . $this->rest_base,
+		register_rest_route(
+			$this->namespace,
+			'/' . $this->rest_base,
 			array(
 				array(
 					'methods'             => WP_REST_Server::CREATABLE,
@@ -50,25 +52,29 @@ class User_Favorites_Controller extends Abstract_Controller {
 			)
 		);
 
-		register_rest_route( $this->namespace, '/' . $this->rest_base . '/(?P<id>[\d]+)', array(
-			'args' => array(
-				'user_id' => array(
-					'description' => __( 'User id.', 'directorist' ),
-					'type'        => 'integer',
-				),
-				'id' => array(
-					'description' => __( 'Listing id.', 'directorist' ),
-					'type'        => 'integer',
-				),
-			),
+		register_rest_route(
+			$this->namespace,
+			'/' . $this->rest_base . '/(?P<id>[\d]+)',
 			array(
-				'methods'             => WP_REST_Server::DELETABLE,
-				'callback'            => array( $this, 'delete_item' ),
-				'permission_callback' => array( $this, 'delete_item_permissions_check' ),
-				'args'                => array(),
-			),
-			'schema' => array( $this, 'get_public_item_schema' ),
-		) );
+				'args'   => array(
+					'user_id' => array(
+						'description' => __( 'User id.', 'directorist' ),
+						'type'        => 'integer',
+					),
+					'id'      => array(
+						'description' => __( 'Listing id.', 'directorist' ),
+						'type'        => 'integer',
+					),
+				),
+				array(
+					'methods'             => WP_REST_Server::DELETABLE,
+					'callback'            => array( $this, 'delete_item' ),
+					'permission_callback' => array( $this, 'delete_item_permissions_check' ),
+					'args'                => array(),
+				),
+				'schema' => array( $this, 'get_public_item_schema' ),
+			)
+		);
 	}
 
 	/**
@@ -286,5 +292,6 @@ class User_Favorites_Controller extends Abstract_Controller {
 		return $this->add_additional_fields_schema( $schema );
 	}
 }
-/* This code is retrieving the user meta data for the user ID of the user that is logged
+/*
+This code is retrieving the user meta data for the user ID of the user that is logged
 in. */

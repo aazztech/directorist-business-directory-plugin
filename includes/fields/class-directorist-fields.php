@@ -1,7 +1,6 @@
 <?php
 /**
  * Directorist Fields manager class.
- *
  */
 namespace Directorist\Fields;
 
@@ -86,20 +85,20 @@ class Fields {
 
 	public static function translate_key_to_field( $type ) {
 		$map = array(
-			'address'            => 'text',
-			'category'           => 'categories',
-			'color'              => 'color_picker',
-			'excerpt'            => 'textarea',
-			'fax'                => 'text',
-			'hide_contact_owner' => 'switch',
-			'title'              => 'text',
-			'location'           => 'locations',
-			'phone'              => 'text',
-			'phone2'             => 'text',
-			'tag'                => 'tags',
-			'tagline'            => 'text',
-			'website'            => 'url',
-			'zip'                => 'text',
+			'address'                     => 'text',
+			'category'                    => 'categories',
+			'color'                       => 'color_picker',
+			'excerpt'                     => 'textarea',
+			'fax'                         => 'text',
+			'hide_contact_owner'          => 'switch',
+			'title'                       => 'text',
+			'location'                    => 'locations',
+			'phone'                       => 'text',
+			'phone2'                      => 'text',
+			'tag'                         => 'tags',
+			'tagline'                     => 'text',
+			'website'                     => 'url',
+			'zip'                         => 'text',
 			// Custom fields in themes
 			'ddoctors-accept-new-patient' => 'text',
 			'ddoctors-gender'             => 'text',
@@ -114,7 +113,7 @@ class Fields {
 			'dlawyers_gender'             => 'number',
 			'drealestate-number'          => 'number',
 			'drealestate-area'            => 'number',
-			'dclassified-bullet-list'      => 'textarea',
+			'dclassified-bullet-list'     => 'textarea',
 			'ddoctors-bullet-list'        => 'textarea',
 			'djobs_bullet_list'           => 'textarea',
 			'dlawyers_bullet_list'        => 'textarea',

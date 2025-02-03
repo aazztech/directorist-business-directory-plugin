@@ -5,23 +5,25 @@
  * @version 7.4.0
  */
 
-if ( ! defined( 'ABSPATH' ) ) exit;
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
 
 $announcements = $dashboard->get_announcements();
 ?>
 
 <div class="directorist-announcement-wrapper">
 
-	<?php if ( !empty( $announcements ) ) : ?>
+	<?php if ( ! empty( $announcements ) ) : ?>
 
-			<?php foreach ( $announcements as $announcement_id => $announcement ): ?>
+			<?php foreach ( $announcements as $announcement_id => $announcement ) : ?>
 
 				<div class="directorist-announcement" data-post-id="<?php echo esc_attr( $announcement_id ); ?>">
 
 					<div class="directorist-announcement__date">
-						<span class="directorist-announcement__date__part-one"><?php echo get_the_date( 'd', $announcement_id ) ?></span>
-						<span class="directorist-announcement__date__part-two"><?php echo get_the_date( 'M', $announcement_id ) ?></span>
-						<span class="directorist-announcement__date__part-three"><?php echo get_the_date( 'Y', $announcement_id ) ?></span>
+						<span class="directorist-announcement__date__part-one"><?php echo get_the_date( 'd', $announcement_id ); ?></span>
+						<span class="directorist-announcement__date__part-two"><?php echo get_the_date( 'M', $announcement_id ); ?></span>
+						<span class="directorist-announcement__date__part-three"><?php echo get_the_date( 'Y', $announcement_id ); ?></span>
 					</div>
 
 					<div class="directorist-announcement__content">
@@ -37,9 +39,9 @@ $announcements = $dashboard->get_announcements();
 
 			<?php endforeach; ?>
 
-	<?php else: ?>
+	<?php else : ?>
 
-		<p class="directorist_not-found"><?php esc_html_e( 'No announcements found', 'directorist' ) ?></p>
+		<p class="directorist_not-found"><?php esc_html_e( 'No announcements found', 'directorist' ); ?></p>
 
 	<?php endif; ?>
 

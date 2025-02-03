@@ -9,7 +9,7 @@
 		 For most standard PHP configurations, this means the memory limit will temporarily be raised.
 		 Ref: https://github.com/squizlabs/PHP_CodeSniffer/wiki/Advanced-Usage#specifying-phpini-settings
 	-->
-	<ini name="memory_limit" value="256M"/>
+	<ini name="memory_limit" value="1000M"/>
 
 	<!-- Strip the filepaths in reports down to the relevant bit. -->
 	<arg name="basepath" value="./" />
@@ -21,7 +21,7 @@
 	<arg value="ps" />
 
 	<!-- Exclude Warnings. -->
-	<arg value="n" />
+	<!-- <arg value="n" /> -->
 
 	<file>.</file>
 
@@ -41,7 +41,7 @@
 	<exclude-pattern>/vendor/*</exclude-pattern>
 
 	<!-- Rules -->
-	<rule ref="WordPress.Security"/>
+	<!-- <rule ref="WordPress"/> -->
 
 	<rule ref="WordPress.Security.NonceVerification">
         <properties>

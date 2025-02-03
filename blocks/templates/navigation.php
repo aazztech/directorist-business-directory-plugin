@@ -23,14 +23,14 @@ $dashboard_url = get_permalink( get_directorist_option( 'user_dashboard' ) );
 
 	<ul>
 
-		<?php foreach ( $dashboard->dashboard_tabs() as $key => $value ): ?>
+		<?php foreach ( $dashboard->dashboard_tabs() as $key => $value ) : ?>
 
 			<li>
 
 				<a href="<?php echo esc_url( $dashboard_url ) . '#' . $key; ?>">
 
 					<span class="directorist_menuItem-icon">
-						<?php directorist_icon( $value['icon'] );?>
+						<?php directorist_icon( $value['icon'] ); ?>
 					</span>
 
 					<?php echo wp_kses_post( $value['title'] ); ?>
@@ -39,31 +39,31 @@ $dashboard_url = get_permalink( get_directorist_option( 'user_dashboard' ) );
 
 			</li>
 
-		<?php endforeach;?>
+		<?php endforeach; ?>
 
-		<?php if ( $dashboard->user_can_submit() ): ?>
+		<?php if ( $dashboard->user_can_submit() ) : ?>
 
 			<li>
 
 				<a href="<?php echo esc_url( ATBDP_Permalink::get_add_listing_page_link() ); ?>">
 
-					<span class="directorist_menuItem-icon"><?php directorist_icon( 'las la-plus' );?> </span>
+					<span class="directorist_menuItem-icon"><?php directorist_icon( 'las la-plus' ); ?> </span>
 
-					<?php esc_html_e( 'Add Listing', 'directorist' );?>
+					<?php esc_html_e( 'Add Listing', 'directorist' ); ?>
 
 				</a>
 
 			</li>
 
-		<?php endif;?>
+		<?php endif; ?>
 
 		<li>
 
 			<a href="<?php echo esc_url( wp_logout_url( home_url() ) ); ?>">
 
-				<span class="directorist_menuItem-icon"><?php directorist_icon( 'las la-sign-out-alt' );?>	</span>
+				<span class="directorist_menuItem-icon"><?php directorist_icon( 'las la-sign-out-alt' ); ?>	</span>
 
-				<?php esc_html_e( 'Log Out', 'directorist' );?>
+				<?php esc_html_e( 'Log Out', 'directorist' ); ?>
 
 			</a>
 

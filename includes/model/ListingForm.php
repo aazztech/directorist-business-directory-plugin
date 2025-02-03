@@ -5,13 +5,15 @@
 
 namespace Directorist;
 
-use \ATBDP_Permalink;
+use ATBDP_Permalink;
 
-if ( ! defined( 'ABSPATH' ) ) exit;
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
 
 class Directorist_Listing_Form {
 
-	protected static $instance = null;
+	protected static $instance    = null;
 	public static $directory_type = '';
 
 	public $add_listing_id;
@@ -21,15 +23,13 @@ class Directorist_Listing_Form {
 	private function __construct( $id ) {
 
 		if ( $id ) {
-			$this->add_listing_id = $id;
+			$this->add_listing_id   = $id;
 			$this->add_listing_post = get_post( $id );
-		}
-		else {
+		} else {
 			add_action( 'wp', array( $this, 'init' ) );
 		}
 
 		$this->current_listing_type = $this->get_current_listing_type();
-
 	}
 
 	public static function instance( $id = '' ) {
@@ -55,12 +55,11 @@ class Directorist_Listing_Form {
 	}
 
 	public function load_color_picker_script( $data ) {
-		if( !empty( $data['value'] ) ) {
+		if ( ! empty( $data['value'] ) ) {
 			?>
 			<script> jQuery(document).ready(function ($) { $('.directorist-color-field-js').wpColorPicker(); }); </script>
 			<?php
-		}
-		else {
+		} else {
 			?>
 			<script> jQuery(document).ready(function ($) { $('.directorist-color-field-js').wpColorPicker().empty(); }); </script>
 			<?php
@@ -292,13 +291,13 @@ class Directorist_Listing_Form {
 		$p_id = $this->get_add_listing_id();
 
 		if ( ! empty( $p_id ) ) {
-			$listing_info['never_expire']            = get_post_meta( $p_id, '_never_expire', true );
-			$listing_info['featured']                = get_post_meta( $p_id, '_featured', true );
-			$listing_info['listing_type']            = get_post_meta( $p_id, '_listing_type', true );
-			$listing_info['price']                   = get_post_meta( $p_id, '_price', true );
-			$listing_info['videourl']                = get_post_meta( $p_id, '_videourl', true );
-			$listing_info['price_range']             = get_post_meta( $p_id, '_price_range', true );
-			$listing_info['atbd_listing_pricing']    = get_post_meta( $p_id, '_atbd_listing_pricing', true );
+			$listing_info['never_expire']         = get_post_meta( $p_id, '_never_expire', true );
+			$listing_info['featured']             = get_post_meta( $p_id, '_featured', true );
+			$listing_info['listing_type']         = get_post_meta( $p_id, '_listing_type', true );
+			$listing_info['price']                = get_post_meta( $p_id, '_price', true );
+			$listing_info['videourl']             = get_post_meta( $p_id, '_videourl', true );
+			$listing_info['price_range']          = get_post_meta( $p_id, '_price_range', true );
+			$listing_info['atbd_listing_pricing'] = get_post_meta( $p_id, '_atbd_listing_pricing', true );
 			// TODO: Status has been migrated, remove related code.
 			// $listing_info['listing_status']          = get_post_meta( $p_id, '_listing_status', true );
 			$listing_info['listing_status']          = get_post_status( $p_id );
@@ -320,7 +319,7 @@ class Directorist_Listing_Form {
 			$listing_info['bdbh']                    = get_post_meta( $p_id, '_bdbh', true );
 			$listing_info['enable247hour']           = get_post_meta( $p_id, '_enable247hour', true );
 			$listing_info['disable_bz_hour_listing'] = get_post_meta( $p_id, '_disable_bz_hour_listing', true );
-			$listing_info['bdbh_version'] 			 = get_post_meta( $p_id, '_bdbh_version', true );
+			$listing_info['bdbh_version']            = get_post_meta( $p_id, '_bdbh_version', true );
 			$listing_info['hide_contact_info']       = get_post_meta( $p_id, '_hide_contact_info', true );
 			$listing_info['hide_contact_owner']      = get_post_meta( $p_id, '_hide_contact_owner', true );
 			$listing_info['expiry_date']             = get_post_meta( $p_id, '_expiry_date', true );
@@ -363,7 +362,7 @@ class Directorist_Listing_Form {
 		$terms = get_the_terms( $this->add_listing_id, $taxonomy );
 
 		if ( is_wp_error( $terms ) || empty( $terms ) ) {
-			return [];
+			return array();
 		}
 
 		return $terms;
@@ -416,9 +415,8 @@ class Directorist_Listing_Form {
 	}
 
 	public function featured_listing_description() {
-		$description = get_directorist_option('featured_listing_desc', ' (Top of the search result and listings pages for a number days and it requires an additional payment.) ');
+		$description = get_directorist_option( 'featured_listing_desc', ' (Top of the search result and listings pages for a number days and it requires an additional payment.) ' );
 		return $description;
-
 	}
 
 	public function required_html() {
@@ -441,10 +439,9 @@ class Directorist_Listing_Form {
 		$p_id = $this->get_add_listing_id();
 		$type = $this->current_listing_type;
 
-		if ( !empty($p_id) ) {
-			$submit_label = __('Preview Changes', 'directorist');
-		}
-		else {
+		if ( ! empty( $p_id ) ) {
+			$submit_label = __( 'Preview Changes', 'directorist' );
+		} else {
 			$submit_label = get_directorist_type_option( $type, 'submit_button_label', __( 'Save & Preview', 'directorist' ) );
 		}
 		return $submit_label;
@@ -470,19 +467,19 @@ class Directorist_Listing_Form {
 		Helper::get_template( 'listing-form/submit', $args );
 	}
 
-	public function social_item_template( $index='', $social_info='' ) {
-		if ( !$social_info ) {
-			$index = 'socialindex';
-			$social_info = [
-				'id'   => '',
-				'url'  => '',
-			];
+	public function social_item_template( $index = '', $social_info = '' ) {
+		if ( ! $social_info ) {
+			$index       = 'socialindex';
+			$social_info = array(
+				'id'  => '',
+				'url' => '',
+			);
 		}
 
 		$args = array(
-			'listing_form'   => $this,
-			'index'          => $index,
-			'social_info'    => $social_info,
+			'listing_form' => $this,
+			'index'        => $index,
+			'social_info'  => $social_info,
 		);
 
 		Helper::get_template( 'listing-form/social-item', $args );
@@ -493,10 +490,10 @@ class Directorist_Listing_Form {
 		preg_match_all( $pattern, $text, $matches );
 
 		if ( ! empty( $matches[1] ) ) {
-			foreach( $matches[1] as $match ) {
-				$label     = $this->terms_privacy_name( $match);
+			foreach ( $matches[1] as $match ) {
+				$label     = $this->terms_privacy_name( $match );
 				$link      = $this->terms_privacy_link( $match );
-				$changed[] = sprintf('<a target="_blank" href="%s">%s</a>', $link, $label);
+				$changed[] = sprintf( '<a target="_blank" href="%s">%s</a>', $link, $label );
 			}
 
 			$result = str_replace( $matches[0], $changed, $text );
@@ -515,7 +512,7 @@ class Directorist_Listing_Form {
 				$name = get_directorist_type_option( $this->current_listing_type, 'privacy_name', __( 'Privacy & Policy', 'directorist' ) );
 				break;
 			default:
-            	$name =  '';
+				$name = '';
 		}
 		return $name;
 	}
@@ -529,22 +526,22 @@ class Directorist_Listing_Form {
 				$link = get_directorist_type_option( $this->current_listing_type, 'privacy_link', ATBDP_Permalink::get_privacy_policy_page_url() );
 				break;
 			default:
-            	$link =  '';
+				$link = '';
 		}
 		return $link;
 	}
 
 	public function type_hidden_field() {
-		$value             		= get_post_meta( $this->get_add_listing_id(), '_directory_type', true );
+		$value                  = get_post_meta( $this->get_add_listing_id(), '_directory_type', true );
 		$current_directory_type = $this->get_current_listing_type();
-		$default_directory 		= default_directory_type();
+		$default_directory      = default_directory_type();
 		$directory_type         = ! empty( $current_directory_type ) ? $current_directory_type : $default_directory;
-		$current_type      		= ! empty( $value ) ? $value : $directory_type;
+		$current_type           = ! empty( $value ) ? $value : $directory_type;
 		printf( '<input type="hidden" name="directory_type" value="%s">', esc_attr( $current_type ) );
 	}
 
 	public function field_label_template( $data, $label_id = '' ) {
-		$key = !empty( $data['field_key'] ) ? $data['field_key'] : 'random-'.rand();
+		$key  = ! empty( $data['field_key'] ) ? $data['field_key'] : 'random-' . rand();
 		$args = array(
 			'listing_form' => $this,
 			'data'         => $data,
@@ -573,7 +570,7 @@ class Directorist_Listing_Form {
 
 		$load_section = apply_filters( 'directorist_section_template', true, $args );
 
-		if( $load_section && ! empty( $section_data['fields'] ) ) {
+		if ( $load_section && ! empty( $section_data['fields'] ) ) {
 			Helper::get_template( 'listing-form/section', $args );
 		}
 	}
@@ -595,11 +592,11 @@ class Directorist_Listing_Form {
 	}
 
 
-	public function add_listing_category_custom_field_template( $field_data, $listing_id = NULL ) {
+	public function add_listing_category_custom_field_template( $field_data, $listing_id = null ) {
 		$value = '';
 		if ( ! empty( $listing_id ) ) {
 
-			$value = get_post_meta( $listing_id, '_'.$field_data['field_key'], true );
+			$value = get_post_meta( $listing_id, '_' . $field_data['field_key'], true );
 		}
 
 		if ( $field_data['field_key'] === 'hide_contact_owner' && $value == 1 ) {
@@ -607,7 +604,7 @@ class Directorist_Listing_Form {
 		}
 
 		$field_data['value'] = $value;
-		$field_data['form'] = $this;
+		$field_data['form']  = $this;
 
 		$args = array(
 			'listing_form' => $this,
@@ -616,8 +613,7 @@ class Directorist_Listing_Form {
 
 		if ( $this->is_custom_field( $field_data ) ) {
 			$template = 'listing-form/custom-fields/' . $field_data['widget_name'];
-		}
-		else {
+		} else {
 			$template = 'listing-form/fields/' . $field_data['widget_name'];
 		}
 
@@ -629,42 +625,34 @@ class Directorist_Listing_Form {
 
 			if ( atbdp_has_admin_template( $admin_template ) ) {
 				atbdp_get_admin_template( $admin_template, $args );
-			}
-			else {
+			} else {
 				Helper::get_template( $template, $args );
 			}
-		}
-		else {
-			if ( empty( $field_data['only_for_admin'] ) ) {
+		} elseif ( empty( $field_data['only_for_admin'] ) ) {
 				Helper::get_template( $template, $args );
-			}
 		}
-
 	}
 
 	public function field_template( $field_data ) {
 
-		if( ! empty( $field_data['assign_to'] ) ) {
+		if ( ! empty( $field_data['assign_to'] ) ) {
 			return;
 		}
 
 		$listing_id = $this->get_add_listing_id();
-		$value = '';
+		$value      = '';
 
 		$field_data['lazy_load'] = get_directorist_option( 'lazy_load_taxonomy_fields', true );
 
 		if ( ! empty( $listing_id ) ) {
 			if ( $field_data['widget_name'] == 'title' ) {
 				$value = $this->add_listing_post->post_title;
-			}
-			elseif ( $field_data['widget_name'] == 'description' ) {
+			} elseif ( $field_data['widget_name'] == 'description' ) {
 				$value = $this->add_listing_post->post_content;
-			}
-			elseif ( $field_data['widget_name'] == 'terms_privacy' ) {
+			} elseif ( $field_data['widget_name'] == 'terms_privacy' ) {
 				$field_data['privacy_checked'] = (bool) get_post_meta( $listing_id, '_privacy_policy', true );
-			}
-			elseif ( !empty( $field_data['field_key'] ) ) {
-				$value = get_post_meta( $listing_id, '_'.$field_data['field_key'], true );
+			} elseif ( ! empty( $field_data['field_key'] ) ) {
+				$value = get_post_meta( $listing_id, '_' . $field_data['field_key'], true );
 
 				if ( empty( $value ) ) {
 					$value = get_post_meta( $listing_id, $field_data['field_key'], true );
@@ -677,37 +665,34 @@ class Directorist_Listing_Form {
 		}
 
 		$field_data['value'] = $value;
-		$field_data['form'] = $this;
-		$field_data = apply_filters( 'directorist_form_field_data', $field_data );
-
+		$field_data['form']  = $this;
+		$field_data          = apply_filters( 'directorist_form_field_data', $field_data );
 
 		if ( $this->is_custom_field( $field_data ) ) {
 
 			$template = 'listing-form/custom-fields/' . $field_data['widget_name'];
 
-			if( 'checkbox' === $field_data['type'] ){
+			if ( 'checkbox' === $field_data['type'] ) {
 
-				$options_value = is_array( $value ) ? join( ",",$value ) : $value;
-				$result = explode( ",", $options_value );
+				$options_value = is_array( $value ) ? join( ',', $value ) : $value;
+				$result        = explode( ',', $options_value );
 
-				if( ! is_array( $value ) ){
-					$pure_string = trim(preg_replace('/\n+/', ' ', $options_value));
-					$result = explode( " ", $pure_string );
+				if ( ! is_array( $value ) ) {
+					$pure_string = trim( preg_replace( '/\n+/', ' ', $options_value ) );
+					$result      = explode( ' ', $pure_string );
 				}
 
 				$field_data['value'] = $result;
 			}
-
-		}
-		else {
+		} else {
 			$template = 'listing-form/fields/' . $field_data['widget_name'];
 		}
 
 		$template = apply_filters( 'directorist_field_template', $template, $field_data );
 
 		$args = array(
-			'listing_form'  => $this,
-			'data'          => $field_data,
+			'listing_form' => $this,
+			'data'         => $field_data,
 		);
 
 		if ( is_admin() ) {
@@ -716,22 +701,17 @@ class Directorist_Listing_Form {
 
 			if ( atbdp_has_admin_template( $admin_template ) ) {
 				atbdp_get_admin_template( $admin_template, $args );
-			}
-			else {
+			} else {
 				Helper::get_template( $template, $args );
 			}
-		}
-		else {
+		} elseif ( empty( $field_data['only_for_admin'] ) ) {
 
-			if ( empty( $field_data['only_for_admin'] ) ) {
 				Helper::get_template( $template, $args );
-			}
 		}
-
 	}
 
 	public function is_custom_field( $data ) {
-		$fields = [ 'checkbox', 'color_picker', 'date', 'file', 'number', 'radio', 'select', 'text', 'textarea', 'time', 'url' ];
+		$fields = array( 'checkbox', 'color_picker', 'date', 'file', 'number', 'radio', 'select', 'text', 'textarea', 'time', 'url' );
 		return in_array( $data['widget_name'], $fields ) ? true : false;
 	}
 
@@ -761,14 +741,12 @@ class Directorist_Listing_Form {
 
 		if ( $listing_type_count == 1 ) {
 			$type = array_key_first( $listing_types );
-		}
-		elseif( ! empty( $get_listing_type ) ) {
+		} elseif ( ! empty( $get_listing_type ) ) {
 			$type = $get_listing_type;
-		}
-		else {
+		} else {
 			$type = isset( $_REQUEST['directory_type'] ) ? sanitize_text_field( wp_unslash( $_REQUEST['directory_type'] ) ) : '';
 		}
-		if( !empty( $type ) && ! is_numeric( $type ) ) {
+		if ( ! empty( $type ) && ! is_numeric( $type ) ) {
 			$term = get_term_by( 'slug', $type, ATBDP_TYPE );
 			$type = $term->term_id;
 		}
@@ -777,15 +755,15 @@ class Directorist_Listing_Form {
 	}
 
 	public function build_form_data( $type ) {
-		$form_data = [];
+		$form_data = array();
 
-		if ( !$type ) {
+		if ( ! $type ) {
 			return $form_data;
 		}
 
 		$submission_form_fields = get_term_meta( $type, 'submission_form_fields', true );
 
-		if( ! empty( $submission_form_fields['groups'] ) ) {
+		if ( ! empty( $submission_form_fields['groups'] ) ) {
 			foreach ( $submission_form_fields['groups'] as $group ) {
 				$section           = $group;
 				$section['fields'] = array();
@@ -824,17 +802,16 @@ class Directorist_Listing_Form {
 	}
 
 	public function render_shortcode( $atts ) {
-		$atts = shortcode_atts( ['directory_type' => ''], $atts );
+		$atts                 = shortcode_atts( array( 'directory_type' => '' ), $atts );
 		self::$directory_type = $atts['directory_type'] ? explode( ',', $atts['directory_type'] ) : '';
 
 		$guest_submission = directorist_is_guest_submission_enabled();
-		$user_id		  = get_current_user_id();
+		$user_id          = get_current_user_id();
 		$user_type        = get_user_meta( $user_id, '_user_type', true );
 
 		if ( ! $guest_submission && ! is_user_logged_in() ) {
 			return \ATBDP_Helper::guard( array( 'type' => 'auth' ) );
-		}
-		elseif( ! empty( $user_type ) && ( 'general' == $user_type || 'become_author' == $user_type ) ) {
+		} elseif ( ! empty( $user_type ) && ( 'general' == $user_type || 'become_author' == $user_type ) ) {
 			return \ATBDP_Helper::guard( array( 'type' => 'user_type' ) );
 		}
 
@@ -844,7 +821,7 @@ class Directorist_Listing_Form {
 		if ( ! empty( $p_id ) ) {
 			$listing = get_post( $p_id );
 			if ( $listing->post_author != get_current_user_id() && ! current_user_can( 'edit_others_at_biz_dirs' ) ) {
-				return Helper::get_template_contents( 'listing-form/restrict-access', [ 'listing_form' => $this ] );
+				return Helper::get_template_contents( 'listing-form/restrict-access', array( 'listing_form' => $this ) );
 			}
 		}
 
@@ -856,7 +833,7 @@ class Directorist_Listing_Form {
 		// Edit Mode
 		if ( $p_id ) {
 			$terms                  = get_the_terms( $p_id, ATBDP_TYPE );
-			$type                   = !empty($terms) ? $terms[0]->term_id : '';
+			$type                   = ! empty( $terms ) ? $terms[0]->term_id : '';
 			$args['form_data']      = $this->build_form_data( $type );
 			$args['enable_sidebar'] = (bool) get_directorist_type_option( $type, 'enable_sidebar', 1 );
 			$args['is_edit_mode']   = true;
@@ -866,14 +843,14 @@ class Directorist_Listing_Form {
 			// if no listing type exists
 			if ( $listing_type_count == 0 ) {
 
-				if( ! directory_types() ) {
-					if( current_user_can('manage_options') || current_user_can('edit_pages') ) {
-						$args['error_notice'] = sprintf( __('Please add a directory type first %s', 'directorist' ), '<a href="'. admin_url() .'edit.php?post_type=at_biz_dir&page=atbdp-directory-types">Add Now</a>' );
+				if ( ! directory_types() ) {
+					if ( current_user_can( 'manage_options' ) || current_user_can( 'edit_pages' ) ) {
+						$args['error_notice'] = sprintf( __( 'Please add a directory type first %s', 'directorist' ), '<a href="' . admin_url() . 'edit.php?post_type=at_biz_dir&page=atbdp-directory-types">Add Now</a>' );
 					} else {
-						$args['error_notice'] = __('There\'s something unexpected happen. Please contact site admin.', 'directorist');
+						$args['error_notice'] = __( 'There\'s something unexpected happen. Please contact site admin.', 'directorist' );
 					}
 				} else {
-					$args['error_notice'] = __('Notice: Your given directory type is not valid. Please use a valid directory type', 'directorist');
+					$args['error_notice'] = __( 'Notice: Your given directory type is not valid. Please use a valid directory type', 'directorist' );
 				}
 
 				return Helper::get_template_contents( 'listing-form/add-listing-notype', $args );
@@ -891,7 +868,7 @@ class Directorist_Listing_Form {
 			}
 
 			// multiple directory available
-			$template = Helper::get_template_contents( 'listing-form/add-listing-type', [ 'listing_form' => $this ] );
+			$template = Helper::get_template_contents( 'listing-form/add-listing-type', array( 'listing_form' => $this ) );
 			return apply_filters( 'atbdp_add_listing_page_template', $template, $args );
 		}
 	}

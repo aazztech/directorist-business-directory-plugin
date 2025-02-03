@@ -5,7 +5,9 @@
  * @version 7.7.0
  */
 
-if ( ! defined( 'ABSPATH' ) ) exit;
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
 ?>
 
 <div id="directorist-quick-login" class="directorist-quick-login directorist-modal-container">
@@ -33,7 +35,7 @@ if ( ! defined( 'ABSPATH' ) ) exit;
 						<input type="password" name="password" placeholder="Password" class="directorist-form-element">
 					</div>
 
-					<?php wp_nonce_field('directorist-quick-login-nonce', 'directorist-quick-login-security'); ?>
+					<?php wp_nonce_field( 'directorist-quick-login-nonce', 'directorist-quick-login-security' ); ?>
 					<div class="directorist-form-feedback"></div>
 
 					<div class="directorist-form-actions directorist-text-center">

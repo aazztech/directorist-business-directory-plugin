@@ -5,7 +5,9 @@
 
 namespace Directorist\Asset_Loader;
 
-if ( ! defined( 'ABSPATH' ) ) exit;
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
 
 class Helper {
 
@@ -25,16 +27,16 @@ class Helper {
 	/**
 	 * Register all scripts.
 	 *
-	 * @param array $script single item of Scripts::get_all_scripts() array.
+	 * @param array  $script single item of Scripts::get_all_scripts() array.
 	 * @param string $version
 	 */
 	public static function register_all_scripts( $scripts, $version = '' ) {
-		if ( !$version ) {
+		if ( ! $version ) {
 			$version = self::get_script_version();
 		}
 
 		foreach ( $scripts as $handle => $script ) {
-			Helper::register_single_script( $handle, $script, $version );
+			self::register_single_script( $handle, $script, $version );
 		}
 	}
 
@@ -42,25 +44,23 @@ class Helper {
 	 * Register a script.
 	 *
 	 * @param string $handle
-	 * @param array $script single item of Scripts::get_all_scripts() array.
+	 * @param array  $script single item of Scripts::get_all_scripts() array.
 	 * @param string $version
 	 */
 	public static function register_single_script( $handle, $script, $version = '' ) {
-        $url = self::script_file_url( $script );
+		$url = self::script_file_url( $script );
 
-        if ( !empty( $script['dep'] ) ) {
-            $dep = $script['dep'];
-        }
-        else {
-            $dep = ( $script['type'] == 'js' ) ? ['jquery'] : [];
-        }
+		if ( ! empty( $script['dep'] ) ) {
+			$dep = $script['dep'];
+		} else {
+			$dep = ( $script['type'] == 'js' ) ? array( 'jquery' ) : array();
+		}
 
-        if ( $script['type'] == 'css' ) {
-            wp_register_style( $handle, $url, $dep, $version );
-        }
-        else {
-            wp_register_script( $handle, $url, $dep, $version, true );
-        }
+		if ( $script['type'] == 'css' ) {
+			wp_register_style( $handle, $url, $dep, $version );
+		} else {
+			wp_register_script( $handle, $url, $dep, $version, true );
+		}
 	}
 
 	/**
@@ -83,7 +83,7 @@ class Helper {
 		ob_start();
 		include $style_path;
 		$style = ob_get_clean();
-		$style = str_replace( ['<style>', '</style>'], '', $style );
+		$style = str_replace( array( '<style>', '</style>' ), '', $style );
 		$style = self::minify_css( $style );
 		return $style;
 	}
@@ -96,13 +96,13 @@ class Helper {
 	 * @return string URL string.
 	 */
 	public static function script_file_url( $script ) {
-		if ( !empty( $script['ext'] ) ) {
+		if ( ! empty( $script['ext'] ) ) {
 			return $script['ext'];
 		}
 
-		$min  = self::debug_enabled() ? '' : '.min';
-		$rtl  = ( !empty( $script['rtl'] ) && is_rtl() ) ? '.rtl' : '';
-		$ext  = $script['type'] == 'css' ? '.css' : '.js';
+		$min = self::debug_enabled() ? '' : '.min';
+		$rtl = ( ! empty( $script['rtl'] ) && is_rtl() ) ? '.rtl' : '';
+		$ext = $script['type'] == 'css' ? '.css' : '.js';
 		$url = $script['path'] . $rtl . $min . $ext;
 		return $url;
 	}
@@ -117,7 +117,9 @@ class Helper {
 	 * @return string
 	 */
 	public static function minify_css( $input ) {
-		if(trim($input) === "") return $input;
+		if ( trim( $input ) === '' ) {
+			return $input;
+		}
 		return preg_replace(
 			array(
 				// Remove comment(s)
@@ -140,7 +142,7 @@ class Helper {
 				// Replace `(border|outline):none` with `(border|outline):0`
 				'#(?<=[\{;])(border|outline):none(?=[;\}\!])#',
 				// Remove empty selector(s)
-				'#(\/\*(?>.*?\*\/))|(^|[\{\}])(?:[^\s\{\}]+)\{\}#s'
+				'#(\/\*(?>.*?\*\/))|(^|[\{\}])(?:[^\s\{\}]+)\{\}#s',
 			),
 			array(
 				'$1',
@@ -153,9 +155,10 @@ class Helper {
 				'$1$2$4$5',
 				'$1$2$3',
 				'$1:0',
-				'$1$2'
+				'$1$2',
 			),
-			$input);
+			$input
+		);
 	}
 
 	/**
@@ -178,7 +181,7 @@ class Helper {
 		if ( empty( $template ) ) {
 			return false;
 		}
-	
+
 		return str_starts_with( $template, 'widgets/' );
 	}
 
@@ -204,7 +207,7 @@ class Helper {
 			case 'builder-edit':
 				if ( $screen == 'at_biz_dir_page_atbdp-directory-types' ) {
 					// Multi-directory enabled
-					if ( !empty( $_GET['action'] ) && ( $_GET['action'] == 'edit' || $_GET['action'] == 'add_new' ) ) {
+					if ( ! empty( $_GET['action'] ) && ( $_GET['action'] == 'edit' || $_GET['action'] == 'add_new' ) ) {
 						$status = true;
 					}
 				} elseif ( $screen == 'at_biz_dir_page_atbdp-layout-builder' ) {
@@ -220,7 +223,7 @@ class Helper {
 				break;
 
 			case 'all_listings':
-				if ( $screen == 'edit' && !empty( $_GET['post_type'] ) && $_GET['post_type'] == 'at_biz_dir' ) {
+				if ( $screen == 'edit' && ! empty( $_GET['post_type'] ) && $_GET['post_type'] == 'at_biz_dir' ) {
 					$status = true;
 				}
 				break;
@@ -235,7 +238,7 @@ class Helper {
 
 			case 'taxonomy':
 				if ( $screen == 'term' || $screen == 'edit-tags' ) {
-					$taxonomies   = [ 'at_biz_dir-category', 'at_biz_dir-location', 'at_biz_dir-tags' ];
+					$taxonomies = array( 'at_biz_dir-category', 'at_biz_dir-location', 'at_biz_dir-tags' );
 					if ( isset( $_GET['taxonomy'] ) && in_array( $_GET['taxonomy'], $taxonomies ) ) {
 						$status = true;
 					}

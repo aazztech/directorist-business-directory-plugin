@@ -1,7 +1,6 @@
 <?php
 /**
  * Directorist View Count Field class.
- *
  */
 namespace Directorist\Fields;
 

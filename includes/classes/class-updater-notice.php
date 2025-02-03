@@ -14,8 +14,8 @@ if ( ! defined( 'ABSPATH' ) ) {
 class Updater_Notice {
 
 	public static function init() {
-		add_action( 'wp_loaded', [ __CLASS__, 'hide_notices' ] );
-		add_action( 'admin_notices', [ __CLASS__, 'show_notices' ] );
+		add_action( 'wp_loaded', array( __CLASS__, 'hide_notices' ) );
+		add_action( 'admin_notices', array( __CLASS__, 'show_notices' ) );
 	}
 
 	/**
@@ -23,8 +23,8 @@ class Updater_Notice {
 	 */
 	public static function hide_notices() {
 
-		if( is_admin() && isset( $_GET["page"] ) && ( ( $_GET["page"] == 'atbdp-settings' ) || ( $_GET["page"] == 'atbdp-directory-types' ) || ( 'atbdp-layout-builder' === $_GET["page"] ) ) ) {
-			remove_all_actions('admin_notices');
+		if ( is_admin() && isset( $_GET['page'] ) && ( ( $_GET['page'] == 'atbdp-settings' ) || ( $_GET['page'] == 'atbdp-directory-types' ) || ( 'atbdp-layout-builder' === $_GET['page'] ) ) ) {
+			remove_all_actions( 'admin_notices' );
 		}
 
 		if ( isset( $_GET['directorist-hide-notice'] ) && isset( $_GET['_directorist_notice_nonce'] ) ) { // WPCS: input var ok, CSRF ok.

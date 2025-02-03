@@ -177,10 +177,10 @@ class Bootstrap {
 	 *
 	 * Since subscriber cannot edit their own comment so meta cap remapping is necessary.
 	 *
-	 * @param array $caps
+	 * @param array  $caps
 	 * @param string $cap
-	 * @param int $user_id
-	 * @param mixed $args
+	 * @param int    $user_id
+	 * @param mixed  $args
 	 *
 	 * @return array
 	 */
@@ -213,7 +213,7 @@ class Bootstrap {
 			return $args;
 		}
 
-		$args['supports'] = array_merge( $args['supports'], [ 'comments' ] );
+		$args['supports'] = array_merge( $args['supports'], array( 'comments' ) );
 
 		return $args;
 	}

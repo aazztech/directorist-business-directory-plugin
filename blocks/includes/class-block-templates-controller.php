@@ -177,7 +177,7 @@ class Block_Templates_Controller {
 			if (
 				array_filter(
 					$query_result,
-					static function( $query_result_template ) use ( $template_file ) {
+					static function ( $query_result_template ) use ( $template_file ) {
 						return $query_result_template->slug === $template_file->slug &&
 								$query_result_template->theme === $template_file->theme;
 					}
@@ -236,13 +236,13 @@ class Block_Templates_Controller {
 
 		// Get the slugs of all templates that have been customised and saved in the database.
 		$customised_template_slugs = array_map(
-			static function( $template ) {
+			static function ( $template ) {
 				return $template->slug;
 			},
 			array_values(
 				array_filter(
 					$templates,
-					static function( $template ) {
+					static function ( $template ) {
 						// This template has been customised and saved as a post.
 						return 'custom' === $template->source;
 					}
@@ -257,7 +257,7 @@ class Block_Templates_Controller {
 		return array_values(
 			array_filter(
 				$templates,
-				static function( $template ) use ( $customised_template_slugs ) {
+				static function ( $template ) use ( $customised_template_slugs ) {
 					// This template has been customised and saved as a post, so return it.
 					return ! ( 'theme' === $template->source && in_array( $template->slug, $customised_template_slugs, true ) );
 				}
@@ -291,11 +291,11 @@ class Block_Templates_Controller {
 			$check_query_args['post_name__in'] = $slugs;
 		}
 
-		$check_query         = new \WP_Query( $check_query_args );
+		$check_query                 = new \WP_Query( $check_query_args );
 		$saved_directorist_templates = $check_query->posts;
 
 		return array_map(
-			static function( $saved_directorist_template ) {
+			static function ( $saved_directorist_template ) {
 				return Block_Template_Utils::gutenberg_build_template_result_from_post( $saved_directorist_template );
 			},
 			$saved_directorist_templates

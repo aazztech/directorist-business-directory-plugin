@@ -171,8 +171,8 @@ class Walker extends Walker_Comment {
 							$args,
 							array(
 								'edit_text' => sprintf( __( '%s Edit', 'directorist' ), directorist_icon( 'fas fa-pencil-alt', false ) ),
-								'depth'      => $depth,
-								'max_depth'  => $args['max_depth']
+								'depth'     => $depth,
+								'max_depth' => $args['max_depth'],
 							)
 						)
 					);
@@ -180,7 +180,7 @@ class Walker extends Walker_Comment {
 					if ( $edit_link ) {
 
 						echo wp_kses_post( $edit_link );
-						
+
 					}
 					?>
 				</div>

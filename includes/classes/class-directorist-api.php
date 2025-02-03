@@ -22,7 +22,7 @@ class API {
 			return $promotion;
 		}
 
-		$promotion  = static::get( 'v1/get-promo' );
+		$promotion = static::get( 'v1/get-promo' );
 		$promotion = json_decode( $promotion );
 		$end_time  = static::get_promotion_end_time( $promotion );
 
@@ -59,7 +59,7 @@ class API {
 
 		if ( empty( $products ) ) {
 			return array(
-				'themes' => array(),
+				'themes'     => array(),
 				'extensions' => array(),
 			);
 		}
@@ -92,7 +92,7 @@ class API {
 	 * @return string
 	 */
 	public static function get( $endpoint = '' ) {
-		$url = static::URL . $endpoint;
+		$url      = static::URL . $endpoint;
 		$response = wp_remote_get( $url, static::get_request_args() );
 
 		return wp_remote_retrieve_body( $response );

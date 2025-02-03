@@ -7,7 +7,9 @@ namespace Directorist;
 
 use Exception;
 
-if ( ! defined( 'ABSPATH' ) ) exit;
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
 
 class Helper {
 
@@ -38,7 +40,7 @@ class Helper {
 			return '';
 		}
 
-		$error_keys = ( is_array( $wp_error->errors ) ) ? array_keys( $wp_error->errors ) : [];
+		$error_keys = ( is_array( $wp_error->errors ) ) ? array_keys( $wp_error->errors ) : array();
 		$error_key  = ( ! empty( $error_keys ) ) ? $error_keys[0] : '';
 		$message    = ( ! empty( $error_key ) && is_array( $wp_error->errors[ $error_key ] ) && ! empty( $wp_error->errors[ $error_key ] ) ) ? $wp_error->errors[ $error_key ][0] : '';
 
@@ -50,13 +52,14 @@ class Helper {
 	 *
 	 * This function is only available on operating
 	 * systems that support the gettimeofday() system call.
+	 *
 	 * @link https://www.php.net/manual/en/function.microtime.php
 	 *
 	 * @return int
 	 */
 	public static function getTimeInMillisecond() {
 		try {
-			return ( int ) ( microtime( true ) * 1000 );
+			return (int) ( microtime( true ) * 1000 );
 		} catch ( Exception $e ) {
 			return 0;
 		}
@@ -93,7 +96,7 @@ class Helper {
 		}
 
 		// JSON Decode from Base64
-		$decode_base64 = base64_decode( $input_data );
+		$decode_base64      = base64_decode( $input_data );
 		$decode_base64_json = json_decode( $decode_base64, true );
 
 		if ( ! is_null( $decode_base64_json ) ) {
@@ -104,15 +107,16 @@ class Helper {
 	}
 
 	// get_widget_value
-	public static function get_widget_value( $post_id = 0, $widget = [] ) {
+	public static function get_widget_value( $post_id = 0, $widget = array() ) {
 		$value = '';
 
 		// directorist_console_log( $widget );
 
-		if ( ! is_array( $widget ) ) { return ''; }
+		if ( ! is_array( $widget ) ) {
+			return ''; }
 
 		if ( isset( $widget['field_key'] ) ) {
-			$value = get_post_meta( $post_id, '_'.$widget['field_key'], true );
+			$value = get_post_meta( $post_id, '_' . $widget['field_key'], true );
 
 			if ( empty( $value ) ) {
 				$value = get_post_meta( $post_id, $widget['field_key'], true );
@@ -131,18 +135,24 @@ class Helper {
 	}
 
 	// add_listings_review_meta
-	public static function add_listings_review_meta( array $args = [] ) {
+	public static function add_listings_review_meta( array $args = array() ) {
 
-		if ( empty( $args['post_id'] ) ) { return false; }
+		if ( empty( $args['post_id'] ) ) {
+			return false; }
 
 		$reviews = get_post_meta( $args['post_id'], '_directorist_reviews', true );
 
-		if ( ! is_array( $reviews ) ) { $reviews = []; }
+		if ( ! is_array( $reviews ) ) {
+			$reviews = array(); }
 
-		if ( empty( $args['reviewer_id'] ) ) { return false; }
-		if ( empty( $args['status'] ) ) { return false; }
-		if ( empty( $args['rating'] ) ) { return false; }
-		if ( ! is_numeric( $args['rating'] ) ) { return false; }
+		if ( empty( $args['reviewer_id'] ) ) {
+			return false; }
+		if ( empty( $args['status'] ) ) {
+			return false; }
+		if ( empty( $args['rating'] ) ) {
+			return false; }
+		if ( ! is_numeric( $args['rating'] ) ) {
+			return false; }
 
 		$reviews[ $args['reviewer_id'] ] = $args;
 
@@ -152,26 +162,31 @@ class Helper {
 	}
 
 	// update_listings_review_meta
-	public static function update_listings_review_meta( array $args = [] ) {
+	public static function update_listings_review_meta( array $args = array() ) {
 
-		if ( empty( $args['post_id'] ) ) { return false; }
+		if ( empty( $args['post_id'] ) ) {
+			return false; }
 
 		$reviews = get_post_meta( $args['post_id'], '_directorist_reviews', true );
 
-		if ( ! is_array( $reviews ) ) { return false; }
+		if ( ! is_array( $reviews ) ) {
+			return false; }
 
-		if ( empty( $args['field_key'] ) ) { return false; }
-		if ( empty( $args['value'] ) ) { return false; }
-		if ( empty( $args['reviewer_id'] ) ) { return false; }
+		if ( empty( $args['field_key'] ) ) {
+			return false; }
+		if ( empty( $args['value'] ) ) {
+			return false; }
+		if ( empty( $args['reviewer_id'] ) ) {
+			return false; }
 
-
-		if (  'rating' === $args['field_key'] && ! is_numeric( $args['value'] ) ) {
+		if ( 'rating' === $args['field_key'] && ! is_numeric( $args['value'] ) ) {
 			return false;
 		}
 
-		if ( empty( $reviews[ $args['reviewer_id'] ] ) ) { return false; }
-		if ( empty( $reviews[ $args['reviewer_id'] ][ $args['field_key'] ] ) ) { return false; }
-
+		if ( empty( $reviews[ $args['reviewer_id'] ] ) ) {
+			return false; }
+		if ( empty( $reviews[ $args['reviewer_id'] ][ $args['field_key'] ] ) ) {
+			return false; }
 
 		$reviewer_id = $args['reviewer_id'];
 		$field_key   = $args['field_key'];
@@ -187,23 +202,30 @@ class Helper {
 	// update_listings_ratings_meta
 	public static function update_listings_ratings_meta( $post_id = 0 ) {
 
-		if ( empty( $post_id ) ) { return false; }
+		if ( empty( $post_id ) ) {
+			return false; }
 
 		$reviews = get_post_meta( $post_id, '_directorist_reviews', true );
 
-		if ( empty( $reviews ) ) { return  false; }
-		if ( ! is_array( $reviews ) ) { return  false; }
+		if ( empty( $reviews ) ) {
+			return false; }
+		if ( ! is_array( $reviews ) ) {
+			return false; }
 
 		$total_ratings = 0;
 
 		foreach ( $reviews as $id => $review ) {
 
-			if ( empty( $review[ 'rating' ] ) ) { continue; }
-			if ( ! is_numeric( $review[ 'rating' ] ) ) { continue; }
-			if ( empty( $review[ 'status' ] ) ) { continue; }
-			if ( 'published' !== $review[ 'status' ] ) { continue; }
+			if ( empty( $review['rating'] ) ) {
+				continue; }
+			if ( ! is_numeric( $review['rating'] ) ) {
+				continue; }
+			if ( empty( $review['status'] ) ) {
+				continue; }
+			if ( 'published' !== $review['status'] ) {
+				continue; }
 
-			$total_ratings = $total_ratings + ( float ) $review[ 'rating' ];
+			$total_ratings = $total_ratings + (float) $review['rating'];
 		}
 
 		$avg_ratings = $total_ratings / count( $reviews );
@@ -212,43 +234,42 @@ class Helper {
 		return true;
 	}
 
-	public static function listing_price( $id='' ) {
-		if ( !$id ) {
+	public static function listing_price( $id = '' ) {
+		if ( ! $id ) {
 			$id = get_the_ID();
 		}
 
-		if ( !self::has_price_range( $id ) && !self::has_price( $id ) ) {
+		if ( ! self::has_price_range( $id ) && ! self::has_price( $id ) ) {
 			return;
 		}
 
-		if ( 'range' == Helper::pricing_type( $id ) ) {
+		if ( 'range' == self::pricing_type( $id ) ) {
 			self::price_range_template( $id );
-		}
-		else {
+		} else {
 			self::price_template( $id );
 		}
 	}
 
 	public static function socials() {
-		$socials = [
-			'facebook'       => __('Facebook', 'directorist'),
-			'twitter'        => __('Twitter', 'directorist'),
-			'linkedin'       => __('LinkedIn', 'directorist'),
-			'pinterest'      => __('Pinterest', 'directorist'),
-			'instagram'      => __('Instagram', 'directorist'),
-			'tumblr'         => __('Tumblr', 'directorist'),
-			'flickr'         => __('Flickr', 'directorist'),
-			'snapchat'       => __('Snapchat', 'directorist'),
-			'reddit'         => __('Reddit', 'directorist'),
-			'youtube'        => __('Youtube', 'directorist'),
-			'vimeo'          => __('Vimeo', 'directorist'),
-			'vine'           => __('Vine', 'directorist'),
-			'github'         => __('Github', 'directorist'),
-			'dribbble'       => __('Dribbble', 'directorist'),
-			'behance'        => __('Behance', 'directorist'),
-			'soundcloud'     => __('SoundCloud', 'directorist'),
-			'stack-overflow' => __('StackOverFLow', 'directorist'),
-		];
+		$socials = array(
+			'facebook'       => __( 'Facebook', 'directorist' ),
+			'twitter'        => __( 'Twitter', 'directorist' ),
+			'linkedin'       => __( 'LinkedIn', 'directorist' ),
+			'pinterest'      => __( 'Pinterest', 'directorist' ),
+			'instagram'      => __( 'Instagram', 'directorist' ),
+			'tumblr'         => __( 'Tumblr', 'directorist' ),
+			'flickr'         => __( 'Flickr', 'directorist' ),
+			'snapchat'       => __( 'Snapchat', 'directorist' ),
+			'reddit'         => __( 'Reddit', 'directorist' ),
+			'youtube'        => __( 'Youtube', 'directorist' ),
+			'vimeo'          => __( 'Vimeo', 'directorist' ),
+			'vine'           => __( 'Vine', 'directorist' ),
+			'github'         => __( 'Github', 'directorist' ),
+			'dribbble'       => __( 'Dribbble', 'directorist' ),
+			'behance'        => __( 'Behance', 'directorist' ),
+			'soundcloud'     => __( 'SoundCloud', 'directorist' ),
+			'stack-overflow' => __( 'StackOverFLow', 'directorist' ),
+		);
 
 		asort( $socials );
 
@@ -277,51 +298,50 @@ class Helper {
 
 	public static function price_range_template( $listing_id ) {
 		$price_range = get_post_meta( $listing_id, '_price_range', true );
-		$currency = directorist_get_currency();
-		$currency = atbdp_currency_symbol( $currency );
+		$currency    = directorist_get_currency();
+		$currency    = atbdp_currency_symbol( $currency );
 
 		switch ( $price_range ) {
 			case 'skimming':
-			$active_items = 4;
-			$price_range_text = __( 'Skimming', 'directorist' );
-			break;
+				$active_items     = 4;
+				$price_range_text = __( 'Skimming', 'directorist' );
+				break;
 
 			case 'moderate':
-			$active_items = 3;
-			$price_range_text = __( 'Moderate', 'directorist' );
-			break;
+				$active_items     = 3;
+				$price_range_text = __( 'Moderate', 'directorist' );
+				break;
 
 			case 'economy':
-			$active_items = 2;
-			$price_range_text = __( 'Economy', 'directorist' );
-			break;
+				$active_items     = 2;
+				$price_range_text = __( 'Economy', 'directorist' );
+				break;
 
 			case 'bellow_economy':
-			$active_items = 1;
-			$price_range_text = __( 'Cheap', 'directorist' );
-			break;
+				$active_items     = 1;
+				$price_range_text = __( 'Cheap', 'directorist' );
+				break;
 
 			default:
-			$active_items = 4;
-			$price_range_text = __( 'Skimming', 'directorist' );
-			break;
+				$active_items     = 4;
+				$price_range_text = __( 'Skimming', 'directorist' );
+				break;
 		}
 
 		self::get_template( 'global/price-range', compact( 'active_items', 'currency', 'price_range_text' ) );
 	}
 
 	public static function formatted_price( $price ) {
-		$allow_decimal = get_directorist_option('allow_decimal', 1);
+		$allow_decimal = get_directorist_option( 'allow_decimal', 1 );
 		$c_position    = directorist_get_currency_position();
 		$currency      = directorist_get_currency();
-		$symbol        = atbdp_currency_symbol($currency);
+		$symbol        = atbdp_currency_symbol( $currency );
 		$before        = '';
 		$after         = '';
 
-		if ('after' == $c_position) {
+		if ( 'after' == $c_position ) {
 			$after = $symbol;
-		}
-		else {
+		} else {
 			$before = $symbol;
 		}
 
@@ -340,10 +360,13 @@ class Helper {
 	}
 
 	public static function phone_link( $args ) {
-		$args = array_merge( array(
-			'number'    => '',
-			'whatsapp'  => false,
-		), $args );
+		$args = array_merge(
+			array(
+				'number'   => '',
+				'whatsapp' => false,
+			),
+			$args
+		);
 
 		$number = self::formatted_tel( $args['number'], false );
 
@@ -358,10 +381,9 @@ class Helper {
 
 		if ( is_integer( $user_id_or_obj ) ) {
 			$user_id = $user_id_or_obj;
-			$user = get_userdata( $user_id );
-		}
-		else {
-			$user = $user_id_or_obj;
+			$user    = get_userdata( $user_id );
+		} else {
+			$user    = $user_id_or_obj;
 			$user_id = $user->data->ID;
 		}
 
@@ -369,49 +391,49 @@ class Helper {
 
 		switch ( $meta ) {
 			case 'name':
-			$result = $user->data->display_name;
-			break;
+				$result = $user->data->display_name;
+				break;
 
 			case 'role':
-			$result = $user->roles[0];
-			break;
+				$result = $user->roles[0];
+				break;
 
 			case 'address':
-			$result = get_user_meta($user_id, 'address', true);
-			break;
+				$result = get_user_meta( $user_id, 'address', true );
+				break;
 
 			case 'phone':
-			$result = get_user_meta($user_id, 'atbdp_phone', true);
-			break;
+				$result = get_user_meta( $user_id, 'atbdp_phone', true );
+				break;
 
 			case 'email':
-			$result = $user->data->user_email;
-			break;
+				$result = $user->data->user_email;
+				break;
 
 			case 'website':
-			$result = $user->data->user_url;
-			break;
+				$result = $user->data->user_url;
+				break;
 
 			case 'description':
-			$result = trim( get_user_meta( $user_id, 'description', true ) );
-			//var_dump($result);
-			break;
+				$result = trim( get_user_meta( $user_id, 'description', true ) );
+				// var_dump($result);
+				break;
 
 			case 'facebook':
-			$result = get_user_meta($user_id, 'atbdp_facebook', true);
-			break;
+				$result = get_user_meta( $user_id, 'atbdp_facebook', true );
+				break;
 
 			case 'twitter':
-			$result = get_user_meta($user_id, 'atbdp_twitter', true);
-			break;
+				$result = get_user_meta( $user_id, 'atbdp_twitter', true );
+				break;
 
 			case 'linkedin':
-			$result = get_user_meta($user_id, 'atbdp_linkedin', true);
-			break;
+				$result = get_user_meta( $user_id, 'atbdp_linkedin', true );
+				break;
 
 			case 'youtube':
-			$result = get_user_meta($user_id, 'atbdp_youtube', true);
-			break;
+				$result = get_user_meta( $user_id, 'atbdp_youtube', true );
+				break;
 		}
 
 		return $result;
@@ -420,20 +442,20 @@ class Helper {
 	public static function parse_video( $url ) {
 		$embeddable_url = '';
 
-		$is_youtube = preg_match('/youtu\.be/i', $url) || preg_match('/youtube\.com\/watch/i', $url) || preg_match('/youtube\.com\/shorts/i', $url);
-        if ($is_youtube) {
+		$is_youtube = preg_match( '/youtu\.be/i', $url ) || preg_match( '/youtube\.com\/watch/i', $url ) || preg_match( '/youtube\.com\/shorts/i', $url );
+		if ( $is_youtube ) {
 			$pattern = '/^.*((youtu.be\/)|(v\/)|(\/u\/\w\/)|(embed\/)|(shorts\/)|(watch\?))\??v?=?([^#\&\?]*).*/';
-			preg_match($pattern, $url, $matches);
-			if (count($matches) && strlen($matches[8]) == 11) {
+			preg_match( $pattern, $url, $matches );
+			if ( count( $matches ) && strlen( $matches[8] ) == 11 ) {
 				$embeddable_url = 'https://www.youtube.com/embed/' . $matches[8];
 			}
 		}
 
-		$is_vimeo = preg_match('/vimeo\.com/i', $url);
-		if ($is_vimeo) {
+		$is_vimeo = preg_match( '/vimeo\.com/i', $url );
+		if ( $is_vimeo ) {
 			$pattern = '/\/\/(www\.)?vimeo.com\/(\d+)($|\/)/';
-			preg_match($pattern, $url, $matches);
-			if (count($matches)) {
+			preg_match( $pattern, $url, $matches );
+			if ( count( $matches ) ) {
 				$embeddable_url = 'https://player.vimeo.com/video/' . $matches[2];
 			}
 		}
@@ -463,25 +485,23 @@ class Helper {
 		// @cache @kowsar
 		if ( self::is_new( $listing_id ) || self::is_featured( $listing_id ) || self::is_popular( $listing_id ) ) {
 			return true;
-		}
-		else {
+		} else {
 			return false;
 		}
 	}
 
 	public static function is_new( $listing_id ) {
-		$post = get_post( $listing_id ); // @cache @kowsar
-		$new_listing_time = get_directorist_option('new_listing_day');
-		$each_hours = 60 * 60 * 24;
-		$s_date1 = strtotime(current_time('mysql'));
-		$s_date2 = strtotime($post->post_date);
-		$s_date_diff = abs($s_date1 - $s_date2);
-		$days = round($s_date_diff / $each_hours);
+		$post             = get_post( $listing_id ); // @cache @kowsar
+		$new_listing_time = get_directorist_option( 'new_listing_day' );
+		$each_hours       = 60 * 60 * 24;
+		$s_date1          = strtotime( current_time( 'mysql' ) );
+		$s_date2          = strtotime( $post->post_date );
+		$s_date_diff      = abs( $s_date1 - $s_date2 );
+		$days             = round( $s_date_diff / $each_hours );
 
-		if ($days <= (int)$new_listing_time) {
+		if ( $days <= (int) $new_listing_time ) {
 			return true;
-		}
-		else {
+		} else {
 			return false;
 		}
 	}
@@ -496,7 +516,7 @@ class Helper {
 		if ( ! empty( $settings['preview_image'] ) ) {
 			$default_preview = $settings['preview_image'];
 		} else {
-			$default_img = get_directorist_option( 'default_preview_image' );
+			$default_img     = get_directorist_option( 'default_preview_image' );
 			$default_preview = $default_img ? $default_img : DIRECTORIST_ASSETS . 'images/grid.jpg';
 		}
 
@@ -512,18 +532,18 @@ class Helper {
 	}
 
 	public static function new_badge_text() {
-		return get_directorist_option('new_badge_text', 'New');
+		return get_directorist_option( 'new_badge_text', 'New' );
 	}
 
 	public static function popular_badge_text() {
-		return get_directorist_option('popular_badge_text', 'Popular');
+		return get_directorist_option( 'popular_badge_text', 'Popular' );
 	}
 
 	public static function featured_badge_text() {
-		return get_directorist_option('feature_badge_text', 'Featured');
+		return get_directorist_option( 'feature_badge_text', 'Featured' );
 	}
 
-	public static function single_listing_dummy_shortcode( $shortcode, $atts = [] ) {
+	public static function single_listing_dummy_shortcode( $shortcode, $atts = array() ) {
 		$atts_string = '';
 
 		if ( $atts ) {
@@ -557,42 +577,47 @@ class Helper {
 
 		$directory_types = directorist_get_directories( $args );
 		if ( empty( $directory_types ) || is_wp_error( $directory_types ) ) {
-			return [];
+			return array();
 		}
 
-		$directory_types = array_filter( $directory_types, static function( $directory_type ) use ( $page_id ) {
-			$selected_page_id = (int) get_term_meta( $directory_type->term_id, 'single_listing_page', true );
+		$directory_types = array_filter(
+			$directory_types,
+			static function ( $directory_type ) use ( $page_id ) {
+				$selected_page_id = (int) get_term_meta( $directory_type->term_id, 'single_listing_page', true );
 
-			if ( is_null( $page_id ) ) {
-				return $selected_page_id;
+				if ( is_null( $page_id ) ) {
+					return $selected_page_id;
+				}
+
+				return ( $selected_page_id === (int) $page_id );
 			}
-
-			return ( $selected_page_id === (int) $page_id );
-		} );
+		);
 
 		return $directory_types;
 	}
 
 	public static function builder_selected_single_pages() {
 		// @cache @kowsar
-		$pages = [];
+		$pages = array();
 
-		$types = get_terms( array(
-			'taxonomy'   => 'atbdp_listing_types',
-			'hide_empty' => false,
-			'meta_query' => array(
-				array(
-					'key'     => 'single_listing_page',
-					'compare' => 'EXISTS',
+		$types = get_terms(
+			array(
+				'taxonomy'   => 'atbdp_listing_types',
+				'hide_empty' => false,
+				'meta_query' => array(
+					array(
+						'key'     => 'single_listing_page',
+						'compare' => 'EXISTS',
+					),
 				),
-			),
-		) );
+			)
+		);
 
 		foreach ( $types as $type ) {
-			$page_id   = get_directorist_type_option( $type->term_id, 'single_listing_page' );
+			$page_id                = get_directorist_type_option( $type->term_id, 'single_listing_page' );
 			$single_listing_enabled = get_directorist_type_option( $type->term_id, 'enable_single_listing_page' );
 			if ( $single_listing_enabled && $page_id ) {
-				$pages[$page_id] = $type->name;
+				$pages[ $page_id ] = $type->name;
 			}
 		}
 
@@ -615,26 +640,27 @@ class Helper {
 
 	// get_listing_order_id
 	public static function get_listing_order_id( $listing_id = '' ) {
-		$args = [
-			'post_type' => 'atbdp_orders',
+		$args = array(
+			'post_type'   => 'atbdp_orders',
 			'post_status' => 'publish',
-			'meta_query' => [
-				[
-					'key' => '_listing_id',
+			'meta_query'  => array(
+				array(
+					'key'   => '_listing_id',
 					'value' => $listing_id,
-				]
-			]
-		];
+				),
+			),
+		);
 
-		$orders = new \WP_Query( $args );
+		$orders   = new \WP_Query( $args );
 		$order_id = ( $orders->have_posts() ) ? $orders->post->ID : '';
 
 		return $order_id;
 	}
 
-	public static function add_hidden_data_to_dom( string $data_key = '', array $data = [] ) {
+	public static function add_hidden_data_to_dom( string $data_key = '', array $data = array() ) {
 
-		if ( empty( $data ) ) { return; }
+		if ( empty( $data ) ) {
+			return; }
 
 		$data_value = base64_encode( json_encode( $data ) );
 		?>
@@ -648,11 +674,11 @@ class Helper {
 	}
 
 	public static function add_shortcode_comment( string $shortcode = '' ) {
-		echo "<!-- directorist-shortcode:: [ " . esc_attr( $shortcode ) . "] -->";
+		echo '<!-- directorist-shortcode:: [ ' . esc_attr( $shortcode ) . '] -->';
 	}
 
 	public static function sanitize_query_strings( $url = '' ) {
-		$matches = [];
+		$matches    = array();
 		$qs_pattern = '/[?].+/';
 
 		$qs = preg_match( $qs_pattern, $url, $matches );
@@ -686,7 +712,7 @@ class Helper {
 	 */
 	public static function is_yoast_active() {
 		$yoast_free_is_active    = self::is_plugin_active( 'wordpress-seo/wp-seo.php' );
-    	$yoast_premium_is_active = self::is_plugin_active( 'wordpress-seo-premium/wp-seo-premium.php' );
+		$yoast_premium_is_active = self::is_plugin_active( 'wordpress-seo-premium/wp-seo-premium.php' );
 
 		return ( $yoast_free_is_active || $yoast_premium_is_active );
 	}
@@ -720,7 +746,7 @@ class Helper {
 
 		$d = \DateTime::createFromFormat( $format, $date );
 
-		return $d && $d->format($format) === $date;
+		return $d && $d->format( $format ) === $date;
 	}
 
 	/**
@@ -730,7 +756,7 @@ class Helper {
 	 * @return string URL
 	 */
 	public static function escape_query_strings_from_url( $url = '' ) {
-		$matches = [];
+		$matches    = array();
 		$qs_pattern = '/[?].+/';
 
 		$qs = preg_match( $qs_pattern, $url, $matches );
@@ -787,7 +813,7 @@ class Helper {
 		}
 
 		$qs_pattern = self::get_query_string_pattern();
-		$matches = [];
+		$matches    = array();
 
 		preg_match( $qs_pattern, $url, $matches );
 
@@ -795,5 +821,4 @@ class Helper {
 
 		return $query_strings;
 	}
-
 }

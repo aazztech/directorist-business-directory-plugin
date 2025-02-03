@@ -1,7 +1,6 @@
 <?php
 /**
  * Directorist Social Info Field class.
- *
  */
 namespace Directorist\Fields;
 
@@ -24,9 +23,12 @@ class Social_Info_Field extends Base_Field {
 	public function validate( $posted_data ) {
 		$items = $this->get_value( $posted_data );
 
-		$items = array_filter( $items, static function( $item ) {
-			return ! ( empty( $item['id'] ) || empty( $item['url'] ) );
-		} );
+		$items = array_filter(
+			$items,
+			static function ( $item ) {
+				return ! ( empty( $item['id'] ) || empty( $item['url'] ) );
+			}
+		);
 
 		if ( ! count( $items ) ) {
 			$this->add_error( __( 'Invalid social info.', 'directorist' ) );
@@ -48,7 +50,7 @@ class Social_Info_Field extends Base_Field {
 
 			$items[] = array(
 				'id'  => $item['id'],
-				'url' => sanitize_url( $item['url'] )
+				'url' => sanitize_url( $item['url'] ),
 			);
 		}
 

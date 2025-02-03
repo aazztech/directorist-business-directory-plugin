@@ -36,12 +36,12 @@ class ATBDP_Review_Rating {
 	 * @return string
 	 */
 	public function print_static_rating( $star_number = 1 ) {
-		$v ='<ul>';
-			for ( $i=1; $i<=5; $i++ ) {
-				$v .= ( $i <= $star_number )
-					? "<li><span class='directorist-rate-active'></span></li>"
-					: "<li><span class='directorist-rate-disable'></span></li>";
-			}
+		$v = '<ul>';
+		for ( $i = 1; $i <= 5; $i++ ) {
+			$v .= ( $i <= $star_number )
+				? "<li><span class='directorist-rate-active'></span></li>"
+				: "<li><span class='directorist-rate-disable'></span></li>";
+		}
 		$v .= '</ul>';
 
 		return $v;
@@ -142,7 +142,7 @@ class ATBDP_Review_Rating_DB {
 		}
 
 		$comments_query = new WP_Comment_Query( $args );
-		$comments = $comments_query->comments;
+		$comments       = $comments_query->comments;
 
 		if ( empty( $comments ) ) {
 			return false;
@@ -151,7 +151,7 @@ class ATBDP_Review_Rating_DB {
 		$data = array();
 		foreach ( $comments as $comment_id ) {
 			$data[] = (object) array(
-				'rating' => (int) \Directorist\Review\Comment_Meta::get_rating( $comment_id )
+				'rating' => (int) \Directorist\Review\Comment_Meta::get_rating( $comment_id ),
 			);
 		}
 		unset( $comments, $comments_query );

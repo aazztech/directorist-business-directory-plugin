@@ -2,21 +2,21 @@
 /**
  * @author AazzTech
  */
-class ATBDP_Custom_Url
-{
-    public function __construct() {
+class ATBDP_Custom_Url {
+
+	public function __construct() {
 		add_action( 'wp_ajax_generate_url', array( $this, 'generate_url' ) );
 		add_action( 'wp_ajax_revoke_url', array( $this, 'revoke_url' ) );
 		add_action( 'template_redirect', array( $this, 'view_debug_info' ), 1 );
-    }
+	}
 
-    public function generate_url() {
+	public function generate_url() {
 		if ( ! directorist_verify_nonce( '_nonce', '_generate_custom_url' ) ) {
-			wp_send_json_error( __( 'Invalid request', 'directorist' ),  400 );
+			wp_send_json_error( __( 'Invalid request', 'directorist' ), 400 );
 		}
 
 		if ( ! current_user_can( 'manage_options' ) ) {
-			wp_send_json_error( __( 'You are not allowed to create secret url', 'directorist' ),  403 );
+			wp_send_json_error( __( 'You are not allowed to create secret url', 'directorist' ), 403 );
 		}
 
 		$token = wp_rand();
@@ -29,33 +29,36 @@ class ATBDP_Custom_Url
 				'message' => __( 'Secret URL has been created.', 'directorist' ),
 			)
 		);
-    }
-
-	public function get_token_url( $token ) {
-		return add_query_arg( array(
-			'directorist_debug_token' => wp_hash( $token, 'nonce' ),
-		), home_url( '/' ) );
 	}
 
-    public function revoke_url() {
+	public function get_token_url( $token ) {
+		return add_query_arg(
+			array(
+				'directorist_debug_token' => wp_hash( $token, 'nonce' ),
+			),
+			home_url( '/' )
+		);
+	}
+
+	public function revoke_url() {
 		if ( ! directorist_verify_nonce( '_nonce', '_revoke_custom_url' ) ) {
-			wp_send_json_error( __( 'Invalid request', 'directorist' ),  400 );
+			wp_send_json_error( __( 'Invalid request', 'directorist' ), 400 );
 		}
 
 		if ( ! current_user_can( 'manage_options' ) ) {
-			wp_send_json_error( __( 'You are not allowed to revoke secret url', 'directorist' ),  403 );
+			wp_send_json_error( __( 'You are not allowed to revoke secret url', 'directorist' ), 403 );
 		}
 
 		delete_transient( 'system_info_remote_token' );
 		wp_send_json_success( __( 'Secret URL has been revoked.', 'directorist' ) );
-    }
+	}
 
-    public function view_debug_info() {
+	public function view_debug_info() {
 		if ( empty( $_GET['directorist_debug_token'] ) ) {
 			return;
 		}
 
-		$debug_token = sanitize_text_field( wp_unslash( $_GET['directorist_debug_token'] ) );
+		$debug_token        = sanitize_text_field( wp_unslash( $_GET['directorist_debug_token'] ) );
 		$stored_debug_token = get_transient( 'system_info_remote_token' );
 
 		if ( wp_hash( $stored_debug_token, 'nonce' ) !== $debug_token ) {
@@ -73,14 +76,14 @@ class ATBDP_Custom_Url
 		exit;
 	}
 
-    public function system_info() {
+	public function system_info() {
 		include ATBDP_INC_DIR . '/system-status/system-info.php';
 		ob_start();
 		new ATBDP_System_Info_Email_Link();
 		return ob_get_clean();
 	}
 
-    public function custom_link() {
+	public function custom_link() {
 		$url = '';
 		if ( get_transient( 'system_info_remote_token' ) ) {
 			$url = $this->get_token_url( get_transient( 'system_info_remote_token' ) );
@@ -115,5 +118,4 @@ class ATBDP_Custom_Url
 		</div>
 		<?php
 	}
-
 }

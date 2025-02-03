@@ -5,7 +5,7 @@
  * @version 8.0.6
  */
 
-use \Directorist\Helper;
+use Directorist\Helper;
 
 $user_email           = isset( $_GET['user'] ) ? sanitize_email( wp_unslash( base64_decode( $_GET['user'] ) ) ) : '';
 $key                  = isset( $_GET['key'] ) ? sanitize_text_field( wp_unslash( $_GET['key'] ) ) : '';
@@ -17,27 +17,36 @@ if ( ! empty( $_GET['registration_status'] ) ) {
 }
 ?>
 <div class="directorist-w-100">
-    <div class="<?php Helper::directorist_container_fluid(); ?>">
-        <div class="<?php Helper::directorist_row(); ?>">
-            <div class="directorist-col-md-6 directorist-offset-md-3 directorist-login-wrapper directorist-authentication <?php echo esc_attr( $active_form === 'signin' ? 'active' : '' ); ?>">
+	<div class="<?php Helper::directorist_container_fluid(); ?>">
+		<div class="<?php Helper::directorist_row(); ?>">
+			<div class="directorist-col-md-6 directorist-offset-md-3 directorist-login-wrapper directorist-authentication <?php echo esc_attr( $active_form === 'signin' ? 'active' : '' ); ?>">
 				<div class="atbdp_login_form_shortcode directorist-authentication__form">
 
-					<?php if ( $registration_success ): ?>
+					<?php if ( $registration_success ) : ?>
 						<p style="padding: 20px" class="alert-success directorist-alert directorist-alert-success">
-							<span><?php esc_html_e('Registration completed. Please check your email for confirmation. Or login here.', 'directorist');?></span>
+							<span><?php esc_html_e( 'Registration completed. Please check your email for confirmation. Or login here.', 'directorist' ); ?></span>
 						</p>
 					<?php endif; ?>
 
 					<?php if ( directorist_is_email_verification_enabled() && ! empty( $_GET['verification'] ) && is_email( $user_email ) ) : ?>
 						<p class="directorist-alert directorist-alert-success"><span>
 							<?php
-							$send_confirm_mail_url = add_query_arg( array(
-								'action'            => 'directorist_send_confirmation_email',
-								'user'              => $user_email,
-								'directorist_nonce' => wp_create_nonce( 'directorist_nonce' ),
-							), admin_url( 'admin-ajax.php' ) );
+							$send_confirm_mail_url = add_query_arg(
+								array(
+									'action'            => 'directorist_send_confirmation_email',
+									'user'              => $user_email,
+									'directorist_nonce' => wp_create_nonce( 'directorist_nonce' ),
+								),
+								admin_url( 'admin-ajax.php' )
+							);
 
-							echo wp_kses( sprintf( __( "Thank you for signing up! To complete the registration, please verify your email address by clicking on the link we have sent to your email.<br><br>If you didn't find the verification email, please check your spam folder. If you still can't find it, click on the <a href='%s'>Resend confirmation email</a> to have a new email sent to you.", 'directorist' ), esc_url( $send_confirm_mail_url ) ), array( 'a' => array( 'href' => array() ), 'br' => array() ) );
+							echo wp_kses(
+								sprintf( __( "Thank you for signing up! To complete the registration, please verify your email address by clicking on the link we have sent to your email.<br><br>If you didn't find the verification email, please check your spam folder. If you still can't find it, click on the <a href='%s'>Resend confirmation email</a> to have a new email sent to you.", 'directorist' ), esc_url( $send_confirm_mail_url ) ),
+								array(
+									'a'  => array( 'href' => array() ),
+									'br' => array(),
+								)
+							);
 							?>
 						</span></p>
 					<?php endif; ?>
@@ -53,37 +62,51 @@ if ( ! empty( $_GET['registration_status'] ) ) {
 					if ( is_email( $user_email ) && ! empty( $key ) ) {
 						$user = get_user_by( 'email', $user_email );
 
-						if ( ! $user ) { ?>
+						if ( ! $user ) {
+							?>
 							<p class="directorist-alert directorist-alert-danger">
 								<?php esc_html_e( 'Sorry! user not found', 'directorist' ); ?>
 							</p>
-						<?php } else {
+							<?php
+						} else {
 							$is_valid_password_reset_key = check_password_reset_key( $key, $user->user_login );
 
 							if ( is_wp_error( $is_valid_password_reset_key ) ) {
-								?><p class="directorist-alert directorist-alert-danger">
+								?>
+								<p class="directorist-alert directorist-alert-danger">
 									<?php echo $is_valid_password_reset_key->get_error_message(); ?>
-								</p><?php
+								</p>
+								<?php
 							} else {
 								if ( ! empty( $_POST['directorist_reset_password'] ) && directorist_verify_nonce( 'directorist-reset-password-nonce', 'reset_password' ) ) :
 									// Ignore password sanitization
 									$password_1 = isset( $_POST['password_1'] ) ? $_POST['password_1'] : ''; // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.MissingUnslash, WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
 									$password_2 = isset( $_POST['password_2'] ) ? $_POST['password_2'] : ''; // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.MissingUnslash, WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
 
-									if ( empty( $password_1 ) || empty( $password_2 ) ) : ?>
+									if ( empty( $password_1 ) || empty( $password_2 ) ) :
+										?>
 										<p class="atbd_reset_warning directorist-alert directorist-alert-danger"><?php echo esc_html__( 'Passwords cannot be empty.', 'directorist' ); ?></p>
 									<?php elseif ( $password_1 !== $password_2 ) : ?>
 										<p class="atbd_reset_error directorist-alert directorist-alert-danger"><?php echo esc_html__( 'Passwords do not match!', 'directorist' ); ?></p>
-									<?php else :
+										<?php
+									else :
 										wp_set_password( $password_2, $user->ID );
 										// Since password reset is handled through email, so we can consider it verified!
 										delete_user_meta( $user->ID, 'directorist_user_email_unverified' );
 										?>
-										<p class="atbd_reset_success directorist-alert directorist-alert-success"><?php echo wp_kses( sprintf(
-											__( 'Password changed successfully. Please <a href="%s">click here to login</a>.', 'directorist' ),
-											esc_url( ATBDP_Permalink::get_signin_signup_page_link() )
-										), array( 'a' => array( 'href' => array() ) ) ); ?></p>
-									<?php endif;
+										<p class="atbd_reset_success directorist-alert directorist-alert-success">
+										<?php
+										echo wp_kses(
+											sprintf(
+												__( 'Password changed successfully. Please <a href="%s">click here to login</a>.', 'directorist' ),
+												esc_url( ATBDP_Permalink::get_signin_signup_page_link() )
+											),
+											array( 'a' => array( 'href' => array() ) )
+										);
+										?>
+										</p>
+										<?php
+									endif;
 								endif;
 
 								if ( ! empty( $_GET['password_reset'] ) ) {
@@ -98,16 +121,22 @@ if ( ! empty( $_GET['registration_status'] ) ) {
 									ATBDP()->email->custom_wp_new_user_notification_email( $user->ID );
 									?>
 									<div class="directorist-alert directorist-alert-success">
-										<?php echo wp_kses( sprintf(
-											__( 'Email verification successful. Please <a href="%s">click here to login</a>.', 'directorist' ),
-											esc_url( ATBDP_Permalink::get_signin_signup_page_link() )
-										), array( 'a' => array( 'href' => array() ) ) ); ?>
+										<?php
+										echo wp_kses(
+											sprintf(
+												__( 'Email verification successful. Please <a href="%s">click here to login</a>.', 'directorist' ),
+												esc_url( ATBDP_Permalink::get_signin_signup_page_link() )
+											),
+											array( 'a' => array( 'href' => array() ) )
+										);
+										?>
 									</div>
 									<?php
 								}
 							}
 						}
-					} else { ?>
+					} else {
+						?>
 						<form action="#" id="login" method="POST">
 							<p class="status"></p>
 							<div class="directorist-form-group directorist-mb-15">
@@ -128,20 +157,22 @@ if ( ! empty( $_GET['registration_status'] ) ) {
 									</label>
 								</div>
 
-								<?php if ( ! empty( $display_recpass ) && 'yes' == $display_recpass ) :
+								<?php
+								if ( ! empty( $display_recpass ) && 'yes' == $display_recpass ) :
 									$output = sprintf( "<a href='' class='atbdp_recovery_pass'> " . $recpass_text . '</a>' );
 									echo wp_kses_post( $output );
-								endif; ?>
+								endif;
+								?>
 							</div>
 
 							<div class="directorist-form-group atbd_login_btn_wrapper directorist-mb-15 directorist-authentication__form__btn-wrapper">
 								<button class="directorist-btn directorist-btn-block directorist-authentication__form__btn" type="submit" value="<?php echo esc_attr( $log_button ); ?>" name="submit" aria-label="Signin Button"><?php echo esc_html( $log_button ); ?></button>
-								<?php wp_nonce_field( 'ajax-login-nonce', 'security' );?>
+								<?php wp_nonce_field( 'ajax-login-nonce', 'security' ); ?>
 							</div>
 						</form>
 
 						<div class="atbd_social_login">
-							<?php do_action( 'atbdp_before_login_form_end' );?>
+							<?php do_action( 'atbdp_before_login_form_end' ); ?>
 						</div>
 
 						<?php if ( directorist_is_user_registration_enabled() ) : ?>
@@ -152,8 +183,8 @@ if ( ! empty( $_GET['registration_status'] ) ) {
 						<?php endif; ?>
 
 						<?php
-						//stuff to recover password start
-						$error = '';
+						// stuff to recover password start
+						$error   = '';
 						$success = '';
 						// check if we're in reset form
 						if ( isset( $_POST['action'] ) && 'reset' === $_POST['action'] && directorist_verify_nonce() ) :
@@ -162,19 +193,21 @@ if ( ! empty( $_GET['registration_status'] ) ) {
 
 							if ( empty( $email ) ) {
 								$error = __( 'Email address cannot be empty.', 'directorist' );
-							} else if ( ! is_email( $email ) ) {
+							} elseif ( ! is_email( $email ) ) {
 								$error = __( 'Invalid e-mail address.', 'directorist' );
-							} else if ( ! email_exists( $email ) ) {
+							} elseif ( ! email_exists( $email ) ) {
 								$error = __( 'There is no user registered with that email address.', 'directorist' );
 							} else {
-								$user      = get_user_by( 'email', $email );
+								$user = get_user_by( 'email', $email );
 								/* translators: %s: site name */
-								$subject   = esc_html( sprintf( __( '[%s] Reset Your Password', 'directorist' ), get_option( 'blogname', 'display' )  ));
+								$subject   = esc_html( sprintf( __( '[%s] Reset Your Password', 'directorist' ), get_option( 'blogname', 'display' ) ) );
 								$title     = esc_html__( 'Password Reset Request', 'directorist' );
 								$site_name = wp_specialchars_decode( get_option( 'blogname' ), ENT_QUOTES );
 
 								/* translators: %1$s: site name, %1$s: user name, %3$s: password reset link */
-								$message = sprintf( __( 'Someone has requested a password reset for the following account:
+								$message = sprintf(
+									__(
+										'Someone has requested a password reset for the following account:
 									<strong>Site name:</strong> %1$s
 									<strong>User name:</strong> %2$s
 									To reset your password, please click on the <a href="%3$s">Reset Password</a>.<br>
@@ -185,13 +218,16 @@ if ( ! empty( $_GET['registration_status'] ) ) {
 									esc_url( directorist_password_reset_url( $user, true ) )
 								);
 
-								$message = wp_kses( $message, array(
-									'br' => array(),
-									'strong' => array(),
-									'a' => array(
-										'href' => array()
+								$message = wp_kses(
+									$message,
+									array(
+										'br'     => array(),
+										'strong' => array(),
+										'a'      => array(
+											'href' => array(),
+										),
 									)
-								) );
+								);
 
 								$message = atbdp_email_html( $title, nl2br( $message ) );
 
@@ -202,7 +238,6 @@ if ( ! empty( $_GET['registration_status'] ) ) {
 								} else {
 									$error = __( 'Something went wrong, unable to send the password reset email. If the issue persists please contact with the site administrator.', 'directorist' );
 								}
-
 							}
 
 							if ( ! empty( $error ) ) {
@@ -213,7 +248,8 @@ if ( ! empty( $_GET['registration_status'] ) ) {
 								echo '<div class="error_login"><p class="success directorist-alert directorist-alert-success">' . esc_html( $success ) . '</p></div>';
 							}
 
-						endif; ?>
+						endif;
+						?>
 
 						<div id="recover-pass-modal" class="directorist-mt-15 directorist-authentication__form__recover-pass-modal">
 							<form method="post">
@@ -229,7 +265,7 @@ if ( ! empty( $_GET['registration_status'] ) ) {
 								</fieldset>
 							</form>
 						</div>
-					<?php }; ?>
+					<?php } ?>
 				</div><!-- /.atbdp_login_form_shortcode -->
 			</div>
 
@@ -241,7 +277,7 @@ if ( ! empty( $_GET['registration_status'] ) ) {
 						if ( ! empty( $_GET['registration_status'] ) && true == $_GET['registration_status'] ) {
 							if ( empty( $display_password_reg ) || 'yes' != $display_password_reg ) {
 								?>
-								<p style="padding: 20px" class="alert-success directorist-alert directorist-alert-success"><span> <?php esc_html_e('Go to your inbox or spam/junk and get your password.', 'directorist'); ?>
+								<p style="padding: 20px" class="alert-success directorist-alert directorist-alert-success"><span> <?php esc_html_e( 'Go to your inbox or spam/junk and get your password.', 'directorist' ); ?>
 									<?php
 									$output = sprintf( __( 'Click %s to login.', 'directorist' ), '<a href="' . ATBDP_Permalink::get_login_page_link() . '"><i style="color: red">' . __( 'Here', 'directorist' ) . '</i></a>' );
 									echo wp_kses_post( $output );
@@ -249,13 +285,13 @@ if ( ! empty( $_GET['registration_status'] ) ) {
 								</span></p>
 							<?php } else { ?>
 								<!--registration succeeded, so show notification -->
-								<p style="padding: 20px" class="alert-success directorist-alert directorist-alert-success"><span> <?php esc_html_e('Registration completed. Please check your email for confirmation.', 'directorist'); ?>
+								<p style="padding: 20px" class="alert-success directorist-alert directorist-alert-success"><span> <?php esc_html_e( 'Registration completed. Please check your email for confirmation.', 'directorist' ); ?>
 									<?php
-									$output = sprintf( __('Or click %s to login.', 'directorist' ), '<button class="directorist-authentication__btn directorist-authentication__btn--signin"><span style="color: red">' . __( 'Here', 'directorist' ) . '</span></button>' );
+									$output = sprintf( __( 'Or click %s to login.', 'directorist' ), '<button class="directorist-authentication__btn directorist-authentication__btn--signin"><span style="color: red">' . __( 'Here', 'directorist' ) . '</span></button>' );
 									echo wp_kses_post( $output );
 									?>
 								</span></p>
-							<?php
+								<?php
 							}
 						}
 						?>
@@ -273,47 +309,57 @@ if ( ! empty( $_GET['registration_status'] ) ) {
 						</div>
 						<?php if ( ! empty( $display_password_reg ) && 'yes' == $display_password_reg ) { ?>
 							<div class="directorist-form-group directorist-mb-35">
-								<label for="directorist__authentication__signup__password"><?php
+								<label for="directorist__authentication__signup__password">
+								<?php
 									echo esc_html( $password );
 									echo '<strong class="directorist-form-required">*</strong>';
-								?></label>
+								?>
+								</label>
 								<input id="directorist__authentication__signup__password" class="directorist-form-element" type="password" name="password" value="" required>
 							</div>
 						<?php } ?>
 						<?php if ( ! empty( $display_fname ) && 'yes' == $display_fname ) { ?>
 						<div class="directorist-form-group directorist-mb-35">
-							<label for="directorist__authentication__signup__fname"><?php
+							<label for="directorist__authentication__signup__fname">
+							<?php
 								echo esc_html( $first_name );
 								echo ( ! empty( $require_fname ) && 'yes' == $require_fname ? '<strong class="directorist-form-required">*</strong>' : '' );
-							?></label>
-							<input id="directorist__authentication__signup__fname" class="directorist-form-element" type="text" name="fname" value="<?php echo isset( $_REQUEST['fname']) ? esc_attr( sanitize_text_field( wp_unslash( $_REQUEST['fname'] ) ) ) : ''; ?>" <?php echo ( ! empty( $require_fname ) && 'yes' == $require_fname ? 'required' : '' ); ?>>
+							?>
+							</label>
+							<input id="directorist__authentication__signup__fname" class="directorist-form-element" type="text" name="fname" value="<?php echo isset( $_REQUEST['fname'] ) ? esc_attr( sanitize_text_field( wp_unslash( $_REQUEST['fname'] ) ) ) : ''; ?>" <?php echo ( ! empty( $require_fname ) && 'yes' == $require_fname ? 'required' : '' ); ?>>
 						</div>
 						<?php } ?>
 						<?php if ( ! empty( $display_lname ) && 'yes' == $display_lname ) { ?>
 						<div class="directorist-form-group directorist-mb-35">
-							<label for="directorist__authentication__signup__lname"><?php
+							<label for="directorist__authentication__signup__lname">
+							<?php
 								echo esc_html( $last_name );
 								echo ( ! empty( $require_lname ) && 'yes' == $require_lname ? '<strong class="directorist-form-required">*</strong>' : '' );
-							?></label>
-							<input class="directorist-form-element" id="directorist__authentication__signup__lname" type="text" name="lname" value="<?php echo isset( $_REQUEST['lname']) ? esc_attr( sanitize_text_field( wp_unslash( $_REQUEST['lname'] ) ) ) : ''; ?>" <?php echo ( ! empty( $require_lname ) && 'yes' == $require_lname ? 'required' : '' ); ?>>
+							?>
+							</label>
+							<input class="directorist-form-element" id="directorist__authentication__signup__lname" type="text" name="lname" value="<?php echo isset( $_REQUEST['lname'] ) ? esc_attr( sanitize_text_field( wp_unslash( $_REQUEST['lname'] ) ) ) : ''; ?>" <?php echo ( ! empty( $require_lname ) && 'yes' == $require_lname ? 'required' : '' ); ?>>
 						</div>
 						<?php } ?>
-						<?php if ( ! empty( $display_website ) && 'yes' == $display_website ) {  ?>
+						<?php if ( ! empty( $display_website ) && 'yes' == $display_website ) { ?>
 							<div class="directorist-form-group directorist-mb-35">
-								<label for="directorist__authentication__signup__website"><?php
+								<label for="directorist__authentication__signup__website">
+								<?php
 									echo esc_html( $website );
 									echo ( ! empty( $require_website ) && 'yes' == $require_website ? '<strong class="directorist-form-required">*</strong>' : '' );
-								?></label>
-								<input id="directorist__authentication__signup__website" class="directorist-form-element" type="text" name="website" value="<?php echo isset( $_REQUEST['website']) ? esc_url( sanitize_text_field( wp_unslash( $_REQUEST['website'] ) ) ) : ''; ?>" <?php echo ( ! empty( $require_website ) && 'yes' == $require_website ? 'required' : '' ); ?>>
+								?>
+								</label>
+								<input id="directorist__authentication__signup__website" class="directorist-form-element" type="text" name="website" value="<?php echo isset( $_REQUEST['website'] ) ? esc_url( sanitize_text_field( wp_unslash( $_REQUEST['website'] ) ) ) : ''; ?>" <?php echo ( ! empty( $require_website ) && 'yes' == $require_website ? 'required' : '' ); ?>>
 							</div>
 						<?php } ?>
 						<?php if ( ! empty( $display_bio ) && 'yes' == $display_bio ) { ?>
 						<div class="directorist-form-group directorist-mb-35">
-							<label for="directorist__authentication__signup__bio"><?php
+							<label for="directorist__authentication__signup__bio">
+							<?php
 								echo esc_html( $bio );
 								echo ( ! empty( $require_bio ) && 'yes' == $require_bio ? '<strong class="directorist-form-required">*</strong>' : '' );
-							?></label>
-							<textarea id="directorist__authentication__signup__bio" class="directorist-form-element" name="bio" rows="10" placeholder="<?php echo esc_html( $bio ); ?>" <?php echo ( ! empty( $require_bio ) ? 'required' : '' ); ?>><?php echo isset( $_REQUEST['bio']) ? esc_textarea( sanitize_text_field( wp_unslash( $_REQUEST['bio'] ) ) ) : ''; ?></textarea>
+							?>
+							</label>
+							<textarea id="directorist__authentication__signup__bio" class="directorist-form-element" name="bio" rows="10" placeholder="<?php echo esc_html( $bio ); ?>" <?php echo ( ! empty( $require_bio ) ? 'required' : '' ); ?>><?php echo isset( $_REQUEST['bio'] ) ? esc_textarea( sanitize_text_field( wp_unslash( $_REQUEST['bio'] ) ) ) : ''; ?></textarea>
 						</div>
 						<?php } ?>
 
@@ -338,8 +384,8 @@ if ( ! empty( $_GET['registration_status'] ) ) {
 						<?php if ( ! empty( $enable_registration_terms ) && 'yes' == $enable_registration_terms ) { ?>
 							<div class="atbd_term_and_condition_area directory_regi_btn directorist-checkbox directorist-mb-30">
 								<input id="directorist__authentication__signup__listing_t" type="checkbox" name="t_c_check" <?php echo( ( isset( $t_c_check ) && 'on' === $t_c_check ) ? 'checked="checked"' : '' ); ?>>
-								<label for="directorist__authentication__signup__listing_t" class="directorist-checkbox__label"><?php echo esc_attr($terms_label); ?>
-									<a style="color: red" target="_blank" href="<?php echo esc_url($t_C_page_link)?>"><?php echo esc_attr( $terms_label_link); ?></a> <span class="directorist-form-required">*</span></label>
+								<label for="directorist__authentication__signup__listing_t" class="directorist-checkbox__label"><?php echo esc_attr( $terms_label ); ?>
+									<a style="color: red" target="_blank" href="<?php echo esc_url( $t_C_page_link ); ?>"><?php echo esc_attr( $terms_label_link ); ?></a> <span class="directorist-form-required">*</span></label>
 							</div>
 						<?php } ?>
 

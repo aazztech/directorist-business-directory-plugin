@@ -17,10 +17,10 @@ class Comment_Meta {
 
 	const FIELD_REPORT = 'reported';
 
-	public static $valid_fields = [
+	public static $valid_fields = array(
 		self::FIELD_RATING,
 		self::FIELD_REPORT,
-	];
+	);
 
 	protected static function is_valid_field( $field_key ) {
 		return in_array( $field_key, self::$valid_fields, true );

@@ -1,7 +1,6 @@
 <?php
 /**
  * Directorist Builder Field Abstract class.
- *
  */
 namespace Directorist\Fields;
 
@@ -39,24 +38,24 @@ class Base_Field {
 		return $this->props;
 	}
 
-	public function get_key() : string {
-		return ( string ) $this->field_key;
+	public function get_key(): string {
+		return (string) $this->field_key;
 	}
 
-	public function get_internal_key() : string {
-		return ( string ) $this->widget_key;
+	public function get_internal_key(): string {
+		return (string) $this->widget_key;
 	}
 
-	public function is_admin_only() : bool {
-		return ( bool ) $this->only_for_admin;
+	public function is_admin_only(): bool {
+		return (bool) $this->only_for_admin;
 	}
 
-	public function is_required() : bool {
-		return ( bool ) $this->required;
+	public function is_required(): bool {
+		return (bool) $this->required;
 	}
 
-	public function is_preset() : bool {
-		return ( bool ) ( $this->widget_group === 'preset' );
+	public function is_preset(): bool {
+		return (bool) ( $this->widget_group === 'preset' );
 	}
 
 	public function is_category_only() {

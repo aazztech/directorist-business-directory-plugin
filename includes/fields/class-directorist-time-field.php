@@ -1,7 +1,6 @@
 <?php
 /**
  * Directorist Time Field class.
- *
  */
 namespace Directorist\Fields;
 
@@ -15,7 +14,7 @@ class Time_Field extends Base_Field {
 
 	public function validate( $posted_data ) {
 		$value = $this->get_value( $posted_data );
-		
+
 		if ( date( 'H:i', strtotime( 'today ' . $value ) ) !== $value ) {
 			$this->add_error( __( 'Invalid time.', 'directorist' ) );
 

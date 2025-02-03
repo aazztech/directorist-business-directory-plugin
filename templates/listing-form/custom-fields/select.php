@@ -5,20 +5,22 @@
  * @version 7.3.0
  */
 
-if ( ! defined( 'ABSPATH' ) ) exit;
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
 ?>
 
 <div class="directorist-form-group directorist-custom-field-select">
 
-	<?php $listing_form->field_label_template( $data );?>
+	<?php $listing_form->field_label_template( $data ); ?>
 
-	<?php if( !empty( $data['options'] ) ) : ?>
+	<?php if ( ! empty( $data['options'] ) ) : ?>
 
 		<select name="<?php echo esc_attr( $data['field_key'] ); ?>" id="<?php echo esc_attr( $data['field_key'] ); ?>" class="directorist-form-element" <?php $listing_form->required( $data ); ?>>
 
-			<?php foreach( $data['options'] as $key => $value ): ?>
+			<?php foreach ( $data['options'] as $key => $value ) : ?>
 
-				<option value="<?php echo esc_attr( $value['option_value'] )?>" <?php selected( $value['option_value'], $data['value'] ); ?>><?php echo esc_attr( $value['option_label'] )?></option>
+				<option value="<?php echo esc_attr( $value['option_value'] ); ?>" <?php selected( $value['option_value'], $data['value'] ); ?>><?php echo esc_attr( $value['option_label'] ); ?></option>
 
 			<?php endforeach ?>
 

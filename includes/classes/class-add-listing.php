@@ -287,23 +287,28 @@ if ( ! class_exists( 'ATBDP_Add_Listing' ) ) :
 
 				// // Terms & conditions and privacy policy have been merged in v8.
 				// if ( directorist_should_check_privacy_policy( $directory_id ) && empty( $posted_data['privacy_policy'] ) && directorist_should_check_terms_and_condition( $directory_id ) && empty( $posted_data['t_c_check'] ) ) {
-				// 	$error->add( 'terms_and_condition_required', __( 'Terms and condition is required.', 'directorist' ) );
+				// $error->add( 'terms_and_condition_required', __( 'Terms and condition is required.', 'directorist' ) );
 				// }
 
 				// if ( directorist_should_check_privacy_policy( $directory_id ) && empty( $posted_data['privacy_policy'] ) ) {
-				// 	$error->add( 'privacy_policy_required', __( 'Privacy Policy is required.', 'directorist' ) );
+				// $error->add( 'privacy_policy_required', __( 'Privacy Policy is required.', 'directorist' ) );
 				// }
 
 				if ( $error->has_errors() ) {
-					return wp_send_json( apply_filters( 'atbdp_listing_form_submission_info', array(
-						'error'     => true,
-						'error_msg' => implode( '<br>', $error->get_error_messages() ),
-					) ) );
+					return wp_send_json(
+						apply_filters(
+							'atbdp_listing_form_submission_info',
+							array(
+								'error'     => true,
+								'error_msg' => implode( '<br>', $error->get_error_messages() ),
+							)
+						)
+					);
 				}
 
 				// Terms & conditions and privacy policy have been merged in v8.
 				if ( ! empty( $posted_data['t_c_check'] ) || ! empty( $posted_data['privacy_policy'] ) ) {
-					$meta_data['_t_c_check'] = true;
+					$meta_data['_t_c_check']      = true;
 					$meta_data['_privacy_policy'] = true;
 				}
 
@@ -334,9 +339,9 @@ if ( ! class_exists( 'ATBDP_Add_Listing' ) ) :
 					$listing_data['post_status'] = directorist_get_listing_edit_status( $directory_id, $listing_id );
 
 					// if ( $preview_enable ) {
-					// 	$listing_data['post_status'] = 'private';
+					// $listing_data['post_status'] = 'private';
 					// } else {
-					// 	$listing_data['post_status'] = directorist_get_listing_edit_status( $directory_id, $listing_id );
+					// $listing_data['post_status'] = directorist_get_listing_edit_status( $directory_id, $listing_id );
 					// }
 
 					$listing_id = wp_update_post( $listing_data );
@@ -402,7 +407,7 @@ if ( ! class_exists( 'ATBDP_Add_Listing' ) ) :
 				do_action( 'atbdp_after_created_listing', $listing_id );
 
 				$data = array(
-					'id' => $listing_id
+					'id' => $listing_id,
 				);
 
 				// handling media files
@@ -427,10 +432,12 @@ if ( ! class_exists( 'ATBDP_Add_Listing' ) ) :
 						$data['redirect_url'] = ATBDP_Permalink::get_checkout_page_link( $listing_id );
 						$data['need_payment'] = true;
 
-						wp_update_post( array(
-							'ID'          => $listing_id,
-							'post_status' => 'pending',
-						) );
+						wp_update_post(
+							array(
+								'ID'          => $listing_id,
+								'post_status' => 'pending',
+							)
+						);
 					}
 				}
 
@@ -464,11 +471,14 @@ if ( ! class_exists( 'ATBDP_Add_Listing' ) ) :
 
 				wp_send_json( apply_filters( 'atbdp_listing_form_submission_info', $data ) );
 
-			} catch (Exception $e ) {
-				return wp_send_json( array(
-					'error'     => true,
-					'error_msg' => $e->getMessage(),
-				), $e->getCode() );
+			} catch ( Exception $e ) {
+				return wp_send_json(
+					array(
+						'error'     => true,
+						'error_msg' => $e->getMessage(),
+					),
+					$e->getCode()
+				);
 			}
 		}
 
@@ -487,29 +497,33 @@ if ( ! class_exists( 'ATBDP_Add_Listing' ) ) :
 		}
 
 		public static function filter_empty_meta_data( $meta_data ) {
-			return array_filter( $meta_data, static function( $value, $key ) {
-				if ( $key === '_hide_contact_owner' && ! $value ) {
-					return false;
-				}
+			return array_filter(
+				$meta_data,
+				static function ( $value, $key ) {
+					if ( $key === '_hide_contact_owner' && ! $value ) {
+						return false;
+					}
 
-				if ( is_array( $value ) ) {
-					return ! empty( $value );
-				}
+					if ( is_array( $value ) ) {
+						return ! empty( $value );
+					}
 
-				if ( is_null( $value ) ) {
-					return false;
-				}
+					if ( is_null( $value ) ) {
+						return false;
+					}
 
-				if ( is_string( $value ) && $value === '' ) {
-					return false;
-				}
+					if ( is_string( $value ) && $value === '' ) {
+						return false;
+					}
 
-				if ( is_numeric( $value ) && $value == 0 ) {
-					return false;
-				}
+					if ( is_numeric( $value ) && $value == 0 ) {
+						return false;
+					}
 
-				return true;
-			}, ARRAY_FILTER_USE_BOTH );
+					return true;
+				},
+				ARRAY_FILTER_USE_BOTH
+			);
 		}
 
 		public static function is_admin_only_field( $field ) {
@@ -604,7 +618,6 @@ if ( ! class_exists( 'ATBDP_Add_Listing' ) ) :
 
 					directorist_background_image_process( $background_processable_images );
 				}
-
 			} catch ( Exception $e ) {
 
 				error_log( $e->getMessage() );
@@ -750,7 +763,7 @@ if ( ! class_exists( 'ATBDP_Add_Listing' ) ) :
 				return;
 			}
 
-			$categories    = $field->get_value( $posted_data );
+			$categories   = $field->get_value( $posted_data );
 			$category_ids = array();
 
 			foreach ( $categories as $category ) {
@@ -861,7 +874,7 @@ if ( ! class_exists( 'ATBDP_Add_Listing' ) ) :
 			if ( ! $should_validate ) {
 				return array(
 					'is_valid' => true,
-					'message'  => ''
+					'message'  => '',
 				);
 			}
 
@@ -873,7 +886,7 @@ if ( ! class_exists( 'ATBDP_Add_Listing' ) ) :
 
 			return array(
 				'is_valid' => ! $field->has_error(),
-				'message'  => $field->get_error()
+				'message'  => $field->get_error(),
 			);
 		}
 
@@ -974,7 +987,7 @@ if ( ! class_exists( 'ATBDP_Add_Listing' ) ) :
 				$expiry_date = calc_listing_expiry_date();
 			} else {
 				$old_expiry_date = get_post_meta( $listing_id, '_expiry_date', true );
-				$expiry_date     = calc_listing_expiry_date( $old_expiry_date, '',  $directory_type );
+				$expiry_date     = calc_listing_expiry_date( $old_expiry_date, '', $directory_type );
 			}
 
 			// update related post meta_data
@@ -996,7 +1009,6 @@ if ( ! class_exists( 'ATBDP_Add_Listing' ) ) :
 			wp_safe_redirect( $r_url );
 			exit;
 		}
-
 	} // ends ATBDP_Add_Listing
 
 

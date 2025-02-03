@@ -1,7 +1,6 @@
 <?php
 /**
  * Directorist Textarea Field class.
- *
  */
 namespace Directorist\Fields;
 

@@ -1,7 +1,6 @@
 <?php
 /**
  * Directorist Video Field class.
- *
  */
 namespace Directorist\Fields;
 

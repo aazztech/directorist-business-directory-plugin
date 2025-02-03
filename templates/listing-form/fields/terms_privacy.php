@@ -5,7 +5,9 @@
  * @version 8.0
  */
 
-if ( ! defined( 'ABSPATH' ) ) exit;
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
 ?>
 <div class="directorist-add-listing-form__privacy">
 	<?php
@@ -18,7 +20,7 @@ if ( ! defined( 'ABSPATH' ) ) exit;
 
 		<label for="directorist_submit_privacy_policy" class="directorist-checkbox__label"><?php echo wp_kses_post( strip_tags( $data['text'], '<a><strong><em>' ) ); ?></label>
 
-		<?php if ( $data['required'] ): ?>
+		<?php if ( $data['required'] ) : ?>
 			<span class="directorist-form-required"> *</span>
 		<?php endif; ?>
 

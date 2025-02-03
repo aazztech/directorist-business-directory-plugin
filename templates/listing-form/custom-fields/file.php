@@ -5,7 +5,9 @@
  * @version 7.3.3
  */
 
-if ( ! defined( 'ABSPATH' ) ) exit;
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
 
 $post_id    = ! empty( $data['field_key'] ) ? $data['field_key'] : rand();
 $file_types = 'all_types';
@@ -20,7 +22,7 @@ if ( ! empty( $data['file_type'] ) ) {
 	}
 }
 
-$file_size         = ! empty( $data['file_size'] ) ? $data['file_size'] : '2mb';
+$file_size = ! empty( $data['file_size'] ) ? $data['file_size'] : '2mb';
 // place js config array for plupload
 $plupload_init = array(
 	'runtimes'            => 'html5,silverlight,html4',
@@ -95,25 +97,25 @@ $multiple           = false;
 ?>
 <div class="directorist-form-group directorist-custom-field-file-upload">
 
-	<?php $listing_form->field_label_template( $data );?>
+	<?php $listing_form->field_label_template( $data ); ?>
 
 	<div class="directorist-custom-field-file-upload__wrapper">
 		<div class="" id="<?php echo esc_attr( $id ); ?>dropbox">
-			<input type="hidden" name="<?php echo esc_attr( $data['field_key'] ); ?>" id="<?php echo esc_attr( $post_id ); ?>" value="<?php echo !empty( $data['value'] ) ? esc_attr( $data['value'] ) : '' ; ?>"
+			<input type="hidden" name="<?php echo esc_attr( $data['field_key'] ); ?>" id="<?php echo esc_attr( $post_id ); ?>" value="<?php echo ! empty( $data['value'] ) ? esc_attr( $data['value'] ) : ''; ?>"
 			/>
 			<input type="hidden" name="<?php echo esc_attr( $id ); ?>image_limit" id="<?php echo esc_attr( $id ); ?>image_limit"
-				   value="<?php echo esc_attr( $image_limit ); ?>"/>
+					value="<?php echo esc_attr( $image_limit ); ?>"/>
 			<input type="hidden" name="<?php echo esc_attr( $id ); ?>totImg" id="<?php echo esc_attr( $id ); ?>totImg"
-				   value="<?php echo esc_attr( $total_files ); ?>"/>
+					value="<?php echo esc_attr( $total_files ); ?>"/>
 			<?php if ( $allowed_file_types != '' ) { ?>
 				<input type="hidden" name="<?php echo esc_attr( $id ); ?>_allowed_types" id="<?php echo esc_attr( $id ); ?>_allowed_types"
-					   value="<?php echo esc_attr( $allowed_file_types ); ?>"
-					   data-exts="<?php echo esc_attr( $display_file_types ); ?>"/>
+						value="<?php echo esc_attr( $allowed_file_types ); ?>"
+						data-exts="<?php echo esc_attr( $display_file_types ); ?>"/>
 			<?php } ?>
 
 			<?php if ( ! empty( $file_size ) ) { ?>
 				<input type="hidden" name="<?php echo esc_attr( $id ); ?>_file_size" id="<?php echo esc_attr( $id ); ?>_file_size"
-					   value="<?php echo esc_attr( $file_size ); ?>"/>
+						value="<?php echo esc_attr( $file_size ); ?>"/>
 			<?php } ?>
 
 			<input type="hidden" name="<?php echo esc_attr( $id ); ?>_directory" id="<?php echo esc_attr( $id ); ?>_directory" value="general"/>
@@ -126,7 +128,7 @@ $multiple           = false;
 			?>
 			" id="<?php echo esc_attr( $id ); ?>plupload-upload-ui">
 				<input id="<?php echo esc_attr( $id ); ?>plupload-browse-button" type="button"
-					   value="<?php esc_attr_e( 'Select Files', 'directorist' ); ?>" class="directorist-btn"/>
+						value="<?php esc_attr_e( 'Select Files', 'directorist' ); ?>" class="directorist-btn"/>
 				<label for="<?php echo esc_attr( $id ); ?>plupload-browse-button" class="plupload-browse-button-label"><?php directorist_icon( 'far fa-image' ); ?></label>
 				<span class="plupload-browse-img-size">1600×1200 or larger</span>
 			</div>
@@ -137,7 +139,7 @@ $multiple           = false;
 				echo 'plupload-thumbs-multiple';
 			}
 			?>
-			 clearfix" id="<?php echo esc_attr( $id ); ?>plupload-thumbs"></div>
+			clearfix" id="<?php echo esc_attr( $id ); ?>plupload-thumbs"></div>
 			<span id="<?php echo esc_attr( $id ); ?>upload-error" style="display:none"></span>
 			<span style="display: none" id="atbdp-image-meta-input" class="lity-hide lity-show"></span>
 		</div>

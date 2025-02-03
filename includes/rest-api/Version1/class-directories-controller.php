@@ -101,13 +101,13 @@ class Directories_Controller extends Terms_Controller {
 			'title'      => $this->taxonomy,
 			'type'       => 'object',
 			'properties' => array(
-				'id'          => array(
+				'id'              => array(
 					'description' => __( 'Unique identifier for the resource.', 'directorist' ),
 					'type'        => 'integer',
 					'context'     => array( 'view', 'edit' ),
 					'readonly'    => true,
 				),
-				'name'        => array(
+				'name'            => array(
 					'description' => __( 'Category name.', 'directorist' ),
 					'type'        => 'string',
 					'context'     => array( 'view', 'edit' ),
@@ -115,7 +115,7 @@ class Directories_Controller extends Terms_Controller {
 						'sanitize_callback' => 'sanitize_text_field',
 					),
 				),
-				'slug'        => array(
+				'slug'            => array(
 					'description' => __( 'An alphanumeric identifier for the resource unique to its type.', 'directorist' ),
 					'type'        => 'string',
 					'context'     => array( 'view', 'edit' ),
@@ -123,12 +123,12 @@ class Directories_Controller extends Terms_Controller {
 						'sanitize_callback' => 'sanitize_title',
 					),
 				),
-				'image_url'    => array(
+				'image_url'       => array(
 					'description' => __( 'Preview image url.', 'directorist' ),
 					'type'        => 'string',
 					'context'     => array( 'view', 'edit' ),
 				),
-				'icon' => array(
+				'icon'            => array(
 					'description' => __( 'Icon class.', 'directorist' ),
 					'type'        => 'string',
 					'context'     => array( 'view', 'edit' ),
@@ -136,19 +136,19 @@ class Directories_Controller extends Terms_Controller {
 						'sanitize_callback' => 'sanitize_text_field',
 					),
 				),
-				'count' => array(
+				'count'           => array(
 					'description' => __( 'Number of published listings for the resource.', 'directorist' ),
 					'type'        => 'integer',
 					'context'     => array( 'view', 'edit' ),
 					'readonly'    => true,
 				),
-				'is_default' => array(
+				'is_default'      => array(
 					'description' => __( 'Default directory status.', 'directorist' ),
 					'type'        => 'boolean',
 					'default'     => false,
 					'context'     => array( 'view', 'edit' ),
 				),
-				'new_status' => array(
+				'new_status'      => array(
 					'description' => __( 'Newly created listing status under this directory.', 'directorist' ),
 					'type'        => 'string',
 					'default'     => 'pending',
@@ -158,7 +158,7 @@ class Directories_Controller extends Terms_Controller {
 					),
 					'context'     => array( 'view', 'edit' ),
 				),
-				'edit_status' => array(
+				'edit_status'     => array(
 					'description' => __( 'Edited listing status under this directory.', 'directorist' ),
 					'type'        => 'string',
 					'default'     => 'pending',
@@ -173,7 +173,7 @@ class Directories_Controller extends Terms_Controller {
 					'type'        => 'integer',
 					'context'     => array( 'view', 'edit' ),
 				),
-				'date_created'      => array(
+				'date_created'    => array(
 					'description' => __( "The date the directory was created, in the site's timezone.", 'directorist' ),
 					'type'        => 'date-time',
 					'context'     => array( 'view', 'edit' ),
@@ -191,7 +191,6 @@ class Directories_Controller extends Terms_Controller {
 	 * @param WP_Term         $term    Term object.
 	 * @param WP_REST_Request $request Request instance.
 	 * @return bool|WP_Error
-	 *
 	 */
 	protected function update_term_meta_fields( $term, $request ) {
 		return true;

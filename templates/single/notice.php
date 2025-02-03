@@ -5,9 +5,11 @@
  * @version 8.0
  */
 
-if ( ! defined( 'ABSPATH' ) ) exit;
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
 
-if ( !$notice_text ) {
+if ( ! $notice_text ) {
 	return;
 }
 ?>

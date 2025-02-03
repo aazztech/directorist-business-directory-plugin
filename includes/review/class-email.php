@@ -14,10 +14,10 @@ if ( ! defined( 'ABSPATH' ) ) {
 class Email {
 
 	public static function init() {
-		add_action( 'comment_post', [ __CLASS__, 'notify_owner' ] );
-		add_action( 'comment_post', [ __CLASS__, 'notify_admin' ] );
+		add_action( 'comment_post', array( __CLASS__, 'notify_owner' ) );
+		add_action( 'comment_post', array( __CLASS__, 'notify_admin' ) );
 
-		add_action( 'comment_post', [ __CLASS__, 'maybe_disable_default_email' ], 0 );
+		add_action( 'comment_post', array( __CLASS__, 'maybe_disable_default_email' ), 0 );
 	}
 
 	public static function maybe_disable_default_email() {
@@ -77,17 +77,17 @@ class Email {
 		$subject = __( '[{site_name}] New review at "{listing_title}"', 'directorist' );
 		$subject = strtr( $subject, $placeholders );
 
-		$message = __( "Dear User,<br /><br />A new review at {listing_url}.<br /><br />Name: {sender_name}<br />Email: {sender_email}<br />Review: {message}", 'directorist' );
+		$message = __( 'Dear User,<br /><br />A new review at {listing_url}.<br /><br />Name: {sender_name}<br />Email: {sender_email}<br />Review: {message}', 'directorist' );
 		$message = strtr( $message, $placeholders );
 
-		$headers = "From: {$review->comment_author_email} <{$review->comment_author_email}>\r\n";
+		$headers  = "From: {$review->comment_author_email} <{$review->comment_author_email}>\r\n";
 		$headers .= "Reply-To: {$review->comment_author_email}\r\n";
 
 		return ATBDP()->email->send_mail( $user->user_email, $subject, $message, $headers );
 	}
 
 	public static function notify_admin( $comment_id ) {
-		if ( ! directorist_admin_notifiable_for( 'listing_review' ) )  {
+		if ( ! directorist_admin_notifiable_for( 'listing_review' ) ) {
 			return false;
 		}
 
@@ -96,12 +96,12 @@ class Email {
 			return false;
 		}
 
-		$post          = get_post( $review->comment_post_ID );
-		$site_name     = get_bloginfo( 'name' );
-		$site_url      = get_bloginfo( 'url' );
-		$listing_title = get_the_title( $post->ID );
-		$listing_url   = get_the_permalink( $post->ID );
-		$listing_url   = sprintf( '<a href="%s">%s</a>', $listing_url, $listing_url );
+		$post           = get_post( $review->comment_post_ID );
+		$site_name      = get_bloginfo( 'name' );
+		$site_url       = get_bloginfo( 'url' );
+		$listing_title  = get_the_title( $post->ID );
+		$listing_url    = get_the_permalink( $post->ID );
+		$listing_url    = sprintf( '<a href="%s">%s</a>', $listing_url, $listing_url );
 		$comment_author = empty( $review->comment_author ) ? $review->comment_author_email : $review->comment_author;
 
 		$to = get_directorist_option( 'admin_email_lists' );
@@ -110,10 +110,10 @@ class Email {
 			$to = get_bloginfo( 'admin_email' );
 		}
 
-		$subject = "[$site_name] New review at $listing_title";
-		$message = __( "Dear Admin,<br /><br />A new review at $listing_url.<br /><br />Name: $comment_author<br />Email: $review->comment_author_email<br />Review: $review->comment_content", 'directorist' );
-		$message = atbdp_email_html( $subject, $message );
-		$headers = "From: {$review->comment_author_email} <{$review->comment_author_email}>\r\n";
+		$subject  = "[$site_name] New review at $listing_title";
+		$message  = __( "Dear Admin,<br /><br />A new review at $listing_url.<br /><br />Name: $comment_author<br />Email: $review->comment_author_email<br />Review: $review->comment_content", 'directorist' );
+		$message  = atbdp_email_html( $subject, $message );
+		$headers  = "From: {$review->comment_author_email} <{$review->comment_author_email}>\r\n";
 		$headers .= "Reply-To: {$review->comment_author_email}\r\n";
 
 		return ATBDP()->email->send_mail( $to, $subject, $message, $headers );

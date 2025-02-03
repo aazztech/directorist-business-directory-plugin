@@ -1,7 +1,6 @@
 <?php
 /**
  * Directorist Email Field class.
- *
  */
 namespace Directorist\Fields;
 

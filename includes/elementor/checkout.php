@@ -7,27 +7,29 @@ namespace AazzTech\Directorist\Elementor;
 
 use Elementor\Controls_Manager;
 
-if ( ! defined( 'ABSPATH' ) ) exit;
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
 
 class Directorist_Checkout extends Custom_Widget_Base {
 
-	public function __construct( $data = [], $args = null ) {
+	public function __construct( $data = array(), $args = null ) {
 		$this->az_name = __( 'Cart/Checkout', 'directorist' );
 		$this->az_base = 'directorist_checkout';
 		parent::__construct( $data, $args );
 	}
 
-	public function az_fields(){
+	public function az_fields() {
 		$fields = array(
 			array(
-				'mode'    => 'section_start',
-				'id'      => 'sec_general',
-				'label'   => __( 'General', 'directorist' ),
+				'mode'  => 'section_start',
+				'id'    => 'sec_general',
+				'label' => __( 'General', 'directorist' ),
 			),
 			array(
-				'type'      => Controls_Manager::HEADING,
-				'id'        => 'sec_heading',
-				'label'     => $this->az_texts['checkout'],
+				'type'  => Controls_Manager::HEADING,
+				'id'    => 'sec_heading',
+				'label' => $this->az_texts['checkout'],
 			),
 			array(
 				'mode' => 'section_end',

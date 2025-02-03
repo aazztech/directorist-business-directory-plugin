@@ -7,9 +7,9 @@ defined( 'ABSPATH' ) || exit;
 /**
  * Allow rest api endpoint permission to all read context requests.
  *
- * @param boolen $permission
- * @param string $context
- * @param integer $object_id
+ * @param boolen              $permission
+ * @param string              $context
+ * @param integer             $object_id
  * @param string @object_type
  *
  * @return boolen

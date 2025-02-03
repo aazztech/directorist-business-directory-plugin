@@ -7,28 +7,30 @@ namespace AazzTech\Directorist\Elementor;
 
 use Elementor\Controls_Manager;
 
-if ( ! defined( 'ABSPATH' ) ) exit;
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
 
 class Directorist_Author_Profile extends Custom_Widget_Base {
 
-	public function __construct( $data = [], $args = null ) {
+	public function __construct( $data = array(), $args = null ) {
 		$this->az_name = __( 'User Profile', 'directorist' );
 		$this->az_base = 'directorist_author_profile';
 		parent::__construct( $data, $args );
 	}
 
-	public function az_fields(){
+	public function az_fields() {
 		$fields = array(
 			array(
-				'mode'    => 'section_start',
-				'id'      => 'sec_general',
-				'label'   => __( 'General', 'directorist' ),
+				'mode'  => 'section_start',
+				'id'    => 'sec_general',
+				'label' => __( 'General', 'directorist' ),
 			),
 			array(
-				'type'      => Controls_Manager::SWITCHER,
-				'id'        => 'user',
-				'label'     => __( 'Only For Logged In User?', 'directorist' ),
-				'default'   => 'no',
+				'type'    => Controls_Manager::SWITCHER,
+				'id'      => 'user',
+				'label'   => __( 'Only For Logged In User?', 'directorist' ),
+				'default' => 'no',
 			),
 			array(
 				'mode' => 'section_end',

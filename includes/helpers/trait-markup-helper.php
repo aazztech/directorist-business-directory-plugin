@@ -5,7 +5,9 @@
 
 namespace Directorist;
 
-if ( ! defined( 'ABSPATH' ) ) exit;
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
 
 trait Markup_Helper {
 
@@ -28,19 +30,18 @@ trait Markup_Helper {
 		if ( is_array( $column ) ) {
 			$result = '';
 			foreach ( $column as $value ) {
-				$result .= ' directorist-col-'. $value;
+				$result .= ' directorist-col-' . $value;
 			}
-		}
-		else {
-			$result = 'directorist-col-'. $column;
+		} else {
+			$result = 'directorist-col-' . $column;
 		}
 
-		$result = apply_filters( 'directorist_column', $result , $column );
+		$result = apply_filters( 'directorist_column', $result, $column );
 		echo esc_attr( $result );
 	}
 
 	public static function directorist_single_column() {
-		$column = is_active_sidebar('right-sidebar-listing') ? 'lg-8' : 'lg-12';
+		$column = is_active_sidebar( 'right-sidebar-listing' ) ? 'lg-8' : 'lg-12';
 		Helper::directorist_column( $column );
 	}
 

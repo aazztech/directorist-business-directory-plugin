@@ -22,7 +22,7 @@ class AI_Builder {
 	/**
 	 * Preset fields map
 	 */
-	protected static $preset_fields = [
+	protected static $preset_fields = array(
 		'title'       => 'title',
 		'description' => 'description',
 		'tagline'     => 'tagline',
@@ -42,11 +42,11 @@ class AI_Builder {
 		'socialinfo'  => 'social_info',
 		'images'      => 'image_upload',
 		'video'       => 'video',
-	];
+	);
 
 	public static function init() {
-		add_action( 'wp_ajax_directorist_ai_directory_form', [ __CLASS__, 'form_handler' ] );
-        add_action( 'wp_ajax_directorist_ai_directory_creation', [ __CLASS__, 'create_directory' ] );
+		add_action( 'wp_ajax_directorist_ai_directory_form', array( __CLASS__, 'form_handler' ) );
+		add_action( 'wp_ajax_directorist_ai_directory_creation', array( __CLASS__, 'create_directory' ) );
 	}
 
 	public static function form_handler() {
@@ -56,17 +56,20 @@ class AI_Builder {
 
 		ob_start();
 
-		atbdp_load_admin_template( 'post-types-manager/ai/step-one', [] );
+		atbdp_load_admin_template( 'post-types-manager/ai/step-one', array() );
 
 		$form = ob_get_clean();
 
-		wp_send_json_success( ['form' => $form ] );
+		wp_send_json_success( array( 'form' => $form ) );
 	}
 
 	protected static function prepare_keywords( $keywords ) {
-		$keywords = array_map( static function( $keyword ) {
-			return '"' . trim( $keyword ) . '"';
-		}, explode( ',', $keywords ) );
+		$keywords = array_map(
+			static function ( $keyword ) {
+				return '"' . trim( $keyword ) . '"';
+			},
+			explode( ',', $keywords )
+		);
 
 		return implode( ',', $keywords );
 	}
@@ -77,21 +80,24 @@ class AI_Builder {
 			wp_send_json_error( 'You are not authorized.', 401 );
 		}
 
-		$prompt     = ! empty( $_POST['prompt'] ) ? sanitize_textarea_field( $_POST['prompt'] ) : '';
-		$keywords   = ! empty( $_POST['keywords'] ) ? static::prepare_keywords( $_POST['keywords'] ) : '';
-		$pinned     = ! empty( $_POST['pinned'] ) ? $_POST['pinned'] : '';
-		$step       = ! empty( $_POST['step'] ) ? absint( $_POST['step'] ) : '';
-		$name       = ! empty( $_POST['name'] ) ? sanitize_text_field( $_POST['name'] ) : '';
-		$fields     = ! empty( $_POST['fields'] ) ? $_POST['fields'] : [];
+		$prompt   = ! empty( $_POST['prompt'] ) ? sanitize_textarea_field( $_POST['prompt'] ) : '';
+		$keywords = ! empty( $_POST['keywords'] ) ? static::prepare_keywords( $_POST['keywords'] ) : '';
+		$pinned   = ! empty( $_POST['pinned'] ) ? $_POST['pinned'] : '';
+		$step     = ! empty( $_POST['step'] ) ? absint( $_POST['step'] ) : '';
+		$name     = ! empty( $_POST['name'] ) ? sanitize_text_field( $_POST['name'] ) : '';
+		$fields   = ! empty( $_POST['fields'] ) ? $_POST['fields'] : array();
 
 		if ( 1 === $step ) {
 			$response = static::ai_create_keywords( $prompt );
 
 			if ( is_wp_error( $response ) ) {
-				wp_send_json_error( [
-					'message' => $response->get_error_message(),
-					'code'    => $response->get_error_code()
-				], ( $response->get_error_code() === 'limit_exceeded' ? 429 : 400 ) );
+				wp_send_json_error(
+					array(
+						'message' => $response->get_error_message(),
+						'code'    => $response->get_error_code(),
+					),
+					( $response->get_error_code() === 'limit_exceeded' ? 429 : 400 )
+				);
 			} else {
 				wp_send_json_success( $response );
 			}
@@ -101,10 +107,13 @@ class AI_Builder {
 			$response = static::ai_create_fields( $keywords, $pinned );
 
 			if ( is_wp_error( $response ) ) {
-				wp_send_json_error( [
-					'message' => $response->get_error_message(),
-					'code'    => $response->get_error_code()
-				], ( $response->get_error_code() === 'limit_exceeded' ? 429 : 400 ) );
+				wp_send_json_error(
+					array(
+						'message' => $response->get_error_message(),
+						'code'    => $response->get_error_code(),
+					),
+					( $response->get_error_code() === 'limit_exceeded' ? 429 : 400 )
+				);
 			} else {
 				wp_send_json_success( $response );
 			}
@@ -115,82 +124,90 @@ class AI_Builder {
 
 			$id = ! empty( $data['id'] ) ? $data['id'] : '';
 
-			wp_send_json_success( [
-				'url' => esc_url_raw( admin_url( 'edit.php?post_type=at_biz_dir&page=atbdp-directory-types&listing_type_id=' . $id . '&action=edit' ) ),
-			] );
+			wp_send_json_success(
+				array(
+					'url' => esc_url_raw( admin_url( 'edit.php?post_type=at_biz_dir&page=atbdp-directory-types&listing_type_id=' . $id . '&action=edit' ) ),
+				)
+			);
 		}
 	}
 
-	public static function merge_new_fields($existing_config, $new_fields) {
-		$new_fields_array = json_decode(stripslashes($new_fields), true);
+	public static function merge_new_fields( $existing_config, $new_fields ) {
+		$new_fields_array = json_decode( stripslashes( $new_fields ), true );
 
-		if (is_null($new_fields_array)) {
+		if ( is_null( $new_fields_array ) ) {
 			// throw new Exception('Failed to decode new fields JSON: ' . json_last_error_msg());
 		}
 
 		// Reformat new fields to match the old format and ensure unique field keys for same type fields
-		$type_counts = [];
-		$formatted_fields = [];
-		foreach ($new_fields_array as $key => $field) {
-			$type = strtolower($field['type']);
-			if (!isset($type_counts[$type])) {
-				$type_counts[$type] = 0;
+		$type_counts      = array();
+		$formatted_fields = array();
+		foreach ( $new_fields_array as $key => $field ) {
+			$type = strtolower( $field['type'] );
+			if ( ! isset( $type_counts[ $type ] ) ) {
+				$type_counts[ $type ] = 0;
 			} else {
-				$type_counts[$type]++;
+				++$type_counts[ $type ];
 			}
-			$suffix = $type_counts[$type] > 0 ? '-' . $type_counts[$type] : '';
+			$suffix    = $type_counts[ $type ] > 0 ? '-' . $type_counts[ $type ] : '';
 			$field_key = "custom-{$type}{$suffix}";
 
 			// Handle specific structures for checkbox, radio, and select fields
-			if (in_array($type, ['checkbox', 'radio', 'select']) && isset($field['options']) && is_array($field['options'])) {
-				$field['options'] = array_map(function ($option) {
-					if (is_array($option)) {
-						return [
-							'option_value' => $option['option_value'] ?? $option['value'],
-							'option_label' => $option['option_label'] ?? $option['label']
-						];
-					}
-					return [
-						'option_value' => $option,
-						'option_label' => $option
-					];
-				}, $field['options']);
+			if ( in_array( $type, array( 'checkbox', 'radio', 'select' ) ) && isset( $field['options'] ) && is_array( $field['options'] ) ) {
+				$field['options'] = array_map(
+					function ( $option ) {
+						if ( is_array( $option ) ) {
+							return array(
+								'option_value' => $option['option_value'] ?? $option['value'],
+								'option_label' => $option['option_label'] ?? $option['label'],
+							);
+						}
+						return array(
+							'option_value' => $option,
+							'option_label' => $option,
+						);
+					},
+					$field['options']
+				);
 			}
 
-			$formatted_fields[$field_key] = array_merge($field, [
-				'widget_group' => 'custom',
-				'widget_name' => $type,
-				'field_key' => $field_key,
-				'widget_key' => $key,
-			]);
+			$formatted_fields[ $field_key ] = array_merge(
+				$field,
+				array(
+					'widget_group' => 'custom',
+					'widget_name'  => $type,
+					'field_key'    => $field_key,
+					'widget_key'   => $key,
+				)
+			);
 		}
 
 		// Group the fields based on 'group_name'
-		$groups = [];
-		foreach ($formatted_fields as $field_key => $field) {
+		$groups = array();
+		foreach ( $formatted_fields as $field_key => $field ) {
 			$group_name = $field['group_name'];
-			if (!isset($groups[$group_name])) {
-				$groups[$group_name] = [
-					"type" => "general_group",
-					"label" => $group_name,
-					"fields" => [],
-					"defaultGroupLabel" => "Section",
-					"disableTrashIfGroupHasWidgets" => [
-						[
-							"widget_name" => "title",
-							"widget_group" => "preset"
-						]
-					],
-					"icon" => "las la-pen-nib",
-				];
+			if ( ! isset( $groups[ $group_name ] ) ) {
+				$groups[ $group_name ] = array(
+					'type'                          => 'general_group',
+					'label'                         => $group_name,
+					'fields'                        => array(),
+					'defaultGroupLabel'             => 'Section',
+					'disableTrashIfGroupHasWidgets' => array(
+						array(
+							'widget_name'  => 'title',
+							'widget_group' => 'preset',
+						),
+					),
+					'icon'                          => 'las la-pen-nib',
+				);
 			}
-			$groups[$group_name]['fields'][] = $field_key;
+			$groups[ $group_name ]['fields'][] = $field_key;
 		}
 
 		// Keep old title and description fields
 		$title_description_fields = array_intersect_key(
-			$existing_config['submission_form_fields']['fields'] ?? [],
-			array_flip(['title', 'description'])
+			$existing_config['submission_form_fields']['fields'] ?? array(),
+			array_flip( array( 'title', 'description' ) )
 		);
 
 		// Replace the old fields with new fields, keeping title and description
@@ -199,52 +216,61 @@ class AI_Builder {
 			$formatted_fields
 		);
 
-		$existing_config['submission_form_fields']['groups'] = array_values($groups);
+		$existing_config['submission_form_fields']['groups'] = array_values( $groups );
 
 		// Update the single listing layout to use the new fields
 		$single_listing_fields = array_merge(
-			$existing_config['single_listings_contents']['fields'] ?? [],
-			array_map(function ($field) {
-				return [
-					'icon' => $field['icon'] ?? '',
-					'widget_group' => $field['widget_group'],
-					'widget_name' => $field['widget_name'],
-					'original_widget_key' => $field['field_key'],
-					'widget_key' => $field['field_key'],
-				];
-			}, $formatted_fields)
+			$existing_config['single_listings_contents']['fields'] ?? array(),
+			array_map(
+				function ( $field ) {
+					return array(
+						'icon'                => $field['icon'] ?? '',
+						'widget_group'        => $field['widget_group'],
+						'widget_name'         => $field['widget_name'],
+						'original_widget_key' => $field['field_key'],
+						'widget_key'          => $field['field_key'],
+					);
+				},
+				$formatted_fields
+			)
 		);
 
 		$existing_config['single_listings_contents']['fields'] = $single_listing_fields;
-		$existing_config['single_listings_contents']['groups'] = array_values($groups);
+		$existing_config['single_listings_contents']['groups'] = array_values( $groups );
 
 		return $existing_config;
 	}
 
 	public static function merge_new_fields_v2( $structure, $new_fields ) {
 
-		$new_fields_array = json_decode(stripslashes($new_fields), true);
+		$new_fields_array = json_decode( stripslashes( $new_fields ), true );
 
-		if (is_null($new_fields_array)) {
-			return [];
+		if ( is_null( $new_fields_array ) ) {
+			return array();
 		}
-		array_walk($new_fields_array, function (&$field, $key) {
-			// Generate the field_key dynamically by type and prefix "custom-"
-			$type = strtolower($field['type']);
-			$field_key = "custom-{$type}";
+		array_walk(
+			$new_fields_array,
+			function ( &$field, $key ) {
+				// Generate the field_key dynamically by type and prefix "custom-"
+				$type      = strtolower( $field['type'] );
+				$field_key = "custom-{$type}";
 
-			$field = array_merge($field, [
-				'widget_group' => 'custom',
-				'widget_name' => $type,
-				'field_key' => $field_key,
-				'widget_key' => $key,
-			]);
-		});
+				$field = array_merge(
+					$field,
+					array(
+						'widget_group' => 'custom',
+						'widget_name'  => $type,
+						'field_key'    => $field_key,
+						'widget_key'   => $key,
+					)
+				);
+			}
+		);
 
 		// Keep old title and description fields
 		$title_description_fields = array_intersect_key(
-			$structure['submission_form_fields']['fields'] ?? [],
-			array_flip(['title', 'description'])
+			$structure['submission_form_fields']['fields'] ?? array(),
+			array_flip( array( 'title', 'description' ) )
 		);
 
 		// Replace the old fields with new fields, keeping title and description
@@ -254,21 +280,21 @@ class AI_Builder {
 		);
 
 		// Replace old groups with a new group containing the new fields and keeping title and description
-		$structure['submission_form_fields']['groups'] = [
-			[
-				"type" => "general_group",
-				"label" => "General Information",
-				"fields" => array_merge(['title', 'description'], array_keys($new_fields_array)),
-				"defaultGroupLabel" => "Section",
-				"disableTrashIfGroupHasWidgets" => [
-					[
-						"widget_name" => "title",
-						"widget_group" => "preset"
-					]
-				],
-				"icon" => "las la-pen-nib",
-			]
-		];
+		$structure['submission_form_fields']['groups'] = array(
+			array(
+				'type'                          => 'general_group',
+				'label'                         => 'General Information',
+				'fields'                        => array_merge( array( 'title', 'description' ), array_keys( $new_fields_array ) ),
+				'defaultGroupLabel'             => 'Section',
+				'disableTrashIfGroupHasWidgets' => array(
+					array(
+						'widget_name'  => 'title',
+						'widget_group' => 'preset',
+					),
+				),
+				'icon'                          => 'las la-pen-nib',
+			),
+		);
 
 		return $structure;
 	}
@@ -288,11 +314,13 @@ class AI_Builder {
 
 		DirectoryManager::load_builder_data();
 
-		$directory = DirectoryManager::add_directory( [
-			'directory_name' => $name,
-			'fields_value'   => $directory_config,
-			'is_json'        => false
-		] );
+		$directory = DirectoryManager::add_directory(
+			array(
+				'directory_name' => $name,
+				'fields_value'   => $directory_config,
+				'is_json'        => false,
+			)
+		);
 
 		if ( $directory['status']['success'] ) {
 			$term_id = $directory['term_id'];
@@ -300,30 +328,32 @@ class AI_Builder {
 			$term_id = $directory['status']['term_id'];
 		}
 
-		return [
+		return array(
 			'structure'      => $directory_config,
 			'new_fields'     => $form_fields['fields'],
 			'updated_config' => $directory_config,
 			'id'             => $term_id,
-		];
+		);
 	}
 
 	public static function ai_create_fields( $keywords, $pinned = null ) {
-		$response = static::request_fields( [
-			'keywords' => $keywords,
-			'pinned'   => $pinned,
-		] );
+		$response = static::request_fields(
+			array(
+				'keywords' => $keywords,
+				'pinned'   => $pinned,
+			)
+		);
 
 		if ( is_wp_error( $response ) ) {
 			return $response;
 		}
 
 		if ( empty( $response['response']['fields'] ) || ! is_array( $response['response']['fields'] ) ) {
-			return [
-				'fields'        => [],
+			return array(
+				'fields'        => array(),
 				'html'          => '',
-				'request_count' => $response['request_count']
-			];
+				'request_count' => $response['request_count'],
+			);
 		}
 
 		ob_start();
@@ -334,15 +364,15 @@ class AI_Builder {
 
 		$html = ob_get_clean();
 
-		return [
+		return array(
 			'fields'        => $response['response']['fields'],
 			'html'          => $html,
-			'request_count' => $response['request_count']
-		];
+			'request_count' => $response['request_count'],
+		);
 	}
 
 	public static function ai_create_keywords( $prompt ) {
-		$response = static::request_keywords( ['prompt' => $prompt] );
+		$response = static::request_keywords( array( 'prompt' => $prompt ) );
 
 		if ( is_wp_error( $response ) ) {
 			return $response;
@@ -353,24 +383,25 @@ class AI_Builder {
 		if ( ! empty( $response['response']['keywords'] ) ) {
 			foreach ( $response['response']['keywords'] as $keyword ) { ?>
 				<li class="free-enabled"><?php echo ucwords( $keyword ); ?></li>
-			<?php }
+				<?php
+			}
 		}
 
 		$html = ob_get_clean();
 
-		return [
+		return array(
 			'html'          => $html,
-			'request_count' => $response['request_count']
-		];
+			'request_count' => $response['request_count'],
+		);
 	}
 
 	protected static function prepare_form_fields( $fields ) {
 		$form_fields_file = DIRECTORIST_ASSETS_DIR . 'sample-data/listing-form-fields.json';
 		$form_fields      = json_decode( file_get_contents( $form_fields_file ), 1 );
 
-		$prepared_fields      = [];
-		$prepared_groups      = [];
-		$counter              = [];
+		$prepared_fields      = array();
+		$prepared_groups      = array();
+		$counter              = array();
 		$should_include_group = false;
 
 		foreach ( $fields as $field ) {
@@ -390,26 +421,29 @@ class AI_Builder {
 					$should_include_group = true;
 				}
 
-			// Handle custom fields
+				// Handle custom fields
 			} elseif ( isset( $form_fields[ $field['type'] ] ) ) {
 				$_field          = $form_fields[ $field['type'] ];
 				$_field['label'] = $field['label'];
 
-				if ( in_array( $field['type'], [ 'select', 'radio', 'checkbox' ], true ) &&
+				if ( in_array( $field['type'], array( 'select', 'radio', 'checkbox' ), true ) &&
 					isset( $field['options'] ) &&
 					is_array( $field['options'] ) ) {
-					$_field['options'] = array_map( static function( $option ) {
-						return [
-							'option_value' => $option,
-							'option_label' => $option
-						];
-					}, $field['options'] );
+					$_field['options'] = array_map(
+						static function ( $option ) {
+							return array(
+								'option_value' => $option,
+								'option_label' => $option,
+							);
+						},
+						$field['options']
+					);
 				}
 
 				// "text_2": {
-				// 	"type": "text",
-				// 	"field_key": "custom-text-2",
-				// 	"widget_key": "text_2"
+				// "type": "text",
+				// "field_key": "custom-text-2",
+				// "widget_key": "text_2"
 				// },
 
 				if ( isset( $counter[ $field['type'] ] ) ) {
@@ -432,32 +466,32 @@ class AI_Builder {
 				if ( isset( $prepared_groups[ $field['group'] ] ) ) {
 					$prepared_groups[ $field['group'] ]['fields'][] = $field_name;
 				} else {
-					$prepared_groups[ $field['group'] ] = [
+					$prepared_groups[ $field['group'] ] = array(
 						'label'  => $field['group'],
-						'fields' => [ $field_name ],
-					];
+						'fields' => array( $field_name ),
+					);
 				}
 			}
 
 			$should_include_group = false;
 		}
 
-		return [
+		return array(
 			'groups' => array_values( $prepared_groups ),
 			'fields' => $prepared_fields,
-		];
+		);
 	}
 
 	protected static function prepare_single_fields( $form_fields ) {
-		$fields           = [];
-		$ignorable_fields = [
+		$fields           = array();
+		$ignorable_fields = array(
 			'title'        => false,
 			'tagline'      => false,
 			'image_upload' => false,
 			'location'     => false,
 			'category'     => false,
 			'pricing'      => false,
-		];
+		);
 
 		// Prepare fields
 		foreach ( $form_fields['fields'] as $field_key => $field ) {
@@ -467,13 +501,13 @@ class AI_Builder {
 				continue;
 			}
 
-			$fields[ $field_key ] = [
+			$fields[ $field_key ] = array(
 				'icon'                => 'las la-tag',
 				'widget_group'        => 'preset_widgets',
 				'widget_name'         => $field['widget_name'],
 				'original_widget_key' => $field_key,
-				'widget_key'          => $field_key
-			];
+				'widget_key'          => $field_key,
+			);
 
 			if ( $field_key === 'address' ) {
 				$fields[ $field_key ]['address_link_with_map'] = false;
@@ -485,7 +519,7 @@ class AI_Builder {
 		}
 
 		// Prepare groups
-		$groups               = [];
+		$groups               = array();
 		$ignorable_field_keys = array_keys( $ignorable_fields );
 		$section_id           = 0;
 
@@ -496,15 +530,15 @@ class AI_Builder {
 				continue;
 			}
 
-			$groups[] = [
+			$groups[] = array(
 				'type'       => 'general_group',
 				'label'      => $group['label'],
 				'fields'     => array_values( $group_fields ),
 				'section_id' => ++$section_id,
-			];
+			);
 		}
 
-		$groups[] = [
+		$groups[] = array(
 			'type'          => 'section',
 			'label'         => 'Author Info',
 			'section_id'    => ++$section_id,
@@ -512,195 +546,195 @@ class AI_Builder {
 			'display_email' => true,
 			'widget_group'  => 'other_widgets',
 			'widget_name'   => 'author_info',
-			'fields'        => []
-		];
+			'fields'        => array(),
+		);
 
-		$groups[] = [
-			'type'   => 'section',
-			'label'  => 'Contact Listings Owner Form',
-			'fields' => [
+		$groups[] = array(
+			'type'             => 'section',
+			'label'            => 'Contact Listings Owner Form',
+			'fields'           => array(
 				'contact_name',
 				'contact_email',
 				'contact_message',
-			],
+			),
 			'section_id'       => ++$section_id,
 			'icon'             => 'las la-phone',
-			'accepted_widgets' => [
-				[
+			'accepted_widgets' => array(
+				array(
 					'widget_group'      => 'other_widgets',
 					'widget_name'       => 'contact_listings_owner',
 					'widget_child_name' => 'contact_name',
-				],
-				[
+				),
+				array(
 					'widget_group'      => 'other_widgets',
 					'widget_name'       => 'contact_listings_owner',
 					'widget_child_name' => 'contact_email',
-				],
-				[
+				),
+				array(
 					'widget_group'      => 'other_widgets',
 					'widget_name'       => 'contact_listings_owner',
 					'widget_child_name' => 'contact_message',
-				],
-			],
-			'widget_group' => 'other_widgets',
-			'widget_name'  => 'contact_listings_owner',
-		];
+				),
+			),
+			'widget_group'     => 'other_widgets',
+			'widget_name'      => 'contact_listings_owner',
+		);
 
 		// Contact form fields
-		$fields['contact_name'] = [
-			'enable'           => 1,
-			'placeholder'      => 'Name',
-			'widget_group'     => 'other_widgets',
-			'widget_name'      => 'contact_listings_owner',
-			'widget_child_name'=> 'contact_name',
-			'widget_key'       => 'contact_name',
-		];
+		$fields['contact_name'] = array(
+			'enable'            => 1,
+			'placeholder'       => 'Name',
+			'widget_group'      => 'other_widgets',
+			'widget_name'       => 'contact_listings_owner',
+			'widget_child_name' => 'contact_name',
+			'widget_key'        => 'contact_name',
+		);
 
-		$fields['contact_email'] = [
-			'placeholder'      => 'Email',
-			'widget_group'     => 'other_widgets',
-			'widget_name'      => 'contact_listings_owner',
-			'widget_child_name'=> 'contact_email',
-			'widget_key'       => 'contact_email',
-		];
+		$fields['contact_email'] = array(
+			'placeholder'       => 'Email',
+			'widget_group'      => 'other_widgets',
+			'widget_name'       => 'contact_listings_owner',
+			'widget_child_name' => 'contact_email',
+			'widget_key'        => 'contact_email',
+		);
 
-		$fields['contact_message'] = [
-			'placeholder'      => 'Message...',
-			'widget_group'     => 'other_widgets',
-			'widget_name'      => 'contact_listings_owner',
-			'widget_child_name'=> 'contact_message',
-			'widget_key'       => 'contact_message',
-		];
+		$fields['contact_message'] = array(
+			'placeholder'       => 'Message...',
+			'widget_group'      => 'other_widgets',
+			'widget_name'       => 'contact_listings_owner',
+			'widget_child_name' => 'contact_message',
+			'widget_key'        => 'contact_message',
+		);
 
 		// Prepare header
 		$header = static::prepare_single_header_fields( $ignorable_fields );
 
-		return [
+		return array(
 			'header' => $header,
 			'groups' => $groups,
-			'fields' => $fields
-		];
+			'fields' => $fields,
+		);
 	}
 
 	protected static function prepare_single_header_fields( $header_fields ) {
-		$fields = [
-			'quick-widgets-placeholder' => [
+		$fields = array(
+			'quick-widgets-placeholder' => array(
 				'type'           => 'placeholder_group',
 				'placeholderKey' => 'quick-widgets-placeholder',
-				'placeholders'   => [
-					[
-						'type'           => 'placeholder_group',
-						'placeholderKey' => 'quick-info-placeholder',
-						'selectedWidgets' => [
-							[
+				'placeholders'   => array(
+					array(
+						'type'            => 'placeholder_group',
+						'placeholderKey'  => 'quick-info-placeholder',
+						'selectedWidgets' => array(
+							array(
 								'type'        => 'button',
 								'label'       => 'Back',
 								'widget_name' => 'back',
 								'widget_key'  => 'back',
-							],
-						],
-					],
-					[
-						'type'           => 'placeholder_group',
-						'placeholderKey' => 'quick-action-placeholder',
-						'selectedWidgets' => [
-							[
+							),
+						),
+					),
+					array(
+						'type'            => 'placeholder_group',
+						'placeholderKey'  => 'quick-action-placeholder',
+						'selectedWidgets' => array(
+							array(
 								'type'        => 'button',
 								'label'       => 'Bookmark',
 								'widget_name' => 'bookmark',
 								'widget_key'  => 'bookmark',
-							],
-							[
+							),
+							array(
 								'type'        => 'badge',
 								'label'       => 'Share',
 								'widget_name' => 'share',
 								'widget_key'  => 'share',
 								'icon'        => 'las la-share',
-							],
-							[
+							),
+							array(
 								'type'        => 'badge',
 								'label'       => 'Report',
 								'widget_name' => 'report',
 								'widget_key'  => 'report',
 								'icon'        => 'las la-flag',
-							],
-						],
-					],
-				],
-			],
-			'slider-placeholder' => [
-				'type'           => 'placeholder_item',
-				'placeholderKey' => 'slider-placeholder',
-				'selectedWidgets' => [
-					[
-						'type'           => 'thumbnail',
-						'label'          => 'Listing Image/Slider',
-						'widget_name'    => 'slider',
-						'widget_key'     => 'slider',
+							),
+						),
+					),
+				),
+			),
+			'slider-placeholder'        => array(
+				'type'            => 'placeholder_item',
+				'placeholderKey'  => 'slider-placeholder',
+				'selectedWidgets' => array(
+					array(
+						'type'             => 'thumbnail',
+						'label'            => 'Listing Image/Slider',
+						'widget_name'      => 'slider',
+						'widget_key'       => 'slider',
 						'footer_thumbnail' => true,
-					],
-				],
-			],
-			'listing-title-placeholder' => [
-				'type'           => 'placeholder_item',
-				'placeholderKey' => 'listing-title-placeholder',
-				'selectedWidgets' => [
-					[
-						'type'          => 'title',
-						'label'         => 'Listing Title',
-						'widget_name'   => 'title',
-						'widget_key'    => 'title',
+					),
+				),
+			),
+			'listing-title-placeholder' => array(
+				'type'            => 'placeholder_item',
+				'placeholderKey'  => 'listing-title-placeholder',
+				'selectedWidgets' => array(
+					array(
+						'type'           => 'title',
+						'label'          => 'Listing Title',
+						'widget_name'    => 'title',
+						'widget_key'     => 'title',
 						'enable_tagline' => true,
-					],
-				],
-			],
-			'more-widgets-placeholder' => [
-				'type'           => 'placeholder_item',
-				'placeholderKey' => 'more-widgets-placeholder',
-				'selectedWidgets' => [
-					[
+					),
+				),
+			),
+			'more-widgets-placeholder'  => array(
+				'type'            => 'placeholder_item',
+				'placeholderKey'  => 'more-widgets-placeholder',
+				'selectedWidgets' => array(
+					array(
 						'type'        => 'badge',
 						'label'       => 'Pricing',
 						'widget_name' => 'price',
 						'widget_key'  => 'price',
-					],
-					[
+					),
+					array(
 						'type'        => 'ratings-count',
 						'label'       => 'Rating',
 						'widget_name' => 'ratings_count',
 						'widget_key'  => 'ratings_count',
-					],
-					[
-						'type'          => 'badge',
-						'label'         => 'Badges',
-						'widget_name'   => 'badges',
-						'widget_key'    => 'badges',
-						'new_badge'     => true,
-						'popular_badge' => true,
+					),
+					array(
+						'type'           => 'badge',
+						'label'          => 'Badges',
+						'widget_name'    => 'badges',
+						'widget_key'     => 'badges',
+						'new_badge'      => true,
+						'popular_badge'  => true,
 						'featured_badge' => true,
-					],
-					[
+					),
+					array(
 						'type'        => 'badge',
 						'label'       => 'Category',
 						'widget_name' => 'category',
 						'widget_key'  => 'category',
-					],
-					[
+					),
+					array(
 						'type'        => 'badge',
 						'label'       => 'Location',
 						'widget_name' => 'location',
 						'widget_key'  => 'location',
-					],
-				],
-			],
-		];
+					),
+				),
+			),
+		);
 
 		if ( ! $header_fields['image_upload'] ) {
-			$fields['slider-placeholder']['selectedWidgets'] = [];
+			$fields['slider-placeholder']['selectedWidgets'] = array();
 		}
 
 		if ( ! $header_fields['title'] ) {
-			$fields['listing-title-placeholder']['selectedWidgets'] = [];
+			$fields['listing-title-placeholder']['selectedWidgets'] = array();
 		}
 
 		if ( $header_fields['title'] && $header_fields['tagline'] ) {
@@ -722,42 +756,42 @@ class AI_Builder {
 
 	protected static function render_fields( $fields ) {
 		$icons_map = array(
-            'title'         => 'las la-text-height',
-            'description'   => 'uil uil-align-left',
-            'tagline'       => 'uil uil-text-fields',
-            'pricing'       => 'uil uil-bill',
-            'excerpt'       => 'uil uil-paragraph',
-            'location'      => 'uil uil-map-marker',
-            'tag'           => 'las la-tag',
-            'category'      => 'uil uil-folder-open',
-            'map'           => 'uil uil-map',
-            'address'       => 'uil uil-map-pin',
-            'zip'           => 'uil uil-map-pin',
-            'phone'         => 'uil uil-phone',
-            'phone2'        => 'uil uil-phone',
-            'fax'           => 'uil uil-print',
-            'email'         => 'uil uil-envelope',
-            'website'       => 'uil uil-globe',
-            'social_info'   => 'uil uil-users-alt',
-            'image_upload'  => 'uil uil-image',
-            'video'         => 'uil uil-video',
-            'terms_privacy' => 'uil uil-text-fields',
-            'text'          => 'uil uil-text',
-            'textarea'      => 'uil uil-align-left',
-            'number'        => 'uil uil-0-plus',
-            'url'           => 'uil uil-link-add',
-            'date'          => 'uil uil-calender',
-            'time'          => 'uil uil-clock',
-            'color_picker'  => 'uil uil-palette',
-            'select'        => 'uil uil-list-ui-alt',
-            'checkbox'      => 'uil uil-check-square',
-            'radio'         => 'uil uil-dot-circle',
-            'file_upload'   => 'uil uil-file-upload'
-        );
+			'title'         => 'las la-text-height',
+			'description'   => 'uil uil-align-left',
+			'tagline'       => 'uil uil-text-fields',
+			'pricing'       => 'uil uil-bill',
+			'excerpt'       => 'uil uil-paragraph',
+			'location'      => 'uil uil-map-marker',
+			'tag'           => 'las la-tag',
+			'category'      => 'uil uil-folder-open',
+			'map'           => 'uil uil-map',
+			'address'       => 'uil uil-map-pin',
+			'zip'           => 'uil uil-map-pin',
+			'phone'         => 'uil uil-phone',
+			'phone2'        => 'uil uil-phone',
+			'fax'           => 'uil uil-print',
+			'email'         => 'uil uil-envelope',
+			'website'       => 'uil uil-globe',
+			'social_info'   => 'uil uil-users-alt',
+			'image_upload'  => 'uil uil-image',
+			'video'         => 'uil uil-video',
+			'terms_privacy' => 'uil uil-text-fields',
+			'text'          => 'uil uil-text',
+			'textarea'      => 'uil uil-align-left',
+			'number'        => 'uil uil-0-plus',
+			'url'           => 'uil uil-link-add',
+			'date'          => 'uil uil-calender',
+			'time'          => 'uil uil-clock',
+			'color_picker'  => 'uil uil-palette',
+			'select'        => 'uil uil-list-ui-alt',
+			'checkbox'      => 'uil uil-check-square',
+			'radio'         => 'uil uil-dot-circle',
+			'file_upload'   => 'uil uil-file-upload',
+		);
 
 		foreach ( $fields as $field ) {
 			$label   = $field['label'] ?? '';
-			$options = empty( $field['options'] ) ? [] : $field['options'];
+			$options = empty( $field['options'] ) ? array() : $field['options'];
 			$icon    = $icons_map[ ( static::$preset_fields[ $field['type'] ] ?? $field['type'] ) ] ?? 'uil uil-paragraph';
 			?>
 			<div class="directorist-ai-generate-box__item">
@@ -817,9 +851,9 @@ class AI_Builder {
 
 	protected static function request( $endpoint = 'keywords', $params = array() ) {
 		$headers = array(
-			'user-agent'    => 'Directorist\\' . ATBDP_VERSION,
-			'Accept'        => 'application/json',
-			'Content-Type'  => 'application/json'
+			'user-agent'   => 'Directorist\\' . ATBDP_VERSION,
+			'Accept'       => 'application/json',
+			'Content-Type' => 'application/json',
 		);
 
 		$config = array(
@@ -843,11 +877,11 @@ class AI_Builder {
 		}
 
 		// Decode the JSON string into a PHP array.
-        $response = json_decode( $response, true );
+		$response = json_decode( $response, true );
 
-        if ( JSON_ERROR_NONE !== json_last_error() ) {
+		if ( JSON_ERROR_NONE !== json_last_error() ) {
 			return new WP_Error( 'invalid_data', 'Malformed JSON response', 400 );
-        }
+		}
 
 		if ( static::is_response_error( $response ) ) {
 			return static::get_response_wp_error( $response );

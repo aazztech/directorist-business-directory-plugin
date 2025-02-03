@@ -1,7 +1,6 @@
 <?php
 /**
  * Directorist Url Field class.
- *
  */
 namespace Directorist\Fields;
 

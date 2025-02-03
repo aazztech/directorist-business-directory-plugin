@@ -5,9 +5,11 @@
  * @version 7.4.0
  */
 
-use \Directorist\Helper;
+use Directorist\Helper;
 
-if ( ! defined( 'ABSPATH' ) ) exit;
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
 ?>
 
 <div class="directorist-dashboard-mylistings" id="directorist-dashboard-mylistings-js" data-paged="1" data-search="">
@@ -68,7 +70,7 @@ if ( ! defined( 'ABSPATH' ) ) exit;
 
 								<?php do_action( 'directorist_dashboard_listing_th_2', $dashboard ); ?>
 
-								<?php if ( directorist_is_multi_directory_enabled() ): ?>
+								<?php if ( directorist_is_multi_directory_enabled() ) : ?>
 									<th class="directorist-table-listing-type"><?php esc_html_e( 'Type', 'directorist' ); ?></th>
 								<?php endif; ?>
 

@@ -5,20 +5,22 @@
  * @version 8.1
  */
 
-use \Directorist\Helper;
+use Directorist\Helper;
 
-if ( ! defined( 'ABSPATH' ) ) exit;
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
 ?>
 
-<div class="directorist-archive-items directorist-archive-list-view <?php echo esc_attr( $listings->pagination_infinite_scroll_class() ) ?>">
+<div class="directorist-archive-items directorist-archive-list-view <?php echo esc_attr( $listings->pagination_infinite_scroll_class() ); ?>">
 	<div class="<?php Helper::directorist_container_fluid(); ?>">
 
 		<?php do_action( 'directorist_before_list_listings_loop' ); ?>
 
-			<?php if ( $listings->have_posts() ): ?>
+			<?php if ( $listings->have_posts() ) : ?>
 
 				<div class="<?php Helper::directorist_row(); ?>">
-					<?php $listings->render_list_view( $listings->post_ids() ) ?>
+					<?php $listings->render_list_view( $listings->post_ids() ); ?>
 					</div>
 				<div/>
 				
@@ -33,9 +35,9 @@ if ( ! defined( 'ABSPATH' ) ) exit;
 				}
 				?>
 
-				<?php do_action('directorist_after_grid_listings_loop'); ?>
+				<?php do_action( 'directorist_after_grid_listings_loop' ); ?>
 
-			<?php else: ?>
+			<?php else : ?>
 
 			<div class="directorist-archive-notfound"><?php esc_html_e( 'No listings found.', 'directorist' ); ?></div>
 

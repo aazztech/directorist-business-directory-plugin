@@ -5,7 +5,9 @@
  * @version 8.0
  */
 
-if ( ! defined( 'ABSPATH' ) ) exit;
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
 
 ?>
 <section id="directorist-single-listing-slider-wrap" class="directorist-single-listing-slider-wrap background-<?php echo esc_attr( $data['background-size'] ); ?>"
@@ -21,23 +23,23 @@ if ( ! defined( 'ABSPATH' ) ) exit;
 	<div class="directorist-swiper directorist-single-listing-slider">
 		<div class="swiper-wrapper">
 			<?php
-				if ( ! empty( $data['images'] )  ):
-					foreach ( $data['images'] as $image ) {
-						if ( empty( $image['src'] ) ) {
-							continue;
-						}
-						printf(
-							'<div class="swiper-slide"><img src="%1$s" alt="%2$s"></div>',
-							esc_url( $image['src'] ),
-							esc_attr( $image['alt'] )
-						);
+			if ( ! empty( $data['images'] ) ) :
+				foreach ( $data['images'] as $image ) {
+					if ( empty( $image['src'] ) ) {
+						continue;
 					}
+					printf(
+						'<div class="swiper-slide"><img src="%1$s" alt="%2$s"></div>',
+						esc_url( $image['src'] ),
+						esc_attr( $image['alt'] )
+					);
+				}
 				endif;
 			?>
 		</div>
 		<div class='directorist-swiper__navigation'>
-			<div class='directorist-swiper__nav directorist-swiper__nav--prev directorist-swiper__nav--prev-single-listing'><?php directorist_icon('las la-angle-left')?></div>
-			<div class='directorist-swiper__nav directorist-swiper__nav--next directorist-swiper__nav--next-single-listing'><?php directorist_icon('las la-angle-right')?></div>
+			<div class='directorist-swiper__nav directorist-swiper__nav--prev directorist-swiper__nav--prev-single-listing'><?php directorist_icon( 'las la-angle-left' ); ?></div>
+			<div class='directorist-swiper__nav directorist-swiper__nav--next directorist-swiper__nav--next-single-listing'><?php directorist_icon( 'las la-angle-right' ); ?></div>
 		</div>
 
 		<div class='directorist-swiper__pagination directorist-swiper__pagination--single-listing'></div>
@@ -47,7 +49,7 @@ if ( ! defined( 'ABSPATH' ) ) exit;
 	<div class="directorist-swiper directorist-single-listing-slider-thumb">
 		<div class="swiper-wrapper">
 			<?php
-			if ( ! empty( $data['images'] )  ):
+			if ( ! empty( $data['images'] ) ) :
 				foreach ( $data['images'] as $image ) {
 					if ( empty( $image['src'] ) ) {
 						continue;
@@ -63,8 +65,8 @@ if ( ! defined( 'ABSPATH' ) ) exit;
 			?>
 		</div>
 		<div class='directorist-swiper__navigation'>
-			<div class='directorist-swiper__nav directorist-swiper__nav--prev directorist-swiper__nav--prev-single-listing-thumb'><?php directorist_icon('las la-angle-left')?></div>
-			<div class='directorist-swiper__nav directorist-swiper__nav--next directorist-swiper__nav--next-single-listing-thumb'><?php directorist_icon('las la-angle-right')?></div>
+			<div class='directorist-swiper__nav directorist-swiper__nav--prev directorist-swiper__nav--prev-single-listing-thumb'><?php directorist_icon( 'las la-angle-left' ); ?></div>
+			<div class='directorist-swiper__nav directorist-swiper__nav--next directorist-swiper__nav--next-single-listing-thumb'><?php directorist_icon( 'las la-angle-right' ); ?></div>
 		</div>
 
 		<div class='directorist-swiper__pagination directorist-swiper__pagination--single-listing-thumb'></div>

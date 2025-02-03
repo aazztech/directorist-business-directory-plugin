@@ -28,7 +28,7 @@ class Comment_Form_Renderer {
 			array(
 				'action' => self::AJAX_ACTION,
 				'nonce'  => wp_create_nonce( self::AJAX_ACTION ),
-				'cpage'  => get_query_var( 'cpage' )
+				'cpage'  => get_query_var( 'cpage' ),
 			),
 			admin_url( 'admin-ajax.php', 'relative' )
 		);
@@ -67,10 +67,12 @@ class Comment_Form_Renderer {
 			$comment_type_label = $is_review ? __( 'review', 'directorist' ) : __( 'comment', 'directorist' );
 
 			if ( ! is_user_logged_in() ) {
-				throw new Exception( sprintf(
-					__( 'Please login to update your %s.', 'directorist' ),
-					$comment_type_label
-				) );
+				throw new Exception(
+					sprintf(
+						__( 'Please login to update your %s.', 'directorist' ),
+						$comment_type_label
+					)
+				);
 			}
 
 			if ( ! current_user_can( 'edit_comment', $comment_id ) ) {
@@ -79,17 +81,21 @@ class Comment_Form_Renderer {
 
 			$form = self::get_form_markup( $comment );
 
-			wp_send_json_success( array(
-				'error' => '',
-				'html'  => $form,
-			) );
+			wp_send_json_success(
+				array(
+					'error' => '',
+					'html'  => $form,
+				)
+			);
 		} catch ( Exception $e ) {
 			$html = sprintf( '<div class="directorist-alert directorist-alert-danger">%s</div>', $e->getMessage() );
 
-			wp_send_json_error( array(
-				'error' => $e->getMessage(),
-				'html'  => $html,
-			) );
+			wp_send_json_error(
+				array(
+					'error' => $e->getMessage(),
+					'html'  => $html,
+				)
+			);
 		}
 	}
 
@@ -135,16 +141,16 @@ class Comment_Form_Renderer {
 	}
 
 	public static function get_fields( $comment ) {
-		$fields  = array();
-	
+		$fields = array();
+
 		$comment_type = __( 'comment', 'directorist' );
 		if ( $comment->comment_type === 'review' ) {
-			$rating = Comment::get_rating( $comment->comment_ID );
+			$rating           = Comment::get_rating( $comment->comment_ID );
 			$fields['rating'] = '<div class="directorist-review-criteria directorist-adv-criteria">' . Markup::get_rating( $rating, $comment ) . '</div>';
-			$comment_type = __( 'review', 'directorist' );
+			$comment_type     = __( 'review', 'directorist' );
 		}
-	
-		$fields['content'] =  sprintf(
+
+		$fields['content'] = sprintf(
 			'<div class="directorist-form-group form-group-comment">%s</div>',
 			sprintf(
 				'<textarea id="comment" class="directorist-form-element" placeholder="%s" name="comment" cols="30" rows="10" maxlength="65525" required="required">%s</textarea>',
@@ -152,15 +158,15 @@ class Comment_Form_Renderer {
 				esc_textarea( $comment->comment_content )
 			)
 		);
-	
+
 		// Add custom action hook after textarea
 		ob_start();
-		do_action('directorist_after_comment_textarea', $comment);
+		do_action( 'directorist_after_comment_textarea', $comment );
 		$fields['after_textarea'] = ob_get_clean();
-	
+
 		return $fields;
 	}
-	
+
 
 	public static function get_action_url() {
 		return admin_url( 'admin-ajax.php', 'relative' );
@@ -172,7 +178,7 @@ class Comment_Form_Renderer {
 	 * @see comment_form() wp core function. Directly copied from there and renamed filters.
 	 *
 	 * @param array $args
-	 * @param int $post_id
+	 * @param int   $post_id
 	 *
 	 * @return void
 	 */
@@ -250,7 +256,7 @@ class Comment_Form_Renderer {
 			),
 		);
 
-		if ( $builder->is_gdpr_consent()  ) {
+		if ( $builder->is_gdpr_consent() ) {
 			$args['fields']['gdpr_consent'] = sprintf(
 				'<p class="comment-form-gdpr-consent comment-form-cookies-consent">
 					<input id="directorist-gdpr-consent" name="directorist-gdpr-consent" type="checkbox" value="yes" required />
@@ -395,8 +401,6 @@ class Comment_Form_Renderer {
 			comment_form_title( $args['title_reply'], $args['title_reply_to'] );
 
 			// echo $args['cancel_reply_before'];
-
-
 
 			// echo $args['cancel_reply_after'];
 

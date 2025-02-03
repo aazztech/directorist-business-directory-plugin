@@ -195,7 +195,7 @@ abstract class WP_Background_Process extends WP_Async_Request {
 
 		$key = $wpdb->esc_like( $this->identifier . '_batch_' ) . '%';
 
-		$count = $wpdb->get_var( $wpdb->prepare( "SELECT COUNT(*) FROM %s WHERE %s LIKE %s", $table, $column, $key ) );
+		$count = $wpdb->get_var( $wpdb->prepare( 'SELECT COUNT(*) FROM %s WHERE %s LIKE %s', $table, $column, $key ) );
 
 		return ( $count > 0 ) ? false : true;
 	}
@@ -266,14 +266,21 @@ abstract class WP_Background_Process extends WP_Async_Request {
 
 		$key = $wpdb->esc_like( $this->identifier . '_batch_' ) . '%';
 
-		$query = $wpdb->get_row( $wpdb->prepare( "
+		$query = $wpdb->get_row(
+			$wpdb->prepare(
+				'
 			SELECT *
 			FROM %s
 			WHERE %s LIKE %s
 			ORDER BY %s ASC
 			LIMIT 1
-		", $table, $column, $key, $key_column
-		) );
+		',
+				$table,
+				$column,
+				$key,
+				$key_column
+			)
+		);
 
 		$batch       = new stdClass();
 		$batch->key  = $query->$column;
@@ -472,7 +479,6 @@ abstract class WP_Background_Process extends WP_Async_Request {
 	 * Cancel Process
 	 *
 	 * Stop processing queue items, clear cronjob and delete batch.
-	 *
 	 */
 	public function cancel_process() {
 		if ( ! $this->is_queue_empty() ) {
@@ -482,7 +488,6 @@ abstract class WP_Background_Process extends WP_Async_Request {
 
 			wp_clear_scheduled_hook( $this->cron_hook_identifier );
 		}
-
 	}
 
 	/**
@@ -498,5 +503,4 @@ abstract class WP_Background_Process extends WP_Async_Request {
 	 * @return mixed
 	 */
 	abstract protected function task( $item );
-
 }

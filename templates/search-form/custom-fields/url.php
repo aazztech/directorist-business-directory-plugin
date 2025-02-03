@@ -5,7 +5,9 @@
  * @version 7.7.0
  */
 
-if ( ! defined( 'ABSPATH' ) ) exit;
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
 ?>
 
 <div class="directorist-search-field single_search_field directorist-form-group search-form-field">

@@ -5,8 +5,10 @@
  * @version 8.0
  */
 
- use \Directorist\Helper;
+use Directorist\Helper;
 
-if ( ! defined( 'ABSPATH' ) ) exit;
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
 
 Helper::get_template( 'single/top-actions' );

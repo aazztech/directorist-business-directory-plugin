@@ -5,9 +5,11 @@
  * @version 7.7.0
  */
 
-use \Directorist\Helper;
+use Directorist\Helper;
 
-if ( ! defined( 'ABSPATH' ) ) exit;
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
 ?>
 
 <section class="directorist-author-profile-area directorist-author-profile">
@@ -29,7 +31,7 @@ if ( ! defined( 'ABSPATH' ) ) exit;
 
 		<ul class="directorist-author-meta-list directorist-author-profile__meta-list">
 
-			<?php if ( $author->review_enabled() ): ?>
+			<?php if ( $author->review_enabled() ) : ?>
 				<li class="directorist-author-meta-list__item directorist-info-meta directorist-author-profile__meta-list__item">
 					<?php directorist_icon( 'fas fa-star' ); ?>
 					<span class="directorist-review-count">

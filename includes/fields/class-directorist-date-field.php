@@ -1,7 +1,6 @@
 <?php
 /**
  * Directorist Date Field class.
- *
  */
 namespace Directorist\Fields;
 

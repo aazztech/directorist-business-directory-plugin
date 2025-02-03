@@ -1,7 +1,6 @@
 <?php
 /**
  * Directorist Color Picker Field class.
- *
  */
 namespace Directorist\Fields;
 

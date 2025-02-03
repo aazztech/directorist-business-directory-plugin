@@ -22,31 +22,31 @@ if ( ! class_exists( 'ATBDP_User' ) ) :
 
 		public function __construct() {
 			add_action( 'wp_loaded', array( $this, 'handle_user_registration' ) );
-			//add_action('init', array($this, 'activate_user'));
-			add_filter( 'pre_get_posts', array( $this,'restrict_listing_to_the_author' ) );
+			// add_action('init', array($this, 'activate_user'));
+			add_filter( 'pre_get_posts', array( $this, 'restrict_listing_to_the_author' ) );
 			// allow contributor upload images for now. @todo; later it will be better to add custom rules and capability
 			// add_action( 'plugins_loaded', array( $this, 'user_functions_ready_hook' ) );// before we add custom image uploading, lets use WordPress default image uploading by letting subscriber and contributor upload imaging capability
 
-			add_action( 'template_redirect', [ $this, 'registration_redirection' ] );
+			add_action( 'template_redirect', array( $this, 'registration_redirection' ) );
 
-			add_filter( 'authenticate', [$this, 'filter_authenticate'], 999999, 2 );
+			add_filter( 'authenticate', array( $this, 'filter_authenticate' ), 999999, 2 );
 
 			if ( is_admin() ) {
-				add_filter( 'manage_users_columns', [$this,'manage_users_columns'], 10, 1 );
-				add_filter( 'manage_users_custom_column', [$this,'manage_users_custom_column'], 10, 3 );
+				add_filter( 'manage_users_columns', array( $this, 'manage_users_columns' ), 10, 1 );
+				add_filter( 'manage_users_custom_column', array( $this, 'manage_users_custom_column' ), 10, 3 );
 
 				if ( directorist_is_email_verification_enabled() ) {
-					add_filter( 'user_row_actions', [$this, 'filter_user_row_actions'], 10, 2 );
-					add_filter( 'bulk_actions-users', [$this, 'filter_users_table_bulk_actions'] );
-					add_filter( 'handle_bulk_actions-users', [$this, 'filter_handle_bulk_actions_users'], 10, 3 );
-					add_action( 'edit_user_profile', [$this, 'user_email_verification_input'] );
-					add_action( 'user_new_form', [$this, 'user_email_verification_input'] );
-					add_action( 'user_register', [$this, 'action_admin_edit_user_info'] );
-					add_action( 'profile_update', [$this, 'action_admin_edit_user_info'] );
-					add_action( 'admin_notices', [$this, 'action_email_verification_notice'] );
+					add_filter( 'user_row_actions', array( $this, 'filter_user_row_actions' ), 10, 2 );
+					add_filter( 'bulk_actions-users', array( $this, 'filter_users_table_bulk_actions' ) );
+					add_filter( 'handle_bulk_actions-users', array( $this, 'filter_handle_bulk_actions_users' ), 10, 3 );
+					add_action( 'edit_user_profile', array( $this, 'user_email_verification_input' ) );
+					add_action( 'user_new_form', array( $this, 'user_email_verification_input' ) );
+					add_action( 'user_register', array( $this, 'action_admin_edit_user_info' ) );
+					add_action( 'profile_update', array( $this, 'action_admin_edit_user_info' ) );
+					add_action( 'admin_notices', array( $this, 'action_email_verification_notice' ) );
 				}
 			} else {
-				add_action( 'user_register', [$this, 'action_user_register'] );
+				add_action( 'user_register', array( $this, 'action_user_register' ) );
 			}
 
 			add_action( 'wp_ajax_directorist_register_form', array( $this, 'directorist_register_form' ) );
@@ -54,34 +54,40 @@ if ( ! class_exists( 'ATBDP_User' ) ) :
 		}
 
 		public function directorist_register_form() {
-			if ( ! directorist_verify_nonce() || ! isset( $_POST['params'] )  ) {
-				wp_send_json_error( array(
-					'error' => 'Invalid request.'
-				), 401 );
+			if ( ! directorist_verify_nonce() || ! isset( $_POST['params'] ) ) {
+				wp_send_json_error(
+					array(
+						'error' => 'Invalid request.',
+					),
+					401
+				);
 			}
 
-			$params_json_decode    = json_decode( stripslashes( $_POST['params'] ), true );
-			$params                = directorist_clean( $params_json_decode);
+			$params_json_decode = json_decode( stripslashes( $_POST['params'] ), true );
+			$params             = directorist_clean( $params_json_decode );
 
 			if ( ! directorist_is_user_registration_enabled() ) {
-				wp_send_json_error( array(
-					'error' => 'You are not allowed to register.'
-				), 400 );
+				wp_send_json_error(
+					array(
+						'error' => 'You are not allowed to register.',
+					),
+					400
+				);
 			}
 
 			// if the form is submitted then save the form
-			$require_website      = ! empty( $params['registration_website_required'] ) && 'yes' === $params['registration_website_required']  ? 1 : 0;
-			$display_website      = ! empty( $params['enable_registration_website'] ) && 'yes' === $params['enable_registration_website']  ? 1 : 0;
-			$display_fname        = ! empty( $params['enable_registration_first_name'] ) && 'yes' === $params['enable_registration_first_name']  ? 1 : 0;
-			$require_fname        = ! empty( $params['registration_first_name_required'] ) && 'yes' === $params['registration_first_name_required']  ? 1 : 0;
-			$display_lname        = ! empty( $params['enable_registration_last_name'] ) && 'yes' === $params['enable_registration_last_name']  ? 1 : 0;
-			$require_lname        = ! empty( $params['registration_last_name_required'] ) && 'yes' === $params['registration_last_name_required']  ? 1 : 0;
-			$display_password     = ! empty( $params['enable_registration_password'] ) && 'yes' === $params['enable_registration_password']  ? 1 : 0;
-			$display_user_type    = ! empty( $params['enable_user_type'] ) && 'yes' === $params['enable_user_type']  ? 1 : 0;
-			$display_bio          = ! empty( $params['enable_registration_bio'] ) && 'yes' === $params['enable_registration_bio']  ? 1 : 0;
-			$require_bio          = ! empty( $params['registration_bio_required'] ) && 'yes' === $params['registration_bio_required']  ? 1 : 0;
-			$registration_privacy = ! empty( $params['enable_registration_privacy'] ) && 'yes' === $params['enable_registration_privacy']  ? 1 : 0;
-			$terms_condition      = ! empty( $params['enable_registration_terms'] ) && 'yes' === $params['enable_registration_terms']  ? 1 : 0;
+			$require_website      = ! empty( $params['registration_website_required'] ) && 'yes' === $params['registration_website_required'] ? 1 : 0;
+			$display_website      = ! empty( $params['enable_registration_website'] ) && 'yes' === $params['enable_registration_website'] ? 1 : 0;
+			$display_fname        = ! empty( $params['enable_registration_first_name'] ) && 'yes' === $params['enable_registration_first_name'] ? 1 : 0;
+			$require_fname        = ! empty( $params['registration_first_name_required'] ) && 'yes' === $params['registration_first_name_required'] ? 1 : 0;
+			$display_lname        = ! empty( $params['enable_registration_last_name'] ) && 'yes' === $params['enable_registration_last_name'] ? 1 : 0;
+			$require_lname        = ! empty( $params['registration_last_name_required'] ) && 'yes' === $params['registration_last_name_required'] ? 1 : 0;
+			$display_password     = ! empty( $params['enable_registration_password'] ) && 'yes' === $params['enable_registration_password'] ? 1 : 0;
+			$display_user_type    = ! empty( $params['enable_user_type'] ) && 'yes' === $params['enable_user_type'] ? 1 : 0;
+			$display_bio          = ! empty( $params['enable_registration_bio'] ) && 'yes' === $params['enable_registration_bio'] ? 1 : 0;
+			$require_bio          = ! empty( $params['registration_bio_required'] ) && 'yes' === $params['registration_bio_required'] ? 1 : 0;
+			$registration_privacy = ! empty( $params['enable_registration_privacy'] ) && 'yes' === $params['enable_registration_privacy'] ? 1 : 0;
+			$terms_condition      = ! empty( $params['enable_registration_terms'] ) && 'yes' === $params['enable_registration_terms'] ? 1 : 0;
 
 			$username       = ! empty( $_POST['username'] ) ? directorist_clean( wp_unslash( $_POST['username'] ) ) : '';
 			$password       = ! empty( $_POST['password'] ) ? $_POST['password'] : '';                                                 // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized, WordPress.Security.ValidatedSanitizedInput.MissingUnslash
@@ -95,27 +101,27 @@ if ( ! class_exists( 'ATBDP_User' ) ) :
 			$t_c_check      = ! empty( $_POST['t_c_check'] ) ? directorist_clean( wp_unslash( $_POST['t_c_check'] ) ) : '';
 			$previous_page  = ! empty( $_POST['previous_page'] ) ? directorist_clean( $_POST['previous_page'] ) : '';
 
-			//password validation
+			// password validation
 			if ( ! empty( $display_password ) && empty( $password ) ) {
 				$password_validation = 'yes';
 			}
 
-			//website validation
+			// website validation
 			if ( ! empty( $require_website ) && ! empty( $display_website ) && empty( $website ) ) {
 				$website_validation = 'yes';
 			}
 
-			//first name validation
+			// first name validation
 			if ( ! empty( $require_fname ) && ! empty( $display_fname ) && empty( $first_name ) ) {
 				$fname_validation = 'yes';
 			}
 
-			//last name validation
-			if ( ! empty( $require_lname ) && !empty( $display_lname ) && empty( $last_name ) ) {
+			// last name validation
+			if ( ! empty( $require_lname ) && ! empty( $display_lname ) && empty( $last_name ) ) {
 				$lname_validation = 'yes';
 			}
 
-			//bio validation
+			// bio validation
 			if ( ! empty( $require_bio ) && ! empty( $display_bio ) && empty( $bio ) ) {
 				$bio_validation = 'yes';
 			}
@@ -124,12 +130,12 @@ if ( ! class_exists( 'ATBDP_User' ) ) :
 				$user_type_validation = 'yes';
 			}
 
-			//privacy validation
+			// privacy validation
 			if ( ! empty( $registration_privacy ) && empty( $privacy_policy ) ) {
 				$privacy_validation = 'yes';
 			}
 
-			//terms & conditions validation
+			// terms & conditions validation
 			if ( ! empty( $terms_condition ) && empty( $t_c_check ) ) {
 				$t_c_validation = 'yes';
 			}
@@ -139,13 +145,13 @@ if ( ! class_exists( 'ATBDP_User' ) ) :
 			if ( 'passed' !== $validation ) {
 				$error_msg = '';
 
-				if ( empty( $username ) || ! empty( $password_validation ) || empty( $email ) || ! empty( $website_validation ) || ! empty( $fname_validation ) || ! empty( $lname_validation ) || ! empty( $bio_validation )|| ! empty( $privacy_validation ) || ! empty( $t_c_validation ) ) {
+				if ( empty( $username ) || ! empty( $password_validation ) || empty( $email ) || ! empty( $website_validation ) || ! empty( $fname_validation ) || ! empty( $lname_validation ) || ! empty( $bio_validation ) || ! empty( $privacy_validation ) || ! empty( $t_c_validation ) ) {
 					$error_msg = directorist_get_registration_error_message( 1 );
 				} elseif ( email_exists( $email ) ) {
 					$error_msg = directorist_get_registration_error_message( 2 );
 				} elseif ( ! empty( $username ) && 4 > strlen( $username ) ) {
 					$error_msg = directorist_get_registration_error_message( 3 );
-				} elseif ( ! empty( $username ) && preg_match('/\s/',$username) ) {
+				} elseif ( ! empty( $username ) && preg_match( '/\s/', $username ) ) {
 					$error_msg = directorist_get_registration_error_message( 7 );
 				} elseif ( username_exists( $username ) ) {
 					$error_msg = directorist_get_registration_error_message( 4 );
@@ -158,9 +164,11 @@ if ( ! class_exists( 'ATBDP_User' ) ) :
 				}
 
 				if ( $error_msg ) {
-					wp_send_json_error( array(
-						'error' => $error_msg
-					) );
+					wp_send_json_error(
+						array(
+							'error' => $error_msg,
+						)
+					);
 				}
 			}
 
@@ -184,6 +192,7 @@ if ( ! class_exists( 'ATBDP_User' ) ) :
 
 			/**
 			 * It fires before processing a submitted registration from the front end
+			 *
 			 * @param array $_POST the array containing the submitted listing data.
 			 * @since 8.0
 			 * */
@@ -192,9 +201,11 @@ if ( ! class_exists( 'ATBDP_User' ) ) :
 			$user_id = $this->complete_registration( $username, $password, $email, $website, $first_name, $last_name, $bio );
 
 			if ( is_wp_error( $user_id ) || ! $user_id ) {
-				wp_send_json_success( array(
-					'error' => directorist_get_registration_error_message( 0 )
-				) );
+				wp_send_json_success(
+					array(
+						'error' => directorist_get_registration_error_message( 0 ),
+					)
+				);
 			}
 
 			/*
@@ -218,10 +229,14 @@ if ( ! class_exists( 'ATBDP_User' ) ) :
 				ATBDP()->email->send_user_confirmation_email( get_user_by( 'ID', $user_id ) );
 
 				$response = array(
-					'redirect_url' => esc_url_raw( ATBDP_Permalink::get_signin_signup_page_link( array(
-						'user'         => base64_encode( $email ),
-						'verification' => 1,
-					) ) )
+					'redirect_url' => esc_url_raw(
+						ATBDP_Permalink::get_signin_signup_page_link(
+							array(
+								'user'         => base64_encode( $email ),
+								'verification' => 1,
+							)
+						)
+					),
 				);
 
 				wp_send_json_success( $response );
@@ -229,9 +244,9 @@ if ( ! class_exists( 'ATBDP_User' ) ) :
 
 			ATBDP()->email->custom_wp_new_user_notification_email( $user_id );
 
-			$auto_login            = ! empty( $params['auto_login_after_registration'] ) && 'yes' === $params['auto_login_after_registration']  ? 1 : 0;
-			$redirect_after_reg	   = ATBDP_Permalink::get_reg_redirection_page_link('');
-			$redirection_link      = ! empty( $params['redirection_after_registration'] ) ? $params['redirection_after_registration'] : $redirect_after_reg;
+			$auto_login         = ! empty( $params['auto_login_after_registration'] ) && 'yes' === $params['auto_login_after_registration'] ? 1 : 0;
+			$redirect_after_reg = ATBDP_Permalink::get_reg_redirection_page_link( '' );
+			$redirection_link   = ! empty( $params['redirection_after_registration'] ) ? $params['redirection_after_registration'] : $redirect_after_reg;
 
 			if ( ! empty( $auto_login ) ) {
 				wp_set_current_user( $user_id, $email );
@@ -240,15 +255,15 @@ if ( ! class_exists( 'ATBDP_User' ) ) :
 
 			if ( ! empty( $redirection_link ) ) {
 				$response = array(
-					'redirect_url' => esc_url_raw( ATBDP_Permalink::get_reg_redirection_page_link( $previous_page,  array( 'registration_status' => true ), $redirection_link ) ),
-					'message' => esc_html__( 'Registration completed. Please check your email for confirmation. You will be redirected...', 'directorist' ),
+					'redirect_url' => esc_url_raw( ATBDP_Permalink::get_reg_redirection_page_link( $previous_page, array( 'registration_status' => true ), $redirection_link ) ),
+					'message'      => esc_html__( 'Registration completed. Please check your email for confirmation. You will be redirected...', 'directorist' ),
 				);
 
 				wp_send_json_success( $response );
 			} else {
 				$response = array(
 					'redirect_url' => esc_url_raw( ATBDP_Permalink::get_signin_signup_page_link( array( 'registration_status' => true ) ) ),
-					'message' => esc_html__( 'Registration completed. Please check your email for confirmation. You will be redirected...', 'directorist' ),
+					'message'      => esc_html__( 'Registration completed. Please check your email for confirmation. You will be redirected...', 'directorist' ),
 				);
 
 				wp_send_json_success( $response );
@@ -292,7 +307,7 @@ if ( ! class_exists( 'ATBDP_User' ) ) :
 			<?php $email_verify_checkbox = ob_get_clean(); ?>
 			<script>
 				jQuery(($) => {
-					$('#your-profile .user-email-wrap, #createuser .user-pass2-wrap').after(`<?php echo $email_verify_checkbox;?>`);
+					$('#your-profile .user-email-wrap, #createuser .user-pass2-wrap').after(`<?php echo $email_verify_checkbox; ?>`);
 				});
 			</script>
 			<?php
@@ -363,11 +378,14 @@ if ( ! class_exists( 'ATBDP_User' ) ) :
 					break;
 			}
 
-			return add_query_arg( array(
-				'users'                   => $user_ids,
-				'email-verification-type' => $email_verification_type,
-				'_wpnonce'                => wp_create_nonce( 'directorist_verify_user_email_notice' )
-			), $sendback );
+			return add_query_arg(
+				array(
+					'users'                   => $user_ids,
+					'email-verification-type' => $email_verification_type,
+					'_wpnonce'                => wp_create_nonce( 'directorist_verify_user_email_notice' ),
+				),
+				$sendback
+			);
 		}
 
 		public function action_email_verification_notice() {
@@ -396,28 +414,37 @@ if ( ! class_exists( 'ATBDP_User' ) ) :
 
 			switch ( $_GET['email-verification-type'] ) {
 				case 'sent-request':
-					$message = sprintf( _n(
-						'Email verification request sent to %s user.',
-						'Email verification request sent to %s users.',
-						$total_links,
-						'directorist'
-					), $raw_links );
+					$message = sprintf(
+						_n(
+							'Email verification request sent to %s user.',
+							'Email verification request sent to %s users.',
+							$total_links,
+							'directorist'
+						),
+						$raw_links
+					);
 					break;
 				case 'verified':
-					$message = sprintf( _n(
-						'%s user marked as email verified.',
-						'%s users marked as email verified.',
-						$total_links,
-						'directorist'
-					), $raw_links );
+					$message = sprintf(
+						_n(
+							'%s user marked as email verified.',
+							'%s users marked as email verified.',
+							$total_links,
+							'directorist'
+						),
+						$raw_links
+					);
 					break;
 				case 'unverified':
-					$message = sprintf( _n(
-						'%s user marked as email unverified.',
-						'%s users marked as email unverified.',
-						$total_links,
-						'directorist'
-					), $raw_links );
+					$message = sprintf(
+						_n(
+							'%s user marked as email unverified.',
+							'%s users marked as email unverified.',
+							$total_links,
+							'directorist'
+						),
+						$raw_links
+					);
 					break;
 			}
 
@@ -445,18 +472,21 @@ if ( ! class_exists( 'ATBDP_User' ) ) :
 		 * @param \WP_User $user_object WP_User object for the currently listed user.
 		 * @return string[] An array of action links to be displayed. Default 'Edit', 'Delete' for single site, and 'Edit', 'Remove' for Multisite.
 		 */
-		public function filter_user_row_actions( array $actions, \WP_User $user_object ) : array {
+		public function filter_user_row_actions( array $actions, \WP_User $user_object ): array {
 
 			$is_email_unverified = (bool) get_user_meta( $user_object->ID, 'directorist_user_email_unverified', true );
 
 			if ( $is_email_unverified ) {
-				$url = add_query_arg( array(
-					'action'   => 'directorist_request_email_verification',
-					'users[]'  => $user_object->ID,
-					'_wpnonce' => wp_create_nonce( 'bulk-users' )
-				), admin_url( 'users.php' ) );
+				$url = add_query_arg(
+					array(
+						'action'   => 'directorist_request_email_verification',
+						'users[]'  => $user_object->ID,
+						'_wpnonce' => wp_create_nonce( 'bulk-users' ),
+					),
+					admin_url( 'users.php' )
+				);
 
-				$actions['directorist_request_email_verification'] = "<a style='cursor:pointer;' href=" . esc_url( $url ) . ">" . esc_html__( 'Request email verification', 'directorist' ) . "</a>";
+				$actions['directorist_request_email_verification'] = "<a style='cursor:pointer;' href=" . esc_url( $url ) . '>' . esc_html__( 'Request email verification', 'directorist' ) . '</a>';
 			}
 
 			return $actions;
@@ -467,8 +497,8 @@ if ( ! class_exists( 'ATBDP_User' ) ) :
 		 *
 		 * @param int $user_id  User ID.
 		 */
-		public function action_user_register(int $user_id) : void {
-			add_user_meta($user_id, 'directorist_user_email_unverified', true);
+		public function action_user_register( int $user_id ): void {
+			add_user_meta( $user_id, 'directorist_user_email_unverified', true );
 		}
 
 		/**
@@ -507,21 +537,27 @@ if ( ! class_exists( 'ATBDP_User' ) ) :
 				return $user;
 			}
 
-			$mail_send_url = add_query_arg( array(
-				'action'            => 'directorist_send_confirmation_email',
-				'user'              => $user->user_email,
-				'directorist_nonce' => wp_create_nonce( 'directorist_nonce' ),
-			), admin_url( 'admin-ajax.php' ) );
+			$mail_send_url = add_query_arg(
+				array(
+					'action'            => 'directorist_send_confirmation_email',
+					'user'              => $user->user_email,
+					'directorist_nonce' => wp_create_nonce( 'directorist_nonce' ),
+				),
+				admin_url( 'admin-ajax.php' )
+			);
 
-			return new WP_Error( 'email_unverified', sprintf(
-				__( 'Your account is not yet verified. Please check your email to verify your account. If you did not receive the verification email, please click on the %s', 'directorist'),
-				'<a href="' . esc_url_raw( $mail_send_url ) . '">' . __( 'Resend confirmation email', 'directorist' ) . '</a>' )
+			return new WP_Error(
+				'email_unverified',
+				sprintf(
+					__( 'Your account is not yet verified. Please check your email to verify your account. If you did not receive the verification email, please click on the %s', 'directorist' ),
+					'<a href="' . esc_url_raw( $mail_send_url ) . '">' . __( 'Resend confirmation email', 'directorist' ) . '</a>'
+				)
 			);
 		}
 
 		public function registration_redirection() {
 			$dashbord_page_id = (int) get_directorist_option( 'user_dashboard' );
-			$signin_page_id = (int) get_directorist_option( 'signin_signup_page' );
+			$signin_page_id   = (int) get_directorist_option( 'signin_signup_page' );
 
 			if ( $dashbord_page_id && ! is_user_logged_in() && is_page( $dashbord_page_id ) ) {
 				wp_safe_redirect( ATBDP_Permalink::get_signin_signup_page_link() );
@@ -545,13 +581,13 @@ if ( ! class_exists( 'ATBDP_User' ) ) :
 		 *
 		 * @param string $column_value
 		 * @param string $column_name
-		 * @param int $user_id
+		 * @param int    $user_id
 		 *
 		 * @return string
 		 */
 		public function manage_users_custom_column( $column_value, $column_name, $user_id ) {
 
-			switch ($column_name) {
+			switch ( $column_name ) {
 				case 'directorist_email_verified':
 					$is_user_unverified = (bool) get_user_meta( $user_id, 'directorist_user_email_unverified', true );
 					if ( $is_user_unverified ) {
@@ -567,10 +603,10 @@ if ( ! class_exists( 'ATBDP_User' ) ) :
 					} elseif ( 'general' === $user_type ) {
 						return esc_html__( 'User', 'directorist' );
 					} elseif ( 'become_author' === $user_type ) {
-						$author_pending =  "<p>Author <span style='color:red;'>( " . esc_html__('Pending', 'directorist') . " )</span></p>";
-						$approve        =  "<a href='' id='atbdp-user-type-approve' style='color: #388E3C' data-userId={$user_id} data-nonce=". wp_create_nonce( 'atbdp_user_type_approve' ) ."><span>" . esc_html__('Approve', 'directorist') . " </span></a> | ";
-						$deny           =  "<a href='' id='atbdp-user-type-deny' style='color: red' data-userId={$user_id} data-nonce=". wp_create_nonce( 'atbdp_user_type_deny' ) ."><span>" . esc_html__('Deny', 'directorist') . "</span></a>";
-						return "<div class='atbdp-user-type' id='user-type-". $user_id ."'>" .$author_pending . $approve . $deny . "</div>";
+						$author_pending = "<p>Author <span style='color:red;'>( " . esc_html__( 'Pending', 'directorist' ) . ' )</span></p>';
+						$approve        = "<a href='' id='atbdp-user-type-approve' style='color: #388E3C' data-userId={$user_id} data-nonce=" . wp_create_nonce( 'atbdp_user_type_approve' ) . '><span>' . esc_html__( 'Approve', 'directorist' ) . ' </span></a> | ';
+						$deny           = "<a href='' id='atbdp-user-type-deny' style='color: red' data-userId={$user_id} data-nonce=" . wp_create_nonce( 'atbdp_user_type_deny' ) . '><span>' . esc_html__( 'Deny', 'directorist' ) . '</span></a>';
+						return "<div class='atbdp-user-type' id='user-type-" . $user_id . "'>" . $author_pending . $approve . $deny . '</div>';
 					}
 			}
 
@@ -585,7 +621,7 @@ if ( ! class_exists( 'ATBDP_User' ) ) :
 		 * @return array
 		 */
 		function manage_users_columns( $columns ) {
-			if(directorist_is_email_verification_enabled()) {
+			if ( directorist_is_email_verification_enabled() ) {
 				$columns['directorist_email_verified'] = esc_html__( 'Email Verified?', 'directorist' );
 			}
 			$columns['user_type'] = esc_html__( 'User Type', 'directorist' );
@@ -593,15 +629,15 @@ if ( ! class_exists( 'ATBDP_User' ) ) :
 		}
 
 		// public function user_functions_ready_hook() {
-		// 	//Allow Contributors/Subscriber/Customer to Add Media
-		// 	$roles = (array) wp_get_current_user()->roles;
+		// Allow Contributors/Subscriber/Customer to Add Media
+		// $roles = (array) wp_get_current_user()->roles;
 
-		// 	if ( ( in_array( 'contributor', $roles ) ||
-		// 		in_array( 'subscriber', $roles ) ||
-		// 		in_array( 'customer', $roles ) ) &&
-		// 		! current_user_can( 'upload_files' ) ) {
-		// 		add_action( 'init', array( $this, 'allow_contributor_uploads' ) );
-		// 	}
+		// if ( ( in_array( 'contributor', $roles ) ||
+		// in_array( 'subscriber', $roles ) ||
+		// in_array( 'customer', $roles ) ) &&
+		// ! current_user_can( 'upload_files' ) ) {
+		// add_action( 'init', array( $this, 'allow_contributor_uploads' ) );
+		// }
 		// }
 
 		/**
@@ -610,25 +646,25 @@ if ( ! class_exists( 'ATBDP_User' ) ) :
 		 * @return void
 		 */
 		// public function allow_contributor_uploads() {
-		// 	$roles = (array) wp_get_current_user()->roles;
+		// $roles = (array) wp_get_current_user()->roles;
 
-		// 	// contributor
-		// 	if ( in_array( 'contributor', $roles ) ){
-		// 		$contributor = get_role( 'contributor' );
-		// 		$contributor->add_cap( 'upload_files' );
-		// 	}
+		// contributor
+		// if ( in_array( 'contributor', $roles ) ){
+		// $contributor = get_role( 'contributor' );
+		// $contributor->add_cap( 'upload_files' );
+		// }
 
-		// 	// subscriber
-		// 	if ( in_array( 'subscriber', $roles ) ){
-		// 		$subscriber = get_role( 'subscriber' );
-		// 		$subscriber->add_cap( 'upload_files' );
-		// 	}
+		// subscriber
+		// if ( in_array( 'subscriber', $roles ) ){
+		// $subscriber = get_role( 'subscriber' );
+		// $subscriber->add_cap( 'upload_files' );
+		// }
 
-		// 	// customer
-		// 	if ( in_array( 'customer', $roles ) ){
-		// 		$customer = get_role( 'customer' );
-		// 		$customer->add_cap( 'upload_files' );
-		// 	}
+		// customer
+		// if ( in_array( 'customer', $roles ) ){
+		// $customer = get_role( 'customer' );
+		// $customer->add_cap( 'upload_files' );
+		// }
 		// }
 
 		public function activate_user() {
@@ -636,20 +672,21 @@ if ( ! class_exists( 'ATBDP_User' ) ) :
 			if ( $user_id ) {
 				// get user meta activation hash field
 				$code = get_user_meta( $user_id, 'has_to_be_activated', true );
-				$key = filter_input( INPUT_GET, 'key' );
+				$key  = filter_input( INPUT_GET, 'key' );
 				if ( $code == $key ) {
 					delete_user_meta( $user_id, 'has_to_be_activated' );
-					wp_safe_redirect(ATBDP_Permalink::get_login_page_link());
+					wp_safe_redirect( ATBDP_Permalink::get_login_page_link() );
 				}
 			}
 		}
 
-		public function registration_form( ) {
-			ATBDP()->load_template('front-end/user-registration-form');
+		public function registration_form() {
+			ATBDP()->load_template( 'front-end/user-registration-form' );
 		}
 
 		/**
 		 * It registers a user. It is a private function, All the vars this function uses will be passed into it after proper validation and sanitization
+		 *
 		 * @param $username
 		 * @param $password
 		 * @param $email
@@ -659,9 +696,9 @@ if ( ! class_exists( 'ATBDP_User' ) ) :
 		 * @param $bio
 		 * @return bool|int|WP_Error
 		 */
-		private function complete_registration($username, $password, $email, $website, $first_name, $last_name, $bio) {
-			global $reg_errors, $username, $password, $email, $website, $first_name, $last_name,  $bio;
-			$reg_errors = new WP_Error;
+		private function complete_registration( $username, $password, $email, $website, $first_name, $last_name, $bio ) {
+			global $reg_errors, $username, $password, $email, $website, $first_name, $last_name, $bio;
+			$reg_errors = new WP_Error();
 
 			if ( 1 > count( $reg_errors->get_error_messages() ) ) {
 				$userdata = array(
@@ -681,113 +718,115 @@ if ( ! class_exists( 'ATBDP_User' ) ) :
 			return false;
 		}
 
-		public function registration_validation( $username, $password, $email, $website, $first_name, $last_name, $bio, $user_type, $privacy_policy, $t_c_check )  {
+		public function registration_validation( $username, $password, $email, $website, $first_name, $last_name, $bio, $user_type, $privacy_policy, $t_c_check ) {
 			global $reg_errors;
-			$require_website             = get_directorist_option('require_website_reg',0);
-			$display_website             = get_directorist_option('display_website_reg',1);
-			$display_fname               = get_directorist_option('display_fname_reg',1);
-			$require_fname               = get_directorist_option('require_fname_reg',0);
-			$display_lname               = get_directorist_option('display_lname_reg',1);
-			$require_lname               = get_directorist_option('require_lname_reg',0);
-			$display_user_type           = get_directorist_option('display_user_type',0);
-			$display_bio                 = get_directorist_option('display_bio_reg',1);
-			$require_bio                 = get_directorist_option('require_bio_reg',0);
-			$display_password            = get_directorist_option('display_password_reg',1);
-			$require_password            = get_directorist_option('require_password_reg',0);
-			$registration_privacy        = get_directorist_option('registration_privacy',1);
-			$terms_condition             = get_directorist_option('regi_terms_condition',1);
-			//password validation
-			if(!empty($require_password) && !empty($display_password) && empty($password)){
+			$require_website      = get_directorist_option( 'require_website_reg', 0 );
+			$display_website      = get_directorist_option( 'display_website_reg', 1 );
+			$display_fname        = get_directorist_option( 'display_fname_reg', 1 );
+			$require_fname        = get_directorist_option( 'require_fname_reg', 0 );
+			$display_lname        = get_directorist_option( 'display_lname_reg', 1 );
+			$require_lname        = get_directorist_option( 'require_lname_reg', 0 );
+			$display_user_type    = get_directorist_option( 'display_user_type', 0 );
+			$display_bio          = get_directorist_option( 'display_bio_reg', 1 );
+			$require_bio          = get_directorist_option( 'require_bio_reg', 0 );
+			$display_password     = get_directorist_option( 'display_password_reg', 1 );
+			$require_password     = get_directorist_option( 'require_password_reg', 0 );
+			$registration_privacy = get_directorist_option( 'registration_privacy', 1 );
+			$terms_condition      = get_directorist_option( 'regi_terms_condition', 1 );
+			// password validation
+			if ( ! empty( $require_password ) && ! empty( $display_password ) && empty( $password ) ) {
 				$password_validation = 'yes';
 			}
-			//website validation
-			if(!empty($require_website) && !empty($display_website) && empty($website)){
+			// website validation
+			if ( ! empty( $require_website ) && ! empty( $display_website ) && empty( $website ) ) {
 				$website_validation = 'yes';
 			}
-			//first name validation
-			if(!empty($require_fname) && !empty($display_fname) && empty($first_name)){
+			// first name validation
+			if ( ! empty( $require_fname ) && ! empty( $display_fname ) && empty( $first_name ) ) {
 				$fname_validation = 'yes';
 			}
-			//last name validation
-			if(!empty($require_lname) && !empty($display_lname) && empty($last_name)){
+			// last name validation
+			if ( ! empty( $require_lname ) && ! empty( $display_lname ) && empty( $last_name ) ) {
 				$lname_validation = 'yes';
 			}
-			//user type validation
-			if( ! empty( $display_user_type ) && empty( $user_type ) ) {
+			// user type validation
+			if ( ! empty( $display_user_type ) && empty( $user_type ) ) {
 				$user_type_validation = 'yes';
 			}
-			//bio validation
-			if(!empty($require_bio) && !empty($display_bio) && empty($bio)){
+			// bio validation
+			if ( ! empty( $require_bio ) && ! empty( $display_bio ) && empty( $bio ) ) {
 				$bio_validation = 'yes';
 			}
-			//privacy validation
-			if(!empty($registration_privacy) && empty($privacy_policy)){
+			// privacy validation
+			if ( ! empty( $registration_privacy ) && empty( $privacy_policy ) ) {
 				$privacy_validation = 'yes';
 			}
-			//terms & conditions validation
-			if(!empty($terms_condition) && empty($t_c_check)){
+			// terms & conditions validation
+			if ( ! empty( $terms_condition ) && empty( $t_c_check ) ) {
 				$t_c_validation = 'yes';
 			}
-			$reg_errors = new WP_Error;
-			if ( empty( $username ) || !empty( $password_validation ) || empty( $email ) || !empty($website_validation) || !empty($fname_validation) || !empty($lname_validation) || !empty($bio_validation) || !empty($privacy_validation) || !empty($t_c_validation) || ! empty( $user_type_validation ) ) {
-				$reg_errors->add('field', esc_html__('Required form field is missing. Please fill all required fields.', 'directorist'));
+			$reg_errors = new WP_Error();
+			if ( empty( $username ) || ! empty( $password_validation ) || empty( $email ) || ! empty( $website_validation ) || ! empty( $fname_validation ) || ! empty( $lname_validation ) || ! empty( $bio_validation ) || ! empty( $privacy_validation ) || ! empty( $t_c_validation ) || ! empty( $user_type_validation ) ) {
+				$reg_errors->add( 'field', esc_html__( 'Required form field is missing. Please fill all required fields.', 'directorist' ) );
 			}
 
-			if (!empty( $username ) && 4 > strlen( $username ) ) {
-				$reg_errors->add( 'username_length', esc_html__('Username too short. At least 4 characters is required', 'directorist') );
+			if ( ! empty( $username ) && 4 > strlen( $username ) ) {
+				$reg_errors->add( 'username_length', esc_html__( 'Username too short. At least 4 characters is required', 'directorist' ) );
 			}
 
-			if ( username_exists( $username ) )
-				$reg_errors->add('user_name', esc_html__('Sorry, that username already exists!', 'directorist'));
+			if ( username_exists( $username ) ) {
+				$reg_errors->add( 'user_name', esc_html__( 'Sorry, that username already exists!', 'directorist' ) );
+			}
 
-			if ( preg_match('/\s/',$username))
-				$reg_errors->add('space_in_username', esc_html__('Sorry, space is not allowed in username!', 'directorist'));
+			if ( preg_match( '/\s/', $username ) ) {
+				$reg_errors->add( 'space_in_username', esc_html__( 'Sorry, space is not allowed in username!', 'directorist' ) );
+			}
 
 			if ( ! validate_username( $username ) ) {
-				$reg_errors->add( 'username_invalid', esc_html__('Sorry, the username you entered is not valid', 'directorist') );
+				$reg_errors->add( 'username_invalid', esc_html__( 'Sorry, the username you entered is not valid', 'directorist' ) );
 			}
 
 			if ( ! empty( $password ) && 5 > strlen( $password ) ) {
-				$reg_errors->add( 'password', esc_html__('Password length must be greater than 5', 'directorist') );
+				$reg_errors->add( 'password', esc_html__( 'Password length must be greater than 5', 'directorist' ) );
 			}
 
 			if ( empty( $privacy_policy ) ) {
-				$reg_errors->add( 'empty_privacy', esc_html__('Privacy field is required', 'directorist') );
+				$reg_errors->add( 'empty_privacy', esc_html__( 'Privacy field is required', 'directorist' ) );
 			}
 			if ( empty( $t_c_check ) ) {
-				$reg_errors->add( 'empty_terms', esc_html__('Terms and Condition field is required', 'directorist') );
+				$reg_errors->add( 'empty_terms', esc_html__( 'Terms and Condition field is required', 'directorist' ) );
 			}
 
 			if ( empty( $user_type_validation ) ) {
-				$reg_errors->add( 'empty_terms', esc_html__('Terms and Condition field is required', 'directorist') );
+				$reg_errors->add( 'empty_terms', esc_html__( 'Terms and Condition field is required', 'directorist' ) );
 			}
 
-			if ( !is_email( $email ) ) {
-				$reg_errors->add( 'email_invalid', esc_html__('Email is not valid', 'directorist') );
+			if ( ! is_email( $email ) ) {
+				$reg_errors->add( 'email_invalid', esc_html__( 'Email is not valid', 'directorist' ) );
 			}
 			if ( email_exists( $email ) ) {
-				$reg_errors->add( 'email', esc_html__('Email Already in use', 'directorist') );
+				$reg_errors->add( 'email', esc_html__( 'Email Already in use', 'directorist' ) );
 			}
 			if ( ! empty( $first_name ) ) {
-				if (!is_string($first_name)) {
-					$reg_errors->add('First Name', esc_html__('First Name must be letters or combination of letters and number', 'directorist'));
+				if ( ! is_string( $first_name ) ) {
+					$reg_errors->add( 'First Name', esc_html__( 'First Name must be letters or combination of letters and number', 'directorist' ) );
 				}
 			}
 			if ( ! empty( $last_name ) ) {
-				if (!is_string($last_name)) {
-					$reg_errors->add('Last Name', esc_html__('Last Name must be letters or combination of letters and number', 'directorist'));
+				if ( ! is_string( $last_name ) ) {
+					$reg_errors->add( 'Last Name', esc_html__( 'Last Name must be letters or combination of letters and number', 'directorist' ) );
 				}
 			}
 
 			if ( ! empty( $website ) ) {
 				if ( ! filter_var( $website, FILTER_VALIDATE_URL ) ) {
-					$reg_errors->add( 'website', esc_html__('Website is not a valid URL', 'directorist') );
+					$reg_errors->add( 'website', esc_html__( 'Website is not a valid URL', 'directorist' ) );
 				}
 			}
 			// if we have errors then returns a string of error message.
 			$e = $reg_errors->get_error_messages(); // save the errors in a placeholder var as we can not use function inside empty() until php 5.5.
-			if ( is_wp_error( $reg_errors ) && !empty($e) ) {
-				//@todo; errors should be kept in the session using a helper function so that we can get all the errors after redirection
+			if ( is_wp_error( $reg_errors ) && ! empty( $e ) ) {
+				// @todo; errors should be kept in the session using a helper function so that we can get all the errors after redirection
 				$err_msg = '';
 				foreach ( $reg_errors->get_error_messages() as $error ) {
 					$err_msg .= '<div>';
@@ -796,11 +835,10 @@ if ( ! class_exists( 'ATBDP_User' ) ) :
 					$err_msg .= '</div>';
 
 				}
-				return apply_filters('atbdp_registration_error', $err_msg);
+				return apply_filters( 'atbdp_registration_error', $err_msg );
 
 			}
 			return 'passed';
-
 		}
 
 		public function handle_user_registration() {
@@ -825,6 +863,7 @@ if ( ! class_exists( 'ATBDP_User' ) ) :
 
 			/**
 			 * It fires before processing a submitted registration from the front end
+			 *
 			 * @param array $_POST the array containing the submitted listing data.
 			 * @since 4.4.0
 			 * */
@@ -841,117 +880,123 @@ if ( ! class_exists( 'ATBDP_User' ) ) :
 			$privacy_policy = ! empty( $_POST['privacy_policy'] ) ? directorist_clean( wp_unslash( $_POST['privacy_policy'] ) ) : '';
 			$t_c_check      = ! empty( $_POST['t_c_check'] ) ? directorist_clean( wp_unslash( $_POST['t_c_check'] ) ) : '';
 
-			//password validation
+			// password validation
 			if ( ! empty( $require_password ) && ! empty( $display_password ) && empty( $password ) ) {
 				$password_validation = 'yes';
 			}
 
-			//website validation
+			// website validation
 			if ( ! empty( $require_website ) && ! empty( $display_website ) && empty( $website ) ) {
 				$website_validation = 'yes';
 			}
 
-			//first name validation
+			// first name validation
 			if ( ! empty( $require_fname ) && ! empty( $display_fname ) && empty( $first_name ) ) {
 				$fname_validation = 'yes';
 			}
 
-			//last name validation
-			if ( ! empty( $require_lname ) && !empty( $display_lname ) && empty( $last_name ) ) {
+			// last name validation
+			if ( ! empty( $require_lname ) && ! empty( $display_lname ) && empty( $last_name ) ) {
 				$lname_validation = 'yes';
 			}
 
-			//bio validation
-			if(!empty($require_bio) && !empty($display_bio) && empty($bio)){
+			// bio validation
+			if ( ! empty( $require_bio ) && ! empty( $display_bio ) && empty( $bio ) ) {
 				$bio_validation = 'yes';
 			}
-			if( ! empty( $display_user_type ) && empty( $user_type) ) {
+			if ( ! empty( $display_user_type ) && empty( $user_type ) ) {
 				$user_type_validation = 'yes';
 			}
-			//privacy validation
-			if(!empty($registration_privacy) && empty($privacy_policy)){
+			// privacy validation
+			if ( ! empty( $registration_privacy ) && empty( $privacy_policy ) ) {
 				$privacy_validation = 'yes';
 			}
-			//terms & conditions validation
-			if(!empty($terms_condition) && empty($t_c_check)){
+			// terms & conditions validation
+			if ( ! empty( $terms_condition ) && empty( $t_c_check ) ) {
 				$t_c_validation = 'yes';
 			}
 			// validate all the inputs
 			$validation = $this->registration_validation( $username, $password, $email, $website, $first_name, $last_name, $bio, $user_type, $privacy_policy, $t_c_check );
-			if ( 'passed' !== $validation ){
-				if (empty( $username ) || !empty( $password_validation ) || empty( $email ) || !empty($website_validation) || !empty($fname_validation) || !empty($lname_validation) || !empty($bio_validation)|| !empty($privacy_validation)|| !empty($t_c_validation)){
-					wp_safe_redirect(ATBDP_Permalink::get_registration_page_link(array('errors' => 1)));
+			if ( 'passed' !== $validation ) {
+				if ( empty( $username ) || ! empty( $password_validation ) || empty( $email ) || ! empty( $website_validation ) || ! empty( $fname_validation ) || ! empty( $lname_validation ) || ! empty( $bio_validation ) || ! empty( $privacy_validation ) || ! empty( $t_c_validation ) ) {
+					wp_safe_redirect( ATBDP_Permalink::get_registration_page_link( array( 'errors' => 1 ) ) );
 					exit();
-				}elseif(email_exists($email)){
-					wp_safe_redirect(ATBDP_Permalink::get_registration_page_link(array('errors' => 2)));
+				} elseif ( email_exists( $email ) ) {
+					wp_safe_redirect( ATBDP_Permalink::get_registration_page_link( array( 'errors' => 2 ) ) );
 					exit();
-				}elseif(!empty( $username ) && 4 > strlen( $username ) ){
-					wp_safe_redirect(ATBDP_Permalink::get_registration_page_link(array('errors' => 3)));
+				} elseif ( ! empty( $username ) && 4 > strlen( $username ) ) {
+					wp_safe_redirect( ATBDP_Permalink::get_registration_page_link( array( 'errors' => 3 ) ) );
 					exit();
-				}elseif(!empty( $username ) && preg_match('/\s/',$username) ){
-					wp_safe_redirect(ATBDP_Permalink::get_registration_page_link(array('errors' => 7)));
+				} elseif ( ! empty( $username ) && preg_match( '/\s/', $username ) ) {
+					wp_safe_redirect( ATBDP_Permalink::get_registration_page_link( array( 'errors' => 7 ) ) );
 					exit();
-				}elseif( username_exists( $username )){
-					wp_safe_redirect(ATBDP_Permalink::get_registration_page_link(array('errors' => 4)));
+				} elseif ( username_exists( $username ) ) {
+					wp_safe_redirect( ATBDP_Permalink::get_registration_page_link( array( 'errors' => 4 ) ) );
 					exit();
-				}elseif(! empty( $password ) && 5 > strlen( $password )){
-					wp_safe_redirect(ATBDP_Permalink::get_registration_page_link(array('errors' => 5)));
+				} elseif ( ! empty( $password ) && 5 > strlen( $password ) ) {
+					wp_safe_redirect( ATBDP_Permalink::get_registration_page_link( array( 'errors' => 5 ) ) );
 					exit();
-				}elseif(!is_email( $email )){
-					wp_safe_redirect(ATBDP_Permalink::get_registration_page_link(array('errors' => 6)));
+				} elseif ( ! is_email( $email ) ) {
+					wp_safe_redirect( ATBDP_Permalink::get_registration_page_link( array( 'errors' => 6 ) ) );
 					exit();
-				} elseif( ! empty( $user_type_validation ) ) {
-					wp_safe_redirect(ATBDP_Permalink::get_registration_page_link(array('errors' => 8)));
+				} elseif ( ! empty( $user_type_validation ) ) {
+					wp_safe_redirect( ATBDP_Permalink::get_registration_page_link( array( 'errors' => 8 ) ) );
 					exit();
 				}
 			}
 
 			// sanitize user form input
 			global $username, $password, $email, $website, $first_name, $last_name, $bio;
-			$username   =   directorist_clean( wp_unslash( $_POST['username'] ) );
+			$username = directorist_clean( wp_unslash( $_POST['username'] ) );
 
-			if (empty($display_password) || empty($_POST['password'])){
-				$password   =   wp_generate_password( 12, false );
+			if ( empty( $display_password ) || empty( $_POST['password'] ) ) {
+				$password = wp_generate_password( 12, false );
 			} else {
-				$password   =  $_POST['password']; // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized, WordPress.Security.ValidatedSanitizedInput.MissingUnslash
+				$password = $_POST['password']; // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized, WordPress.Security.ValidatedSanitizedInput.MissingUnslash
 			}
 
-			$email            =   !empty($_POST['email']) ? sanitize_email( wp_unslash( $_POST['email'] ) ) : '';
-			$website          =   !empty($_POST['website']) ? directorist_clean( $_POST['website'] ) : ''; // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.MissingUnslash
-			$first_name       =   !empty($_POST['fname']) ? directorist_clean( wp_unslash( $_POST['fname'] ) ) : '';
-			$last_name        =   !empty($_POST['lname']) ? directorist_clean( wp_unslash( $_POST['lname'] ) ) : '';
-			$user_type        =   !empty($_POST['user_type']) ? directorist_clean( wp_unslash( $_POST['user_type'] ) ) : '';
-			$bio              =   !empty($_POST['bio']) ? sanitize_textarea_field( wp_unslash( $_POST['bio'] ) ) : '';
-			$previous_page    =   !empty($_POST['previous_page']) ? directorist_clean( $_POST['previous_page'] ) : ''; // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.MissingUnslash
+			$email         = ! empty( $_POST['email'] ) ? sanitize_email( wp_unslash( $_POST['email'] ) ) : '';
+			$website       = ! empty( $_POST['website'] ) ? directorist_clean( $_POST['website'] ) : ''; // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.MissingUnslash
+			$first_name    = ! empty( $_POST['fname'] ) ? directorist_clean( wp_unslash( $_POST['fname'] ) ) : '';
+			$last_name     = ! empty( $_POST['lname'] ) ? directorist_clean( wp_unslash( $_POST['lname'] ) ) : '';
+			$user_type     = ! empty( $_POST['user_type'] ) ? directorist_clean( wp_unslash( $_POST['user_type'] ) ) : '';
+			$bio           = ! empty( $_POST['bio'] ) ? sanitize_textarea_field( wp_unslash( $_POST['bio'] ) ) : '';
+			$previous_page = ! empty( $_POST['previous_page'] ) ? directorist_clean( $_POST['previous_page'] ) : ''; // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.MissingUnslash
 			// call @function complete_registration to create the user
 			// only when no WP_error is found
-			$user_id = $this->complete_registration($username, $password, $email, $website, $first_name, $last_name, $bio);
-			if ($user_id && !is_wp_error( $user_id )) {
+			$user_id = $this->complete_registration( $username, $password, $email, $website, $first_name, $last_name, $bio );
+			if ( $user_id && ! is_wp_error( $user_id ) ) {
 				/*
 				* @since 6.3.0
 				* If fires after completed user registration
 				*/
-				do_action('atbdp_user_registration_completed', $user_id);
-				update_user_meta($user_id, '_atbdp_generated_password', $password);
-				update_user_meta($user_id, '_atbdp_privacy', $privacy_policy);
-				update_user_meta($user_id, '_user_type', $user_type);
-				update_user_meta($user_id, '_atbdp_terms_and_conditions', $t_c_check);
+				do_action( 'atbdp_user_registration_completed', $user_id );
+				update_user_meta( $user_id, '_atbdp_generated_password', $password );
+				update_user_meta( $user_id, '_atbdp_privacy', $privacy_policy );
+				update_user_meta( $user_id, '_user_type', $user_type );
+				update_user_meta( $user_id, '_atbdp_terms_and_conditions', $t_c_check );
 				// user has been created successfully, now work on activation process
-				wp_new_user_notification($user_id, null, 'admin'); // send activation to the admin
+				wp_new_user_notification( $user_id, null, 'admin' ); // send activation to the admin
 
 				if ( directorist_is_email_verification_enabled() ) {
 					ATBDP()->email->send_user_confirmation_email( get_user_by( 'ID', $user_id ) );
 
-					wp_safe_redirect( esc_url_raw( ATBDP_Permalink::get_login_page_link( array(
-						'user'         => $email,
-						'verification' => 1,
-					) ) ) );
+					wp_safe_redirect(
+						esc_url_raw(
+							ATBDP_Permalink::get_login_page_link(
+								array(
+									'user'         => $email,
+									'verification' => 1,
+								)
+							)
+						)
+					);
 					exit();
 				}
 
-				ATBDP()->email->custom_wp_new_user_notification_email($user_id);
+				ATBDP()->email->custom_wp_new_user_notification_email( $user_id );
 
-				$redirection_after_reg = get_directorist_option( 'redirection_after_reg');
+				$redirection_after_reg = get_directorist_option( 'redirection_after_reg' );
 				$auto_login            = get_directorist_option( 'auto_login' );
 
 				if ( ! empty( $auto_login ) ) {
@@ -960,71 +1005,69 @@ if ( ! class_exists( 'ATBDP_User' ) ) :
 				}
 
 				if ( ! empty( $redirection_after_reg ) ) {
-					wp_safe_redirect( esc_url_raw( ATBDP_Permalink::get_reg_redirection_page_link( $previous_page,  array( 'registration_status' => true ) ) ) );
+					wp_safe_redirect( esc_url_raw( ATBDP_Permalink::get_reg_redirection_page_link( $previous_page, array( 'registration_status' => true ) ) ) );
 				} else {
 					wp_safe_redirect( esc_url_raw( ATBDP_Permalink::get_registration_page_link( array( 'registration_status' => true ) ) ) );
 				}
 				exit();
 			} else {
-				wp_safe_redirect( esc_url_raw( ATBDP_Permalink::get_registration_page_link(array('errors' => true ) ) ) );
+				wp_safe_redirect( esc_url_raw( ATBDP_Permalink::get_registration_page_link( array( 'errors' => true ) ) ) );
 				exit();
 			}
 		}
 
 		public function user_dashboard() {
 			// load user dashboard on the front end
-			ATBDP()->load_template('front-end/user-dashboard');
+			ATBDP()->load_template( 'front-end/user-dashboard' );
 		}
 
 		/**
 		 * It returns all the listing of the current user
+		 *
 		 * @return WP_Query   it returns an object of the WP_Query class with the items/listings on success and false on failure.
-
-		*/
-		public function current_user_listings()
-		{
+		 */
+		public function current_user_listings() {
 			return ATBDP()->listing->db->get_listing_by_user(); // it returns all the listing of the current user.
 		}
 
 		/**
 		 * It returns all the favraites listing of the current user
+		 *
 		 * @return WP_Query   it returns an object of the WP_Query class with the items/listings on success and false on failure.
-
-		*/
-		public function current_user_fav_listings()
-		{
+		 */
+		public function current_user_fav_listings() {
 			_deprecated_function( __METHOD__, '7.4.3', 'DB::favorite_listings_query' );
 			return DB::favorite_listings_query();
 		}
 
 		/**
 		 * It updates the user profile and meta data
+		 *
 		 * @param array $data the user data to update.
 		 * @return bool It returns true on success and false on failure
 		 */
-		public function update_profile($data)
-		{
+		public function update_profile( $data ) {
 			$userdata = array();
 			// we need to sanitize the data and then save it.
-			$ID = get_current_user_id();
-			$userdata['ID'] = $ID;
-			$userdata['display_name'] = !empty($data['full_name']) ? sanitize_text_field(trim($data['full_name'])) : '';
-			$userdata['user_email'] = !empty($data['user_email']) ? sanitize_email($data['user_email'] ): '';
-			$userdata['user_url'] = !empty($data['website']) ? sanitize_url(trim($data['website'] )): '';
-			$phone = !empty($data['phone']) ? sanitize_text_field(trim($data['phone'] )): '';
-			$first_name = !empty($data['first_name']) ? sanitize_text_field(trim($data['first_name'])) : '';
-			$last_name = !empty($data['last_name']) ? sanitize_text_field(trim($data['last_name'] )): '';
-			$address = !empty($data['address']) ? sanitize_text_field(trim($data['address'] )): '';
-			$facebook = !empty($data['facebook']) ? sanitize_url(trim($data['facebook'] )): '';
-			$twitter = !empty($data['twitter']) ? sanitize_url(trim($data['twitter'] )): '';
-			$linkedIn = !empty($data['linkedIn']) ? sanitize_url(trim($data['linkedIn'] )): '';
-			$youtube = !empty($data['youtube']) ? sanitize_url(trim($data['youtube'] )): '';
-			$bio = !empty($data['bio']) ? sanitize_textarea_field(trim($data['bio'] )): '';
-			$new_pass = !empty($data['new_pass']) ? $data['new_pass'] : ''; // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized, WordPress.Security.ValidatedSanitizedInput.MissingUnslash
-			$confirm_pass = !empty($data['confirm_pass']) ? $data['confirm_pass']: ''; // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized, WordPress.Security.ValidatedSanitizedInput.MissingUnslash
+			$ID                       = get_current_user_id();
+			$userdata['ID']           = $ID;
+			$userdata['display_name'] = ! empty( $data['full_name'] ) ? sanitize_text_field( trim( $data['full_name'] ) ) : '';
+			$userdata['user_email']   = ! empty( $data['user_email'] ) ? sanitize_email( $data['user_email'] ) : '';
+			$userdata['user_url']     = ! empty( $data['website'] ) ? sanitize_url( trim( $data['website'] ) ) : '';
+			$phone                    = ! empty( $data['phone'] ) ? sanitize_text_field( trim( $data['phone'] ) ) : '';
+			$first_name               = ! empty( $data['first_name'] ) ? sanitize_text_field( trim( $data['first_name'] ) ) : '';
+			$last_name                = ! empty( $data['last_name'] ) ? sanitize_text_field( trim( $data['last_name'] ) ) : '';
+			$address                  = ! empty( $data['address'] ) ? sanitize_text_field( trim( $data['address'] ) ) : '';
+			$facebook                 = ! empty( $data['facebook'] ) ? sanitize_url( trim( $data['facebook'] ) ) : '';
+			$twitter                  = ! empty( $data['twitter'] ) ? sanitize_url( trim( $data['twitter'] ) ) : '';
+			$linkedIn                 = ! empty( $data['linkedIn'] ) ? sanitize_url( trim( $data['linkedIn'] ) ) : '';
+			$youtube                  = ! empty( $data['youtube'] ) ? sanitize_url( trim( $data['youtube'] ) ) : '';
+			$bio                      = ! empty( $data['bio'] ) ? sanitize_textarea_field( trim( $data['bio'] ) ) : '';
+			$new_pass                 = ! empty( $data['new_pass'] ) ? $data['new_pass'] : ''; // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized, WordPress.Security.ValidatedSanitizedInput.MissingUnslash
+			$confirm_pass             = ! empty( $data['confirm_pass'] ) ? $data['confirm_pass'] : ''; // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized, WordPress.Security.ValidatedSanitizedInput.MissingUnslash
 
 			// now lets save the data to the db without password
-			$uid = wp_update_user($userdata);
+			$uid = wp_update_user( $userdata );
 			update_user_meta( $ID, 'address', $address );
 			update_user_meta( $ID, 'atbdp_facebook', $facebook );
 			update_user_meta( $ID, 'atbdp_twitter', $twitter );
@@ -1035,10 +1078,10 @@ if ( ! class_exists( 'ATBDP_User' ) ) :
 			update_user_meta( $ID, 'last_name', $last_name );
 			update_user_meta( $ID, 'atbdp_phone', $phone );
 
-			if (!empty($new_pass || $confirm_pass)){
+			if ( ! empty( $new_pass || $confirm_pass ) ) {
 				// password will be updated here
-				if ( ( $new_pass == $confirm_pass ) && ( strlen( $confirm_pass) > 5 ) ){
-					wp_set_password($new_pass, $ID); // set the password to the database
+				if ( ( $new_pass == $confirm_pass ) && ( strlen( $confirm_pass ) > 5 ) ) {
+					wp_set_password( $new_pass, $ID ); // set the password to the database
 					/**
 					 * Fire password changed action after successful password change
 					 *
@@ -1050,43 +1093,39 @@ if ( ! class_exists( 'ATBDP_User' ) ) :
 					 * @param integer ID of the user who changed their password
 					 */
 					do_action( 'directorist_password_changed', $ID );
-				}else{
-					$pass_match = esc_html__('Password should be matched and more than five character', 'directorist');
-					wp_send_json_error($pass_match, 'directorist');
+				} else {
+					$pass_match = esc_html__( 'Password should be matched and more than five character', 'directorist' );
+					wp_send_json_error( $pass_match, 'directorist' );
 
 				}
 			}
-			if (!is_wp_error($uid)){
-				$congz_txt = esc_html__('Congratulations! Your profile updated successfully', 'directorist');
-				wp_send_json_success( $congz_txt, 'directorist');
+			if ( ! is_wp_error( $uid ) ) {
+				$congz_txt = esc_html__( 'Congratulations! Your profile updated successfully', 'directorist' );
+				wp_send_json_success( $congz_txt, 'directorist' );
 				return true;
-			}else{
-				$ops_text = esc_html__('Oops! Something wrong.', 'directorist');
-				wp_send_json_error($ops_text, 'directorist');
+			} else {
+				$ops_text = esc_html__( 'Oops! Something wrong.', 'directorist' );
+				wp_send_json_error( $ops_text, 'directorist' );
 			}
 
-
 			return false; // failed to save data, so return false
-
 		}
 
 		/**
 		 * It prevent the user from showing other posts/listings on dashboard if he is not an admin
+		 *
 		 * @param Object|WP_Query $query
 		 * @return Object|WP_Query
 		 */
-		public function restrict_listing_to_the_author($query)
-		{
+		public function restrict_listing_to_the_author( $query ) {
 			global $pagenow, $post_type;
 
-
-			if( ATBDP_POST_TYPE == $post_type && 'edit.php' == $pagenow && $query->is_admin && !current_user_can( 'edit_others_'.ATBDP_POST_TYPE.'s' ) ){
+			if ( ATBDP_POST_TYPE == $post_type && 'edit.php' == $pagenow && $query->is_admin && ! current_user_can( 'edit_others_' . ATBDP_POST_TYPE . 's' ) ) {
 				global $user_ID;
-				$query->set('author', $user_ID );
+				$query->set( 'author', $user_ID );
 			}
-
 
 			return $query;
 		}
-    } // ends ATBDP_User
+	} // ends ATBDP_User
 endif;

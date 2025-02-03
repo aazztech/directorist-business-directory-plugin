@@ -5,19 +5,21 @@
  * @version 7.0.6
  */
 
-use \Directorist\Helper;
+use Directorist\Helper;
 
-if ( ! defined( 'ABSPATH' ) ) exit;
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
 
 $phone_args = array(
-	'number'    => $value,
-	'whatsapp'  => $listing->has_whatsapp( $data ),
+	'number'   => $value,
+	'whatsapp' => $listing->has_whatsapp( $data ),
 );
 
 ?>
 <div class="directorist-single-info directorist-single-info-phone2">
 	<div class="directorist-single-info__label">
-		<span class="directorist-single-info__label-icon"><?php directorist_icon( $icon );?></span>
+		<span class="directorist-single-info__label-icon"><?php directorist_icon( $icon ); ?></span>
 		<span class="directorist-single-info__label__text"><?php echo esc_html( $data['label'] ); ?></span>
 	</div>
 

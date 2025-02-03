@@ -34,7 +34,7 @@ class Markup {
 	}
 
 	private static function convert_to_num( $input ) {
-		
+
 		$numericValue = 0;
 		if ( strpos( $input, '.' ) !== false ) {
 			$numericValue = floatval( $input );
@@ -47,19 +47,19 @@ class Markup {
 	public static function get_rating_stars( $rating = 0, $base_rating = 5 ) {
 		$rating = max( 0, min( $base_rating, $rating ) );
 
-		$empty_star = '';
-		$full_star = '';
-		$counter = 0;
-		$rating = self::convert_to_num( $rating );
+		$empty_star     = '';
+		$full_star      = '';
+		$counter        = 0;
+		$rating         = self::convert_to_num( $rating );
 		$rounded_rating = floor( $rating );
 
 		$full_star = str_repeat( directorist_icon( 'fas fa-star', false, 'star-full' ), $rounded_rating );
 
-		while( $counter <= $base_rating - ( $rounded_rating + 1 ) ) {
-			$empty_star .= directorist_icon( 'far fa-star', false, ( ( $counter === 0 ) && ( is_float( $rating  ) ) ) ? 'star-empty directorist_fraction_star' : 'star-empty' );
-			$counter++;
+		while ( $counter <= $base_rating - ( $rounded_rating + 1 ) ) {
+			$empty_star .= directorist_icon( 'far fa-star', false, ( ( $counter === 0 ) && ( is_float( $rating ) ) ) ? 'star-empty directorist_fraction_star' : 'star-empty' );
+			++$counter;
 		}
-		
+
 		return $full_star . $empty_star;
 	}
 

@@ -1,7 +1,6 @@
 <?php
 /**
  * Directorist File Field class.
- *
  */
 namespace Directorist\Fields;
 

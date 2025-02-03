@@ -7,7 +7,7 @@
 ?>
 
 <li class="directorist-listing-card-zip">
-    <?php directorist_icon( $icon ); ?>
-    <?php $listings->print_label( $label ); ?>
-    <?php echo esc_html( $value ); ?>
+	<?php directorist_icon( $icon ); ?>
+	<?php $listings->print_label( $label ); ?>
+	<?php echo esc_html( $value ); ?>
 </li>

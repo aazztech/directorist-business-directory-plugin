@@ -38,10 +38,12 @@ class Image_Upload_Field extends Base_Field {
 		}
 
 		if ( $this->get_total_upload_limit() !== 0 && ( ( count( $old_images ) + count( $new_images ) ) > $this->get_total_upload_limit() ) ) {
-			$this->add_error( sprintf(
-				_n( '%s image allowed only.', '%s images allowed only.', $this->get_total_upload_limit(), 'directorist' ),
-				$this->get_total_upload_limit()
-			) );
+			$this->add_error(
+				sprintf(
+					_n( '%s image allowed only.', '%s images allowed only.', $this->get_total_upload_limit(), 'directorist' ),
+					$this->get_total_upload_limit()
+				)
+			);
 
 			return false;
 		}
@@ -53,7 +55,7 @@ class Image_Upload_Field extends Base_Field {
 		$total_size = 0;
 
 		foreach ( $new_images as $file ) {
-			$filepath  = realpath( $temp_dir . $file );
+			$filepath = realpath( $temp_dir . $file );
 
 			if ( empty( $file ) || ! $filepath ) {
 				continue;
@@ -64,29 +66,35 @@ class Image_Upload_Field extends Base_Field {
 
 			if ( ! $real_mime || strpos( $real_mime, 'image' ) === false ) {
 
-				$this->add_error( sprintf(
-					__( '[%1$s] invalid file type, only image allowed.', 'directorist' ),
-					$file
-				) );
+				$this->add_error(
+					sprintf(
+						__( '[%1$s] invalid file type, only image allowed.', 'directorist' ),
+						$file
+					)
+				);
 
 				continue;
 			}
 
 			if ( $filesize > $this->get_per_image_upload_size() ) {
-				$this->add_error( sprintf(
-					__( '[%1$s] size exceeded, %2$s is allowed only.', 'directorist' ),
-					$file,
-					size_format( $this->get_per_image_upload_size() )
-				) );
+				$this->add_error(
+					sprintf(
+						__( '[%1$s] size exceeded, %2$s is allowed only.', 'directorist' ),
+						$file,
+						size_format( $this->get_per_image_upload_size() )
+					)
+				);
 			}
 
 			$total_size += $filesize;
 
 			if ( $total_size > $this->get_total_upload_size() ) {
-				$this->add_error( sprintf(
-					__( 'Total upload size (%s) exceeded.', 'directorist' ),
-					size_format( $this->get_total_upload_size() )
-				) );
+				$this->add_error(
+					sprintf(
+						__( 'Total upload size (%s) exceeded.', 'directorist' ),
+						size_format( $this->get_total_upload_size() )
+					)
+				);
 
 				break;
 			}
@@ -108,7 +116,7 @@ class Image_Upload_Field extends Base_Field {
 		$unit       = 'MB';
 
 		if ( $size_in_mb < 1 ) {
-			$unit = 'KB';
+			$unit       = 'KB';
 			$size_in_mb = KB_IN_BYTES * $size_in_mb;
 		}
 
@@ -120,7 +128,7 @@ class Image_Upload_Field extends Base_Field {
 		$unit       = 'MB';
 
 		if ( $size_in_mb < 1 ) {
-			$unit = 'KB';
+			$unit       = 'KB';
 			$size_in_mb = KB_IN_BYTES * $size_in_mb;
 		}
 

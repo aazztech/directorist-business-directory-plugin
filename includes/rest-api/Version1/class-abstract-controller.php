@@ -494,7 +494,7 @@ abstract class Abstract_Controller extends WP_REST_Controller {
 					'type'        => 'array',
 					'context'     => array( 'view', 'edit' ),
 					'items'       => array(
-						'type'    => 'object',
+						'type' => 'object',
 					),
 				),
 				'update' => array(
@@ -502,7 +502,7 @@ abstract class Abstract_Controller extends WP_REST_Controller {
 					'type'        => 'array',
 					'context'     => array( 'view', 'edit' ),
 					'items'       => array(
-						'type'    => 'object',
+						'type' => 'object',
 					),
 				),
 				'delete' => array(
@@ -510,7 +510,7 @@ abstract class Abstract_Controller extends WP_REST_Controller {
 					'type'        => 'array',
 					'context'     => array( 'view', 'edit' ),
 					'items'       => array(
-						'type'    => 'integer',
+						'type' => 'integer',
 					),
 				),
 			),
@@ -581,7 +581,7 @@ abstract class Abstract_Controller extends WP_REST_Controller {
 		// Return the list of all requested fields which appear in the schema.
 		$this->_fields = array_reduce(
 			$requested_fields,
-			function( $response_fields, $field ) use ( $fields ) {
+			function ( $response_fields, $field ) use ( $fields ) {
 				if ( in_array( $field, $fields, true ) ) {
 					$response_fields[] = $field;
 					return $response_fields;
