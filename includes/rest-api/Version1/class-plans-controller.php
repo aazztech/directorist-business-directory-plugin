@@ -373,6 +373,18 @@ class Plans_Controller extends Posts_Controller {
 				case 'is_non_expiring':
 					$base_data['is_non_expiring'] = (bool) get_post_meta( $plan->ID, 'fm_length_unl', true );
 					break;
+				case 'playstore_product_id':
+					$base_data['playstore_product_id'] = get_post_meta( $plan->ID, '_dpp_playstore_product_id', true );
+					break;
+				case 'playstore_product_price':
+					$base_data['playstore_product_price'] = get_post_meta( $plan->ID, '_dpp_playstore_product_price', true );
+					break;
+				case 'appstore_product_id':
+					$base_data['appstore_product_id'] = get_post_meta( $plan->ID, '_dpp_appstore_product_id', true );
+					break;
+				case 'appstore_product_price':
+					$base_data['appstore_product_price'] = get_post_meta( $plan->ID, '_dpp_appstore_product_price', true );
+					break;
 				case 'features':
 					$base_data['features'] = $this->get_features_data( $plan );
 					break;
@@ -754,6 +766,26 @@ class Plans_Controller extends Posts_Controller {
 				'is_non_expiring'    => array(
 					'description' => __( 'Is plan non expiring?', 'directorist' ),
 					'type'        => 'boolean',
+					'context'     => array( 'view', 'edit' ),
+				),
+				'playstore_product_id'     => array(
+					'description' => __( 'PlayStore product Id.', 'directorist' ),
+					'type'        => 'string',
+					'context'     => array( 'view', 'edit' ),
+				),
+				'playstore_product_price'     => array(
+					'description' => __( 'PlayStore product price.', 'directorist' ),
+					'type'        => 'string',
+					'context'     => array( 'view', 'edit' ),
+				),
+				'appstore_product_id'     => array(
+					'description' => __( 'AppStore product Id.', 'directorist' ),
+					'type'        => 'string',
+					'context'     => array( 'view', 'edit' ),
+				),
+				'appstore_product_price'     => array(
+					'description' => __( 'AppStore product price.', 'directorist' ),
+					'type'        => 'string',
 					'context'     => array( 'view', 'edit' ),
 				),
 				'features'             => array(
