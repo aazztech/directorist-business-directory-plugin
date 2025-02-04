@@ -146,10 +146,11 @@ class Listings_Controller extends Legacy_Listings_Controller {
 		$directory_id = $request['directory'];
 		$plan_id      = $request['plan'];
 
-		$form_fields           = directorist_get_listing_form_fields( $directory_id, $plan_id );
+		$form_fields           = directorist_get_listing_form_fields( $directory_id );
 		$map                   = $this->get_schema_to_post_fields_map();
 		$_POST['directory_id'] = $directory_id;
 		$_POST['tax_input']    = array();
+		$_POST['plan_id']      = $plan_id;
 
 		foreach ( $form_fields as $form_field ) {
 			if ( empty( $form_field['widget_name'] ) || (bool) directorist_get_var( $form_field['only_for_admin'] ) ) {
@@ -408,7 +409,7 @@ class Listings_Controller extends Legacy_Listings_Controller {
 			return apply_filters( 'directorist_rest_listing_fields_data', array(), $listing, $context );
 		}
 
-		$form_fields      = directorist_get_listing_form_fields( $directory_id, $this->get_plan_id( $listing ) );
+		$form_fields      = directorist_get_listing_form_fields( $directory_id );
 		$data             = array();
 		$ignorable_fields = array(
 			'view_count',
@@ -519,9 +520,9 @@ class Listings_Controller extends Legacy_Listings_Controller {
 		}
 
 		// Add gallery images.
-		$gallery_images = (array) get_post_meta( $listing->ID, '_listing_img', true );
+		$gallery_images = directorist_get_listing_gallery_images( $listing->ID );
 		if ( ! empty( $gallery_images ) ) {
-			$attachment_ids = array_unique( array_merge( $attachment_ids, array_filter( wp_parse_id_list( $gallery_images ) ) ) );
+			$attachment_ids = array_unique( array_merge( $attachment_ids, $gallery_images ) );
 		}
 
 		// Build image data.
