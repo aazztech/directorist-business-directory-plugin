@@ -564,6 +564,7 @@ class Listings_Controller extends Legacy_Listings_Controller {
 				'description' => __( 'Listing title.', 'directorist' ),
 				'type'        => 'string',
 				'context'     => array( 'view', 'edit' ),
+				'required'    => true,
 			),
 			'tagline'              => array(
 				'description' => __( 'Tagline.', 'directorist' ),
@@ -914,6 +915,7 @@ class Listings_Controller extends Legacy_Listings_Controller {
 					'description' => __( 'Listing status.', 'directorist' ),
 					'type'        => 'string',
 					'context'     => array( 'view', 'edit' ),
+					'readonly'    => true,
 				),
 				'reviews_allowed'       => array(
 					'description' => __( 'Allow reviews.', 'directorist' ),
