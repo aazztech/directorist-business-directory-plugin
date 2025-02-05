@@ -2576,14 +2576,13 @@ Please remember that your order may be canceled if you do not make your payment 
                     ],
                 ],
                 'categories_depth_number' => [
-                    'label' => __('Sub-category Depth', 'directorist'),
+                    'label'       => __('Sub-category Depth', 'directorist'),
                     'description' => __('Set how many sub-categories to display.', 'directorist'),
-                    'type'  => 'number',
-                    'value' => '4',
-                    'min' => '1',
-                    'max' => '15',
-                    'step' => '2',
-                    'show-if' => [
+                    'type'        => 'number',
+                    'value'       => '4',
+                    'min'         => '1',
+                    'step'        => '1',
+                    'show-if'     => [
                         'where' => "display_categories_as",
                         'conditions' => [
                             ['key' => 'value', 'compare' => '=', 'value' => 'list'],
@@ -2687,14 +2686,13 @@ Please remember that your order may be canceled if you do not make your payment 
                     ],
                 ],
                 'locations_depth_number' => [
-                    'label' => __('Sub-location Depth', 'directorist'),
+                    'label'       => __('Sub-location Depth', 'directorist'),
                     'description' => __('Set how many sub-locations to display.', 'directorist'),
-                    'type'  => 'number',
-                    'value' => '4',
-                    'min' => '1',
-                    'max' => '15',
-                    'step' => '2',
-                    'show-if' => [
+                    'type'        => 'number',
+                    'value'       => '4',
+                    'min'         => '1',
+                    'step'        => '1',
+                    'show-if'     => [
                         'where' => "display_locations_as",
                         'conditions' => [
                             ['key' => 'value', 'compare' => '=', 'value' => 'list'],
