@@ -161,18 +161,7 @@
   color: var(--directorist-color-dark);
 }
 .directorist-account-block-authentication-modal .modal-header .directorist-account-block-close {
-  display: -webkit-box;
-  display: -webkit-flex;
-  display: -ms-flexbox;
-  display: flex;
-  -webkit-box-align: center;
-  -webkit-align-items: center;
-      -ms-flex-align: center;
-          align-items: center;
-  -webkit-box-pack: center;
-  -webkit-justify-content: center;
-      -ms-flex-pack: center;
-          justify-content: center;
+  display: inline-block;
   width: 34px;
   height: 34px;
   border-radius: 50%;
@@ -434,34 +423,6 @@
   overflow-y: auto;
   outline: 0;
   background-color: rgba(var(--directorist-color-dark-rgb), 0.4);
-}
-.directorist-account-block-authentication-modal #directorist-account-block-login-modal .directorist-authentication {
-  width: 100%;
-  margin-right: 0;
-}
-.directorist-account-block-authentication-modal #directorist-account-block-login-modal .directorist-authentication .directorist-authentication__form {
-  padding: 30px 25px 25px;
-  margin: 0;
-  -webkit-box-shadow: none;
-          box-shadow: none;
-  background: transparent;
-}
-.directorist-account-block-authentication-modal #directorist-account-block-login-modal .directorist-authentication .directorist-authentication__form .directorist-form-element {
-  border: none;
-  padding: 15px 0;
-  border-radius: 0;
-  border-bottom: 1px solid #ececec;
-}
-.directorist-account-block-authentication-modal #directorist-account-block-login-modal .directorist-authentication .directorist-authentication__form .directorist-form-element:focus {
-  border-color: var(--directorist-color-primary);
-}
-.directorist-account-block-authentication-modal #directorist-account-block-login-modal .directorist-authentication .directorist-authentication__form .directorist-authentication__form__btn:hover {
-  color: var(--directorist-color-white);
-  background-color: rgba(var(--directorist-color-primary-rgb), 0.8);
-}
-.directorist-account-block-authentication-modal #directorist-account-block-login-modal .directorist-authentication p.status,
-.directorist-account-block-authentication-modal #directorist-account-block-login-modal .directorist-authentication .directorist-register-error {
-  margin-top: 0;
 }
 
 .wp-block-button__link {
