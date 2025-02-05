@@ -793,6 +793,10 @@ class Directorist_Listing_Form {
 			$section['fields'] = array();
 
 			foreach ( $group['fields'] as $field ) {
+				if ( ! isset( $form_fields[ $field ] ) ) {
+					continue;
+				}
+
 				$section['fields'][ $field ] = $form_fields[ $field ];
 			}
 

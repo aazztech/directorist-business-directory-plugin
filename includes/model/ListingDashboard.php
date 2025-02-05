@@ -172,8 +172,10 @@ class Directorist_Listing_Dashboard {
 
 	public function get_listing_status_html() {
 		$id = get_the_ID();
-		$status_label = get_post_status_object( get_post_status( $id ) )->label;
-		$html = sprintf('<span class="directorist_badge dashboard-badge directorist_status_%s">%s</span>', strtolower($status_label), $status_label );
+		$status = get_post_status( $id );
+		$statuses = directorist_get_listing_statuses();
+		$status_label = $statuses[$status] ?? __( 'Unknown', 'directorist' );
+		$html = sprintf('<span class="directorist_badge dashboard-badge directorist_status_%s">%s</span>', strtolower( $status ), $status_label );
 		return $html;
 	}
 
