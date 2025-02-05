@@ -7596,14 +7596,15 @@ __webpack_require__.r(__webpack_exports__);
 /*!*******************************************************************************************!*\
   !*** ./assets/src/js/admin/vue/modules/form-fields/Card_Builder_Listing_Header_Field.vue ***!
   \*******************************************************************************************/
-/*! exports provided: default */
+/*! no static exports found */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _Card_Builder_Listing_Header_Field_vue_vue_type_template_id_2b7791eb__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./Card_Builder_Listing_Header_Field.vue?vue&type=template&id=2b7791eb */ "./assets/src/js/admin/vue/modules/form-fields/Card_Builder_Listing_Header_Field.vue?vue&type=template&id=2b7791eb");
 /* harmony import */ var _Card_Builder_Listing_Header_Field_vue_vue_type_script_lang_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./Card_Builder_Listing_Header_Field.vue?vue&type=script&lang=js */ "./assets/src/js/admin/vue/modules/form-fields/Card_Builder_Listing_Header_Field.vue?vue&type=script&lang=js");
-/* empty/unused harmony star reexport *//* harmony import */ var _node_modules_vue_loader_lib_runtime_componentNormalizer_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../../../../../../../node_modules/vue-loader/lib/runtime/componentNormalizer.js */ "./node_modules/vue-loader/lib/runtime/componentNormalizer.js");
+/* harmony reexport (unknown) */ for(var __WEBPACK_IMPORT_KEY__ in _Card_Builder_Listing_Header_Field_vue_vue_type_script_lang_js__WEBPACK_IMPORTED_MODULE_1__) if(["default"].indexOf(__WEBPACK_IMPORT_KEY__) < 0) (function(key) { __webpack_require__.d(__webpack_exports__, key, function() { return _Card_Builder_Listing_Header_Field_vue_vue_type_script_lang_js__WEBPACK_IMPORTED_MODULE_1__[key]; }) }(__WEBPACK_IMPORT_KEY__));
+/* harmony import */ var _node_modules_vue_loader_lib_runtime_componentNormalizer_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../../../../../../../node_modules/vue-loader/lib/runtime/componentNormalizer.js */ "./node_modules/vue-loader/lib/runtime/componentNormalizer.js");
 
 
 
@@ -7633,7 +7634,7 @@ component.options.__file = "assets/src/js/admin/vue/modules/form-fields/Card_Bui
 /*!*******************************************************************************************************************!*\
   !*** ./assets/src/js/admin/vue/modules/form-fields/Card_Builder_Listing_Header_Field.vue?vue&type=script&lang=js ***!
   \*******************************************************************************************************************/
-/*! exports provided: default */
+/*! no static exports found */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -23317,6 +23318,7 @@ function _objectSpread(e) { for (var r = 1; r < arguments.length; r++) { var t =
               placeholderKey: placeholder.placeholderKey,
               label: placeholder.label,
               selectedWidgets: data,
+              acceptedWidgets: placeholder.acceptedWidgets,
               selectedWidgetList: placeholder.selectedWidgetList
             });
             continue;
@@ -23338,6 +23340,7 @@ function _objectSpread(e) { for (var r = 1; r < arguments.length; r++) { var t =
                   placeholderKey: subPlaceholder.placeholderKey,
                   label: subPlaceholder.label,
                   selectedWidgets: _data,
+                  acceptedWidgets: subPlaceholder.acceptedWidgets,
                   selectedWidgetList: subPlaceholder.selectedWidgetList
                 });
                 continue;
@@ -23561,7 +23564,7 @@ function _objectSpread(e) { for (var r = 1; r < arguments.length; r++) { var t =
           if (sourcePlaceholderIndex === destinationPlaceholderIndex) {
             // Moving within the same placeholder
             var widgets = this.allPlaceholderItems[sourcePlaceholderIndex].acceptedWidgets;
-            var selectedWidgets = this.allPlaceholderItems[sourcePlaceholderIndex].selectedWidgets;
+            var selectedWidgetList = this.allPlaceholderItems[sourcePlaceholderIndex].selectedWidgetList;
 
             // Remove the widget from the source position
             var _widgets$splice = widgets.splice(sourceItemIndex, 1),
@@ -23570,16 +23573,22 @@ function _objectSpread(e) { for (var r = 1; r < arguments.length; r++) { var t =
 
             // Insert the widget at the destination position
             widgets.splice(destinationItemIndex, 0, movedWidget);
+            console.log('@CHK movedWidget', {
+              movedWidget: movedWidget,
+              widgets: widgets,
+              selectedWidgetList: selectedWidgetList,
+              allPlaceholderItems: this.allPlaceholderItems
+            });
 
-            // Update selectedWidgets position based on acceptedWidgets
-            var selectedWidgetIndex = selectedWidgets.indexOf(movedWidget);
+            // Update selectedWidgetList position based on acceptedWidgets
+            var selectedWidgetIndex = selectedWidgetList.indexOf(movedWidget);
             if (selectedWidgetIndex !== -1) {
               // Remove the widget from the selected position
-              selectedWidgets.splice(selectedWidgetIndex, 1);
+              selectedWidgetList.splice(selectedWidgetIndex, 1);
 
               // Insert the widget at the new position
               var newSelectedIndex = widgets.indexOf(movedWidget);
-              selectedWidgets.splice(newSelectedIndex, 0, movedWidget);
+              selectedWidgetList.splice(newSelectedIndex, 0, movedWidget);
             }
             console.log('@CHK onElementsDrop', {
               allPlaceholderItems: this.allPlaceholderItems,
@@ -23596,8 +23605,8 @@ function _objectSpread(e) { for (var r = 1; r < arguments.length; r++) { var t =
             });
           } else if (destinationPlaceholderIndex !== null) {
             // Moving between different placeholders
-            // this.allPlaceholderItems[destinationPlaceholderIndex].selectedWidgets.splice(destinationItemIndex, 0, widgetKey);
-            // this.allPlaceholderItems[sourcePlaceholderIndex].selectedWidgets.splice(sourceItemIndex, 1);
+            // this.allPlaceholderItems[destinationPlaceholderIndex].selectedWidgetList.splice(destinationItemIndex, 0, widgetKey);
+            // this.allPlaceholderItems[sourcePlaceholderIndex].selectedWidgetList.splice(sourceItemIndex, 1);
           }
         }
       } else {
@@ -23686,6 +23695,9 @@ function _objectSpread(e) { for (var r = 1; r < arguments.length; r++) { var t =
           newPlaceholder.selectedWidgetList = placeholder.selectedWidgets.map(function (widget) {
             return widget.widget_name;
           });
+        }
+        if (placeholder.selectedWidgetList) {
+          newPlaceholder.selectedWidgetList = placeholder.selectedWidgetList;
         }
         if (placeholder.acceptedWidgets) {
           newPlaceholder.acceptedWidgets = placeholder.acceptedWidgets;
@@ -23880,6 +23892,7 @@ function _objectSpread(e) { for (var r = 1; r < arguments.length; r++) { var t =
     // 🔹 Add/remove widget from selectedWidgets & active_widgets
     toggleWidgetInSelectedWidgets: function toggleWidgetInSelectedWidgets(widget_key, placeholder_index, isChecked) {
       var placeholder = this.allPlaceholderItems[placeholder_index];
+      var acceptedWidgets = placeholder.acceptedWidgets || [];
       var selectedWidgets = placeholder.selectedWidgets || [];
       var selectedWidgetList = placeholder.selectedWidgetList || [];
       if (!Array.isArray(selectedWidgets)) {
@@ -23887,20 +23900,33 @@ function _objectSpread(e) { for (var r = 1; r < arguments.length; r++) { var t =
       }
 
       if (isChecked) {
+        // Add widget if it does not exist
         if (!selectedWidgets.some(function (widget) {
           return widget.widget_key === widget_key;
         })) {
-          selectedWidgets.push(this.theAvailableWidgets[widget_key]); // Add new widget
-          selectedWidgetList.push(widget_key);
+          var widgetIndex = acceptedWidgets.indexOf(widget_key);
+          if (widgetIndex !== -1) {
+            selectedWidgetList.push(widget_key);
+            selectedWidgets.push(this.theAvailableWidgets[widget_key]);
+          }
         }
       } else {
+        // Remove widget if unchecked
         selectedWidgets = selectedWidgets.filter(function (widget) {
           return widget.widget_key !== widget_key;
-        }); // Remove widget
+        });
         selectedWidgetList = selectedWidgetList.filter(function (widget) {
           return widget !== widget_key;
         });
       }
+
+      // Sort the selectedWidgetList and selectedWidgets based on acceptedWidgets order
+      selectedWidgetList.sort(function (a, b) {
+        return acceptedWidgets.indexOf(a) - acceptedWidgets.indexOf(b);
+      });
+      selectedWidgets.sort(function (a, b) {
+        return acceptedWidgets.indexOf(a.widget_key) - acceptedWidgets.indexOf(b.widget_key);
+      });
 
       // Update selectedWidgets array
       this.$set(this.allPlaceholderItems[placeholder_index], 'selectedWidgets', selectedWidgets);
@@ -23916,6 +23942,8 @@ function _objectSpread(e) { for (var r = 1; r < arguments.length; r++) { var t =
         widget_key: widget_key,
         placeholder: placeholder,
         selectedWidgets: selectedWidgets,
+        selectedWidgetList: selectedWidgetList,
+        acceptedWidgets: acceptedWidgets,
         active_widgets: this.active_widgets
       });
     },
@@ -23934,8 +23962,8 @@ function _objectSpread(e) { for (var r = 1; r < arguments.length; r++) { var t =
           if (allItemsMap[placeholder.placeholderKey]) {
             var selectedWidgets = allItemsMap[placeholder.placeholderKey].selectedWidgets || [];
             var selectedWidgetList = allItemsMap[placeholder.placeholderKey].selectedWidgetList || [];
-            if (!Array.isArray(selectedWidgets)) {
-              selectedWidgets = Object.values(selectedWidgets);
+            if (!Array.isArray(selectedWidgetList)) {
+              selectedWidgetList = Object.values(selectedWidgetList);
             }
             vue__WEBPACK_IMPORTED_MODULE_4__["default"].set(placeholder, 'selectedWidgets', selectedWidgets);
             vue__WEBPACK_IMPORTED_MODULE_4__["default"].set(placeholder, 'selectedWidgetList', selectedWidgetList);
@@ -23957,12 +23985,13 @@ function _objectSpread(e) { for (var r = 1; r < arguments.length; r++) { var t =
       var updatePlaceholderItem = function updatePlaceholderItem(placeholder, allPlaceholderItem) {
         if (placeholder.placeholderKey === allPlaceholderItem.placeholderKey) {
           placeholder.acceptedWidgets = _babel_runtime_helpers_toConsumableArray__WEBPACK_IMPORTED_MODULE_0___default()(allPlaceholderItem.acceptedWidgets);
-          var selectedWidgets = allPlaceholderItem.selectedWidgets || [];
+          // let selectedWidgets = allPlaceholderItem.selectedWidgets || [];
           var selectedWidgetList = allPlaceholderItem.selectedWidgetList || [];
-          if (!Array.isArray(selectedWidgets)) {
-            selectedWidgets = Object.values(selectedWidgets);
+          if (!Array.isArray(selectedWidgetList)) {
+            selectedWidgetList = Object.values(selectedWidgetList);
           }
-          placeholder.selectedWidgets = _babel_runtime_helpers_toConsumableArray__WEBPACK_IMPORTED_MODULE_0___default()(selectedWidgets);
+
+          // placeholder.selectedWidgets = [...selectedWidgets];
           placeholder.selectedWidgetList = _babel_runtime_helpers_toConsumableArray__WEBPACK_IMPORTED_MODULE_0___default()(selectedWidgetList);
         }
       };

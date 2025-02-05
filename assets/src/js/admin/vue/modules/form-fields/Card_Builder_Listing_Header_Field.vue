@@ -334,6 +334,7 @@ export default {
             placeholderKey: placeholder.placeholderKey,
             label: placeholder.label,
             selectedWidgets: data,
+            acceptedWidgets: placeholder.acceptedWidgets,
             selectedWidgetList: placeholder.selectedWidgetList,
           });
           continue;
@@ -353,6 +354,7 @@ export default {
               placeholderKey: subPlaceholder.placeholderKey,
               label: subPlaceholder.label,
               selectedWidgets: data,
+              acceptedWidgets: subPlaceholder.acceptedWidgets,
               selectedWidgetList: subPlaceholder.selectedWidgetList,
             });
             continue;
@@ -584,7 +586,7 @@ export default {
           if (sourcePlaceholderIndex === destinationPlaceholderIndex) {
             // Moving within the same placeholder
             const widgets = this.allPlaceholderItems[sourcePlaceholderIndex].acceptedWidgets;
-            const selectedWidgets = this.allPlaceholderItems[sourcePlaceholderIndex].selectedWidgets;
+            const selectedWidgetList = this.allPlaceholderItems[sourcePlaceholderIndex].selectedWidgetList;
             
             // Remove the widget from the source position
             const [movedWidget] = widgets.splice(sourceItemIndex, 1);
@@ -592,15 +594,17 @@ export default {
             // Insert the widget at the destination position
             widgets.splice(destinationItemIndex, 0, movedWidget);
 
-            // Update selectedWidgets position based on acceptedWidgets
-            const selectedWidgetIndex = selectedWidgets.indexOf(movedWidget);
+            console.log('@CHK movedWidget', { movedWidget, widgets, selectedWidgetList, allPlaceholderItems: this.allPlaceholderItems });
+
+            // Update selectedWidgetList position based on acceptedWidgets
+            const selectedWidgetIndex = selectedWidgetList.indexOf(movedWidget);
             if (selectedWidgetIndex !== -1) {
               // Remove the widget from the selected position
-              selectedWidgets.splice(selectedWidgetIndex, 1);
+              selectedWidgetList.splice(selectedWidgetIndex, 1);
 
               // Insert the widget at the new position
               const newSelectedIndex = widgets.indexOf(movedWidget);
-              selectedWidgets.splice(newSelectedIndex, 0, movedWidget);
+              selectedWidgetList.splice(newSelectedIndex, 0, movedWidget);
             }
 
             console.log('@CHK onElementsDrop', { 
@@ -623,8 +627,8 @@ export default {
             });
           } else if (destinationPlaceholderIndex !== null) {
             // Moving between different placeholders
-            // this.allPlaceholderItems[destinationPlaceholderIndex].selectedWidgets.splice(destinationItemIndex, 0, widgetKey);
-            // this.allPlaceholderItems[sourcePlaceholderIndex].selectedWidgets.splice(sourceItemIndex, 1);
+            // this.allPlaceholderItems[destinationPlaceholderIndex].selectedWidgetList.splice(destinationItemIndex, 0, widgetKey);
+            // this.allPlaceholderItems[sourcePlaceholderIndex].selectedWidgetList.splice(sourceItemIndex, 1);
           }
         }
       } else {
@@ -727,6 +731,10 @@ export default {
         if (placeholder.selectedWidgets) {
           newPlaceholder.selectedWidgets = placeholder.selectedWidgets;
           newPlaceholder.selectedWidgetList = placeholder.selectedWidgets.map(widget => widget.widget_name);
+        }
+
+        if ( placeholder.selectedWidgetList ) {
+          newPlaceholder.selectedWidgetList = placeholder.selectedWidgetList;
         }
         
         if ( placeholder.acceptedWidgets ) {
@@ -984,22 +992,32 @@ export default {
     // 🔹 Add/remove widget from selectedWidgets & active_widgets
     toggleWidgetInSelectedWidgets(widget_key, placeholder_index, isChecked) {
       const placeholder = this.allPlaceholderItems[placeholder_index];
+      const acceptedWidgets = placeholder.acceptedWidgets || [];
       let selectedWidgets = placeholder.selectedWidgets || [];
       let selectedWidgetList = placeholder.selectedWidgetList || [];
-      
+
       if (!Array.isArray(selectedWidgets)) {
-        selectedWidgets = Object.values(selectedWidgets); // Convert object to array if needed
+          selectedWidgets = Object.values(selectedWidgets); // Convert object to array if needed
       }
 
       if (isChecked) {
-        if (!selectedWidgets.some(widget => widget.widget_key === widget_key)) {
-          selectedWidgets.push(this.theAvailableWidgets[widget_key]); // Add new widget
-          selectedWidgetList.push(widget_key);
-        }
+          // Add widget if it does not exist
+          if (!selectedWidgets.some(widget => widget.widget_key === widget_key)) {
+              const widgetIndex = acceptedWidgets.indexOf(widget_key);
+              if (widgetIndex !== -1) {
+                  selectedWidgetList.push(widget_key);
+                  selectedWidgets.push(this.theAvailableWidgets[widget_key]);
+              }
+          }
       } else {
-        selectedWidgets = selectedWidgets.filter(widget => widget.widget_key !== widget_key); // Remove widget
-        selectedWidgetList = selectedWidgetList.filter(widget => widget !== widget_key);
+          // Remove widget if unchecked
+          selectedWidgets = selectedWidgets.filter(widget => widget.widget_key !== widget_key);
+          selectedWidgetList = selectedWidgetList.filter(widget => widget !== widget_key);
       }
+
+      // Sort the selectedWidgetList and selectedWidgets based on acceptedWidgets order
+      selectedWidgetList.sort((a, b) => acceptedWidgets.indexOf(a) - acceptedWidgets.indexOf(b));
+      selectedWidgets.sort((a, b) => acceptedWidgets.indexOf(a.widget_key) - acceptedWidgets.indexOf(b.widget_key));
 
       // Update selectedWidgets array
       this.$set(this.allPlaceholderItems[placeholder_index], 'selectedWidgets', selectedWidgets);
@@ -1007,16 +1025,18 @@ export default {
 
       // Update active_widgets separately
       if (isChecked) {
-        this.$set(this.active_widgets, widget_key, this.theAvailableWidgets[widget_key]);
+          this.$set(this.active_widgets, widget_key, this.theAvailableWidgets[widget_key]);
       } else {
-        this.$delete(this.active_widgets, widget_key);
+          this.$delete(this.active_widgets, widget_key);
       }
 
       console.log('@toggleWidgetInSelectedWidgets:', {
-        widget_key,
-        placeholder,
-        selectedWidgets,
-        active_widgets: this.active_widgets,
+          widget_key,
+          placeholder,
+          selectedWidgets,
+          selectedWidgetList,
+          acceptedWidgets,
+          active_widgets: this.active_widgets,
       });
     },
 
@@ -1035,8 +1055,8 @@ export default {
             let selectedWidgets = allItemsMap[placeholder.placeholderKey].selectedWidgets || [];
             let selectedWidgetList = allItemsMap[placeholder.placeholderKey].selectedWidgetList || [];
 
-            if (!Array.isArray(selectedWidgets)) {
-              selectedWidgets = Object.values(selectedWidgets);
+            if (!Array.isArray(selectedWidgetList)) {
+              selectedWidgetList = Object.values(selectedWidgetList);
             }
             Vue.set(placeholder, 'selectedWidgets', selectedWidgets);
             Vue.set(placeholder, 'selectedWidgetList', selectedWidgetList);
@@ -1060,14 +1080,14 @@ export default {
       const updatePlaceholderItem = (placeholder, allPlaceholderItem) => {
         if (placeholder.placeholderKey === allPlaceholderItem.placeholderKey) {
           placeholder.acceptedWidgets = [...allPlaceholderItem.acceptedWidgets];
-          let selectedWidgets = allPlaceholderItem.selectedWidgets || [];
+          // let selectedWidgets = allPlaceholderItem.selectedWidgets || [];
           let selectedWidgetList = allPlaceholderItem.selectedWidgetList || [];
           
-          if (!Array.isArray(selectedWidgets)) {
-            selectedWidgets = Object.values(selectedWidgets);
+          if (!Array.isArray(selectedWidgetList)) {
+            selectedWidgetList = Object.values(selectedWidgetList);
           }
 
-          placeholder.selectedWidgets = [...selectedWidgets];
+          // placeholder.selectedWidgets = [...selectedWidgets];
           placeholder.selectedWidgetList = [...selectedWidgetList];
         }
       };
