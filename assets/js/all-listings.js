@@ -1694,7 +1694,7 @@ function _objectSpread(e) { for (var r = 1; r < arguments.length; r++) { var t =
   });
 
   /* Directorist instant reset */
-  $('body').on("click", ".directorist-instant-search .directorist-advanced-filter__action--ajax .directorist-btn-reset-js", function (e) {
+  $('body').on("click", ".directorist-instant-search .directorist-btn-reset-js", function (e) {
     e.preventDefault();
     var instant_search_element = $(this).closest('.directorist-instant-search');
     var tag = [];
