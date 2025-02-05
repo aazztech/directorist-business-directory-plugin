@@ -53,9 +53,10 @@ class Users_Controller extends Abstract_Controller {
 						'type'     => 'string',
 					),
 					'password' => array(
-						'required' => true,
+						'required'    => true,
 						'description' => __( 'New user password.', 'directorist' ),
-						'type'     => 'string',
+						'type'        => 'string',
+						'minLength'   => 6,
 					),
 				) ),
 			),
@@ -337,10 +338,6 @@ class Users_Controller extends Abstract_Controller {
 			return new WP_Error( 'directorist_rest_user_email_exists', __( 'A resource is already registered.', 'directorist' ) );
 		}
 
-		if ( ! empty( $request['user_type'] ) && $request['user_type'] === 'guest' ) {
-			$request['password'] = wp_generate_password( 12 );
-		}
-
 		// Create user.
 		$user_data = array(
 			'user_email' => $request['email'],
@@ -588,8 +585,8 @@ class Users_Controller extends Abstract_Controller {
 			'id'             => $id,
 			'date_created'   => directorist_rest_prepare_date_response( $user->user_registered ),
 			'name'           => $user->display_name,
-			'username'       => null,                                                               //$user->user_login,
-			'nickname'       => null,                                                               //$user->nickname,
+			'username'       => $request['context'] === 'edit' ? $user->user_login : null,
+			'nickname'       => null,
 			'first_name'     => $user->first_name,
 			'last_name'      => $user->last_name,
 			'description'    => $user->description,
@@ -818,6 +815,7 @@ class Users_Controller extends Abstract_Controller {
 					'description' => __( 'User password.', 'directorist' ),
 					'type'        => 'string',
 					'context'     => array( 'edit' ),
+					'minLength'   => 6,
 				),
 				'address'        => array(
 					'description' => __( 'Address of the user.', 'directorist' ),
