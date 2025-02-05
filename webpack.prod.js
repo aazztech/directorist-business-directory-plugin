@@ -33,27 +33,24 @@ const prodConfig = {
         onEnd: [
           {
             copy: [
-              { source: './assets', destination: './__build/directorist/directorist/assets' },
-              { source: './blocks', destination: './__build/directorist/directorist/blocks' },
-              { source: './languages', destination: './__build/directorist/directorist/languages' },
-              { source: './includes', destination: './__build/directorist/directorist/includes' },
-              { source: './templates', destination: './__build/directorist/directorist/templates' },
-              { source: './views', destination: './__build/directorist/directorist/views' },
-              { source: './*.php', destination: './__build/directorist/directorist' },
-              { source: './*.txt', destination: './__build/directorist/directorist' },
+              { source: './assets', destination: './__build/directorist/assets' },
+              { source: './blocks', destination: './__build/directorist/blocks' },
+              { source: './languages', destination: './__build/directorist/languages' },
+              { source: './includes', destination: './__build/directorist/includes' },
+              { source: './templates', destination: './__build/directorist/templates' },
+              { source: './views', destination: './__build/directorist/views' },
+              { source: './*.php', destination: './__build/directorist' },
+              { source: './*.txt', destination: './__build/directorist' },
             ],
           },
           {
-            delete: ['./__build/directorist/directorist/assets/src'],
+            delete: ['./__build/directorist/assets/src'],
           },
           {
             archive: [
               { source: './__build/directorist', destination: './__build/directorist.zip' },
             ],
-          },
-          {
-            delete: ['./__build/directorist'],
-          },
+          }
         ],
       },
     }),

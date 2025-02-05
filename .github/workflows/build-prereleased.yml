@@ -1,12 +1,12 @@
-# Workflow to deploy the WordPress plugin to WordPress.org upon a release.
+# Build Pre Release workflow for generating a pre-release build of the plugin.
 
-name: Deploy to WordPress.org
+name: Build Pre Release
 
 on:
-  # Trigger this workflow when a release is published.
+  # Trigger this workflow when a pre-release is published.
   release:
     types:
-      - released
+      - prereleased
 
 concurrency:
   # Ensure only one workflow runs per release tag and cancel any in-progress workflows for the same group.
@@ -15,8 +15,8 @@ concurrency:
 
 jobs:
   build:
-    # Use the Ubuntu 22.04 runner for executing the job.
-    runs-on: ubuntu-22.04
+    # Use the latest Ubuntu runner for executing the job.
+    runs-on: ubuntu-latest
 
     steps:
       # Step 1: Checkout the repository code at the version corresponding to the release event.
@@ -41,23 +41,13 @@ jobs:
       - name: Move directorist to root
         run: mv __build/directorist ./directorist
 
-      # Step 6: Deploy the plugin to WordPress.org using 10up's WordPress plugin deploy action.
-      - name: WordPress Plugin Deploy
-        uses: 10up/action-wordpress-plugin-deploy@stable
-        env:
-          # Provide SVN credentials securely using GitHub secrets.
-          SVN_PASSWORD: ${{ secrets.SVN_PASSWORD }}
-          SVN_USERNAME: ${{ secrets.SVN_USERNAME }}
-          SLUG: directorist
-          BUILD_DIR: directorist
-
-      # Step 7: Create a zip archive of the plugin build, naming it with the release tag for easier identification.
+      # Step 6: Create a zip archive of the plugin build, naming it with the release tag for easier identification.
       - name: Create zip file
         run: |
           tag_name=$(git describe --tags --abbrev=0)
           zip -r "directorist.${tag_name}.zip" directorist
 
-      # Step 8: Upload the generated zip file as an asset to the release on GitHub.
+      # Step 7: Upload the generated zip file as an asset to the pre-release on GitHub.
       - name: Upload zip file as a release asset
         uses: softprops/action-gh-release@v1
         with:
