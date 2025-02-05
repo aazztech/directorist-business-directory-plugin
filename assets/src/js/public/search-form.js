@@ -438,7 +438,7 @@ import './components/directoristSelect';
         });
 
         // Search Field Input Value Check
-        function inputValueCheck(e, searchField) {
+        function inputValueCheck(searchField) {
             searchField = searchField[0];
 
             let inputBox = searchField.querySelector('.directorist-search-field__input:not(.directorist-search-basic-dropdown)');
@@ -453,6 +453,9 @@ import './components/directoristSelect';
                 inputFieldValue = ''
                 if(searchField.classList.contains('input-has-value')) {
                     searchField.classList.remove('input-has-value');
+                }
+                if(searchField.classList.contains('input-is-focused')) {
+                    searchField.classList.remove('input-is-focused');
                 }
             }
         }
@@ -506,11 +509,24 @@ import './components/directoristSelect';
             });
         }
 
+        // Search Form Select Field Init
+        function initSelectFields() {
+            let selectFields = document.querySelectorAll('.directorist-select.directorist-search-field__input:not(.directorist-search-basic-dropdown');
+
+            selectFields.forEach((selectField) => {
+                let searchField = $(selectField).closest('.directorist-search-field');
+
+                inputValueCheck( searchField );
+            })
+        }
+
+        initSelectFields();
+
         // Search Form Input Field Check Trigger
         $('body').on('input keyup change', '.directorist-search-field__input:not(.directorist-search-basic-dropdown)', function(e) {
             let searchField = $(this).closest('.directorist-search-field');
 
-            inputValueCheck(e, searchField);
+            inputValueCheck(searchField);
 
         });
 
