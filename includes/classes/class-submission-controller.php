@@ -653,6 +653,7 @@ class SubmissionController {
 					$meta_data[ '_' . $field->get_key() ] = $field->sanitize( $posted_data );
 			}
 
+			// Exception from the web version.
 			if ( self::$from === 'api' && $field->type === 'file' ) {
 				$meta_data[ '_' . $field->get_key() ] = self::get_file_value( $field, $posted_data );
 			}
@@ -662,18 +663,15 @@ class SubmissionController {
 			return $error;
 		}
 
-		if ( ! empty( $posted_data['privacy_policy'] ) ) {
-			$meta_data['_privacy_policy'] = (bool) $posted_data['privacy_policy'];
-		}
-
-		if ( ! empty( $posted_data['t_c_check'] ) ) {
-			$meta_data['_t_c_check'] = (bool) $posted_data['t_c_check'];
+		// Terms & conditions and privacy policy have been merged in v8.
+		if ( ! empty( $posted_data['t_c_check'] ) || ! empty( $posted_data['privacy_policy'] ) ) {
+			$meta_data['_t_c_check'] = true;
+			$meta_data['_privacy_policy'] = true;
 		}
 
 		$listing_create_status = directorist_get_listing_create_status( $directory_id );
-		$listing_edit_status   = directorist_get_listing_edit_status( $directory_id );
 		$default_expiration    = directorist_get_default_expiration( $directory_id );
-		$preview_enable        = atbdp_is_truthy( get_term_meta( $directory_id, 'preview_mode', true ) );
+		$preview_enable        = directorist_is_preview_enabled( $directory_id );
 
 		/**
 		 * It applies a filter to the meta values that are going to be saved with the listing submitted from the front end
@@ -695,13 +693,8 @@ class SubmissionController {
 			 */
 			do_action( 'atbdp_before_processing_to_update_listing' );
 
-			$listing_data['ID'] = $listing_id; // set the ID of the post to update the post
-
-			if ( $from === 'web' && $preview_enable ) {
-				$listing_data['post_status'] = 'private';
-			} else {
-				$listing_data['post_status'] = $listing_edit_status;
-			}
+			$listing_data['ID']          = $listing_id;
+			$listing_data['post_status'] = directorist_get_listing_edit_status( $directory_id, $listing_id );
 
 			$listing_id = wp_update_post( $listing_data );
 
@@ -717,11 +710,7 @@ class SubmissionController {
 
 			do_action( 'atbdp_listing_updated', $listing_id );
 		} else {
-			if ( $from === 'web' && $preview_enable ) {
-				$listing_data['post_status'] = 'private';
-			} else {
-				$listing_data['post_status'] = $listing_create_status;
-			}
+			$listing_data['post_status'] = $listing_create_status;
 
 			$listing_id = wp_insert_post( $listing_data );
 
@@ -768,15 +757,11 @@ class SubmissionController {
 		);
 
 		$permalink = get_permalink( $listing_id );
-		// no pay extension own yet let treat as general user
 
-		$submission_notice = get_directorist_option( 'submission_confirmation', 1 );
-		$redirect_page     = get_directorist_option( 'edit_listing_redirect', 'view_listing' );
+		$response['redirect_url'] = $permalink;
 
-		if ( 'view_listing' === $redirect_page ) {
-			$response['redirect_url'] = $submission_notice ? add_query_arg( 'notice', true, $permalink ) : $permalink;
-		} else {
-			$response['redirect_url'] = $submission_notice ? add_query_arg( 'notice', true, ATBDP_Permalink::get_dashboard_page_link() ) : ATBDP_Permalink::get_dashboard_page_link();
+		if ( (bool) get_directorist_option( 'submission_confirmation', 1 ) ) {
+			$data['redirect_url'] = add_query_arg( 'notice', true, $response['redirect_url'] );
 		}
 
 		$is_listing_featured = ( ! empty( $posted_data['listing_type'] ) && ( 'featured' === $posted_data['listing_type'] ) );
@@ -805,9 +790,7 @@ class SubmissionController {
 			$response['success_msg'] = __( 'Payment required! Redirecting to checkout...', 'directorist' );
 		}
 
-		if ( $preview_enable ) {
-			$response['preview_mode'] = true;
-		}
+		$data['preview_mode'] = $preview_enable;
 
 		if ( ! empty( $posted_data['listing_id'] ) ) {
 			$response['edited_listing'] = true;
@@ -821,7 +804,7 @@ class SubmissionController {
 			$response['redirect_url'] = Helper::escape_query_strings_from_url( $posted_data['redirect_url'] );
 		}
 
-		return $response;
+		return apply_filters( 'atbdp_listing_form_submission_info', $response );
 	}
 
 	public static function upload_images( $listing_id, $posted_data ) {

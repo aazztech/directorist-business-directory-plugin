@@ -136,7 +136,6 @@ class Listings_Controller extends Legacy_Listings_Controller {
 			'privacy_policy'   => 'privacy_policy',
 			'terms_conditions' => 't_c_check',
 			'directory'        => 'directory_type',
-			'plan'             => 'plan_id',
 			'order'            => 'order_id',
 			'id'               => 'listing_id',
 		);
@@ -260,6 +259,8 @@ class Listings_Controller extends Legacy_Listings_Controller {
 		if ( is_wp_error( $controller_response ) ) {
 			return $controller_response;
 		}
+
+		file_put_contents( __DIR__ . '/data.txt', print_r( $controller_response, true ) );
 
 		$listing = get_post( $controller_response['id'] );
 
