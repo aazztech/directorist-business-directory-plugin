@@ -586,6 +586,7 @@ export default {
           if (sourcePlaceholderIndex === destinationPlaceholderIndex) {
             // Moving within the same placeholder
             const widgets = this.allPlaceholderItems[sourcePlaceholderIndex].acceptedWidgets;
+            const selectedWidgets = this.allPlaceholderItems[sourcePlaceholderIndex].selectedWidgets;
             const selectedWidgetList = this.allPlaceholderItems[sourcePlaceholderIndex].selectedWidgetList;
             
             // Remove the widget from the source position
@@ -594,7 +595,7 @@ export default {
             // Insert the widget at the destination position
             widgets.splice(destinationItemIndex, 0, movedWidget);
 
-            console.log('@CHK movedWidget', { movedWidget, widgets, selectedWidgetList, allPlaceholderItems: this.allPlaceholderItems });
+            console.log('@CHK movedWidget', { movedWidget, widgets, selectedWidgets, selectedWidgetList, allPlaceholderItems: this.allPlaceholderItems });
 
             // Update selectedWidgetList position based on acceptedWidgets
             const selectedWidgetIndex = selectedWidgetList.indexOf(movedWidget);
@@ -606,6 +607,11 @@ export default {
               const newSelectedIndex = widgets.indexOf(movedWidget);
               selectedWidgetList.splice(newSelectedIndex, 0, movedWidget);
             }
+
+            // Reorder `selectedWidgets` based on `selectedWidgetList`
+            selectedWidgets.sort((a, b) => {
+              return selectedWidgetList.indexOf(a.widget_key) - selectedWidgetList.indexOf(b.widget_key);
+            });
 
             console.log('@CHK onElementsDrop', { 
               allPlaceholderItems: this.allPlaceholderItems,
@@ -1080,14 +1086,10 @@ export default {
       const updatePlaceholderItem = (placeholder, allPlaceholderItem) => {
         if (placeholder.placeholderKey === allPlaceholderItem.placeholderKey) {
           placeholder.acceptedWidgets = [...allPlaceholderItem.acceptedWidgets];
-          // let selectedWidgets = allPlaceholderItem.selectedWidgets || [];
+          let selectedWidgets = allPlaceholderItem.selectedWidgets || [];
           let selectedWidgetList = allPlaceholderItem.selectedWidgetList || [];
-          
-          if (!Array.isArray(selectedWidgetList)) {
-            selectedWidgetList = Object.values(selectedWidgetList);
-          }
 
-          // placeholder.selectedWidgets = [...selectedWidgets];
+          placeholder.selectedWidgets = [...selectedWidgets];
           placeholder.selectedWidgetList = [...selectedWidgetList];
         }
       };

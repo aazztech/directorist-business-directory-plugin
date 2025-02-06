@@ -7647,15 +7647,14 @@ __webpack_require__.r(__webpack_exports__);
 /*!*******************************************************************************************!*\
   !*** ./assets/src/js/admin/vue/modules/form-fields/Card_Builder_Listing_Header_Field.vue ***!
   \*******************************************************************************************/
-/*! no static exports found */
+/*! exports provided: default */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _Card_Builder_Listing_Header_Field_vue_vue_type_template_id_2b7791eb__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./Card_Builder_Listing_Header_Field.vue?vue&type=template&id=2b7791eb */ "./assets/src/js/admin/vue/modules/form-fields/Card_Builder_Listing_Header_Field.vue?vue&type=template&id=2b7791eb");
 /* harmony import */ var _Card_Builder_Listing_Header_Field_vue_vue_type_script_lang_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./Card_Builder_Listing_Header_Field.vue?vue&type=script&lang=js */ "./assets/src/js/admin/vue/modules/form-fields/Card_Builder_Listing_Header_Field.vue?vue&type=script&lang=js");
-/* harmony reexport (unknown) */ for(var __WEBPACK_IMPORT_KEY__ in _Card_Builder_Listing_Header_Field_vue_vue_type_script_lang_js__WEBPACK_IMPORTED_MODULE_1__) if(["default"].indexOf(__WEBPACK_IMPORT_KEY__) < 0) (function(key) { __webpack_require__.d(__webpack_exports__, key, function() { return _Card_Builder_Listing_Header_Field_vue_vue_type_script_lang_js__WEBPACK_IMPORTED_MODULE_1__[key]; }) }(__WEBPACK_IMPORT_KEY__));
-/* harmony import */ var _node_modules_vue_loader_lib_runtime_componentNormalizer_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../../../../../../../node_modules/vue-loader/lib/runtime/componentNormalizer.js */ "./node_modules/vue-loader/lib/runtime/componentNormalizer.js");
+/* empty/unused harmony star reexport *//* harmony import */ var _node_modules_vue_loader_lib_runtime_componentNormalizer_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../../../../../../../node_modules/vue-loader/lib/runtime/componentNormalizer.js */ "./node_modules/vue-loader/lib/runtime/componentNormalizer.js");
 
 
 
@@ -7685,7 +7684,7 @@ component.options.__file = "assets/src/js/admin/vue/modules/form-fields/Card_Bui
 /*!*******************************************************************************************************************!*\
   !*** ./assets/src/js/admin/vue/modules/form-fields/Card_Builder_Listing_Header_Field.vue?vue&type=script&lang=js ***!
   \*******************************************************************************************************************/
-/*! no static exports found */
+/*! exports provided: default */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -24036,6 +24035,7 @@ function _objectSpread(e) { for (var r = 1; r < arguments.length; r++) { var t =
           if (sourcePlaceholderIndex === destinationPlaceholderIndex) {
             // Moving within the same placeholder
             var widgets = this.allPlaceholderItems[sourcePlaceholderIndex].acceptedWidgets;
+            var selectedWidgets = this.allPlaceholderItems[sourcePlaceholderIndex].selectedWidgets;
             var selectedWidgetList = this.allPlaceholderItems[sourcePlaceholderIndex].selectedWidgetList;
 
             // Remove the widget from the source position
@@ -24048,6 +24048,7 @@ function _objectSpread(e) { for (var r = 1; r < arguments.length; r++) { var t =
             console.log('@CHK movedWidget', {
               movedWidget: movedWidget,
               widgets: widgets,
+              selectedWidgets: selectedWidgets,
               selectedWidgetList: selectedWidgetList,
               allPlaceholderItems: this.allPlaceholderItems
             });
@@ -24062,6 +24063,11 @@ function _objectSpread(e) { for (var r = 1; r < arguments.length; r++) { var t =
               var newSelectedIndex = widgets.indexOf(movedWidget);
               selectedWidgetList.splice(newSelectedIndex, 0, movedWidget);
             }
+
+            // Reorder `selectedWidgets` based on `selectedWidgetList`
+            selectedWidgets.sort(function (a, b) {
+              return selectedWidgetList.indexOf(a.widget_key) - selectedWidgetList.indexOf(b.widget_key);
+            });
             console.log('@CHK onElementsDrop', {
               allPlaceholderItems: this.allPlaceholderItems,
               placeholders: this.placeholders
@@ -24457,13 +24463,9 @@ function _objectSpread(e) { for (var r = 1; r < arguments.length; r++) { var t =
       var updatePlaceholderItem = function updatePlaceholderItem(placeholder, allPlaceholderItem) {
         if (placeholder.placeholderKey === allPlaceholderItem.placeholderKey) {
           placeholder.acceptedWidgets = _babel_runtime_helpers_toConsumableArray__WEBPACK_IMPORTED_MODULE_0___default()(allPlaceholderItem.acceptedWidgets);
-          // let selectedWidgets = allPlaceholderItem.selectedWidgets || [];
+          var selectedWidgets = allPlaceholderItem.selectedWidgets || [];
           var selectedWidgetList = allPlaceholderItem.selectedWidgetList || [];
-          if (!Array.isArray(selectedWidgetList)) {
-            selectedWidgetList = Object.values(selectedWidgetList);
-          }
-
-          // placeholder.selectedWidgets = [...selectedWidgets];
+          placeholder.selectedWidgets = _babel_runtime_helpers_toConsumableArray__WEBPACK_IMPORTED_MODULE_0___default()(selectedWidgets);
           placeholder.selectedWidgetList = _babel_runtime_helpers_toConsumableArray__WEBPACK_IMPORTED_MODULE_0___default()(selectedWidgetList);
         }
       };
