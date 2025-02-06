@@ -8,9 +8,15 @@ export function applyDrag(arr, dragResult) {
   const result = [...arr];
 
   // Perform the swap
-  const temp = result[removedIndex];
-  result[removedIndex] = result[addedIndex];
-  result[addedIndex] = temp;
+  // const temp = result[removedIndex];
+  // result[removedIndex] = result[addedIndex];
+  // result[addedIndex] = temp;
+
+  // Remove the item from the removedIndex
+  const [removedItem] = result.splice(removedIndex, 1);
+
+  // Insert the removed item at the addedIndex
+  result.splice(addedIndex, 0, removedItem);
 
   console.log('Swapped Result:', result);
   return result;

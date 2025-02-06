@@ -268,6 +268,7 @@ export default {
       let output = [];
       let placeholders = this.placeholders;
 
+      // Get Widget Data
       const getWidgetData = (placeholderData) => {
         if (typeof placeholderData !== "object") {
           return null;
@@ -370,24 +371,10 @@ export default {
         }
       }
 
-      // Update Placeholders
-      // const updatedPlaceholders = allPlaceholders.map((placeholder) => {
-      //   // Transform selectedWidgets into an array of widget_name
-      //   if (Array.isArray(placeholder.selectedWidgets)) {
-      //     return {
-      //       ...placeholder,
-      //       selectedWidgets: placeholder.selectedWidgets.map(widget => widget.widget_name || widget),
-      //     };
-      //   }
-      //   return placeholder; // If no selectedWidgets, return placeholder as is
-      // });
-
       this.placeholders = output;
-      // this.allPlaceholderItems = updatedPlaceholders;
 
       console.log('@Output Data', {
         output, 
-        // updatedPlaceholders, 
         placeholders: this.placeholders, 
         allPlaceholderItems:this.allPlaceholderItems, 
         theAvailableWidgets: this.available_widgets,
@@ -539,6 +526,46 @@ export default {
         }
         return placeholder; // Keep other placeholders unchanged
       });
+
+      // Sync allPlaceholderItems with the updated placeholders
+      let newAllPlaceholderItems = [];
+
+      // Iterate over placeholders to update the newAllPlaceholderItems array
+      this.placeholders.forEach((placeholder) => {
+        if (placeholder.type === "placeholder_item") {
+          // Find the matching item from allPlaceholderItems
+          const matchedItem = this.allPlaceholderItems.find(
+            (item) => item.placeholderKey === placeholder.placeholderKey
+          );
+
+          // If a matched item is found, push it to newAllPlaceholderItems
+          if (matchedItem) {
+            newAllPlaceholderItems.push(matchedItem); // Push only the matchedItem
+          } 
+        } else if (placeholder.type === "placeholder_group") {
+          // Iterate over subPlaceholders for a group
+          placeholder.placeholders.forEach((subPlaceholder) => {
+            const matchedItem = this.allPlaceholderItems.find(
+              (item) => item.placeholderKey === subPlaceholder.placeholderKey
+            );
+
+            // If a matched item is found, push it to newAllPlaceholderItems
+            if (matchedItem) {
+              newAllPlaceholderItems.push(matchedItem); // Push only the matchedItem
+            }
+          });
+        }
+      });
+
+      // Update allPlaceholderItems with the new array
+      this.allPlaceholderItems = newAllPlaceholderItems;
+
+      console.log('@CHK DnD', { 
+        updatedPlaceholders,  
+        newAllPlaceholderItems,
+        placeholders: this.placeholders,
+        allPlaceholderItems: this.allPlaceholderItems
+      });
     },
 
     getSettingsChildPayload(draggedItemIndex, placeholderIndex) {
@@ -585,8 +612,8 @@ export default {
             widgets.splice(destinationItemIndex, 0, movedWidget);
 
             // Update selectedWidgetList position based on acceptedWidgets
-            const selectedWidgetIndex = selectedWidgetList.indexOf(movedWidget);
-            if (selectedWidgetIndex !== -1) {
+            const selectedWidgetIndex = selectedWidgetList && selectedWidgetList.indexOf(movedWidget);
+            if (selectedWidgetIndex && selectedWidgetIndex !== -1) {
               // Remove the widget from the selected position
               selectedWidgetList.splice(selectedWidgetIndex, 1);
 
@@ -596,7 +623,7 @@ export default {
             }
 
             // Reorder `selectedWidgets` based on `selectedWidgetList`
-            selectedWidgets.sort((a, b) => {
+            selectedWidgets && selectedWidgets.sort((a, b) => {
               return selectedWidgetList.indexOf(a.widget_key) - selectedWidgetList.indexOf(b.widget_key);
             });
 

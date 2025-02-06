@@ -368,8 +368,11 @@ requireComponent.keys().forEach(function (fileName) {
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "applyDrag", function() { return applyDrag; });
-/* harmony import */ var _babel_runtime_helpers_toConsumableArray__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @babel/runtime/helpers/toConsumableArray */ "./node_modules/@babel/runtime/helpers/toConsumableArray.js");
-/* harmony import */ var _babel_runtime_helpers_toConsumableArray__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_babel_runtime_helpers_toConsumableArray__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var _babel_runtime_helpers_slicedToArray__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @babel/runtime/helpers/slicedToArray */ "./node_modules/@babel/runtime/helpers/slicedToArray.js");
+/* harmony import */ var _babel_runtime_helpers_slicedToArray__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_babel_runtime_helpers_slicedToArray__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var _babel_runtime_helpers_toConsumableArray__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! @babel/runtime/helpers/toConsumableArray */ "./node_modules/@babel/runtime/helpers/toConsumableArray.js");
+/* harmony import */ var _babel_runtime_helpers_toConsumableArray__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(_babel_runtime_helpers_toConsumableArray__WEBPACK_IMPORTED_MODULE_1__);
+
 
 function applyDrag(arr, dragResult) {
   var removedIndex = dragResult.removedIndex,
@@ -381,12 +384,20 @@ function applyDrag(arr, dragResult) {
 
   // If neither removedIndex nor addedIndex are valid, return the array as-is
   if (removedIndex === null || addedIndex === null) return arr;
-  var result = _babel_runtime_helpers_toConsumableArray__WEBPACK_IMPORTED_MODULE_0___default()(arr);
+  var result = _babel_runtime_helpers_toConsumableArray__WEBPACK_IMPORTED_MODULE_1___default()(arr);
 
   // Perform the swap
-  var temp = result[removedIndex];
-  result[removedIndex] = result[addedIndex];
-  result[addedIndex] = temp;
+  // const temp = result[removedIndex];
+  // result[removedIndex] = result[addedIndex];
+  // result[addedIndex] = temp;
+
+  // Remove the item from the removedIndex
+  var _result$splice = result.splice(removedIndex, 1),
+    _result$splice2 = _babel_runtime_helpers_slicedToArray__WEBPACK_IMPORTED_MODULE_0___default()(_result$splice, 1),
+    removedItem = _result$splice2[0];
+
+  // Insert the removed item at the addedIndex
+  result.splice(addedIndex, 0, removedItem);
   console.log('Swapped Result:', result);
   return result;
 }
@@ -23243,6 +23254,8 @@ function _objectSpread(e) { for (var r = 1; r < arguments.length; r++) { var t =
       var _this = this;
       var output = [];
       var placeholders = this.placeholders;
+
+      // Get Widget Data
       var getWidgetData = function getWidgetData(placeholderData) {
         if (_babel_runtime_helpers_typeof__WEBPACK_IMPORTED_MODULE_3___default()(placeholderData) !== "object") {
           return null;
@@ -23357,29 +23370,14 @@ function _objectSpread(e) { for (var r = 1; r < arguments.length; r++) { var t =
             continue;
           }
         }
-
-        // Update Placeholders
-        // const updatedPlaceholders = allPlaceholders.map((placeholder) => {
-        //   // Transform selectedWidgets into an array of widget_name
-        //   if (Array.isArray(placeholder.selectedWidgets)) {
-        //     return {
-        //       ...placeholder,
-        //       selectedWidgets: placeholder.selectedWidgets.map(widget => widget.widget_name || widget),
-        //     };
-        //   }
-        //   return placeholder; // If no selectedWidgets, return placeholder as is
-        // });
       } catch (err) {
         _iterator2.e(err);
       } finally {
         _iterator2.f();
       }
       this.placeholders = output;
-      // this.allPlaceholderItems = updatedPlaceholders;
-
       console.log('@Output Data', {
         output: output,
-        // updatedPlaceholders, 
         placeholders: this.placeholders,
         allPlaceholderItems: this.allPlaceholderItems,
         theAvailableWidgets: this.available_widgets,
@@ -23495,6 +23493,7 @@ function _objectSpread(e) { for (var r = 1; r < arguments.length; r++) { var t =
       return this.placeholders[index];
     },
     onDrop: function onDrop(dropResult) {
+      var _this3 = this;
       var draggablePlaceholders = this.placeholders.filter(function (placeholder) {
         return placeholder.type === "placeholder_item";
       });
@@ -23509,6 +23508,45 @@ function _objectSpread(e) { for (var r = 1; r < arguments.length; r++) { var t =
         }
 
         return placeholder; // Keep other placeholders unchanged
+      });
+
+      // Sync allPlaceholderItems with the updated placeholders
+      var newAllPlaceholderItems = [];
+
+      // Iterate over placeholders to update the newAllPlaceholderItems array
+      this.placeholders.forEach(function (placeholder) {
+        if (placeholder.type === "placeholder_item") {
+          // Find the matching item from allPlaceholderItems
+          var matchedItem = _this3.allPlaceholderItems.find(function (item) {
+            return item.placeholderKey === placeholder.placeholderKey;
+          });
+
+          // If a matched item is found, push it to newAllPlaceholderItems
+          if (matchedItem) {
+            newAllPlaceholderItems.push(matchedItem); // Push only the matchedItem
+          }
+        } else if (placeholder.type === "placeholder_group") {
+          // Iterate over subPlaceholders for a group
+          placeholder.placeholders.forEach(function (subPlaceholder) {
+            var matchedItem = _this3.allPlaceholderItems.find(function (item) {
+              return item.placeholderKey === subPlaceholder.placeholderKey;
+            });
+
+            // If a matched item is found, push it to newAllPlaceholderItems
+            if (matchedItem) {
+              newAllPlaceholderItems.push(matchedItem); // Push only the matchedItem
+            }
+          });
+        }
+      });
+
+      // Update allPlaceholderItems with the new array
+      this.allPlaceholderItems = newAllPlaceholderItems;
+      console.log('@CHK DnD', {
+        updatedPlaceholders: updatedPlaceholders,
+        newAllPlaceholderItems: newAllPlaceholderItems,
+        placeholders: this.placeholders,
+        allPlaceholderItems: this.allPlaceholderItems
       });
     },
     getSettingsChildPayload: function getSettingsChildPayload(draggedItemIndex, placeholderIndex) {
@@ -23556,8 +23594,8 @@ function _objectSpread(e) { for (var r = 1; r < arguments.length; r++) { var t =
             widgets.splice(destinationItemIndex, 0, movedWidget);
 
             // Update selectedWidgetList position based on acceptedWidgets
-            var selectedWidgetIndex = selectedWidgetList.indexOf(movedWidget);
-            if (selectedWidgetIndex !== -1) {
+            var selectedWidgetIndex = selectedWidgetList && selectedWidgetList.indexOf(movedWidget);
+            if (selectedWidgetIndex && selectedWidgetIndex !== -1) {
               // Remove the widget from the selected position
               selectedWidgetList.splice(selectedWidgetIndex, 1);
 
@@ -23567,7 +23605,7 @@ function _objectSpread(e) { for (var r = 1; r < arguments.length; r++) { var t =
             }
 
             // Reorder `selectedWidgets` based on `selectedWidgetList`
-            selectedWidgets.sort(function (a, b) {
+            selectedWidgets && selectedWidgets.sort(function (a, b) {
               return selectedWidgetList.indexOf(a.widget_key) - selectedWidgetList.indexOf(b.widget_key);
             });
 
@@ -23603,7 +23641,7 @@ function _objectSpread(e) { for (var r = 1; r < arguments.length; r++) { var t =
     },
     // Import Old Data
     importOldData: function importOldData() {
-      var _this3 = this;
+      var _this4 = this;
       var value = JSON.parse(JSON.stringify(this.value));
       if (!Array.isArray(value)) {
         return;
@@ -23615,12 +23653,12 @@ function _objectSpread(e) { for (var r = 1; r < arguments.length; r++) { var t =
       // -------------------------
       var addActiveWidget = function addActiveWidget(widget) {
         // Ensure that the widget exists in the available widgets
-        if (!_this3.theAvailableWidgets[widget.widget_name]) {
+        if (!_this4.theAvailableWidgets[widget.widget_name]) {
           console.error("Widget ".concat(widget.widget_name, " not found in available widgets."));
           return; // Exit if widget is not available
         }
 
-        var widgets_template = _objectSpread({}, _this3.theAvailableWidgets[widget.widget_name]);
+        var widgets_template = _objectSpread({}, _this4.theAvailableWidgets[widget.widget_name]);
         var has_widget_options = false;
         if (widgets_template.options && widgets_template.options.fields) {
           has_widget_options = true;
@@ -23650,13 +23688,13 @@ function _objectSpread(e) { for (var r = 1; r < arguments.length; r++) { var t =
         }
 
         // Set the widget data in the active_widgets object
-        vue__WEBPACK_IMPORTED_MODULE_4__["default"].set(_this3.active_widgets, widget.widget_name, widgets_template);
+        vue__WEBPACK_IMPORTED_MODULE_4__["default"].set(_this4.active_widgets, widget.widget_name, widgets_template);
       };
       var importWidgets = function importWidgets(placeholder, destination) {
-        if (!_this3.placeholdersMap.hasOwnProperty(placeholder.placeholderKey)) {
+        if (!_this4.placeholdersMap.hasOwnProperty(placeholder.placeholderKey)) {
           return;
         }
-        var newPlaceholder = JSON.parse(JSON.stringify(_this3.placeholdersMap[placeholder.placeholderKey]));
+        var newPlaceholder = JSON.parse(JSON.stringify(_this4.placeholdersMap[placeholder.placeholderKey]));
         if (placeholder.selectedWidgets) {
           newPlaceholder.selectedWidgets = placeholder.selectedWidgets;
           newPlaceholder.selectedWidgetList = placeholder.selectedWidgets.map(function (widget) {
@@ -23676,13 +23714,13 @@ function _objectSpread(e) { for (var r = 1; r < arguments.length; r++) { var t =
 
         // Add active widgets based on selectedWidgets
         placeholder.selectedWidgets.forEach(function (widget) {
-          if (typeof widget !== "undefined" && typeof _this3.available_widgets[widget.widget_name] !== "undefined") {
+          if (typeof widget !== "undefined" && typeof _this4.available_widgets[widget.widget_name] !== "undefined") {
             addActiveWidget(widget);
           }
         });
       };
       value.forEach(function (placeholder, index) {
-        if (!_this3.isTruthyObject(placeholder)) {
+        if (!_this4.isTruthyObject(placeholder)) {
           return;
         }
         if ("placeholder_item" === placeholder.type) {
@@ -23694,12 +23732,12 @@ function _objectSpread(e) { for (var r = 1; r < arguments.length; r++) { var t =
           return;
         }
         if ("placeholder_group" === placeholder.type) {
-          if (!_this3.placeholdersMap.hasOwnProperty(placeholder.placeholderKey)) {
+          if (!_this4.placeholdersMap.hasOwnProperty(placeholder.placeholderKey)) {
             return;
           }
-          var newPlaceholder = JSON.parse(JSON.stringify(_this3.placeholdersMap[placeholder.placeholderKey]));
+          var newPlaceholder = JSON.parse(JSON.stringify(_this4.placeholdersMap[placeholder.placeholderKey]));
           newPlaceholder.placeholders = [];
-          var targetPlaceholderIndex = _this3.placeholders.length;
+          var targetPlaceholderIndex = _this4.placeholders.length;
           newPlaceholders.splice(targetPlaceholderIndex, 0, newPlaceholder);
           placeholder.placeholders.forEach(function (subPlaceholder) {
             // if (!Array.isArray(subPlaceholder.selectedWidgets)) {
@@ -23742,7 +23780,7 @@ function _objectSpread(e) { for (var r = 1; r < arguments.length; r++) { var t =
     },
     // Import Placeholders
     importPlaceholders: function importPlaceholders() {
-      var _this4 = this;
+      var _this5 = this;
       this.allPlaceholderItems = [];
       if (!Array.isArray(this.layout)) {
         return;
@@ -23751,7 +23789,7 @@ function _objectSpread(e) { for (var r = 1; r < arguments.length; r++) { var t =
         return;
       }
       var sanitizePlaceholderData = function sanitizePlaceholderData(placeholder) {
-        if (!_this4.isTruthyObject(placeholder)) {
+        if (!_this5.isTruthyObject(placeholder)) {
           placeholder = {};
         }
 
@@ -23772,7 +23810,7 @@ function _objectSpread(e) { for (var r = 1; r < arguments.length; r++) { var t =
       try {
         var _loop = function _loop() {
             var placeholder = _step5.value;
-            if (!_this4.isTruthyObject(placeholder)) {
+            if (!_this5.isTruthyObject(placeholder)) {
               return 0; // continue
             }
             var placeholderItem = placeholder;
@@ -23782,15 +23820,15 @@ function _objectSpread(e) { for (var r = 1; r < arguments.length; r++) { var t =
             if (typeof placeholderItem.placeholderKey === "undefined") {
               return 0; // continue
             }
-            if (_this4.placeholdersMap.hasOwnProperty(placeholderItem.placeholderKey)) {
+            if (_this5.placeholdersMap.hasOwnProperty(placeholderItem.placeholderKey)) {
               return 0; // continue
             }
-            vue__WEBPACK_IMPORTED_MODULE_4__["default"].set(_this4.placeholdersMap, placeholderItem.placeholderKey, placeholderItem);
+            vue__WEBPACK_IMPORTED_MODULE_4__["default"].set(_this5.placeholdersMap, placeholderItem.placeholderKey, placeholderItem);
             if (placeholderItem.type === "placeholder_item") {
               var placeholderItemData = sanitizePlaceholderData(placeholderItem);
               if (placeholderItemData) {
                 sanitizedPlaceholders.push(placeholderItemData);
-                _this4.allPlaceholderItems.push(placeholderItemData);
+                _this5.allPlaceholderItems.push(placeholderItemData);
               }
               return 0; // continue
             }
@@ -23805,15 +23843,15 @@ function _objectSpread(e) { for (var r = 1; r < arguments.length; r++) { var t =
                 return 0; // continue
               }
               placeholderItem.placeholders.forEach(function (placeholderSubItem, subPlaceholderIndex) {
-                if (_this4.placeholdersMap.hasOwnProperty(placeholderSubItem.placeholderKey)) {
+                if (_this5.placeholdersMap.hasOwnProperty(placeholderSubItem.placeholderKey)) {
                   placeholderItem.placeholders.splice(subPlaceholderIndex, 1);
                   return;
                 }
-                vue__WEBPACK_IMPORTED_MODULE_4__["default"].set(_this4.placeholdersMap, placeholderSubItem.placeholderKey, placeholderSubItem);
+                vue__WEBPACK_IMPORTED_MODULE_4__["default"].set(_this5.placeholdersMap, placeholderSubItem.placeholderKey, placeholderSubItem);
                 var placeholderItemData = sanitizePlaceholderData(placeholderSubItem);
                 if (placeholderItemData) {
                   placeholderItem.placeholders.splice(subPlaceholderIndex, 1, placeholderItemData);
-                  _this4.allPlaceholderItems.push(placeholderItemData);
+                  _this5.allPlaceholderItems.push(placeholderItemData);
                 }
               });
               if (placeholderItem.placeholders.length) {
