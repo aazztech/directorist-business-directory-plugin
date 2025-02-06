@@ -539,20 +539,13 @@ export default {
         }
         return placeholder; // Keep other placeholders unchanged
       });
-
-      console.log("@onDrop", dropResult, this.placeholders);
     },
 
     getSettingsChildPayload(draggedItemIndex, placeholderIndex) {
-      // Log for debugging
-      console.log('Dragged Item Index:', draggedItemIndex);
-      console.log('Placeholder Index:', placeholderIndex);
-
       // Return the payload containing both pieces of data
       return {
         draggedItemIndex: draggedItemIndex,
         placeholderIndex: placeholderIndex,
-        // Add any other data you want to include in the payload
       };
     },
 
@@ -560,11 +553,7 @@ export default {
       const { removedIndex, addedIndex, payload } = dropResult;
       const { draggedItemIndex, placeholderIndex } = payload; 
 
-      console.log('@onElementsDrop', { removedIndex, addedIndex, payload, draggedItemIndex, placeholder_index,placeholderIndex });
-
       if ( removedIndex !== null || addedIndex !== null) {
-        console.log('@@Not null', { removedIndex, addedIndex });
-
         let destinationItemIndex;
         let destinationPlaceholderIndex;
         const sourceItemIndex = draggedItemIndex;  
@@ -595,8 +584,6 @@ export default {
             // Insert the widget at the destination position
             widgets.splice(destinationItemIndex, 0, movedWidget);
 
-            console.log('@CHK movedWidget', { movedWidget, widgets, selectedWidgets, selectedWidgetList, allPlaceholderItems: this.allPlaceholderItems });
-
             // Update selectedWidgetList position based on acceptedWidgets
             const selectedWidgetIndex = selectedWidgetList.indexOf(movedWidget);
             if (selectedWidgetIndex !== -1) {
@@ -613,11 +600,6 @@ export default {
               return selectedWidgetList.indexOf(a.widget_key) - selectedWidgetList.indexOf(b.widget_key);
             });
 
-            console.log('@CHK onElementsDrop', { 
-              allPlaceholderItems: this.allPlaceholderItems,
-              placeholders: this.placeholders,
-            });
-
             // Update Placeholders
             const updatedPlaceholders = this.syncPlaceholdersWithAllPlaceholderItems(
               this.allPlaceholderItems,
@@ -625,12 +607,6 @@ export default {
             );
 
             this.placeholders = updatedPlaceholders;
-
-            console.log('@CHK updatedPlaceholders onElementsDrop', { 
-              allPlaceholderItems: this.allPlaceholderItems,
-              placeholders: this.placeholders,
-              updatedPlaceholders 
-            });
           } else if (destinationPlaceholderIndex !== null) {
             // Moving between different placeholders
             // this.allPlaceholderItems[destinationPlaceholderIndex].selectedWidgetList.splice(destinationItemIndex, 0, widgetKey);
@@ -640,8 +616,6 @@ export default {
       } else {
         return;
       }
-
-      console.log('@CHK after onElementsDrop', { placeholders: this.placeholders, allPlaceholderItems: this.allPlaceholderItems });
     },
 
     getGhostParent() {
@@ -974,7 +948,7 @@ export default {
       });
     },
 
-    // 🔹 Handle widget toggle from UI
+    // Handle widget toggle from UI
     handleWidgetSwitch(event, widget_key, placeholder_index) {
       if (!this.allPlaceholderItems[placeholder_index]) {
         console.error(`Invalid placeholder index: ${placeholder_index}`);
@@ -988,14 +962,9 @@ export default {
 
       // Sync selectedWidgets between allPlaceholderItems and placeholders
       this.placeholders = this.syncSelectedWidgets(this.allPlaceholderItems, this.placeholders);
-
-      console.log(`Toggled widget: ${widget_key}`, {
-        placeholders: this.placeholders,
-        allPlaceholderItems: this.allPlaceholderItems,
-      });
     },
 
-    // 🔹 Add/remove widget from selectedWidgets & active_widgets
+    // Add/remove widget from selectedWidgets & active_widgets
     toggleWidgetInSelectedWidgets(widget_key, placeholder_index, isChecked) {
       const placeholder = this.allPlaceholderItems[placeholder_index];
       const acceptedWidgets = placeholder.acceptedWidgets || [];
@@ -1035,21 +1004,10 @@ export default {
       } else {
           this.$delete(this.active_widgets, widget_key);
       }
-
-      console.log('@toggleWidgetInSelectedWidgets:', {
-          widget_key,
-          placeholder,
-          selectedWidgets,
-          selectedWidgetList,
-          acceptedWidgets,
-          active_widgets: this.active_widgets,
-      });
     },
 
-    // 🔹 Sync selectedWidgets across placeholders
+    // Sync selectedWidgets across placeholders
     syncSelectedWidgets(allPlaceholderItems, placeholders) {
-      console.log('Sync Selected Widgets:', { allPlaceholderItems, placeholders });
-
       const allItemsMap = allPlaceholderItems.reduce((acc, item) => {
         acc[item.placeholderKey] = item;
         return acc;
@@ -1079,10 +1037,8 @@ export default {
       return updatePlaceholders(placeholders);
     },
 
-    // 🔹 Sync placeholders with allPlaceholderItems
+    // Sync placeholders with allPlaceholderItems
     syncPlaceholdersWithAllPlaceholderItems(allPlaceholderItems, placeholders) {
-      console.log('Sync Placeholders With All Placeholder Items:', { allPlaceholderItems, placeholders });
-
       const updatePlaceholderItem = (placeholder, allPlaceholderItem) => {
         if (placeholder.placeholderKey === allPlaceholderItem.placeholderKey) {
           placeholder.acceptedWidgets = [...allPlaceholderItem.acceptedWidgets];
@@ -1328,18 +1284,6 @@ export default {
       if (typeof this.active_widgets[options_window.widget].options === "undefined") {
         return;
       }
-
-      console.log('@updateWidgetOptionsData', { 
-        data, 
-        options_window, 
-        placeholders: this.placeholders,
-        active_widgets: this.active_widgets,
-        available_widgets: this.available_widgets,
-        widgets: this.widgets,
-      });
-
-      // Vue.set(this.widgets[options_window.widget].options, "fields", data);
-      // Vue.set(this.available_widgets[options_window.widget].options, "fields", data);
     },
 
     closeCardWidgetOptionsWindow() {

@@ -23982,19 +23982,12 @@ function _objectSpread(e) { for (var r = 1; r < arguments.length; r++) { var t =
 
         return placeholder; // Keep other placeholders unchanged
       });
-
-      console.log("@onDrop", dropResult, this.placeholders);
     },
     getSettingsChildPayload: function getSettingsChildPayload(draggedItemIndex, placeholderIndex) {
-      // Log for debugging
-      console.log('Dragged Item Index:', draggedItemIndex);
-      console.log('Placeholder Index:', placeholderIndex);
-
       // Return the payload containing both pieces of data
       return {
         draggedItemIndex: draggedItemIndex,
         placeholderIndex: placeholderIndex
-        // Add any other data you want to include in the payload
       };
     },
     onElementsDrop: function onElementsDrop(dropResult, placeholder_index) {
@@ -24003,20 +23996,8 @@ function _objectSpread(e) { for (var r = 1; r < arguments.length; r++) { var t =
         payload = dropResult.payload;
       var draggedItemIndex = payload.draggedItemIndex,
         placeholderIndex = payload.placeholderIndex;
-      console.log('@onElementsDrop', {
-        removedIndex: removedIndex,
-        addedIndex: addedIndex,
-        payload: payload,
-        draggedItemIndex: draggedItemIndex,
-        placeholder_index: placeholder_index,
-        placeholderIndex: placeholderIndex
-      });
       if (removedIndex !== null || addedIndex !== null) {
         var _this$allPlaceholderI;
-        console.log('@@Not null', {
-          removedIndex: removedIndex,
-          addedIndex: addedIndex
-        });
         var destinationItemIndex;
         var destinationPlaceholderIndex;
         var sourceItemIndex = draggedItemIndex;
@@ -24045,13 +24026,6 @@ function _objectSpread(e) { for (var r = 1; r < arguments.length; r++) { var t =
 
             // Insert the widget at the destination position
             widgets.splice(destinationItemIndex, 0, movedWidget);
-            console.log('@CHK movedWidget', {
-              movedWidget: movedWidget,
-              widgets: widgets,
-              selectedWidgets: selectedWidgets,
-              selectedWidgetList: selectedWidgetList,
-              allPlaceholderItems: this.allPlaceholderItems
-            });
 
             // Update selectedWidgetList position based on acceptedWidgets
             var selectedWidgetIndex = selectedWidgetList.indexOf(movedWidget);
@@ -24068,19 +24042,10 @@ function _objectSpread(e) { for (var r = 1; r < arguments.length; r++) { var t =
             selectedWidgets.sort(function (a, b) {
               return selectedWidgetList.indexOf(a.widget_key) - selectedWidgetList.indexOf(b.widget_key);
             });
-            console.log('@CHK onElementsDrop', {
-              allPlaceholderItems: this.allPlaceholderItems,
-              placeholders: this.placeholders
-            });
 
             // Update Placeholders
             var updatedPlaceholders = this.syncPlaceholdersWithAllPlaceholderItems(this.allPlaceholderItems, this.placeholders || []);
             this.placeholders = updatedPlaceholders;
-            console.log('@CHK updatedPlaceholders onElementsDrop', {
-              allPlaceholderItems: this.allPlaceholderItems,
-              placeholders: this.placeholders,
-              updatedPlaceholders: updatedPlaceholders
-            });
           } else if (destinationPlaceholderIndex !== null) {
             // Moving between different placeholders
             // this.allPlaceholderItems[destinationPlaceholderIndex].selectedWidgetList.splice(destinationItemIndex, 0, widgetKey);
@@ -24090,10 +24055,6 @@ function _objectSpread(e) { for (var r = 1; r < arguments.length; r++) { var t =
       } else {
         return;
       }
-      console.log('@CHK after onElementsDrop', {
-        placeholders: this.placeholders,
-        allPlaceholderItems: this.allPlaceholderItems
-      });
     },
     getGhostParent: function getGhostParent() {
       return document.body;
@@ -24349,7 +24310,7 @@ function _objectSpread(e) { for (var r = 1; r < arguments.length; r++) { var t =
         allPlaceholderItems: this.allPlaceholderItems
       });
     },
-    // 🔹 Handle widget toggle from UI
+    // Handle widget toggle from UI
     handleWidgetSwitch: function handleWidgetSwitch(event, widget_key, placeholder_index) {
       if (!this.allPlaceholderItems[placeholder_index]) {
         console.error("Invalid placeholder index: ".concat(placeholder_index));
@@ -24362,12 +24323,8 @@ function _objectSpread(e) { for (var r = 1; r < arguments.length; r++) { var t =
 
       // Sync selectedWidgets between allPlaceholderItems and placeholders
       this.placeholders = this.syncSelectedWidgets(this.allPlaceholderItems, this.placeholders);
-      console.log("Toggled widget: ".concat(widget_key), {
-        placeholders: this.placeholders,
-        allPlaceholderItems: this.allPlaceholderItems
-      });
     },
-    // 🔹 Add/remove widget from selectedWidgets & active_widgets
+    // Add/remove widget from selectedWidgets & active_widgets
     toggleWidgetInSelectedWidgets: function toggleWidgetInSelectedWidgets(widget_key, placeholder_index, isChecked) {
       var placeholder = this.allPlaceholderItems[placeholder_index];
       var acceptedWidgets = placeholder.acceptedWidgets || [];
@@ -24416,21 +24373,9 @@ function _objectSpread(e) { for (var r = 1; r < arguments.length; r++) { var t =
       } else {
         this.$delete(this.active_widgets, widget_key);
       }
-      console.log('@toggleWidgetInSelectedWidgets:', {
-        widget_key: widget_key,
-        placeholder: placeholder,
-        selectedWidgets: selectedWidgets,
-        selectedWidgetList: selectedWidgetList,
-        acceptedWidgets: acceptedWidgets,
-        active_widgets: this.active_widgets
-      });
     },
-    // 🔹 Sync selectedWidgets across placeholders
+    // Sync selectedWidgets across placeholders
     syncSelectedWidgets: function syncSelectedWidgets(allPlaceholderItems, placeholders) {
-      console.log('Sync Selected Widgets:', {
-        allPlaceholderItems: allPlaceholderItems,
-        placeholders: placeholders
-      });
       var allItemsMap = allPlaceholderItems.reduce(function (acc, item) {
         acc[item.placeholderKey] = item;
         return acc;
@@ -24454,12 +24399,8 @@ function _objectSpread(e) { for (var r = 1; r < arguments.length; r++) { var t =
       };
       return updatePlaceholders(placeholders);
     },
-    // 🔹 Sync placeholders with allPlaceholderItems
+    // Sync placeholders with allPlaceholderItems
     syncPlaceholdersWithAllPlaceholderItems: function syncPlaceholdersWithAllPlaceholderItems(allPlaceholderItems, placeholders) {
-      console.log('Sync Placeholders With All Placeholder Items:', {
-        allPlaceholderItems: allPlaceholderItems,
-        placeholders: placeholders
-      });
       var updatePlaceholderItem = function updatePlaceholderItem(placeholder, allPlaceholderItem) {
         if (placeholder.placeholderKey === allPlaceholderItem.placeholderKey) {
           placeholder.acceptedWidgets = _babel_runtime_helpers_toConsumableArray__WEBPACK_IMPORTED_MODULE_0___default()(allPlaceholderItem.acceptedWidgets);
@@ -24638,17 +24579,6 @@ function _objectSpread(e) { for (var r = 1; r < arguments.length; r++) { var t =
       if (typeof this.active_widgets[options_window.widget].options === "undefined") {
         return;
       }
-      console.log('@updateWidgetOptionsData', {
-        data: data,
-        options_window: options_window,
-        placeholders: this.placeholders,
-        active_widgets: this.active_widgets,
-        available_widgets: this.available_widgets,
-        widgets: this.widgets
-      });
-
-      // Vue.set(this.widgets[options_window.widget].options, "fields", data);
-      // Vue.set(this.available_widgets[options_window.widget].options, "fields", data);
     },
     closeCardWidgetOptionsWindow: function closeCardWidgetOptionsWindow() {
       this.widgetCardOptionsWindow = this.widgetOptionsWindowDefault;
