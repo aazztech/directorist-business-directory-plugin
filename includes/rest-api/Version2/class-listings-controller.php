@@ -260,8 +260,6 @@ class Listings_Controller extends Legacy_Listings_Controller {
 			return $controller_response;
 		}
 
-		file_put_contents( __DIR__ . '/data.txt', print_r( $controller_response, true ) );
-
 		$listing = get_post( $controller_response['id'] );
 
 		$request->set_param( 'context', 'edit' );
@@ -271,6 +269,10 @@ class Listings_Controller extends Legacy_Listings_Controller {
 
 		if ( isset( $controller_response['preview_url'] ) ) {
 			$response->add_link( 'preview', $controller_response['preview_url'] );
+		}
+
+		if ( isset( $controller_response['redirect_url'] ) ) {
+			$response->add_link( 'redirect', $controller_response['redirect_url'] );
 		}
 
 		$base = '/' . $this->namespace . '/' . $this->rest_base;
