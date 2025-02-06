@@ -157,6 +157,19 @@ class Orders_Controller extends Posts_Controller {
 		update_post_meta( $order_id, '_payment_status', 'created' );
 
 		do_action( 'atbdp_order_created', $order_id, $listing_id );
+
+		$request->set_param( 'context', 'edit' );
+		$response = $this->prepare_item_for_response( get_post( $order_id ), $request );
+		$response = rest_ensure_response( $response );
+		$response->set_status( 201 );
+
+		$base = '/' . $this->namespace . '/' . $this->rest_base;
+
+		$response->header( 'Location', rest_url( $base . '/' . $order_id ) );
+
+		$response = apply_filters( 'directorist_rest_response', $response, 'create_order_item', $request );
+
+		return $response;
 	}
 
 	/**
