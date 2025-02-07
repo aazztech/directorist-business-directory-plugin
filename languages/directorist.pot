@@ -6,7 +6,7 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2025-02-05 05:24+0000\n"
+"POT-Creation-Date: 2025-02-07 04:37+0000\n"
 "X-Poedit-Basepath: ..\n"
 "X-Poedit-KeywordsList: __;_e;_ex:1,2c;_n:1,2;_n_noop:1,2;_nx:1,2,4c;_nx_noop:1,2,3c;_x:1,2c;esc_attr__;esc_attr_e;esc_attr_x:1,2c;esc_html__;esc_html_e;esc_html_x:1,2c\n"
 "X-Poedit-SearchPath-0: .\n"
@@ -748,15 +748,31 @@ msgstr ""
 msgid "Please make sure you filed up the user type"
 msgstr ""
 
-#: ../includes/helper-functions.php:4441, ../includes/classes/class-extension.php:1611, ../includes/classes/class-extension.php:1720
+#: ../includes/helper-functions.php:3614
+msgid "Draft"
+msgstr ""
+
+#: ../includes/helper-functions.php:3615
+msgid "Pending Review"
+msgstr ""
+
+#: ../includes/helper-functions.php:3616
+msgid "Private"
+msgstr ""
+
+#: ../includes/helper-functions.php:3617, ../templates/dashboard/tab-my-listings.php:32
+msgid "Published"
+msgstr ""
+
+#: ../includes/helper-functions.php:4457, ../includes/classes/class-extension.php:1611, ../includes/classes/class-extension.php:1720
 msgid "Invalid download link"
 msgstr ""
 
-#: ../includes/helper-functions.php:4481, ../includes/classes/class-extension.php:1651, ../includes/classes/class-extension.php:1760
+#: ../includes/helper-functions.php:4497, ../includes/classes/class-extension.php:1651, ../includes/classes/class-extension.php:1760
 msgid "Could not create temp directory"
 msgstr ""
 
-#: ../includes/helper-functions.php:4533, ../includes/classes/class-extension.php:1703
+#: ../includes/helper-functions.php:4549, ../includes/classes/class-extension.php:1703
 msgid "The plugin has been downloaded successfully"
 msgstr ""
 
@@ -1065,11 +1081,11 @@ msgstr ""
 msgid "Terms & Privacy is required"
 msgstr ""
 
-#: ../includes/classes/class-add-listing.php:438, ../includes/classes/class-submission-controller.php:801
+#: ../includes/classes/class-add-listing.php:438, ../includes/classes/class-submission-controller.php:786
 msgid "Your listing submission is completed! Redirecting..."
 msgstr ""
 
-#: ../includes/classes/class-add-listing.php:442, ../includes/classes/class-submission-controller.php:805
+#: ../includes/classes/class-add-listing.php:442, ../includes/classes/class-submission-controller.php:790
 msgid "Payment required! Redirecting to checkout..."
 msgstr ""
 
@@ -2299,7 +2315,7 @@ msgstr ""
 msgid "Pending Confirmation Message"
 msgstr ""
 
-#: ../includes/classes/class-settings-panel.php:269, ../includes/model/ListingDashboard.php:483, ../includes/model/SingleListing.php:952
+#: ../includes/classes/class-settings-panel.php:269, ../includes/model/ListingDashboard.php:485, ../includes/model/SingleListing.php:952
 msgid "Thank you for your submission. Your listing is being reviewed and it may take up to 24 hours to complete the review."
 msgstr ""
 
@@ -2307,7 +2323,7 @@ msgstr ""
 msgid "Publish Confirmation Message"
 msgstr ""
 
-#: ../includes/classes/class-settings-panel.php:281, ../includes/model/ListingDashboard.php:478, ../includes/model/SingleListing.php:947
+#: ../includes/classes/class-settings-panel.php:281, ../includes/model/ListingDashboard.php:480, ../includes/model/SingleListing.php:947
 msgid "Congratulations! Your listing has been approved/published. Now it is publicly available."
 msgstr ""
 
@@ -3065,7 +3081,7 @@ msgstr ""
 msgid "\"My Listing\" Tab Label"
 msgstr ""
 
-#: ../includes/classes/class-settings-panel.php:1659, ../includes/model/ListingDashboard.php:372
+#: ../includes/classes/class-settings-panel.php:1659, ../includes/model/ListingDashboard.php:374
 msgid "My Listing"
 msgstr ""
 
@@ -3081,7 +3097,7 @@ msgstr ""
 msgid "\"My Profile\" Tab Label"
 msgstr ""
 
-#: ../includes/classes/class-settings-panel.php:1700, ../includes/model/ListingDashboard.php:386, ../templates/dashboard/tab-profile.php:31
+#: ../includes/classes/class-settings-panel.php:1700, ../includes/model/ListingDashboard.php:388, ../templates/dashboard/tab-profile.php:31
 msgid "My Profile"
 msgstr ""
 
@@ -3093,7 +3109,7 @@ msgstr ""
 msgid "\"Favourite Listings\" Tab Label"
 msgstr ""
 
-#: ../includes/classes/class-settings-panel.php:1716, ../includes/model/ListingDashboard.php:394
+#: ../includes/classes/class-settings-panel.php:1716, ../includes/model/ListingDashboard.php:396
 msgid "Favorite Listings"
 msgstr ""
 
@@ -4427,11 +4443,11 @@ msgstr ""
 msgid "Step Four"
 msgstr ""
 
-#: ../includes/classes/class-setup-wizard.php:516, ../includes/model/ListingForm.php:821
+#: ../includes/classes/class-setup-wizard.php:516, ../includes/model/ListingForm.php:825
 msgid "You can drag the marker to your desired place to place a marker"
 msgstr ""
 
-#: ../includes/classes/class-setup-wizard.php:517, ../includes/model/ListingForm.php:822
+#: ../includes/classes/class-setup-wizard.php:517, ../includes/model/ListingForm.php:826
 msgid "Geocode was not successful for the following reason: "
 msgstr ""
 
@@ -5297,23 +5313,27 @@ msgid_plural "<span>%s</span> Listings"
 msgstr[0] ""
 msgstr[1] ""
 
-#: ../includes/model/ListingDashboard.php:231
+#: ../includes/model/ListingDashboard.php:177
+msgid "Unknown"
+msgstr ""
+
+#: ../includes/model/ListingDashboard.php:233
 msgid "Untitled"
 msgstr ""
 
-#: ../includes/model/ListingDashboard.php:401, ../templates/dashboard/tab-preferences.php:20
+#: ../includes/model/ListingDashboard.php:403, ../templates/dashboard/tab-preferences.php:20
 msgid "Preferences"
 msgstr ""
 
-#: ../includes/model/ListingDashboard.php:605
+#: ../includes/model/ListingDashboard.php:607
 msgid "Renew"
 msgstr ""
 
-#: ../includes/model/ListingDashboard.php:615
+#: ../includes/model/ListingDashboard.php:617
 msgid "Promote"
 msgstr ""
 
-#: ../includes/model/ListingDashboard.php:624
+#: ../includes/model/ListingDashboard.php:626
 msgid "Delete Listing"
 msgstr ""
 
@@ -5341,15 +5361,15 @@ msgstr ""
 msgid "Terms & Conditions"
 msgstr ""
 
-#: ../includes/model/ListingForm.php:879
+#: ../includes/model/ListingForm.php:883
 msgid "Notice: Your given directory type is not valid. Please use a valid directory type"
 msgstr ""
 
-#: ../includes/model/ListingForm.php:876
+#: ../includes/model/ListingForm.php:880
 msgid "There's something unexpected happen. Please contact site admin."
 msgstr ""
 
-#: ../includes/model/ListingForm.php:874
+#: ../includes/model/ListingForm.php:878
 msgid "Please add a directory type first %s"
 msgstr ""
 
@@ -7663,7 +7683,7 @@ msgstr ""
 msgid "Name for the resource."
 msgstr ""
 
-#: ../includes/rest-api/Version1/class-abstract-terms-controller.php:81, ../includes/rest-api/Version1/class-categories-controller.php:114, ../includes/rest-api/Version1/class-directories-controller.php:105, ../includes/rest-api/Version1/class-listing-reviews-controller.php:54, ../includes/rest-api/Version1/class-listing-reviews-controller.php:403, ../includes/rest-api/Version1/class-listings-controller.php:67, ../includes/rest-api/Version1/class-listings-controller.php:939, ../includes/rest-api/Version1/class-locations-controller.php:111, ../includes/rest-api/Version1/class-plans-controller.php:652, ../includes/rest-api/Version1/class-tags-controller.php:84, ../includes/rest-api/Version1/class-users-controller.php:69, ../includes/rest-api/Version1/class-users-controller.php:751, ../includes/rest-api/Version2/class-listings-controller.php:78, ../includes/rest-api/Version2/class-listings-controller.php:829
+#: ../includes/rest-api/Version1/class-abstract-terms-controller.php:81, ../includes/rest-api/Version1/class-categories-controller.php:114, ../includes/rest-api/Version1/class-directories-controller.php:105, ../includes/rest-api/Version1/class-listing-reviews-controller.php:54, ../includes/rest-api/Version1/class-listing-reviews-controller.php:403, ../includes/rest-api/Version1/class-listings-controller.php:67, ../includes/rest-api/Version1/class-listings-controller.php:939, ../includes/rest-api/Version1/class-locations-controller.php:111, ../includes/rest-api/Version1/class-plans-controller.php:652, ../includes/rest-api/Version1/class-tags-controller.php:84, ../includes/rest-api/Version1/class-users-controller.php:69, ../includes/rest-api/Version1/class-users-controller.php:751, ../includes/rest-api/Version2/class-listings-controller.php:78, ../includes/rest-api/Version2/class-listings-controller.php:832
 msgid "Unique identifier for the resource."
 msgstr ""
 
@@ -7703,7 +7723,7 @@ msgstr ""
 msgid "Offset the result set by a specific number of items. Applies to hierarchical taxonomies only."
 msgstr ""
 
-#: ../includes/rest-api/Version1/class-abstract-terms-controller.php:771, ../includes/rest-api/Version1/class-listing-reviews-controller.php:527, ../includes/rest-api/Version1/class-listings-controller.php:1372, ../includes/rest-api/Version1/class-orders-controller.php:548, ../includes/rest-api/Version1/class-plans-controller.php:886, ../includes/rest-api/Version1/class-users-controller.php:1020
+#: ../includes/rest-api/Version1/class-abstract-terms-controller.php:771, ../includes/rest-api/Version1/class-listing-reviews-controller.php:527, ../includes/rest-api/Version1/class-listings-controller.php:1372, ../includes/rest-api/Version1/class-orders-controller.php:561, ../includes/rest-api/Version1/class-plans-controller.php:886, ../includes/rest-api/Version1/class-users-controller.php:1020
 msgid "Order sort attribute ascending or descending."
 msgstr ""
 
@@ -7727,7 +7747,7 @@ msgstr ""
 msgid "Limit result set to resources with a specific slug."
 msgstr ""
 
-#: ../includes/rest-api/Version1/class-builder-controller.php:40, ../includes/rest-api/Version1/class-builder-controller.php:70, ../includes/rest-api/Version1/class-plans-controller.php:685, ../includes/rest-api/Version2/class-listings-controller.php:50, ../includes/rest-api/Version2/class-listings-controller.php:878
+#: ../includes/rest-api/Version1/class-builder-controller.php:40, ../includes/rest-api/Version1/class-builder-controller.php:70, ../includes/rest-api/Version1/class-plans-controller.php:685, ../includes/rest-api/Version2/class-listings-controller.php:50, ../includes/rest-api/Version2/class-listings-controller.php:881
 msgid "Directory id."
 msgstr ""
 
@@ -7759,7 +7779,7 @@ msgstr ""
 msgid "Field map."
 msgstr ""
 
-#: ../includes/rest-api/Version1/class-categories-controller.php:120, ../includes/rest-api/Version1/class-directories-controller.php:111, ../includes/rest-api/Version1/class-listings-controller.php:1187, ../includes/rest-api/Version2/class-listings-controller.php:597
+#: ../includes/rest-api/Version1/class-categories-controller.php:120, ../includes/rest-api/Version1/class-directories-controller.php:111, ../includes/rest-api/Version1/class-listings-controller.php:1187, ../includes/rest-api/Version2/class-listings-controller.php:600
 msgid "Category name."
 msgstr ""
 
@@ -7779,7 +7799,7 @@ msgstr ""
 msgid "Image data."
 msgstr ""
 
-#: ../includes/rest-api/Version1/class-categories-controller.php:154, ../includes/rest-api/Version1/class-listings-controller.php:1269, ../includes/rest-api/Version1/class-locations-controller.php:151, ../includes/rest-api/Version1/class-users-controller.php:836, ../includes/rest-api/Version1/class-users-controller.php:878, ../includes/rest-api/Version2/class-listings-controller.php:779
+#: ../includes/rest-api/Version1/class-categories-controller.php:154, ../includes/rest-api/Version1/class-listings-controller.php:1269, ../includes/rest-api/Version1/class-locations-controller.php:151, ../includes/rest-api/Version1/class-users-controller.php:836, ../includes/rest-api/Version1/class-users-controller.php:878, ../includes/rest-api/Version2/class-listings-controller.php:782
 msgid "Image ID."
 msgstr ""
 
@@ -7799,15 +7819,15 @@ msgstr ""
 msgid "The date the image was last modified, as GMT."
 msgstr ""
 
-#: ../includes/rest-api/Version1/class-categories-controller.php:183, ../includes/rest-api/Version1/class-listings-controller.php:1298, ../includes/rest-api/Version1/class-locations-controller.php:180, ../includes/rest-api/Version1/class-users-controller.php:865, ../includes/rest-api/Version1/class-users-controller.php:907, ../includes/rest-api/Version2/class-listings-controller.php:784
+#: ../includes/rest-api/Version1/class-categories-controller.php:183, ../includes/rest-api/Version1/class-listings-controller.php:1298, ../includes/rest-api/Version1/class-locations-controller.php:180, ../includes/rest-api/Version1/class-users-controller.php:865, ../includes/rest-api/Version1/class-users-controller.php:907, ../includes/rest-api/Version2/class-listings-controller.php:787
 msgid "Image URL."
 msgstr ""
 
-#: ../includes/rest-api/Version1/class-categories-controller.php:189, ../includes/rest-api/Version1/class-listings-controller.php:1304, ../includes/rest-api/Version1/class-locations-controller.php:186, ../includes/rest-api/Version2/class-listings-controller.php:790
+#: ../includes/rest-api/Version1/class-categories-controller.php:189, ../includes/rest-api/Version1/class-listings-controller.php:1304, ../includes/rest-api/Version1/class-locations-controller.php:186, ../includes/rest-api/Version2/class-listings-controller.php:793
 msgid "Image name."
 msgstr ""
 
-#: ../includes/rest-api/Version1/class-categories-controller.php:194, ../includes/rest-api/Version1/class-listings-controller.php:1309, ../includes/rest-api/Version1/class-locations-controller.php:191, ../includes/rest-api/Version2/class-listings-controller.php:795
+#: ../includes/rest-api/Version1/class-categories-controller.php:194, ../includes/rest-api/Version1/class-listings-controller.php:1309, ../includes/rest-api/Version1/class-locations-controller.php:191, ../includes/rest-api/Version2/class-listings-controller.php:798
 msgid "Image alternative text."
 msgstr ""
 
@@ -7916,7 +7936,7 @@ msgstr ""
 msgid "Offset the result set by a specific number of items."
 msgstr ""
 
-#: ../includes/rest-api/Version1/class-listing-reviews-controller.php:536, ../includes/rest-api/Version1/class-listings-controller.php:1380, ../includes/rest-api/Version1/class-orders-controller.php:554, ../includes/rest-api/Version1/class-plans-controller.php:892, ../includes/rest-api/Version1/class-users-controller.php:1028
+#: ../includes/rest-api/Version1/class-listing-reviews-controller.php:536, ../includes/rest-api/Version1/class-listings-controller.php:1380, ../includes/rest-api/Version1/class-orders-controller.php:567, ../includes/rest-api/Version1/class-plans-controller.php:892, ../includes/rest-api/Version1/class-users-controller.php:1028
 msgid "Sort collection by object attribute."
 msgstr ""
 
@@ -7984,7 +8004,7 @@ msgstr ""
 msgid "Action message."
 msgstr ""
 
-#: ../includes/rest-api/Version1/class-listings-controller.php:506, ../includes/rest-api/Version1/class-orders-controller.php:292, ../includes/rest-api/Version1/class-plans-controller.php:234
+#: ../includes/rest-api/Version1/class-listings-controller.php:506, ../includes/rest-api/Version1/class-orders-controller.php:305, ../includes/rest-api/Version1/class-plans-controller.php:234
 msgid "Invalid ID."
 msgstr ""
 
@@ -7992,59 +8012,59 @@ msgstr ""
 msgid "Listing name."
 msgstr ""
 
-#: ../includes/rest-api/Version1/class-listings-controller.php:950, ../includes/rest-api/Version2/class-listings-controller.php:835
+#: ../includes/rest-api/Version1/class-listings-controller.php:950, ../includes/rest-api/Version2/class-listings-controller.php:838
 msgid "Listing slug."
 msgstr ""
 
-#: ../includes/rest-api/Version1/class-listings-controller.php:955, ../includes/rest-api/Version2/class-listings-controller.php:840
+#: ../includes/rest-api/Version1/class-listings-controller.php:955, ../includes/rest-api/Version2/class-listings-controller.php:843
 msgid "Listing URL."
 msgstr ""
 
-#: ../includes/rest-api/Version1/class-listings-controller.php:962, ../includes/rest-api/Version2/class-listings-controller.php:847
+#: ../includes/rest-api/Version1/class-listings-controller.php:962, ../includes/rest-api/Version2/class-listings-controller.php:850
 msgid "The date the listing was created, in the site's timezone."
 msgstr ""
 
-#: ../includes/rest-api/Version1/class-listings-controller.php:968, ../includes/rest-api/Version2/class-listings-controller.php:853
+#: ../includes/rest-api/Version1/class-listings-controller.php:968, ../includes/rest-api/Version2/class-listings-controller.php:856
 msgid "The date the listing was created, as GMT."
 msgstr ""
 
-#: ../includes/rest-api/Version1/class-listings-controller.php:974, ../includes/rest-api/Version2/class-listings-controller.php:859
+#: ../includes/rest-api/Version1/class-listings-controller.php:974, ../includes/rest-api/Version2/class-listings-controller.php:862
 msgid "The date the listing was last modified, in the site's timezone."
 msgstr ""
 
-#: ../includes/rest-api/Version1/class-listings-controller.php:980, ../includes/rest-api/Version2/class-listings-controller.php:865
+#: ../includes/rest-api/Version1/class-listings-controller.php:980, ../includes/rest-api/Version2/class-listings-controller.php:868
 msgid "The date the listing was last modified, as GMT."
 msgstr ""
 
-#: ../includes/rest-api/Version1/class-listings-controller.php:986, ../includes/rest-api/Version2/class-listings-controller.php:575
+#: ../includes/rest-api/Version1/class-listings-controller.php:986, ../includes/rest-api/Version2/class-listings-controller.php:578
 msgid "Listing description."
 msgstr ""
 
-#: ../includes/rest-api/Version1/class-listings-controller.php:991, ../includes/rest-api/Version2/class-listings-controller.php:580
+#: ../includes/rest-api/Version1/class-listings-controller.php:991, ../includes/rest-api/Version2/class-listings-controller.php:583
 msgid "Listing short description."
 msgstr ""
 
-#: ../includes/rest-api/Version1/class-listings-controller.php:996, ../includes/rest-api/Version2/class-listings-controller.php:715
+#: ../includes/rest-api/Version1/class-listings-controller.php:996, ../includes/rest-api/Version2/class-listings-controller.php:718
 msgid "Zip code."
 msgstr ""
 
-#: ../includes/rest-api/Version1/class-listings-controller.php:1001, ../includes/rest-api/Version2/class-listings-controller.php:741
+#: ../includes/rest-api/Version1/class-listings-controller.php:1001, ../includes/rest-api/Version2/class-listings-controller.php:744
 msgid "Phone number 1."
 msgstr ""
 
-#: ../includes/rest-api/Version1/class-listings-controller.php:1006, ../includes/rest-api/Version2/class-listings-controller.php:746
+#: ../includes/rest-api/Version1/class-listings-controller.php:1006, ../includes/rest-api/Version2/class-listings-controller.php:749
 msgid "Phone number 2."
 msgstr ""
 
-#: ../includes/rest-api/Version1/class-listings-controller.php:1011, ../includes/rest-api/Version2/class-listings-controller.php:751
+#: ../includes/rest-api/Version1/class-listings-controller.php:1011, ../includes/rest-api/Version2/class-listings-controller.php:754
 msgid "Fax number."
 msgstr ""
 
-#: ../includes/rest-api/Version1/class-listings-controller.php:1016, ../includes/rest-api/Version2/class-listings-controller.php:756
+#: ../includes/rest-api/Version1/class-listings-controller.php:1016, ../includes/rest-api/Version2/class-listings-controller.php:759
 msgid "Email address."
 msgstr ""
 
-#: ../includes/rest-api/Version1/class-listings-controller.php:1022, ../includes/rest-api/Version2/class-listings-controller.php:762
+#: ../includes/rest-api/Version1/class-listings-controller.php:1022, ../includes/rest-api/Version2/class-listings-controller.php:765
 msgid "Website url."
 msgstr ""
 
@@ -8052,15 +8072,15 @@ msgstr ""
 msgid "List of social media links."
 msgstr ""
 
-#: ../includes/rest-api/Version1/class-listings-controller.php:1034, ../includes/rest-api/Version2/class-listings-controller.php:679
+#: ../includes/rest-api/Version1/class-listings-controller.php:1034, ../includes/rest-api/Version2/class-listings-controller.php:682
 msgid "Social media name"
 msgstr ""
 
-#: ../includes/rest-api/Version1/class-listings-controller.php:1039, ../includes/rest-api/Version2/class-listings-controller.php:684
+#: ../includes/rest-api/Version1/class-listings-controller.php:1039, ../includes/rest-api/Version2/class-listings-controller.php:687
 msgid "Social media url."
 msgstr ""
 
-#: ../includes/rest-api/Version1/class-listings-controller.php:1047, ../includes/rest-api/Version2/class-listings-controller.php:871
+#: ../includes/rest-api/Version1/class-listings-controller.php:1047, ../includes/rest-api/Version2/class-listings-controller.php:874
 msgid "Visitors view count."
 msgstr ""
 
@@ -8068,15 +8088,15 @@ msgstr ""
 msgid "Map visibility status status."
 msgstr ""
 
-#: ../includes/rest-api/Version1/class-listings-controller.php:1059, ../includes/rest-api/Version2/class-listings-controller.php:720
+#: ../includes/rest-api/Version1/class-listings-controller.php:1059, ../includes/rest-api/Version2/class-listings-controller.php:723
 msgid "Listing address."
 msgstr ""
 
-#: ../includes/rest-api/Version1/class-listings-controller.php:1064, ../includes/rest-api/Version2/class-listings-controller.php:731
+#: ../includes/rest-api/Version1/class-listings-controller.php:1064, ../includes/rest-api/Version2/class-listings-controller.php:734
 msgid "Address location latitude."
 msgstr ""
 
-#: ../includes/rest-api/Version1/class-listings-controller.php:1069, ../includes/rest-api/Version2/class-listings-controller.php:736
+#: ../includes/rest-api/Version1/class-listings-controller.php:1069, ../includes/rest-api/Version2/class-listings-controller.php:739
 msgid "Address location longitude."
 msgstr ""
 
@@ -8092,15 +8112,15 @@ msgstr ""
 msgid "Listing price range."
 msgstr ""
 
-#: ../includes/rest-api/Version1/class-listings-controller.php:1091, ../includes/rest-api/Version2/class-listings-controller.php:709
+#: ../includes/rest-api/Version1/class-listings-controller.php:1091, ../includes/rest-api/Version2/class-listings-controller.php:712
 msgid "Listing owner contact form visibility status."
 msgstr ""
 
-#: ../includes/rest-api/Version1/class-listings-controller.php:1097, ../includes/rest-api/Version2/class-listings-controller.php:767
+#: ../includes/rest-api/Version1/class-listings-controller.php:1097, ../includes/rest-api/Version2/class-listings-controller.php:770
 msgid "Video url."
 msgstr ""
 
-#: ../includes/rest-api/Version1/class-listings-controller.php:1102, ../includes/rest-api/Version2/class-listings-controller.php:570
+#: ../includes/rest-api/Version1/class-listings-controller.php:1102, ../includes/rest-api/Version2/class-listings-controller.php:573
 msgid "Tagline."
 msgstr ""
 
@@ -8108,91 +8128,91 @@ msgstr ""
 msgid "Multi directory type id."
 msgstr ""
 
-#: ../includes/rest-api/Version1/class-listings-controller.php:1112, ../includes/rest-api/Version2/class-listings-controller.php:883
+#: ../includes/rest-api/Version1/class-listings-controller.php:1112, ../includes/rest-api/Version2/class-listings-controller.php:886
 msgid "Expiration date."
 msgstr ""
 
-#: ../includes/rest-api/Version1/class-listings-controller.php:1117, ../includes/rest-api/Version2/class-listings-controller.php:888
+#: ../includes/rest-api/Version1/class-listings-controller.php:1117, ../includes/rest-api/Version2/class-listings-controller.php:891
 msgid "Never expired status."
 msgstr ""
 
-#: ../includes/rest-api/Version1/class-listings-controller.php:1123, ../includes/rest-api/Version2/class-listings-controller.php:895
+#: ../includes/rest-api/Version1/class-listings-controller.php:1123, ../includes/rest-api/Version2/class-listings-controller.php:898
 msgid "Featured listing."
 msgstr ""
 
-#: ../includes/rest-api/Version1/class-listings-controller.php:1129, ../includes/rest-api/Version2/class-listings-controller.php:901
+#: ../includes/rest-api/Version1/class-listings-controller.php:1129, ../includes/rest-api/Version2/class-listings-controller.php:904
 msgid "New listing."
 msgstr ""
 
-#: ../includes/rest-api/Version1/class-listings-controller.php:1136, ../includes/rest-api/Version2/class-listings-controller.php:908
+#: ../includes/rest-api/Version1/class-listings-controller.php:1136, ../includes/rest-api/Version2/class-listings-controller.php:911
 msgid "Popular listing."
 msgstr ""
 
-#: ../includes/rest-api/Version1/class-listings-controller.php:1143, ../includes/rest-api/Version2/class-listings-controller.php:915
+#: ../includes/rest-api/Version1/class-listings-controller.php:1143, ../includes/rest-api/Version2/class-listings-controller.php:918
 msgid "Listing status."
 msgstr ""
 
-#: ../includes/rest-api/Version1/class-listings-controller.php:1148, ../includes/rest-api/Version2/class-listings-controller.php:921
+#: ../includes/rest-api/Version1/class-listings-controller.php:1148, ../includes/rest-api/Version2/class-listings-controller.php:924
 msgid "Allow reviews."
 msgstr ""
 
-#: ../includes/rest-api/Version1/class-listings-controller.php:1154, ../includes/rest-api/Version2/class-listings-controller.php:928
+#: ../includes/rest-api/Version1/class-listings-controller.php:1154, ../includes/rest-api/Version2/class-listings-controller.php:931
 msgid "Reviews average rating."
 msgstr ""
 
-#: ../includes/rest-api/Version1/class-listings-controller.php:1160, ../includes/rest-api/Version2/class-listings-controller.php:934
+#: ../includes/rest-api/Version1/class-listings-controller.php:1160, ../includes/rest-api/Version2/class-listings-controller.php:937
 msgid "Amount of reviews that the listing have."
 msgstr ""
 
-#: ../includes/rest-api/Version1/class-listings-controller.php:1166, ../includes/rest-api/Version2/class-listings-controller.php:940
+#: ../includes/rest-api/Version1/class-listings-controller.php:1166, ../includes/rest-api/Version2/class-listings-controller.php:943
 msgid "List of related listings IDs."
 msgstr ""
 
-#: ../includes/rest-api/Version1/class-listings-controller.php:1175, ../includes/rest-api/Version2/class-listings-controller.php:585
+#: ../includes/rest-api/Version1/class-listings-controller.php:1175, ../includes/rest-api/Version2/class-listings-controller.php:588
 msgid "List of categories."
 msgstr ""
 
-#: ../includes/rest-api/Version1/class-listings-controller.php:1182, ../includes/rest-api/Version2/class-listings-controller.php:592
+#: ../includes/rest-api/Version1/class-listings-controller.php:1182, ../includes/rest-api/Version2/class-listings-controller.php:595
 msgid "Category ID."
 msgstr ""
 
-#: ../includes/rest-api/Version1/class-listings-controller.php:1193, ../includes/rest-api/Version2/class-listings-controller.php:603
+#: ../includes/rest-api/Version1/class-listings-controller.php:1193, ../includes/rest-api/Version2/class-listings-controller.php:606
 msgid "Category slug."
 msgstr ""
 
-#: ../includes/rest-api/Version1/class-listings-controller.php:1199, ../includes/rest-api/Version2/class-listings-controller.php:609
+#: ../includes/rest-api/Version1/class-listings-controller.php:1199, ../includes/rest-api/Version2/class-listings-controller.php:612
 msgid "Category icon."
 msgstr ""
 
-#: ../includes/rest-api/Version1/class-listings-controller.php:1208, ../includes/rest-api/Version2/class-listings-controller.php:618
+#: ../includes/rest-api/Version1/class-listings-controller.php:1208, ../includes/rest-api/Version2/class-listings-controller.php:621
 msgid "List of tags."
 msgstr ""
 
-#: ../includes/rest-api/Version1/class-listings-controller.php:1215, ../includes/rest-api/Version2/class-listings-controller.php:625
+#: ../includes/rest-api/Version1/class-listings-controller.php:1215, ../includes/rest-api/Version2/class-listings-controller.php:628
 msgid "Tag ID."
 msgstr ""
 
-#: ../includes/rest-api/Version1/class-listings-controller.php:1220, ../includes/rest-api/Version1/class-tags-controller.php:90, ../includes/rest-api/Version2/class-listings-controller.php:630
+#: ../includes/rest-api/Version1/class-listings-controller.php:1220, ../includes/rest-api/Version1/class-tags-controller.php:90, ../includes/rest-api/Version2/class-listings-controller.php:633
 msgid "Tag name."
 msgstr ""
 
-#: ../includes/rest-api/Version1/class-listings-controller.php:1226, ../includes/rest-api/Version2/class-listings-controller.php:636
+#: ../includes/rest-api/Version1/class-listings-controller.php:1226, ../includes/rest-api/Version2/class-listings-controller.php:639
 msgid "Tag slug."
 msgstr ""
 
-#: ../includes/rest-api/Version1/class-listings-controller.php:1235, ../includes/rest-api/Version2/class-listings-controller.php:645
+#: ../includes/rest-api/Version1/class-listings-controller.php:1235, ../includes/rest-api/Version2/class-listings-controller.php:648
 msgid "List of locations."
 msgstr ""
 
-#: ../includes/rest-api/Version1/class-listings-controller.php:1242, ../includes/rest-api/Version2/class-listings-controller.php:652
+#: ../includes/rest-api/Version1/class-listings-controller.php:1242, ../includes/rest-api/Version2/class-listings-controller.php:655
 msgid "Location ID."
 msgstr ""
 
-#: ../includes/rest-api/Version1/class-listings-controller.php:1247, ../includes/rest-api/Version1/class-locations-controller.php:117, ../includes/rest-api/Version2/class-listings-controller.php:657
+#: ../includes/rest-api/Version1/class-listings-controller.php:1247, ../includes/rest-api/Version1/class-locations-controller.php:117, ../includes/rest-api/Version2/class-listings-controller.php:660
 msgid "Location name."
 msgstr ""
 
-#: ../includes/rest-api/Version1/class-listings-controller.php:1253, ../includes/rest-api/Version2/class-listings-controller.php:663
+#: ../includes/rest-api/Version1/class-listings-controller.php:1253, ../includes/rest-api/Version2/class-listings-controller.php:666
 msgid "Location slug."
 msgstr ""
 
@@ -8200,19 +8220,19 @@ msgstr ""
 msgid "List of images."
 msgstr ""
 
-#: ../includes/rest-api/Version1/class-listings-controller.php:1314, ../includes/rest-api/Version2/class-listings-controller.php:800
+#: ../includes/rest-api/Version1/class-listings-controller.php:1314, ../includes/rest-api/Version2/class-listings-controller.php:803
 msgid "Image position. 0 means that the image is featured."
 msgstr ""
 
-#: ../includes/rest-api/Version1/class-listings-controller.php:1322, ../includes/rest-api/Version2/class-listings-controller.php:949
+#: ../includes/rest-api/Version1/class-listings-controller.php:1322, ../includes/rest-api/Version2/class-listings-controller.php:952
 msgid "Menu order, used to custom sort listings."
 msgstr ""
 
-#: ../includes/rest-api/Version1/class-listings-controller.php:1327, ../includes/rest-api/Version2/class-listings-controller.php:955
+#: ../includes/rest-api/Version1/class-listings-controller.php:1327, ../includes/rest-api/Version2/class-listings-controller.php:958
 msgid "Listing author id."
 msgstr ""
 
-#: ../includes/rest-api/Version1/class-listings-controller.php:1332, ../includes/rest-api/Version2/class-listings-controller.php:961
+#: ../includes/rest-api/Version1/class-listings-controller.php:1332, ../includes/rest-api/Version2/class-listings-controller.php:964
 msgid "Listing plan id."
 msgstr ""
 
@@ -8268,7 +8288,7 @@ msgstr ""
 msgid "Limit result set to listings specific to author ID."
 msgstr ""
 
-#: ../includes/rest-api/Version1/class-orders-controller.php:66, ../includes/rest-api/Version1/class-orders-controller.php:439, ../includes/rest-api/Version2/class-listings-controller.php:61
+#: ../includes/rest-api/Version1/class-orders-controller.php:66, ../includes/rest-api/Version1/class-orders-controller.php:452, ../includes/rest-api/Version2/class-listings-controller.php:61
 msgid "Order id."
 msgstr ""
 
@@ -8288,63 +8308,63 @@ msgstr ""
 msgid "Unable to create order."
 msgstr ""
 
-#: ../includes/rest-api/Version1/class-orders-controller.php:445
+#: ../includes/rest-api/Version1/class-orders-controller.php:458
 msgid "Order title."
 msgstr ""
 
-#: ../includes/rest-api/Version1/class-orders-controller.php:450
+#: ../includes/rest-api/Version1/class-orders-controller.php:463
 msgid "The date the order was created, in the site's timezone."
 msgstr ""
 
-#: ../includes/rest-api/Version1/class-orders-controller.php:456
+#: ../includes/rest-api/Version1/class-orders-controller.php:469
 msgid "The date the order was last modified, in the site's timezone."
 msgstr ""
 
-#: ../includes/rest-api/Version1/class-orders-controller.php:462
+#: ../includes/rest-api/Version1/class-orders-controller.php:475
 msgid "Customer id."
 msgstr ""
 
-#: ../includes/rest-api/Version1/class-orders-controller.php:467
+#: ../includes/rest-api/Version1/class-orders-controller.php:480
 msgid "Pricing plan id."
 msgstr ""
 
-#: ../includes/rest-api/Version1/class-orders-controller.php:478
+#: ../includes/rest-api/Version1/class-orders-controller.php:491
 msgid "Directory type of the plan."
 msgstr ""
 
-#: ../includes/rest-api/Version1/class-orders-controller.php:484, ../includes/rest-api/Version1/class-users-favorites-controller.php:60
+#: ../includes/rest-api/Version1/class-orders-controller.php:497, ../includes/rest-api/Version1/class-users-favorites-controller.php:60
 msgid "Listing id."
 msgstr ""
 
-#: ../includes/rest-api/Version1/class-orders-controller.php:490
+#: ../includes/rest-api/Version1/class-orders-controller.php:503
 msgid "Featured status."
 msgstr ""
 
-#: ../includes/rest-api/Version1/class-orders-controller.php:495
+#: ../includes/rest-api/Version1/class-orders-controller.php:508
 msgid "Remaining regular listings count."
 msgstr ""
 
-#: ../includes/rest-api/Version1/class-orders-controller.php:501
+#: ../includes/rest-api/Version1/class-orders-controller.php:514
 msgid "Remaining featured listings count."
 msgstr ""
 
-#: ../includes/rest-api/Version1/class-orders-controller.php:507
+#: ../includes/rest-api/Version1/class-orders-controller.php:520
 msgid "Amount."
 msgstr ""
 
-#: ../includes/rest-api/Version1/class-orders-controller.php:512
+#: ../includes/rest-api/Version1/class-orders-controller.php:525
 msgid "Payment status."
 msgstr ""
 
-#: ../includes/rest-api/Version1/class-orders-controller.php:518
+#: ../includes/rest-api/Version1/class-orders-controller.php:531
 msgid "Payment gateway."
 msgstr ""
 
-#: ../includes/rest-api/Version1/class-orders-controller.php:524
+#: ../includes/rest-api/Version1/class-orders-controller.php:537
 msgid "Transaction id."
 msgstr ""
 
-#: ../includes/rest-api/Version1/class-orders-controller.php:561
+#: ../includes/rest-api/Version1/class-orders-controller.php:574
 msgid "Limit result set to specific customer id."
 msgstr ""
 
@@ -8594,7 +8614,7 @@ msgstr ""
 msgid "Feature limited to number of times (-1 indicates unlimited)."
 msgstr ""
 
-#: ../includes/rest-api/Version1/class-plans-controller.php:828, ../includes/rest-api/Version2/class-listings-controller.php:976
+#: ../includes/rest-api/Version1/class-plans-controller.php:828, ../includes/rest-api/Version2/class-listings-controller.php:979
 msgid "Fields data."
 msgstr ""
 
@@ -8865,47 +8885,47 @@ msgstr ""
 msgid "User favorite listing id."
 msgstr ""
 
-#: ../includes/rest-api/Version2/class-listings-controller.php:564
+#: ../includes/rest-api/Version2/class-listings-controller.php:567
 msgid "Listing title."
 msgstr ""
 
-#: ../includes/rest-api/Version2/class-listings-controller.php:672
+#: ../includes/rest-api/Version2/class-listings-controller.php:675
 msgid "List of social links."
 msgstr ""
 
-#: ../includes/rest-api/Version2/class-listings-controller.php:692
+#: ../includes/rest-api/Version2/class-listings-controller.php:695
 msgid "Price type."
 msgstr ""
 
-#: ../includes/rest-api/Version2/class-listings-controller.php:698
+#: ../includes/rest-api/Version2/class-listings-controller.php:701
 msgid "Price amount."
 msgstr ""
 
-#: ../includes/rest-api/Version2/class-listings-controller.php:703
+#: ../includes/rest-api/Version2/class-listings-controller.php:706
 msgid "Price range."
 msgstr ""
 
-#: ../includes/rest-api/Version2/class-listings-controller.php:725
+#: ../includes/rest-api/Version2/class-listings-controller.php:728
 msgid "Map visibility status."
 msgstr ""
 
-#: ../includes/rest-api/Version2/class-listings-controller.php:772
+#: ../includes/rest-api/Version2/class-listings-controller.php:775
 msgid "Listing images."
 msgstr ""
 
-#: ../includes/rest-api/Version2/class-listings-controller.php:808
+#: ../includes/rest-api/Version2/class-listings-controller.php:811
 msgid "Field key: value."
 msgstr ""
 
-#: ../includes/rest-api/Version2/class-listings-controller.php:816
+#: ../includes/rest-api/Version2/class-listings-controller.php:819
 msgid "Listing type."
 msgstr ""
 
-#: ../includes/rest-api/Version2/class-listings-controller.php:966
+#: ../includes/rest-api/Version2/class-listings-controller.php:969
 msgid "Agree to listing privacy policy."
 msgstr ""
 
-#: ../includes/rest-api/Version2/class-listings-controller.php:971
+#: ../includes/rest-api/Version2/class-listings-controller.php:974
 msgid "Agree to terms and conditions."
 msgstr ""
 
@@ -9125,10 +9145,6 @@ msgstr ""
 
 #: ../templates/dashboard/tab-fav-listings.php:43, ../templates/listing-form/custom-fields/file.php:62
 msgid "Remove"
-msgstr ""
-
-#: ../templates/dashboard/tab-my-listings.php:32
-msgid "Published"
 msgstr ""
 
 #: ../templates/dashboard/tab-my-listings.php:40
