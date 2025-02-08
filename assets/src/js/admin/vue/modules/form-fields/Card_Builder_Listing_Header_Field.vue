@@ -276,7 +276,10 @@ export default {
 
         let data = [];
 
-        let selectedWidgets = placeholderData.selectedWidgets || [];
+        let selectedWidgets     = placeholderData.selectedWidgets || [];
+
+        // Sort the selectedWidgets based on acceptedWidgets order
+        selectedWidgets.sort((a, b) => placeholderData.acceptedWidgets.indexOf(a.widget_key) - placeholderData.acceptedWidgets.indexOf(b.widget_key));
 
         // Filter out invalid widgets (without widget_key)
         let validWidgets = selectedWidgets
@@ -691,7 +694,7 @@ export default {
         // Handle widget options fields
         if (has_widget_options) {
           for (let option_key in widgets_template.options.fields) {
-            if (typeof widget.options.fields[option_key] === "undefined") {
+            if (typeof widget.options?.fields[option_key] === "undefined") {
                 continue;
             }
 
@@ -711,19 +714,19 @@ export default {
         let newPlaceholder = JSON.parse(
           JSON.stringify(this.placeholdersMap[placeholder.placeholderKey])
         );
+        
+        if ( placeholder.acceptedWidgets ) {
+          newPlaceholder.acceptedWidgets = placeholder.acceptedWidgets;
+        }
 
         if (placeholder.selectedWidgets) {
           newPlaceholder.selectedWidgets = placeholder.selectedWidgets;
           newPlaceholder.selectedWidgetList = placeholder.selectedWidgets.map(widget => widget.widget_name);
         }
 
-        if ( placeholder.selectedWidgetList ) {
-          newPlaceholder.selectedWidgetList = placeholder.selectedWidgetList;
-        }
-        
-        if ( placeholder.acceptedWidgets ) {
-          newPlaceholder.acceptedWidgets = placeholder.acceptedWidgets;
-        }
+        // if ( placeholder.selectedWidgetList ) {
+        //   newPlaceholder.selectedWidgetList = placeholder.selectedWidgetList;
+        // }
 
         newPlaceholder.maxWidget =
           typeof newPlaceholder.maxWidget !== "undefined"

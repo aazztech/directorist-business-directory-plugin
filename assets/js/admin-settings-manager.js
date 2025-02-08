@@ -23258,6 +23258,11 @@ function _objectSpread(e) { for (var r = 1; r < arguments.length; r++) { var t =
         var data = [];
         var selectedWidgets = placeholderData.selectedWidgets || [];
 
+        // Sort the selectedWidgets based on acceptedWidgets order
+        selectedWidgets.sort(function (a, b) {
+          return placeholderData.acceptedWidgets.indexOf(a.widget_key) - placeholderData.acceptedWidgets.indexOf(b.widget_key);
+        });
+
         // Filter out invalid widgets (without widget_key)
         var validWidgets = selectedWidgets.map(function (widget, index) {
           var _placeholderData$sele;
@@ -23653,7 +23658,8 @@ function _objectSpread(e) { for (var r = 1; r < arguments.length; r++) { var t =
         // Handle widget options fields
         if (has_widget_options) {
           for (var option_key in widgets_template.options.fields) {
-            if (typeof widget.options.fields[option_key] === "undefined") {
+            var _widget$options;
+            if (typeof ((_widget$options = widget.options) === null || _widget$options === void 0 ? void 0 : _widget$options.fields[option_key]) === "undefined") {
               continue;
             }
             widgets_template.options.fields[option_key] = widget.options.fields[option_key];
@@ -23668,18 +23674,20 @@ function _objectSpread(e) { for (var r = 1; r < arguments.length; r++) { var t =
           return;
         }
         var newPlaceholder = JSON.parse(JSON.stringify(_this4.placeholdersMap[placeholder.placeholderKey]));
+        if (placeholder.acceptedWidgets) {
+          newPlaceholder.acceptedWidgets = placeholder.acceptedWidgets;
+        }
         if (placeholder.selectedWidgets) {
           newPlaceholder.selectedWidgets = placeholder.selectedWidgets;
           newPlaceholder.selectedWidgetList = placeholder.selectedWidgets.map(function (widget) {
             return widget.widget_name;
           });
         }
-        if (placeholder.selectedWidgetList) {
-          newPlaceholder.selectedWidgetList = placeholder.selectedWidgetList;
-        }
-        if (placeholder.acceptedWidgets) {
-          newPlaceholder.acceptedWidgets = placeholder.acceptedWidgets;
-        }
+
+        // if ( placeholder.selectedWidgetList ) {
+        //   newPlaceholder.selectedWidgetList = placeholder.selectedWidgetList;
+        // }
+
         newPlaceholder.maxWidget = typeof newPlaceholder.maxWidget !== "undefined" ? parseInt(newPlaceholder.maxWidget) : 0;
         newAllPlaceholders.push(newPlaceholder);
         var targetPlaceholderIndex = destination.length;
