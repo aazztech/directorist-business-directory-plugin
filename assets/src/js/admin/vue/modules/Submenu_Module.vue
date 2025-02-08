@@ -5,8 +5,8 @@
             <a
                 href="#"
                 class="directorist-form-doc__watch-tutorial"
-                v-if="currentVideo"
-                @click.prevent="openVideoPopup"
+                v-if="modalContent"
+                @click.prevent="openModal"
             >
                 <svg
                 xmlns="http://www.w3.org/2000/svg"
@@ -22,7 +22,7 @@
                     fill="currentColor"
                 />
                 </svg>
-                {{currentVideo.button_text}}
+                {{modalContent.button_text}}
             </a>
         </div>
 
@@ -39,11 +39,11 @@
         </div>
 
         <!-- Video Popup Modal -->
-        <form-builder-widget-video-component
-            v-if="currentVideo"
-            :video="currentVideo"
-            :videoOpened="showVideo"
-            @close-video="closeVideoPopup"
+        <form-builder-widget-modal-component
+            v-if="modalContent"
+            :content="modalContent"
+            :modalOpened="showModal"
+            @close-modal="closeModal"
         />
     </div>
 </template>
@@ -99,28 +99,29 @@ export default {
             });
         },
 
-        currentVideo() {
+        modalContent() {
             const activeSubMenu = this.subNavigation[this.active_sub_nav];
+            console.log('@chk cptm-modal', {activeSubMenu});
             return activeSubMenu?.video || null;
         }
     },
 
     methods: {
         // Open the video popup
-        openVideoPopup() {
-            this.showVideo = true;
+        openModal() {
+            this.showModal = true;
         },
 
         // Close the video popup
-        closeVideoPopup() {
-            this.showVideo = false;
+        closeModal() {
+            this.showModal = false;
         },
     },
 
     data() {
         return {
             active_sub_nav: 0,
-            showVideo: false,
+            showModal: false,
         }
     },
 

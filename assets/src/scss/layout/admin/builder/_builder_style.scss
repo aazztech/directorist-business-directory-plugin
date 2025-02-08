@@ -3259,7 +3259,7 @@ input[type="radio"].cptm-radio {
 }
 
 /* Style the video popup */
-.video-popup-overlay {
+.cptm-modal-overlay {
   position: fixed;
   top: 0;
   right: 0;
@@ -3272,7 +3272,7 @@ input[type="radio"].cptm-radio {
   z-index: 9999;
 }
 
-.video-popup-content {
+.cptm-modal-content {
   position: relative;
   display: flex;
   justify-content: center;

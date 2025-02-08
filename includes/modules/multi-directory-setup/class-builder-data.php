@@ -2704,6 +2704,11 @@ class Builder_Data {
                         'learn_more' => [
                             'url' => 'https://directorist.com/features/',
                             'title' => __( 'What is it?', 'directorist' ),
+                            'type' => 'modal',
+                            'content' => [
+                                'title' => __( 'Single Listing Header', 'directorist' ),
+                                'description' => __( 'Watch modal of single listing header.', 'directorist' ),
+                            ],
                         ],
                         'sections'  => [
                             'listing_header' => [

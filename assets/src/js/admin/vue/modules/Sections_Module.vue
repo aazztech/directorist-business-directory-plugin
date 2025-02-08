@@ -18,7 +18,7 @@
             href="#"
             class="directorist-form-doc__watch-tutorial"
             v-if="video && ['submission_form_fields', 'search_form_fields'].includes(section.fields[0])"
-            @click.prevent="openVideoPopup"
+            @click.prevent="openModal"
           >
             <svg
               xmlns="http://www.w3.org/2000/svg"
@@ -37,11 +37,11 @@
             {{video.button_text}}
           </a>
           <a
-            :href="learn_more.url"
-            target="_blank"
+            href="#"
             class="directorist-form-doc__link"
             v-if="learn_more"
             v-html="learn_more.title"
+            @click.prevent="openModal"
           ></a>
         </div>
         <div 
@@ -159,12 +159,20 @@
     </div>
 
     <!-- Video Popup Modal -->
-    <form-builder-widget-video-component
-      v-if="video"
-      :videoOpened="showVideo"
-      :video="video"
-      @close-video="closeVideoPopup"
+    <form-builder-widget-modal-component
+      v-if="modalContent"
+      :modalOpened="showModal"
+      :content="modalContent"
+      @close-modal="closeModal"
     />
+
+    <!-- Single Listing Header Modal -->
+    <!-- <form-builder-widget-single-listing-header-modal-component
+      v-if="learnMoreContent"
+      :modalOpened="showModal"
+      :content="learnMoreContent"
+      @close-modal="closeModal"
+    /> -->
   </div>
 </template>
 
@@ -178,7 +186,7 @@ export default {
 
   data() {
     return {
-      showVideo: false,
+      showModal: false,
     };
   },
 
@@ -228,6 +236,11 @@ export default {
       return firstContainerField
         ? this.fields[firstContainerField].group_label
         : "";
+    },
+
+    modalContent() {
+      console.log('@CHK content', { learn_more: this.learn_more, video: this.video });
+      return this.learn_more?.type === "modal" ? this.learn_more?.content : this.video;
     },
 
   },
@@ -293,15 +306,17 @@ export default {
       return type_id;
     },
 
-    // Open the video popup
-    openVideoPopup() {
-      this.showVideo = true;
+    // Open the modal
+    openModal() {
+      this.showModal = true;
+      console.log('@CHK Modal Content', { modalContent: this.modalContent })
     },
 
-    // Close the video popup
-    closeVideoPopup() {
-      this.showVideo = false;
+    // Close the modal
+    closeModal() {
+      this.showModal = false;
     },
+
     saveData() {
       // Emit the save event before redirecting
       this.$emit("save");

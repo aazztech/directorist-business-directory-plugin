@@ -1,25 +1,27 @@
 <template>
   <div
-      v-if="videoOpened"
-      class="video-popup-overlay"
-      @click.prevent="$emit('close-video')"
+      v-if="modalOpened"
+      class="cptm-modal-overlay"
+      @click.prevent="$emit('close-modal')"
   >
-      <div class="video-popup-content" @click.stop>
-          <div class="video-container">
+      <div class="cptm-modal-content" @click.stop>
+          <div class="cptm-modal-container">
               <iframe
+                  v-if="content.url"
                   width="560"
                   height="315"
-                  :src="video.url"
+                  :src="content.url"
                   frameborder="0"
                   allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                   allowfullscreen
-                  :title="video.title"
+                  :title="content.title"
               ></iframe>
+
           </div>
       </div>
       <button 
         class="close-btn" 
-        @click.prevent="$emit('close-video')"
+        @click.prevent="$emit('close-modal')"
       >
           <span class="la la-close"></span>
       </button>
@@ -28,14 +30,17 @@
 
 <script>
 export default {
-  name: "form-builder-widget-video-component",
+  name: "form-builder-widget-modal-component",
   props: {
-    videoOpened: {
+    modalOpened: {
       default: false,
     },
-    video: {
+    content: {
       type: Object,
     },
   },
+  mounted() {
+    console.log('@CHK Modal Mounted', {content: this.content});
+  }
 };
 </script>
