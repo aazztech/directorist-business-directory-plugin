@@ -303,6 +303,7 @@ export default {
             // if (["options", "icon", "show_if", "fields"].includes(key)) {
             //   continue;
             // }
+
             widget_data[key] = this.active_widgets[widget_name][key];
           }
 
@@ -311,7 +312,9 @@ export default {
             let widget_options = this.active_widgets[widget_name].options.fields;
 
             for (let option in widget_options) {
-              widget_data[option] = widget_options[option].value;
+              if ( widget_data[option]?.options.fields ) {
+                widget_data[option].options.fields = widget_options[option];
+              }
             }
           }
 
@@ -714,11 +717,11 @@ export default {
         // Handle widget options fields
         if (has_widget_options) {
           for (let option_key in widgets_template.options.fields) {
-            if (typeof widget[option_key] === "undefined") {
+            if (typeof widget.options.fields[option_key] === "undefined") {
                 continue;
             }
 
-            widgets_template.options.fields[option_key].value = widget[option_key];
+            widgets_template.options.fields[option_key] = widget.options.fields[option_key];
           }
         }
 
@@ -814,6 +817,7 @@ export default {
         newPlaceholders,
         newAllPlaceholders,
         active_widgets: this.active_widgets,
+        available_widgets: this.available_widgets,
         widgets: this.widgets,
         placeholders: this.placeholders,
         allPlaceholderItems: this.allPlaceholderItems,

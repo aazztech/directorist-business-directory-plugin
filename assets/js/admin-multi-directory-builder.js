@@ -23764,6 +23764,7 @@ function _objectSpread(e) { for (var r = 1; r < arguments.length; r++) { var t =
               // if (["options", "icon", "show_if", "fields"].includes(key)) {
               //   continue;
               // }
+
               widget_data[key] = _this.active_widgets[widget_name][key];
             }
 
@@ -23771,7 +23772,10 @@ function _objectSpread(e) { for (var r = 1; r < arguments.length; r++) { var t =
             if (_babel_runtime_helpers_typeof__WEBPACK_IMPORTED_MODULE_3___default()(_this.active_widgets[widget_name].options) === "object" && _babel_runtime_helpers_typeof__WEBPACK_IMPORTED_MODULE_3___default()(_this.active_widgets[widget_name].options.fields) === "object") {
               var widget_options = _this.active_widgets[widget_name].options.fields;
               for (var option in widget_options) {
-                widget_data[option] = widget_options[option].value;
+                var _widget_data$option;
+                if ((_widget_data$option = widget_data[option]) !== null && _widget_data$option !== void 0 && _widget_data$option.options.fields) {
+                  widget_data[option].options.fields = widget_options[option];
+                }
               }
             }
             data.push(widget_data);
@@ -24152,10 +24156,10 @@ function _objectSpread(e) { for (var r = 1; r < arguments.length; r++) { var t =
         // Handle widget options fields
         if (has_widget_options) {
           for (var option_key in widgets_template.options.fields) {
-            if (typeof widget[option_key] === "undefined") {
+            if (typeof widget.options.fields[option_key] === "undefined") {
               continue;
             }
-            widgets_template.options.fields[option_key].value = widget[option_key];
+            widgets_template.options.fields[option_key] = widget.options.fields[option_key];
           }
         }
 
@@ -24228,6 +24232,7 @@ function _objectSpread(e) { for (var r = 1; r < arguments.length; r++) { var t =
         newPlaceholders: newPlaceholders,
         newAllPlaceholders: newAllPlaceholders,
         active_widgets: this.active_widgets,
+        available_widgets: this.available_widgets,
         widgets: this.widgets,
         placeholders: this.placeholders,
         allPlaceholderItems: this.allPlaceholderItems
