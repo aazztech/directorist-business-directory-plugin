@@ -276,10 +276,13 @@ export default {
 
         let data = [];
 
+        let acceptedWidgets     = placeholderData.acceptedWidgets || [];
         let selectedWidgets     = placeholderData.selectedWidgets || [];
+        let selectedWidgetList  = placeholderData.selectedWidgetList || [];
 
-        // Sort the selectedWidgets based on acceptedWidgets order
-        selectedWidgets.sort((a, b) => placeholderData.acceptedWidgets.indexOf(a.widget_key) - placeholderData.acceptedWidgets.indexOf(b.widget_key));
+        // Sort the selectedWidgetList & selectedWidgets based on acceptedWidgets order
+        selectedWidgetList.sort((a, b) => acceptedWidgets.indexOf(a) - acceptedWidgets.indexOf(b));
+        selectedWidgets.sort((a, b) => acceptedWidgets.indexOf(a.widget_key) - acceptedWidgets.indexOf(b.widget_key));
 
         // Filter out invalid widgets (without widget_key)
         let validWidgets = selectedWidgets
@@ -287,7 +290,7 @@ export default {
             if (widget.widget_key) return widget;
 
             // Fallback: Use `selectedWidgetList` if available
-            let widget_name = placeholderData.selectedWidgetList?.[index];
+            let widget_name = selectedWidgetList?.[index];
             return widget_name ? { widget_key: widget_name, ...widget } : null;
           })
           .filter(widget => widget && widget.widget_key); // Remove invalid items

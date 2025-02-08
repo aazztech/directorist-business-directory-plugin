@@ -23728,20 +23728,24 @@ function _objectSpread(e) { for (var r = 1; r < arguments.length; r++) { var t =
           return null;
         }
         var data = [];
+        var acceptedWidgets = placeholderData.acceptedWidgets || [];
         var selectedWidgets = placeholderData.selectedWidgets || [];
+        var selectedWidgetList = placeholderData.selectedWidgetList || [];
 
-        // Sort the selectedWidgets based on acceptedWidgets order
+        // Sort the selectedWidgetList & selectedWidgets based on acceptedWidgets order
+        selectedWidgetList.sort(function (a, b) {
+          return acceptedWidgets.indexOf(a) - acceptedWidgets.indexOf(b);
+        });
         selectedWidgets.sort(function (a, b) {
-          return placeholderData.acceptedWidgets.indexOf(a.widget_key) - placeholderData.acceptedWidgets.indexOf(b.widget_key);
+          return acceptedWidgets.indexOf(a.widget_key) - acceptedWidgets.indexOf(b.widget_key);
         });
 
         // Filter out invalid widgets (without widget_key)
         var validWidgets = selectedWidgets.map(function (widget, index) {
-          var _placeholderData$sele;
           if (widget.widget_key) return widget;
 
           // Fallback: Use `selectedWidgetList` if available
-          var widget_name = (_placeholderData$sele = placeholderData.selectedWidgetList) === null || _placeholderData$sele === void 0 ? void 0 : _placeholderData$sele[index];
+          var widget_name = selectedWidgetList === null || selectedWidgetList === void 0 ? void 0 : selectedWidgetList[index];
           return widget_name ? _objectSpread({
             widget_key: widget_name
           }, widget) : null;
