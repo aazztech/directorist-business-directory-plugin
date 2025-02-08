@@ -300,10 +300,6 @@ export default {
 
           // Extract widget data, excluding unnecessary keys
           for (let key in this.active_widgets[widget_name]) {
-            // if (["options", "icon", "show_if", "fields"].includes(key)) {
-            //   continue;
-            // }
-
             widget_data[key] = this.active_widgets[widget_name][key];
           }
 
@@ -329,10 +325,6 @@ export default {
         if ("placeholder_item" === placeholder.type) {
           const data = getWidgetData(placeholder);
 
-          // if (!data) {
-          //   continue;
-          // }
-
           output.push({
             type: placeholder.type,
             placeholderKey: placeholder.placeholderKey,
@@ -349,9 +341,6 @@ export default {
 
           for (const subPlaceholder of placeholder.placeholders) {
             const data = getWidgetData(subPlaceholder);
-            // if (!data) {
-            //   continue;
-            // }
 
             subGroupsData.push({
               type: placeholder.type ? placeholder.type : "placeholder_item",
@@ -375,14 +364,6 @@ export default {
       }
 
       this.placeholders = output;
-
-      console.log('@Output Data', {
-        output, 
-        placeholders: this.placeholders, 
-        allPlaceholderItems:this.allPlaceholderItems, 
-        theAvailableWidgets: this.available_widgets,
-        active_widgets: this.active_widgets
-      });
       
       return output;
     },
@@ -562,13 +543,6 @@ export default {
 
       // Update allPlaceholderItems with the new array
       this.allPlaceholderItems = newAllPlaceholderItems;
-
-      console.log('@CHK DnD', { 
-        updatedPlaceholders,  
-        newAllPlaceholderItems,
-        placeholders: this.placeholders,
-        allPlaceholderItems: this.allPlaceholderItems
-      });
     },
 
     getSettingsChildPayload(draggedItemIndex, placeholderIndex) {

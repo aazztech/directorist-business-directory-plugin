@@ -377,16 +377,12 @@ __webpack_require__.r(__webpack_exports__);
 function applyDrag(arr, dragResult) {
   var removedIndex = dragResult.removedIndex,
     addedIndex = dragResult.addedIndex;
-  console.log('applyDrag', {
-    arr: arr,
-    dragResult: dragResult
-  });
 
   // If neither removedIndex nor addedIndex are valid, return the array as-is
   if (removedIndex === null || addedIndex === null) return arr;
   var result = _babel_runtime_helpers_toConsumableArray__WEBPACK_IMPORTED_MODULE_1___default()(arr);
 
-  // Perform the swap
+  // Perform the swap betwen two items
   // const temp = result[removedIndex];
   // result[removedIndex] = result[addedIndex];
   // result[addedIndex] = temp;
@@ -398,7 +394,6 @@ function applyDrag(arr, dragResult) {
 
   // Insert the removed item at the addedIndex
   result.splice(addedIndex, 0, removedItem);
-  console.log('Swapped Result:', result);
   return result;
 }
 
@@ -23289,10 +23284,6 @@ function _objectSpread(e) { for (var r = 1; r < arguments.length; r++) { var t =
 
             // Extract widget data, excluding unnecessary keys
             for (var key in _this.active_widgets[widget_name]) {
-              // if (["options", "icon", "show_if", "fields"].includes(key)) {
-              //   continue;
-              // }
-
               widget_data[key] = _this.active_widgets[widget_name][key];
             }
 
@@ -23324,11 +23315,6 @@ function _objectSpread(e) { for (var r = 1; r < arguments.length; r++) { var t =
           var placeholder = _step2.value;
           if ("placeholder_item" === placeholder.type) {
             var data = getWidgetData(placeholder);
-
-            // if (!data) {
-            //   continue;
-            // }
-
             output.push({
               type: placeholder.type,
               placeholderKey: placeholder.placeholderKey,
@@ -23347,10 +23333,6 @@ function _objectSpread(e) { for (var r = 1; r < arguments.length; r++) { var t =
               for (_iterator3.s(); !(_step3 = _iterator3.n()).done;) {
                 var subPlaceholder = _step3.value;
                 var _data = getWidgetData(subPlaceholder);
-                // if (!data) {
-                //   continue;
-                // }
-
                 subGroupsData.push({
                   type: placeholder.type ? placeholder.type : "placeholder_item",
                   placeholderKey: subPlaceholder.placeholderKey,
@@ -23380,13 +23362,6 @@ function _objectSpread(e) { for (var r = 1; r < arguments.length; r++) { var t =
         _iterator2.f();
       }
       this.placeholders = output;
-      console.log('@Output Data', {
-        output: output,
-        placeholders: this.placeholders,
-        allPlaceholderItems: this.allPlaceholderItems,
-        theAvailableWidgets: this.available_widgets,
-        active_widgets: this.active_widgets
-      });
       return output;
     },
     theAvailableWidgets: function theAvailableWidgets() {
@@ -23546,12 +23521,6 @@ function _objectSpread(e) { for (var r = 1; r < arguments.length; r++) { var t =
 
       // Update allPlaceholderItems with the new array
       this.allPlaceholderItems = newAllPlaceholderItems;
-      console.log('@CHK DnD', {
-        updatedPlaceholders: updatedPlaceholders,
-        newAllPlaceholderItems: newAllPlaceholderItems,
-        placeholders: this.placeholders,
-        allPlaceholderItems: this.allPlaceholderItems
-      });
     },
     getSettingsChildPayload: function getSettingsChildPayload(draggedItemIndex, placeholderIndex) {
       // Return the payload containing both pieces of data
