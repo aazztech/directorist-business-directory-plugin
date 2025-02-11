@@ -7,7 +7,7 @@
       <div class="cptm-modal-content" @click.stop>
           <div class="cptm-modal-container">
               <iframe
-                  v-if="content.url"
+                  v-if="content.type==='video'"
                   width="560"
                   height="315"
                   :src="content.url"
@@ -16,7 +16,13 @@
                   allowfullscreen
                   :title="content.title"
               ></iframe>
-
+              <div 
+                v-if="content.type==='learn_more'"
+                class="cptm-modal-single-listing-header" 
+              >
+                <h2>{{content.title}}</h2>
+                <p>{{content.description}}</p>
+              </div>
           </div>
       </div>
       <button 
@@ -39,8 +45,5 @@ export default {
       type: Object,
     },
   },
-  mounted() {
-    console.log('@CHK Modal Mounted', {content: this.content});
-  }
 };
 </script>

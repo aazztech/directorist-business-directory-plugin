@@ -18,7 +18,7 @@
             href="#"
             class="directorist-form-doc__watch-tutorial"
             v-if="video && ['submission_form_fields', 'search_form_fields'].includes(section.fields[0])"
-            @click.prevent="openModal"
+            @click.prevent="openModal('video')"
           >
             <svg
               xmlns="http://www.w3.org/2000/svg"
@@ -41,7 +41,7 @@
             class="directorist-form-doc__link"
             v-if="learn_more"
             v-html="learn_more.title"
-            @click.prevent="openModal"
+            @click.prevent="openModal('learn_more')"
           ></a>
         </div>
         <div 
@@ -163,6 +163,7 @@
       v-if="modalContent"
       :modalOpened="showModal"
       :content="modalContent"
+      :type="modalContent.type"
       @close-modal="closeModal"
     />
 
@@ -239,7 +240,6 @@ export default {
     },
 
     modalContent() {
-      console.log('@CHK content', { learn_more: this.learn_more, video: this.video });
       return this.learn_more?.type === "modal" ? this.learn_more?.content : this.video;
     },
 
@@ -307,9 +307,8 @@ export default {
     },
 
     // Open the modal
-    openModal() {
+    openModal(type) {
       this.showModal = true;
-      console.log('@CHK Modal Content', { modalContent: this.modalContent })
     },
 
     // Close the modal

@@ -101,7 +101,6 @@ export default {
 
         modalContent() {
             const activeSubMenu = this.subNavigation[this.active_sub_nav];
-            console.log('@chk cptm-modal', {activeSubMenu});
             return activeSubMenu?.video || null;
         }
     },

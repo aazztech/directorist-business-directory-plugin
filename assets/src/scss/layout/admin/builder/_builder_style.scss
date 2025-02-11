@@ -3270,6 +3270,23 @@ input[type="radio"].cptm-radio {
   justify-content: center;
   align-items: center;
   z-index: 9999;
+  .cptm-modal-container {
+    display: block;
+    height: auto;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    right: unset;
+    bottom: unset;
+    transform: translate(-50%, -50%);
+  }
+  .cptm-modal-single-listing-header {
+    width: 500px;
+    height: 300px;
+    background: #fff;
+    padding: 15px;
+    border-radius: 16px;
+  }
 }
 
 .cptm-modal-content {

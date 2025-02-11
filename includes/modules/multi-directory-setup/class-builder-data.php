@@ -2664,6 +2664,7 @@ class Builder_Data {
                     </svg>',
                 'container' => 'full-width',
                 'video' => [
+                    'type' => 'video',
                     'url' => 'https://www.youtube.com/embed/0rjSHUPZgoE',
                     'button_text' => __( 'Watch Tutorial', 'directorist' ),
                     'title' => __( 'Add Listing Form Tutorial', 'directorist' ),
@@ -2696,16 +2697,17 @@ class Builder_Data {
                         'label'     => __( 'Listing Header', 'directorist' ),
                         'container' => 'full-width',
                         'video' => [
+                            'type' => 'video',
                             'url' => 'https://www.youtube.com/embed/NtLXjEAPQzc',
                             'button_text' => __( 'Watch Tutorial', 'directorist' ),
                             'title' => __( 'Listing Header Tutorial', 'directorist' ),
                             'description' => __( 'Watch the video to learn how to create listing header.', 'directorist' ),
                         ],
                         'learn_more' => [
-                            'url' => 'https://directorist.com/features/',
                             'title' => __( 'What is it?', 'directorist' ),
                             'type' => 'modal',
                             'content' => [
+                                'type' => 'learn_more',
                                 'title' => __( 'Single Listing Header', 'directorist' ),
                                 'description' => __( 'Watch modal of single listing header.', 'directorist' ),
                             ],
@@ -2724,6 +2726,7 @@ class Builder_Data {
                         'label'     => __( 'Contents', 'directorist' ),
                         'container' => 'full-width',
                         'video' => [
+                            'type' => 'video',
                             'url' => 'https://www.youtube.com/embed/82CFngofqbM',
                             'button_text' => __( 'Watch Tutorial', 'directorist' ),
                             'title' => __( 'Contents Tutorial', 'directorist' ),
@@ -2768,6 +2771,7 @@ class Builder_Data {
                         'label'     => __( 'All Listing Grid Layout', 'directorist' ),
                         'container' => 'full-width',
                         'video' => [
+                            'type' => 'video',
                             'url' => 'https://www.youtube.com/embed/SijKFqgwXVQ',
                             'button_text' => __( 'Watch Tutorial', 'directorist' ),
                             'title' => __( 'All Listing Grid Tutorial', 'directorist' ),
@@ -2792,6 +2796,7 @@ class Builder_Data {
                         'label'     => __( 'All Listing List Layout', 'directorist' ),
                         'container' => 'full-width',
                         'video' => [
+                            'type' => 'video',
                             'url' => 'https://www.youtube.com/embed/T9VovVonLV0',
                             'button_text' => __( 'Watch Tutorial', 'directorist' ),
                             'title' => __( 'All Listing List Tutorial', 'directorist' ),
@@ -2822,6 +2827,7 @@ class Builder_Data {
                     </svg>',
                 'container' => 'full-width',
                 'video' => [
+                    'type' => 'video',
                     'url' => 'https://www.youtube.com/embed/bWRDFgFIvcI',
                     'button_text' => __( 'Watch Tutorial', 'directorist' ),
                     'title' => __( 'Search Form Tutorial', 'directorist' ),

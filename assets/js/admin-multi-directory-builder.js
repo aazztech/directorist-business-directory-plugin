@@ -16421,10 +16421,6 @@ function _objectSpread(e) { for (var r = 1; r < arguments.length; r++) { var t =
     },
     modalContent: function modalContent() {
       var _this$learn_more, _this$learn_more2;
-      console.log('@CHK content', {
-        learn_more: this.learn_more,
-        video: this.video
-      });
       return ((_this$learn_more = this.learn_more) === null || _this$learn_more === void 0 ? void 0 : _this$learn_more.type) === "modal" ? (_this$learn_more2 = this.learn_more) === null || _this$learn_more2 === void 0 ? void 0 : _this$learn_more2.content : this.video;
     }
   }),
@@ -16476,11 +16472,8 @@ function _objectSpread(e) { for (var r = 1; r < arguments.length; r++) { var t =
       return type_id;
     },
     // Open the modal
-    openModal: function openModal() {
+    openModal: function openModal(type) {
       this.showModal = true;
-      console.log('@CHK Modal Content', {
-        modalContent: this.modalContent
-      });
     },
     // Close the modal
     closeModal: function closeModal() {
@@ -16728,9 +16721,6 @@ __webpack_require__.r(__webpack_exports__);
     },
     modalContent: function modalContent() {
       var activeSubMenu = this.subNavigation[this.active_sub_nav];
-      console.log('@chk cptm-modal', {
-        activeSubMenu: activeSubMenu
-      });
       return (activeSubMenu === null || activeSubMenu === void 0 ? void 0 : activeSubMenu.video) || null;
     }
   },
@@ -18958,11 +18948,6 @@ __webpack_require__.r(__webpack_exports__);
     content: {
       type: Object
     }
-  },
-  mounted: function mounted() {
-    console.log('@CHK Modal Mounted', {
-      content: this.content
-    });
   }
 });
 
@@ -28214,7 +28199,7 @@ var render = function render() {
       on: {
         click: function click($event) {
           $event.preventDefault();
-          return _vm.openModal.apply(null, arguments);
+          return _vm.openModal("video");
         }
       }
     }, [_c("svg", {
@@ -28243,7 +28228,7 @@ var render = function render() {
       on: {
         click: function click($event) {
           $event.preventDefault();
-          return _vm.openModal.apply(null, arguments);
+          return _vm.openModal("learn_more");
         }
       }
     }) : _vm._e()]), _vm._v(" "), section.fields[0] === "submission_form_fields" ? _c("div", {
@@ -28368,7 +28353,8 @@ var render = function render() {
   }), _vm._v(" "), _vm.modalContent ? _c("form-builder-widget-modal-component", {
     attrs: {
       modalOpened: _vm.showModal,
-      content: _vm.modalContent
+      content: _vm.modalContent,
+      type: _vm.modalContent.type
     },
     on: {
       "close-modal": _vm.closeModal
@@ -30222,7 +30208,7 @@ var render = function render() {
     }
   }, [_c("div", {
     staticClass: "cptm-modal-container"
-  }, [_vm.content.url ? _c("iframe", {
+  }, [_vm.content.type === "video" ? _c("iframe", {
     attrs: {
       width: "560",
       height: "315",
@@ -30232,7 +30218,9 @@ var render = function render() {
       allowfullscreen: "",
       title: _vm.content.title
     }
-  }) : _vm._e()])]), _vm._v(" "), _c("button", {
+  }) : _vm._e(), _vm._v(" "), _vm.content.type === "learn_more" ? _c("div", {
+    staticClass: "cptm-modal-single-listing-header"
+  }, [_c("h2", [_vm._v(_vm._s(_vm.content.title))]), _vm._v(" "), _c("p", [_vm._v(_vm._s(_vm.content.description))])]) : _vm._e()])]), _vm._v(" "), _c("button", {
     staticClass: "close-btn",
     on: {
       click: function click($event) {
