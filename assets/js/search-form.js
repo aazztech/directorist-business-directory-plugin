@@ -1384,7 +1384,7 @@ function _arrayLikeToArray(r, a) { (null == a || a > r.length) && (a = r.length)
     });
 
     // Search Field Input Value Check
-    function inputValueCheck(e, searchField) {
+    function inputValueCheck(searchField) {
       searchField = searchField[0];
       var inputBox = searchField.querySelector('.directorist-search-field__input:not(.directorist-search-basic-dropdown)');
       var inputFieldValue = inputBox && inputBox.value;
@@ -1397,6 +1397,9 @@ function _arrayLikeToArray(r, a) { (null == a || a > r.length) && (a = r.length)
         inputFieldValue = '';
         if (searchField.classList.contains('input-has-value')) {
           searchField.classList.remove('input-has-value');
+        }
+        if (searchField.classList.contains('input-is-focused')) {
+          searchField.classList.remove('input-is-focused');
         }
       }
     }
@@ -1444,10 +1447,20 @@ function _arrayLikeToArray(r, a) { (null == a || a > r.length) && (a = r.length)
       });
     }
 
+    // Search Form Select Field Init
+    function initSelectFields() {
+      var selectFields = document.querySelectorAll('.directorist-select.directorist-search-field__input:not(.directorist-search-basic-dropdown');
+      selectFields.forEach(function (selectField) {
+        var searchField = $(selectField).closest('.directorist-search-field');
+        inputValueCheck(searchField);
+      });
+    }
+    initSelectFields();
+
     // Search Form Input Field Check Trigger
     $('body').on('input keyup change', '.directorist-search-field__input:not(.directorist-search-basic-dropdown)', function (e) {
       var searchField = $(this).closest('.directorist-search-field');
-      inputValueCheck(e, searchField);
+      inputValueCheck(searchField);
     });
     $('body').on('focus blur', '.directorist-search-field__input:not(.directorist-search-basic-dropdown)', function (e) {
       var searchField = $(this).closest('.directorist-search-field');
