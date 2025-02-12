@@ -18,7 +18,7 @@
             href="#"
             class="directorist-form-doc__watch-tutorial"
             v-if="video && ['submission_form_fields', 'search_form_fields'].includes(section.fields[0])"
-            @click.prevent="openModal('video')"
+            @click.prevent="openModal()"
           >
             <svg
               xmlns="http://www.w3.org/2000/svg"
@@ -41,7 +41,7 @@
             class="directorist-form-doc__link"
             v-if="learn_more"
             v-html="learn_more.title"
-            @click.prevent="openModal('learn_more')"
+            @click.prevent="openModal()"
           ></a>
         </div>
         <div 
@@ -217,6 +217,9 @@ export default {
 
   computed: {
     ...mapState(["metaKeys", "fields", "cached_fields"]),
+    ...mapState({
+      layout: state => state.layouts 
+    }),
 
     containerClass() {
       return {
@@ -240,7 +243,15 @@ export default {
     },
 
     modalContent() {
-      return this.learn_more?.type === "modal" ? this.learn_more?.content : this.video;
+      const learnMoreContent = {
+        ...this.fields.single_listing_header.layout,
+        type: "learn_more"
+      };
+      console.log("@CHK modalContent", {
+        layout: this.fields.single_listing_header.layout,
+        learnMoreContent,
+      });
+      return this.learn_more?.type === "modal" ? learnMoreContent : this.video;
     },
 
   },
@@ -307,7 +318,8 @@ export default {
     },
 
     // Open the modal
-    openModal(type) {
+    openModal() {
+      console.log("@CHK modalContent", { placeholders: this.$store.state.fields.single_listing_header.layout });
       this.showModal = true;
     },
 

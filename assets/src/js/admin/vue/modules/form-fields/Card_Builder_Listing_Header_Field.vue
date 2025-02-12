@@ -370,7 +370,9 @@ export default {
       }
 
       this.placeholders = output;
-      
+
+      this.$store.commit("updateSingleListingLayout", output);
+
       return output;
     },
 

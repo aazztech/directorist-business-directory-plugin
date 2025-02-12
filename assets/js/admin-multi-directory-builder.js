@@ -12257,6 +12257,13 @@ vue__WEBPACK_IMPORTED_MODULE_0__["default"].use(vuex__WEBPACK_IMPORTED_MODULE_1_
     updateGeneralSectionData: function updateGeneralSectionData(state, payload) {
       state.layouts.general.submenu.general.sections[payload.section_key].fields[payload.field_key].value = payload.value;
     },
+    updateSingleListingLayout: function updateSingleListingLayout(state, value) {
+      console.log('@CHK updateSingleListingLayout', {
+        state: state,
+        value: value
+      });
+      state.fields.single_listing_header.layout = value;
+    },
     importFields: function importFields(state, importing_fields) {
       for (var field_key in importing_fields) {
         if (typeof importing_fields[field_key] === 'undefined') {
@@ -16402,7 +16409,11 @@ function _objectSpread(e) { for (var r = 1; r < arguments.length; r++) { var t =
       type: Object
     }
   },
-  computed: _objectSpread(_objectSpread({}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapState"])(["metaKeys", "fields", "cached_fields"])), {}, {
+  computed: _objectSpread(_objectSpread(_objectSpread({}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapState"])(["metaKeys", "fields", "cached_fields"])), Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapState"])({
+    layout: function layout(state) {
+      return state.layouts;
+    }
+  })), {}, {
     containerClass: function containerClass() {
       return {
         "tab-wide": "wide" === this.container ? true : false,
@@ -16420,8 +16431,15 @@ function _objectSpread(e) { for (var r = 1; r < arguments.length; r++) { var t =
       return firstContainerField ? this.fields[firstContainerField].group_label : "";
     },
     modalContent: function modalContent() {
-      var _this$learn_more, _this$learn_more2;
-      return ((_this$learn_more = this.learn_more) === null || _this$learn_more === void 0 ? void 0 : _this$learn_more.type) === "modal" ? (_this$learn_more2 = this.learn_more) === null || _this$learn_more2 === void 0 ? void 0 : _this$learn_more2.content : this.video;
+      var _this$learn_more;
+      var learnMoreContent = _objectSpread(_objectSpread({}, this.fields.single_listing_header.layout), {}, {
+        type: "learn_more"
+      });
+      console.log("@CHK modalContent", {
+        layout: this.fields.single_listing_header.layout,
+        learnMoreContent: learnMoreContent
+      });
+      return ((_this$learn_more = this.learn_more) === null || _this$learn_more === void 0 ? void 0 : _this$learn_more.type) === "modal" ? learnMoreContent : this.video;
     }
   }),
   methods: {
@@ -16472,7 +16490,10 @@ function _objectSpread(e) { for (var r = 1; r < arguments.length; r++) { var t =
       return type_id;
     },
     // Open the modal
-    openModal: function openModal(type) {
+    openModal: function openModal() {
+      console.log("@CHK modalContent", {
+        placeholders: this.$store.state.fields.single_listing_header.layout
+      });
       this.showModal = true;
     },
     // Close the modal
@@ -18943,11 +18964,25 @@ __webpack_require__.r(__webpack_exports__);
   name: "form-builder-widget-modal-component",
   props: {
     modalOpened: {
+      type: Boolean,
       default: false
     },
     content: {
-      type: Object
+      type: [Object, Array],
+      default: function _default() {
+        return [];
+      } // Default is an empty array
     }
+  },
+
+  computed: {
+    placeholders: function placeholders() {
+      console.log('@chk placeholders', this.content);
+      return this.content || [];
+    }
+  },
+  mounted: function mounted() {
+    console.log('@chk modalcontent', this.content);
   }
 });
 
@@ -23847,6 +23882,7 @@ function _objectSpread(e) { for (var r = 1; r < arguments.length; r++) { var t =
         _iterator2.f();
       }
       this.placeholders = output;
+      this.$store.commit("updateSingleListingLayout", output);
       return output;
     },
     theAvailableWidgets: function theAvailableWidgets() {
@@ -28199,7 +28235,7 @@ var render = function render() {
       on: {
         click: function click($event) {
           $event.preventDefault();
-          return _vm.openModal("video");
+          return _vm.openModal();
         }
       }
     }, [_c("svg", {
@@ -28228,7 +28264,7 @@ var render = function render() {
       on: {
         click: function click($event) {
           $event.preventDefault();
-          return _vm.openModal("learn_more");
+          return _vm.openModal();
         }
       }
     }) : _vm._e()]), _vm._v(" "), section.fields[0] === "submission_form_fields" ? _c("div", {
@@ -30220,7 +30256,50 @@ var render = function render() {
     }
   }) : _vm._e(), _vm._v(" "), _vm.content.type === "learn_more" ? _c("div", {
     staticClass: "cptm-modal-single-listing-header"
-  }, [_c("h2", [_vm._v(_vm._s(_vm.content.title))]), _vm._v(" "), _c("p", [_vm._v(_vm._s(_vm.content.description))])]) : _vm._e()])]), _vm._v(" "), _c("button", {
+  }, [_vm._l(_vm.placeholders, function (placeholderItem, index) {
+    return placeholderItem.type === "placeholder_group" ? _c("div", {
+      key: index,
+      staticClass: "cptm-modal-single-listing-header__group cptm-modal-single-listing-header__group--top"
+    }, _vm._l(placeholderItem.placeholders, function (subPlaceholderItem, index) {
+      return _c("div", {
+        staticClass: "cptm-modal-single-listing-header__item",
+        class: subPlaceholderItem.placeholder_key
+      }, _vm._l(subPlaceholderItem.selectedWidgets, function (selectedWidget, index) {
+        return _c("div", {
+          key: "item_".concat(index),
+          staticClass: "cptm-modal-single-listing-header__btn",
+          class: selectedWidget.widget_key
+        }, [selectedWidget.icon ? _c("span", {
+          class: selectedWidget.icon
+        }) : _vm._e(), _vm._v("\n                " + _vm._s(selectedWidget.label) + "\n              ")]);
+      }), 0);
+    }), 0) : _vm._e();
+  }), _vm._v(" "), _vm._l(_vm.placeholders, function (placeholderItem, index) {
+    return placeholderItem.type === "placeholder_item" ? _c("div", {
+      key: "standalone_".concat(index),
+      staticClass: "cptm-modal-single-listing-header__item",
+      class: placeholderItem.placeholder_key
+    }, _vm._l(placeholderItem.selectedWidgets, function (selectedWidget, index) {
+      return _c("div", {
+        key: "group_".concat(index),
+        staticClass: "cptm-modal-single-listing-header__btn",
+        class: selectedWidget.widget_key
+      }, [selectedWidget.icon ? _c("span", {
+        staticClass: "cptm-modal-single-listing-header__btn__icon",
+        class: selectedWidget.icon
+      }) : _vm._e(), _vm._v("\n              " + _vm._s(selectedWidget.label) + "\n            ")]);
+    }), 0) : _vm._e();
+  }), _vm._v(" "), _c("button", {
+    staticClass: "cptm-modal-single-listing-header__close-btn",
+    on: {
+      click: function click($event) {
+        $event.preventDefault();
+        return _vm.$emit("close-modal");
+      }
+    }
+  }, [_c("span", {
+    staticClass: "la la-close"
+  })])], 2) : _vm._e()])]), _vm._v(" "), _vm.content.type !== "learn_more" ? _c("button", {
     staticClass: "close-btn",
     on: {
       click: function click($event) {
@@ -30230,7 +30309,7 @@ var render = function render() {
     }
   }, [_c("span", {
     staticClass: "la la-close"
-  })])]) : _vm._e();
+  })]) : _vm._e()]) : _vm._e();
 };
 var staticRenderFns = [];
 render._withStripped = true;
