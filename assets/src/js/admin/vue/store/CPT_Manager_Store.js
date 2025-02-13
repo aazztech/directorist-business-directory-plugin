@@ -210,6 +210,10 @@ export default new Vuex.Store({
       state.layouts.general.submenu.general.sections[ payload.section_key ].fields[ payload.field_key ].value = payload.value;
     },
 
+    updateSingleListingLayout: ( state, value ) => {
+      state.fields.single_listing_header.layout = value;
+    },
+
     importFields: ( state, importing_fields ) => {
       for ( let field_key in importing_fields ) {
         if ( typeof importing_fields[ field_key ] === 'undefined' ) { continue; }

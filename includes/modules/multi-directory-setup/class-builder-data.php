@@ -2456,12 +2456,10 @@ class Builder_Data {
                     'price' => [
                         'type' => "badge",
                         'label' => __( "Pricing", "directorist" ),
-                        'icon' => 'uil uil-text-fields',
                     ],
                     'badges' => [
                         'type' => "badge",
                         'label' => __( "Badges", "directorist" ),
-                        'icon' => 'uil uil-text-fields',
                         'options' => [
                             'title' => __( "Badge Settings", "directorist" ),
                             'fields' => [
@@ -2486,29 +2484,26 @@ class Builder_Data {
                     'ratings_count' => [
                         'type' => "ratings-count",
                         'label' => __( "Rating", "directorist" ),
-                        'icon' => 'uil uil-text-fields',
                     ],
                     'category' => [
                         'type' => "badge",
                         'label' => __( "Listings Category", "directorist" ),
-                        'icon' => 'uil uil-text-fields',
-                        'show_if' => [
-                            'where' => "submission_form_fields.value.fields",
-                            'conditions' => [
-                                ['key' => '_any.widget_name', 'compare' => '=', 'value' => 'category'],
-                            ],
-                        ],
+                        // 'show_if' => [
+                        //     'where' => "submission_form_fields.value.fields",
+                        //     'conditions' => [
+                        //         ['key' => '_any.widget_name', 'compare' => '=', 'value' => 'category'],
+                        //     ],
+                        // ],
                     ],
                     'location' => [
                         'type' => "badge",
                         'label' => __( "Listings Location", "directorist" ),
-                        'icon' => 'uil uil-text-fields',
-                        'show_if' => [
-                            'where' => "submission_form_fields.value.fields",
-                            'conditions' => [
-                                ['key' => '_any.widget_name', 'compare' => '=', 'value' => 'location'],
-                            ],
-                        ],
+                        // 'show_if' => [
+                        //     'where' => "submission_form_fields.value.fields",
+                        //     'conditions' => [
+                        //         ['key' => '_any.widget_name', 'compare' => '=', 'value' => 'location'],
+                        //     ],
+                        // ],
                     ],
                 ],
 
@@ -2520,18 +2515,20 @@ class Builder_Data {
                             [
                                 'type'              => 'placeholder_item',
                                 'placeholderKey'    => 'quick-info-placeholder',
-                                'label'             => __( 'Quick info', 'directorist' ),
+                                'label'             => __( 'Top Left', 'directorist' ),
                                 'maxWidget'         => 1,
                                 'maxWidgetInfoText' => "Up to __DATA__ item{s} can be added",
                                 'acceptedWidgets'   => ['back'],
+                                // 'selectedWidgets'   => ['back'],
                             ],
                             [
                                 'type'              => 'placeholder_item',
                                 'placeholderKey'    => 'quick-action-placeholder',
-                                'label'             => __( 'Quick Action', 'directorist' ),
+                                'label'             => __( 'Top Right', 'directorist' ),
                                 'maxWidget'         => 0,
                                 'maxWidgetInfoText' => "Up to __DATA__ item{s} can be added",
                                 'acceptedWidgets'   => [ 'bookmark', 'share', 'report' ],
+                                // 'selectedWidgets'   => [ 'bookmark', 'share' ],
                             ],
                         ],
                     ],
@@ -2542,28 +2539,29 @@ class Builder_Data {
                         'maxWidget'         => 1,
                         'maxWidgetInfoText' => "Up to __DATA__ item{s} can be added",
                         'acceptedWidgets'   => ['title'],
+                        // 'selectedWidgets'   => ['title'],
                     ],
                     [
                         'type'              => 'placeholder_item',
                         'placeholderKey'    => 'more-widgets-placeholder',
-                        'label'             => __( 'More Widgets', 'directorist' ),
+                        'label'             => __( 'Quick Info', 'directorist' ),
                         'maxWidget'         => 0,
                         'maxWidgetInfoText' => "Up to __DATA__ item{s} can be added",
                         'acceptedWidgets'   => [ 'location', 'category', 'ratings_count', 'badges', 'price' ],
-                        'rejectedWidgets'   => ['slider'],
+                        // 'selectedWidgets'   => [ 'location', 'category', 'badges' ],
                     ],
                     [
                         'type'            => 'placeholder_item',
-                        'label'           => 'Slider Widget',
+                        'label'           => 'Image/Slider',
                         'placeholderKey'  => 'slider-placeholder',
-                        'selectedWidgets' => ['slider'],
+                        // 'selectedWidgets' => ['slider'],
                         'acceptedWidgets' => ['slider'],
                         'maxWidget'       => 1,
-                        'canDelete'       => true,
-                        'insertByButton'  => true,
-                        'insertButton'    => [
-                            'label' => 'Add Image/Slider'
-                        ],
+                        // 'canDelete'       => true,
+                        // 'insertByButton'  => true,
+                        // 'insertButton'    => [
+                        //     'label' => 'Add Image/Slider'
+                        // ],
                     ],
                 ],
             ] ),
@@ -2661,6 +2659,7 @@ class Builder_Data {
                     </svg>',
                 'container' => 'full-width',
                 'video' => [
+                    'type' => 'video',
                     'url' => 'https://www.youtube.com/embed/0rjSHUPZgoE',
                     'button_text' => __( 'Watch Tutorial', 'directorist' ),
                     'title' => __( 'Add Listing Form Tutorial', 'directorist' ),
@@ -2693,14 +2692,18 @@ class Builder_Data {
                         'label'     => __( 'Listing Header', 'directorist' ),
                         'container' => 'full-width',
                         'video' => [
+                            'type' => 'video',
                             'url' => 'https://www.youtube.com/embed/NtLXjEAPQzc',
                             'button_text' => __( 'Watch Tutorial', 'directorist' ),
                             'title' => __( 'Listing Header Tutorial', 'directorist' ),
                             'description' => __( 'Watch the video to learn how to create listing header.', 'directorist' ),
                         ],
                         'learn_more' => [
-                            'url' => 'https://directorist.com/features/',
-                            'title' => __( 'What is it?', 'directorist' ),
+                            'type' => 'image',
+                            'url'  => DIRECTORIST_ASSETS . 'images/single-listing-header-preview.png',
+                            'button_text' => __( 'What is it?', 'directorist' ),
+                            'title' => __( 'Single Listing Header', 'directorist' ),
+                            'description' => __( 'Details of Single Listing Header', 'directorist' ),
                         ],
                         'sections'  => [
                             'listing_header' => [
@@ -2716,18 +2719,15 @@ class Builder_Data {
                         'label'     => __( 'Contents', 'directorist' ),
                         'container' => 'full-width',
                         'video' => [
+                            'type' => 'video',
                             'url' => 'https://www.youtube.com/embed/82CFngofqbM',
                             'button_text' => __( 'Watch Tutorial', 'directorist' ),
                             'title' => __( 'Contents Tutorial', 'directorist' ),
                             'description' => __( 'Watch the video to learn how to create a custom contents.', 'directorist' ),
                         ],
-                        'learn_more' => [
-                            'url' => 'https://directorist.com/solutions/',
-                            'title' => __( 'What is it?', 'directorist' ),
-                        ],
                         'sections'  => [
                             'contents' => [
-                                'title'       => __( 'Contents', 'directorist' ),
+                                'title'       => __( 'Listing Contents', 'directorist' ),
                                 'description' => '<a target="_blank" href="https://directorist.com/documentation/directorist/form-and-layout-builder/single-listings-layout/"> ' . __( 'Need help?', 'directorist' ) . ' </a>',
                                 'fields'      => [
                                     'single_listings_contents',
@@ -2738,6 +2738,13 @@ class Builder_Data {
                     'similar_listings' => [
                         'label'    => __( 'Custom Single Listing Page', 'directorist' ),
                         'container' => 'short-wide',
+                        'video' => [
+                            'type' => 'video',
+                            'url' => 'https://www.youtube.com/embed/82CFngofqbM',
+                            'button_text' => __( 'Watch Tutorial', 'directorist' ),
+                            'title' => __( 'Contents Tutorial', 'directorist' ),
+                            'description' => __( 'Watch the video to learn how to create a custom contents.', 'directorist' ),
+                        ],
                         'sections' => [
                             'page_settings' => [
                                 'fields' => [
@@ -2760,14 +2767,18 @@ class Builder_Data {
                         'label'     => __( 'All Listing Grid Layout', 'directorist' ),
                         'container' => 'full-width',
                         'video' => [
+                            'type' => 'video',
                             'url' => 'https://www.youtube.com/embed/SijKFqgwXVQ',
                             'button_text' => __( 'Watch Tutorial', 'directorist' ),
                             'title' => __( 'All Listing Grid Tutorial', 'directorist' ),
                             'description' => __( 'Watch the video to learn how to create all listing grid.', 'directorist' ),
                         ],
                         'learn_more' => [
-                            'url' => 'https://directorist.com/customers/',
-                            'title' => __( 'What is it?', 'directorist' ),
+                            'type' => 'image',
+                            'url'  => DIRECTORIST_ASSETS . 'images/single-listing-header-preview.png',
+                            'button_text' => __( 'What is it?', 'directorist' ),
+                            'title' => __( 'All Listing Grid', 'directorist' ),
+                            'description' => __( 'Details of All Listing Grid', 'directorist' ),
                         ],
                         'sections'  => [
                             'listings_card' => [
@@ -2784,14 +2795,18 @@ class Builder_Data {
                         'label'     => __( 'All Listing List Layout', 'directorist' ),
                         'container' => 'full-width',
                         'video' => [
+                            'type' => 'video',
                             'url' => 'https://www.youtube.com/embed/T9VovVonLV0',
                             'button_text' => __( 'Watch Tutorial', 'directorist' ),
                             'title' => __( 'All Listing List Tutorial', 'directorist' ),
                             'description' => __( 'Watch the video to learn how to create all listing list.', 'directorist' ),
                         ],
                         'learn_more' => [
-                            'url' => 'https://directorist.com/pricing/',
-                            'title' => __( 'What is it?', 'directorist' ),
+                            'type' => 'image',
+                            'url'  => DIRECTORIST_ASSETS . 'images/single-listing-header-preview.png',
+                            'button_text' => __( 'What is it?', 'directorist' ),
+                            'title' => __( 'All Listing List', 'directorist' ),
+                            'description' => __( 'Details of All Listing List', 'directorist' ),
                         ],
                         'sections'  => [
                             'listings_card' => [
@@ -2814,6 +2829,7 @@ class Builder_Data {
                     </svg>',
                 'container' => 'full-width',
                 'video' => [
+                    'type' => 'video',
                     'url' => 'https://www.youtube.com/embed/bWRDFgFIvcI',
                     'button_text' => __( 'Watch Tutorial', 'directorist' ),
                     'title' => __( 'Search Form Tutorial', 'directorist' ),

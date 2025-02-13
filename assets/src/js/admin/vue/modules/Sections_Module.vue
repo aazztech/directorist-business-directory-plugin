@@ -8,17 +8,26 @@
     >
       <div
         class="directorist-form-doc"
-        v-if="['submission_form_fields', 'search_form_fields', 'single_listing_header', 'single_listings_contents', 'listings_card_grid_view', 'listings_card_list_view'].includes(section.fields[0])"
+        v-if="
+          ['submission_form_fields', 'search_form_fields'].includes(
+            section.fields[0]
+          )
+        "
       >
-        <div 
-          class="directorist-form-doc-left"
-        >
+        <div class="directorist-form-doc-left">
           <div class="directorist-form-doc-title" v-html="section.title"></div>
           <a
             href="#"
-            class="directorist-form-doc__watch-tutorial"
-            v-if="video && ['submission_form_fields', 'search_form_fields'].includes(section.fields[0])"
-            @click.prevent="openVideoPopup"
+            class="directorist-row-tooltip directorist-form-doc__modal-btn"
+            v-if="
+              video &&
+              ['submission_form_fields', 'search_form_fields'].includes(
+                section.fields[0]
+              )
+            "
+            :data-tooltip="video?.description"
+            data-flow="bottom"
+            @click.prevent="openModal()"
           >
             <svg
               xmlns="http://www.w3.org/2000/svg"
@@ -34,19 +43,23 @@
                 fill="currentColor"
               />
             </svg>
-            {{video.button_text}}
+            <!-- {{ video?.button_text }} -->
           </a>
           <a
-            :href="learn_more.url"
-            target="_blank"
-            class="directorist-form-doc__link"
+            href="#"
+            class="directorist-row-tooltip directorist-form-doc__modal-btn"
             v-if="learn_more"
-            v-html="learn_more.title"
-          ></a>
+            :data-tooltip="learn_more?.description"
+            data-flow="bottom"
+            @click.prevent="openModal()"
+          >
+            ?
+            <!-- {{ learn_more?.button_text }} -->
+          </a>
         </div>
-        <div 
+        <div
           class="directorist-form-doc-right"
-          v-if="section.fields[0] === 'submission_form_fields'"
+          v-if="['submission_form_fields'].includes(section.fields[0])"
         >
           <a
             href="#"
@@ -68,7 +81,7 @@
                 fill="currentColor"
               />
             </svg>
-            preview
+            Preview
           </a>
         </div>
       </div>
@@ -76,7 +89,16 @@
       <div
         class="cptm-title-area"
         :class="sectionTitleAreaClass(section)"
-        v-if="section.fields[0] !== 'submission_form_fields' && section.fields[0] !== 'search_form_fields' && section.fields[0] !== 'single_listing_header' && section.fields[0] !== 'single_listing_header' && section.fields[0] !== 'single_listings_contents' && section.fields[0] !== 'listings_card_grid_view' && section.fields[0] !== 'listings_card_list_view'"
+        v-if="
+          ![
+            'submission_form_fields',
+            'search_form_fields',
+            'single_listing_header',
+            'single_listings_contents',
+            'listings_card_grid_view',
+            'listings_card_list_view',
+          ].includes(section.fields[0])
+        "
       >
         <h3 v-if="section.title" class="cptm-title" v-html="section.title"></h3>
         <div
@@ -159,11 +181,12 @@
     </div>
 
     <!-- Video Popup Modal -->
-    <form-builder-widget-video-component
-      v-if="video"
-      :videoOpened="showVideo"
-      :video="video"
-      @close-video="closeVideoPopup"
+    <form-builder-widget-modal-component
+      v-if="modalContent"
+      :modalOpened="showModal"
+      :content="modalContent"
+      :type="modalContent.type"
+      @close-modal="closeModal"
     />
   </div>
 </template>
@@ -178,7 +201,7 @@ export default {
 
   data() {
     return {
-      showVideo: false,
+      showModal: false,
     };
   },
 
@@ -208,6 +231,9 @@ export default {
 
   computed: {
     ...mapState(["metaKeys", "fields", "cached_fields"]),
+    ...mapState({
+      layout: (state) => state.layouts,
+    }),
 
     containerClass() {
       return {
@@ -230,6 +256,27 @@ export default {
         : "";
     },
 
+    modalContent() {
+      const learnMoreContent = {
+        ...this.fields?.single_listing_header?.layout,
+        type: "preview",
+      };
+
+      let content;
+
+      switch (this.learn_more?.type) {
+        case "preview":
+          content = learnMoreContent;
+          break;
+        case "image":
+          content = this.learn_more;
+          break;
+        default:
+          content = this.video;
+      }
+
+      return content;
+    },
   },
 
   methods: {
@@ -259,7 +306,7 @@ export default {
     },
 
     sectionClass(section) {
-      return section.fields[0]
+      return section.fields[0];
       // return {
       //   "cptm-short-wide": "short-width" === section.container ? true : false,
       // };
@@ -293,15 +340,16 @@ export default {
       return type_id;
     },
 
-    // Open the video popup
-    openVideoPopup() {
-      this.showVideo = true;
+    // Open the modal
+    openModal() {
+      this.showModal = true;
     },
 
-    // Close the video popup
-    closeVideoPopup() {
-      this.showVideo = false;
+    // Close the modal
+    closeModal() {
+      this.showModal = false;
     },
+
     saveData() {
       // Emit the save event before redirecting
       this.$emit("save");

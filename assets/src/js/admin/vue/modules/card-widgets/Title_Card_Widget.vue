@@ -4,6 +4,13 @@
             <div class="cptm-widget-title-block">
                 {{ label }}
             </div>
+
+            <span 
+                class="cptm-widget-card-disabled-badge" 
+                v-if="disabled"
+            > 
+                Disable 
+            </span>
             
             <widget-action-tools
                 :canEdit="canEdit"
@@ -13,6 +20,7 @@
                 @dragend="dragEnd()" 
                 @edit="$emit( 'edit' )" 
                 @trash="$emit( 'trash' )"
+                v-if="!readOnly"
             />
         </div>
 
@@ -22,6 +30,7 @@
             @dragenter="handleDragEnter()"
             @dragleave="handleDragLeave()" 
             @drop="handleDrop()"
+            v-if="!readOnly"
         >
         </span>
     </div>
@@ -57,6 +66,16 @@ export default {
         canTrash: {
             type: Boolean,
             default: true,
+        },
+
+        disabled: {
+            type: Boolean,
+            default: false,
+        },
+
+        readOnly: {
+            type: Boolean,
+            default: false,
         },
     },
 

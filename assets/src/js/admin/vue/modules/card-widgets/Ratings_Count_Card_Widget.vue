@@ -1,7 +1,8 @@
 <template>
     <div class="cptm-widget-card-wrap cptm-widget-card-inline-wrap cptm-widget-badge-card-wrap">
         <div class="cptm-widget-card cptm-widget-badge cptm-has-widget-control cptm-widget-actions-tools-wrap">
-            {{ label }}
+            <span :class="icon" v-if="icon"></span>
+            <span>{{ label }}</span>
             
             <widget-action-tools
                 :canEdit="canEdit"
@@ -11,6 +12,7 @@
                 @dragend="dragEnd()" 
                 @edit="$emit( 'edit' )" 
                 @trash="$emit( 'trash' )"
+                v-if="!readOnly"
             />
         </div>
 
@@ -20,6 +22,7 @@
             @dragenter="handleDragEnter()"
             @dragleave="handleDragLeave()" 
             @drop="handleDrop()"
+            v-if="!readOnly"
         >
         </span>
     </div>
@@ -29,6 +32,10 @@
 export default {
     name: 'ratings-count-card-widget',
     props: {
+        icon: {
+            type: String,
+        },
+
         label: {
             type: String,
         },
@@ -55,6 +62,11 @@ export default {
         canTrash: {
             type: Boolean,
             default: true,
+        },
+
+        readOnly: {
+            type: Boolean,
+            default: false,
         },
     },
 
