@@ -33821,7 +33821,7 @@ var render = function render() {
     return _c("div", {
       key: placeholder_index,
       staticClass: "cptm-elements-settings__group"
-    }, [placeholder.label ? _c("span", {
+    }, [placeholder.label && (placeholder === null || placeholder === void 0 ? void 0 : placeholder.placeholderKey) !== "listing-title-placeholder" && (placeholder === null || placeholder === void 0 ? void 0 : placeholder.placeholderKey) !== "slider-placeholder" ? _c("span", {
       staticClass: "cptm-elements-settings__group__title"
     }, [_vm._v("\n            " + _vm._s(placeholder.label) + "\n          ")]) : _vm._e(), _vm._v(" "), _c("Container", {
       attrs: {
