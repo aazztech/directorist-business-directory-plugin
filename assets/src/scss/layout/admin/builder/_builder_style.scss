@@ -246,7 +246,7 @@ $light-gray: #f4f5f7;
       line-height: 25px;
     }
   }
-  &__watch-tutorial {
+  &__modal-btn {
     display: inline-flex;
     padding: 8px 12px;
     width: max-content;
@@ -963,7 +963,6 @@ $light-gray: #f4f5f7;
   position: relative;
   background: transparent;
   margin-top: 61px;
-  border-bottom: 1px solid #e5e7eb;
   @media only screen and (max-width: 600px) {
     margin-top: 0;
   }
@@ -990,7 +989,11 @@ $light-gray: #f4f5f7;
       margin: 0;
     }
   }
-  .directorist-form-doc__watch-tutorial {
+  .cptm-tab-content-header__action {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+
     position: absolute;
     right: 30px;
     top: 50%;
@@ -1001,7 +1004,7 @@ $light-gray: #f4f5f7;
       padding-right: 0;
       padding-top: 70px;
     }
-    .directorist-form-doc__watch-tutorial {
+    .cptm-tab-content-header__action {
       top: 20px;
       right: 50%;
       transform: translateX(50%);
@@ -1012,7 +1015,7 @@ $light-gray: #f4f5f7;
       padding-top: 50px;
       padding-bottom: 15px;
     }
-    .directorist-form-doc__watch-tutorial {
+    .cptm-tab-content-header__action {
       top: 0;
     }
   }
@@ -1025,7 +1028,7 @@ $light-gray: #f4f5f7;
 .cptm-tab-content {
   position: relative;
   margin: 0 auto;
-  padding: 20px 30px;
+  padding: 30px;
   min-height: 500px;
   box-sizing: border-box;
 
@@ -3314,29 +3317,49 @@ input[type="radio"].cptm-radio {
     transform: translate(-50%, -50%);
     overflow: visible;
   }
-  .cptm-modal-single-listing-header {
+}
+
+.cptm-modal-content {
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  .cptm-modal-video {
+    video {
+      width: 100%;
+      max-width: 500px;
+    }
+  }
+
+  .cptm-modal-image {
+    .cptm-modal-image__img {
+      max-height: calc(100vh - 200px);
+    }
+  }
+
+  .cptm-modal-preview {
     display: flex;
     gap: 24px;
     flex-direction: column;
-    width: 724px;
     height: auto;
-    max-height: 680px;
+    width: 724px;
+    max-height: calc(100vh - 200px);
     background: #fff;
     padding: 30px 70px;
     border-radius: 16px;
-    .cptm-modal-single-listing-header__group {
+    .cptm-modal-preview__group {
       display: flex;
       gap: 30px;
       justify-content: space-between;
       align-items: center;
     }
-    .cptm-modal-single-listing-header__item {
+    .cptm-modal-preview__item {
       display: flex;
       gap: 10px;
       align-items: center;
       flex-wrap: wrap;
     }
-    .cptm-modal-single-listing-header__btn {
+    .cptm-modal-preview__btn {
       display: flex;
       justify-content: center;
       align-items: center;
@@ -3347,36 +3370,26 @@ input[type="radio"].cptm-radio {
       background: #ededed;
       border: 1px solid #ededed;
       border-radius: 8px;
-      .cptm-modal-single-listing-header__btn__icon {
+      .cptm-modal-preview__btn__icon {
         display: flex;
         justify-content: center;
         align-items: center;
       }
     }
-
-    .cptm-modal-single-listing-header__close-btn {
-      position: absolute;
-      top: 0;
-      right: -42px;
-      width: 36px;
-      height: 36px;
-      color: #000;
-      background: #fff;
-      font-size: 15px;
-      border-radius: 100%;
-      cursor: pointer;
-    }
   }
-}
 
-.cptm-modal-content {
-  position: relative;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  video {
-    width: 100%;
-    max-width: 500px;
+  .cptm-modal-content__close-btn {
+    position: absolute;
+    top: 0;
+    right: -42px;
+    width: 36px;
+    height: 36px;
+    color: #000;
+    background: #fff;
+    font-size: 15px;
+    border: none;
+    border-radius: 100%;
+    cursor: pointer;
   }
 }
 
@@ -3725,13 +3738,8 @@ input[type="radio"] {
           align-items: flex-start;
         }
         .cptm-preview-placeholder__card__box {
+          flex: unset;
           min-width: auto;
-          &:first-child {
-            flex: unset;
-          }
-          &:not(:first-child) {
-            flex: 0 0 50%;
-          }
         }
       }
       .cptm-widget-actions-tools-wrap {

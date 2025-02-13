@@ -2699,13 +2699,11 @@ class Builder_Data {
                             'description' => __( 'Watch the video to learn how to create listing header.', 'directorist' ),
                         ],
                         'learn_more' => [
-                            'title' => __( 'What is it?', 'directorist' ),
-                            'type' => 'modal',
-                            'content' => [
-                                'type' => 'learn_more',
-                                'title' => __( 'Single Listing Header', 'directorist' ),
-                                'description' => __( 'Watch modal of single listing header.', 'directorist' ),
-                            ],
+                            'type' => 'image',
+                            'url'  => DIRECTORIST_ASSETS . 'images/single-listing-header-preview.png',
+                            'button_text' => __( 'What is it?', 'directorist' ),
+                            'title' => __( 'Single Listing Header', 'directorist' ),
+                            'description' => __( 'Details of Single Listing Header', 'directorist' ),
                         ],
                         'sections'  => [
                             'listing_header' => [
@@ -2776,8 +2774,11 @@ class Builder_Data {
                             'description' => __( 'Watch the video to learn how to create all listing grid.', 'directorist' ),
                         ],
                         'learn_more' => [
-                            'url' => 'https://directorist.com/customers/',
-                            'title' => __( 'What is it?', 'directorist' ),
+                            'type' => 'image',
+                            'url'  => DIRECTORIST_ASSETS . 'images/single-listing-header-preview.png',
+                            'button_text' => __( 'What is it?', 'directorist' ),
+                            'title' => __( 'All Listing Grid', 'directorist' ),
+                            'description' => __( 'Details of All Listing Grid', 'directorist' ),
                         ],
                         'sections'  => [
                             'listings_card' => [
@@ -2801,8 +2802,11 @@ class Builder_Data {
                             'description' => __( 'Watch the video to learn how to create all listing list.', 'directorist' ),
                         ],
                         'learn_more' => [
-                            'url' => 'https://directorist.com/pricing/',
-                            'title' => __( 'What is it?', 'directorist' ),
+                            'type' => 'image',
+                            'url'  => DIRECTORIST_ASSETS . 'images/single-listing-header-preview.png',
+                            'button_text' => __( 'What is it?', 'directorist' ),
+                            'title' => __( 'All Listing List', 'directorist' ),
+                            'description' => __( 'Details of All Listing List', 'directorist' ),
                         ],
                         'sections'  => [
                             'listings_card' => [

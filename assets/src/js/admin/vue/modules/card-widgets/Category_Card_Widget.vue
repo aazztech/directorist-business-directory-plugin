@@ -1,7 +1,7 @@
 <template>
     <div class="cptm-widget-card-wrap cptm-widget-card-inline-wrap cptm-widget-badge-card-wrap">
         <div class="cptm-widget-card cptm-widget-badge cptm-has-widget-control cptm-widget-actions-tools-wrap">
-            <span :class="icon"></span>
+            <span :class="icon" v-if="icon"></span>
             <span>{{ label }}</span>
             
             <widget-action-tools
