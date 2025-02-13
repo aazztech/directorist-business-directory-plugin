@@ -18480,6 +18480,12 @@ input[type=radio]:checked::before {
       -ms-flex-pack: justify;
           justify-content: space-between;
 }
+.cptm-preview-placeholder__card__item--top .cptm-preview-placeholder__card__content {
+  -webkit-box-align: start;
+  -webkit-align-items: flex-start;
+      -ms-flex-align: start;
+          align-items: flex-start;
+}
 .cptm-preview-placeholder__card__item--top .cptm-preview-placeholder__card__box {
   min-width: auto;
 }
@@ -18524,8 +18530,18 @@ input[type=radio]:checked::before {
   display: inline-flex;
 }
 .cptm-preview-placeholder__card__box .cptm-widget-preview-area .cptm-widget-badge {
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: -ms-flexbox;
+  display: flex;
+  gap: 6px;
+  -webkit-box-align: center;
+  -webkit-align-items: center;
+      -ms-flex-align: center;
+          align-items: center;
   margin: 0;
-  padding: 6px 19px 7px 20px;
+  height: 30px;
+  padding: 0 12px;
   border-radius: 8px;
   font-size: 13px;
   line-height: 14px;
@@ -24027,6 +24043,12 @@ input[type=radio]:checked::before {
       -ms-flex-pack: justify;
           justify-content: space-between;
 }
+.cptm-preview-placeholder__card__item--top .cptm-preview-placeholder__card__content {
+  -webkit-box-align: start;
+  -webkit-align-items: flex-start;
+      -ms-flex-align: start;
+          align-items: flex-start;
+}
 .cptm-preview-placeholder__card__item--top .cptm-preview-placeholder__card__box {
   min-width: auto;
 }
@@ -24071,8 +24093,18 @@ input[type=radio]:checked::before {
   display: inline-flex;
 }
 .cptm-preview-placeholder__card__box .cptm-widget-preview-area .cptm-widget-badge {
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: -ms-flexbox;
+  display: flex;
+  gap: 6px;
+  -webkit-box-align: center;
+  -webkit-align-items: center;
+      -ms-flex-align: center;
+          align-items: center;
   margin: 0;
-  padding: 6px 19px 7px 20px;
+  height: 30px;
+  padding: 0 12px;
   border-radius: 8px;
   font-size: 13px;
   line-height: 14px;
@@ -29862,6 +29894,12 @@ input[type=radio]:checked::before {
       -ms-flex-pack: justify;
           justify-content: space-between;
 }
+.cptm-preview-placeholder__card__item--top .cptm-preview-placeholder__card__content {
+  -webkit-box-align: start;
+  -webkit-align-items: flex-start;
+      -ms-flex-align: start;
+          align-items: flex-start;
+}
 .cptm-preview-placeholder__card__item--top .cptm-preview-placeholder__card__box {
   min-width: auto;
 }
@@ -29906,8 +29944,18 @@ input[type=radio]:checked::before {
   display: inline-flex;
 }
 .cptm-preview-placeholder__card__box .cptm-widget-preview-area .cptm-widget-badge {
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: -ms-flexbox;
+  display: flex;
+  gap: 6px;
+  -webkit-box-align: center;
+  -webkit-align-items: center;
+      -ms-flex-align: center;
+          align-items: center;
   margin: 0;
-  padding: 6px 19px 7px 20px;
+  height: 30px;
+  padding: 0 12px;
   border-radius: 8px;
   font-size: 13px;
   line-height: 14px;

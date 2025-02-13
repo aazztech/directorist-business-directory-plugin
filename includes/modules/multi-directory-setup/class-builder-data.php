@@ -2456,12 +2456,10 @@ class Builder_Data {
                     'price' => [
                         'type' => "badge",
                         'label' => __( "Pricing", "directorist" ),
-                        'icon' => 'uil uil-text-fields',
                     ],
                     'badges' => [
                         'type' => "badge",
                         'label' => __( "Badges", "directorist" ),
-                        'icon' => 'uil uil-text-fields',
                         'options' => [
                             'title' => __( "Badge Settings", "directorist" ),
                             'fields' => [
@@ -2486,12 +2484,10 @@ class Builder_Data {
                     'ratings_count' => [
                         'type' => "ratings-count",
                         'label' => __( "Rating", "directorist" ),
-                        'icon' => 'uil uil-text-fields',
                     ],
                     'category' => [
                         'type' => "badge",
                         'label' => __( "Listings Category", "directorist" ),
-                        'icon' => 'uil uil-text-fields',
                         // 'show_if' => [
                         //     'where' => "submission_form_fields.value.fields",
                         //     'conditions' => [
@@ -2502,7 +2498,6 @@ class Builder_Data {
                     'location' => [
                         'type' => "badge",
                         'label' => __( "Listings Location", "directorist" ),
-                        'icon' => 'uil uil-text-fields',
                         // 'show_if' => [
                         //     'where' => "submission_form_fields.value.fields",
                         //     'conditions' => [

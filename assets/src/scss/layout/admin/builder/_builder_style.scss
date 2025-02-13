@@ -3721,6 +3721,9 @@ input[type="radio"] {
         display: flex;
         gap: 30px;
         justify-content: space-between;
+        .cptm-preview-placeholder__card__content {
+          align-items: flex-start;
+        }
         .cptm-preview-placeholder__card__box {
           min-width: auto;
           &:first-child {
@@ -3754,8 +3757,12 @@ input[type="radio"] {
         flex-wrap: wrap;
         display: inline-flex;
         .cptm-widget-badge {
+          display: flex;
+          gap: 6px;
+          align-items: center;
           margin: 0;
-          padding: 6px 19px 7px 20px;
+          height: 30px;
+          padding: 0 12px;
           border-radius: 8px;
           font-size: 13px;
           line-height: 14px;

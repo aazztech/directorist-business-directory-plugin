@@ -15514,11 +15514,6 @@ function _objectSpread(e) { for (var r = 1; r < arguments.length; r++) { var t =
       default: false
     }
   },
-  mounted: function mounted() {
-    console.log("@Placeholder mounted", {
-      selectedWidgets: this.selectedWidgets
-    });
-  },
   computed: {
     canAddMore: function canAddMore() {
       if (this.maxWidget < 1) {
@@ -17095,8 +17090,11 @@ __webpack_require__.r(__webpack_exports__);
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony default export */ __webpack_exports__["default"] = ({
-  name: 'badge-card-widget',
+  name: "badge-card-widget",
   props: {
+    icon: {
+      type: String
+    },
     label: {
       type: String
     },
@@ -17127,8 +17125,8 @@ __webpack_require__.r(__webpack_exports__);
   computed: {
     dropAppendClass: function dropAppendClass() {
       return {
-        'dropable': !this.dragging && (this.drop_append_dropable || this.widgetDropable),
-        'drag-enter': this.drop_append_drag_enter
+        dropable: !this.dragging && (this.drop_append_dropable || this.widgetDropable),
+        "drag-enter": this.drop_append_drag_enter
       };
     }
   },
@@ -17142,22 +17140,22 @@ __webpack_require__.r(__webpack_exports__);
   methods: {
     dragStart: function dragStart() {
       this.dragging = true;
-      this.$emit('drag');
+      this.$emit("drag");
     },
     dragEnd: function dragEnd() {
       this.dragging = false;
-      this.$emit('dragend');
+      this.$emit("dragend");
     },
     handleDragEnter: function handleDragEnter() {
-      this.$emit('dragenter');
+      this.$emit("dragenter");
       this.drop_append_drag_enter = true;
     },
     handleDragLeave: function handleDragLeave() {
-      this.$emit('dragleave');
+      this.$emit("dragleave");
       this.drop_append_drag_enter = false;
     },
     handleDrop: function handleDrop() {
-      this.$emit('drop');
+      this.$emit("drop");
       this.dragging = false;
       this.drop_append_dropable = false;
       this.drop_append_drag_enter = false;
@@ -17177,8 +17175,11 @@ __webpack_require__.r(__webpack_exports__);
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony default export */ __webpack_exports__["default"] = ({
-  name: 'button-card-widget',
+  name: "button-card-widget",
   props: {
+    icon: {
+      type: String
+    },
     label: {
       type: String
     },
@@ -17209,8 +17210,8 @@ __webpack_require__.r(__webpack_exports__);
   computed: {
     dropAppendClass: function dropAppendClass() {
       return {
-        'dropable': !this.dragging && (this.drop_append_dropable || this.widgetDropable),
-        'drag-enter': this.drop_append_drag_enter
+        dropable: !this.dragging && (this.drop_append_dropable || this.widgetDropable),
+        "drag-enter": this.drop_append_drag_enter
       };
     }
   },
@@ -17224,22 +17225,22 @@ __webpack_require__.r(__webpack_exports__);
   methods: {
     dragStart: function dragStart() {
       this.dragging = true;
-      this.$emit('drag');
+      this.$emit("drag");
     },
     dragEnd: function dragEnd() {
       this.dragging = false;
-      this.$emit('dragend');
+      this.$emit("dragend");
     },
     handleDragEnter: function handleDragEnter() {
-      this.$emit('dragenter');
+      this.$emit("dragenter");
       this.drop_append_drag_enter = true;
     },
     handleDragLeave: function handleDragLeave() {
-      this.$emit('dragleave');
+      this.$emit("dragleave");
       this.drop_append_drag_enter = false;
     },
     handleDrop: function handleDrop() {
-      this.$emit('drop');
+      this.$emit("drop");
       this.dragging = false;
       this.drop_append_dropable = false;
       this.drop_append_drag_enter = false;
@@ -17261,6 +17262,9 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony default export */ __webpack_exports__["default"] = ({
   name: 'category-card-widget',
   props: {
+    icon: {
+      type: String
+    },
     label: {
       type: String
     },
@@ -17339,6 +17343,9 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony default export */ __webpack_exports__["default"] = ({
   name: 'excerpt-card-widget',
   props: {
+    icon: {
+      type: String
+    },
     label: {
       type: String
     },
@@ -17419,8 +17426,11 @@ __webpack_require__.r(__webpack_exports__);
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony default export */ __webpack_exports__["default"] = ({
-  name: 'icon-card-widget',
+  name: "icon-card-widget",
   props: {
+    icon: {
+      type: String
+    },
     label: {
       type: String
     },
@@ -17451,8 +17461,8 @@ __webpack_require__.r(__webpack_exports__);
   computed: {
     dropAppendClass: function dropAppendClass() {
       return {
-        'dropable': !this.dragging && (this.drop_append_dropable || this.widgetDropable),
-        'drag-enter': this.drop_append_drag_enter
+        dropable: !this.dragging && (this.drop_append_dropable || this.widgetDropable),
+        "drag-enter": this.drop_append_drag_enter
       };
     }
   },
@@ -17466,22 +17476,22 @@ __webpack_require__.r(__webpack_exports__);
   methods: {
     dragStart: function dragStart() {
       this.dragging = true;
-      this.$emit('drag');
+      this.$emit("drag");
     },
     dragEnd: function dragEnd() {
       this.dragging = false;
-      this.$emit('dragend');
+      this.$emit("dragend");
     },
     handleDragEnter: function handleDragEnter() {
-      this.$emit('dragenter');
+      this.$emit("dragenter");
       this.drop_append_drag_enter = true;
     },
     handleDragLeave: function handleDragLeave() {
-      this.$emit('dragleave');
+      this.$emit("dragleave");
       this.drop_append_drag_enter = false;
     },
     handleDrop: function handleDrop() {
-      this.$emit('drop');
+      this.$emit("drop");
       this.dragging = false;
       this.drop_append_dropable = false;
       this.drop_append_drag_enter = false;
@@ -17609,8 +17619,11 @@ __webpack_require__.r(__webpack_exports__);
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony default export */ __webpack_exports__["default"] = ({
-  name: 'price-card-widget',
+  name: "price-card-widget",
   props: {
+    icon: {
+      type: String
+    },
     label: {
       type: String
     },
@@ -17641,8 +17654,8 @@ __webpack_require__.r(__webpack_exports__);
   computed: {
     dropAppendClass: function dropAppendClass() {
       return {
-        'dropable': !this.dragging && (this.drop_append_dropable || this.widgetDropable),
-        'drag-enter': this.drop_append_drag_enter
+        dropable: !this.dragging && (this.drop_append_dropable || this.widgetDropable),
+        "drag-enter": this.drop_append_drag_enter
       };
     }
   },
@@ -17656,22 +17669,22 @@ __webpack_require__.r(__webpack_exports__);
   methods: {
     dragStart: function dragStart() {
       this.dragging = true;
-      this.$emit('drag');
+      this.$emit("drag");
     },
     dragEnd: function dragEnd() {
       this.dragging = false;
-      this.$emit('dragend');
+      this.$emit("dragend");
     },
     handleDragEnter: function handleDragEnter() {
-      this.$emit('dragenter');
+      this.$emit("dragenter");
       this.drop_append_drag_enter = true;
     },
     handleDragLeave: function handleDragLeave() {
-      this.$emit('dragleave');
+      this.$emit("dragleave");
       this.drop_append_drag_enter = false;
     },
     handleDrop: function handleDrop() {
-      this.$emit('drop');
+      this.$emit("drop");
       this.dragging = false;
       this.drop_append_dropable = false;
       this.drop_append_drag_enter = false;
@@ -17775,6 +17788,9 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony default export */ __webpack_exports__["default"] = ({
   name: 'ratings-count-card-widget',
   props: {
+    icon: {
+      type: String
+    },
     label: {
       type: String
     },
@@ -17855,8 +17871,11 @@ __webpack_require__.r(__webpack_exports__);
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony default export */ __webpack_exports__["default"] = ({
-  name: 'reviews-card-widget',
+  name: "reviews-card-widget",
   props: {
+    icon: {
+      type: String
+    },
     label: {
       type: String
     },
@@ -17887,8 +17906,8 @@ __webpack_require__.r(__webpack_exports__);
   computed: {
     dropAppendClass: function dropAppendClass() {
       return {
-        'dropable': !this.dragging && (this.drop_append_dropable || this.widgetDropable),
-        'drag-enter': this.drop_append_drag_enter
+        dropable: !this.dragging && (this.drop_append_dropable || this.widgetDropable),
+        "drag-enter": this.drop_append_drag_enter
       };
     }
   },
@@ -17902,22 +17921,22 @@ __webpack_require__.r(__webpack_exports__);
   methods: {
     dragStart: function dragStart() {
       this.dragging = true;
-      this.$emit('drag');
+      this.$emit("drag");
     },
     dragEnd: function dragEnd() {
       this.dragging = false;
-      this.$emit('dragend');
+      this.$emit("dragend");
     },
     handleDragEnter: function handleDragEnter() {
-      this.$emit('dragenter');
+      this.$emit("dragenter");
       this.drop_append_drag_enter = true;
     },
     handleDragLeave: function handleDragLeave() {
-      this.$emit('dragleave');
+      this.$emit("dragleave");
       this.drop_append_drag_enter = false;
     },
     handleDrop: function handleDrop() {
-      this.$emit('drop');
+      this.$emit("drop");
       this.dragging = false;
       this.drop_append_dropable = false;
       this.drop_append_drag_enter = false;
@@ -28929,7 +28948,9 @@ var render = function render() {
     staticClass: "cptm-widget-card-wrap cptm-widget-card-inline-wrap cptm-widget-badge-card-wrap"
   }, [_c("div", {
     staticClass: "cptm-widget-card cptm-widget-badge cptm-has-widget-control cptm-widget-actions-tools-wrap"
-  }, [_vm._v("\n        " + _vm._s(_vm.label) + "\n        \n        "), !_vm.readOnly ? _c("widget-action-tools", {
+  }, [_c("span", {
+    class: _vm.icon
+  }), _vm._v(" "), _c("span", [_vm._v(_vm._s(_vm.label))]), _vm._v(" "), !_vm.readOnly ? _c("widget-action-tools", {
     attrs: {
       canEdit: _vm.canEdit,
       canMove: _vm.canMove,
@@ -28992,7 +29013,9 @@ var render = function render() {
     staticClass: "cptm-widget-card-wrap cptm-widget-card-inline-wrap cptm-widget-badge-card-wrap"
   }, [_c("div", {
     staticClass: "cptm-widget-card cptm-widget-badge cptm-has-widget-control cptm-widget-actions-tools-wrap"
-  }, [_vm._v("\n        " + _vm._s(_vm.label) + "\n        \n        "), !_vm.readOnly ? _c("widget-action-tools", {
+  }, [_c("span", {
+    class: _vm.icon
+  }), _vm._v(" "), _c("span", [_vm._v(_vm._s(_vm.label))]), _vm._v(" "), !_vm.readOnly ? _c("widget-action-tools", {
     attrs: {
       canEdit: _vm.canEdit,
       canMove: _vm.canMove,
@@ -29055,7 +29078,9 @@ var render = function render() {
     staticClass: "cptm-widget-card-wrap cptm-widget-card-inline-wrap cptm-widget-badge-card-wrap"
   }, [_c("div", {
     staticClass: "cptm-widget-card cptm-widget-badge cptm-has-widget-control cptm-widget-actions-tools-wrap"
-  }, [_vm._v("\n        " + _vm._s(_vm.label) + "\n        \n        "), _c("widget-action-tools", {
+  }, [_c("span", {
+    class: _vm.icon
+  }), _vm._v(" "), _c("span", [_vm._v(_vm._s(_vm.label))]), _vm._v(" "), _c("widget-action-tools", {
     attrs: {
       canEdit: _vm.canEdit,
       canMove: _vm.canMove,
@@ -29118,7 +29143,9 @@ var render = function render() {
     staticClass: "cptm-widget-card-wrap cptm-widget-card-inline-wrap cptm-widget-badge-card-wrap"
   }, [_c("div", {
     staticClass: "cptm-widget-card cptm-widget-badge cptm-has-widget-control cptm-widget-actions-tools-wrap"
-  }, [_vm._v("\n        " + _vm._s(_vm.label) + "\n        \n        "), !_vm.readOnly ? _c("widget-action-tools", {
+  }, [_c("span", {
+    class: _vm.icon
+  }), _vm._v(" "), _c("span", [_vm._v(_vm._s(_vm.label))]), _vm._v(" "), !_vm.readOnly ? _c("widget-action-tools", {
     attrs: {
       canEdit: _vm.canEdit,
       canMove: _vm.canMove,
@@ -29181,7 +29208,9 @@ var render = function render() {
     staticClass: "cptm-widget-card-wrap cptm-widget-card-inline-wrap cptm-widget-badge-card-wrap"
   }, [_c("div", {
     staticClass: "cptm-widget-card cptm-widget-badge cptm-has-widget-control cptm-widget-actions-tools-wrap"
-  }, [_vm._v("\n        " + _vm._s(_vm.label) + "\n        \n        "), !_vm.readOnly ? _c("widget-action-tools", {
+  }, [_c("span", {
+    class: _vm.icon
+  }), _vm._v(" "), _c("span", [_vm._v(_vm._s(_vm.label))]), _vm._v(" "), !_vm.readOnly ? _c("widget-action-tools", {
     attrs: {
       canEdit: _vm.canEdit,
       canMove: _vm.canMove,
@@ -29315,7 +29344,9 @@ var render = function render() {
     staticClass: "cptm-widget-card-wrap cptm-widget-card-inline-wrap cptm-widget-badge-card-wrap"
   }, [_c("div", {
     staticClass: "cptm-widget-card cptm-widget-badge cptm-has-widget-control cptm-widget-actions-tools-wrap"
-  }, [_vm._v("\n        " + _vm._s(_vm.label) + "\n        \n        "), !_vm.readOnly ? _c("widget-action-tools", {
+  }, [_c("span", {
+    class: _vm.icon
+  }), _vm._v(" "), _c("span", [_vm._v(_vm._s(_vm.label))]), _vm._v(" "), !_vm.readOnly ? _c("widget-action-tools", {
     attrs: {
       canEdit: _vm.canEdit,
       canMove: _vm.canMove,
@@ -29378,7 +29409,9 @@ var render = function render() {
     staticClass: "cptm-widget-card-wrap cptm-widget-card-inline-wrap cptm-widget-badge-card-wrap"
   }, [_c("div", {
     staticClass: "cptm-widget-card cptm-widget-badge cptm-has-widget-control cptm-widget-actions-tools-wrap"
-  }, [_vm._v("\n        " + _vm._s(_vm.label) + "\n        \n        "), !_vm.readOnly ? _c("widget-action-tools", {
+  }, [_c("span", {
+    class: _vm.icon
+  }), _vm._v(" "), _c("span", [_vm._v(_vm._s(_vm.label))]), _vm._v(" "), !_vm.readOnly ? _c("widget-action-tools", {
     attrs: {
       canEdit: _vm.canEdit,
       canMove: _vm.canMove,
@@ -29441,7 +29474,9 @@ var render = function render() {
     staticClass: "cptm-widget-card-wrap cptm-widget-card-inline-wrap cptm-widget-badge-card-wrap"
   }, [_c("div", {
     staticClass: "cptm-widget-card cptm-widget-badge cptm-has-widget-control cptm-widget-actions-tools-wrap"
-  }, [_vm._v("\n        " + _vm._s(_vm.label) + "\n        \n        "), !_vm.readOnly ? _c("widget-action-tools", {
+  }, [_c("span", {
+    class: _vm.icon
+  }), _vm._v(" "), _c("span", [_vm._v(_vm._s(_vm.label))]), _vm._v(" "), !_vm.readOnly ? _c("widget-action-tools", {
     attrs: {
       canEdit: _vm.canEdit,
       canMove: _vm.canMove,
@@ -29504,7 +29539,9 @@ var render = function render() {
     staticClass: "cptm-widget-card-wrap cptm-widget-card-inline-wrap cptm-widget-badge-card-wrap"
   }, [_c("div", {
     staticClass: "cptm-widget-card cptm-widget-badge cptm-has-widget-control cptm-widget-actions-tools-wrap"
-  }, [_vm._v("\n        " + _vm._s(_vm.label) + "\n        \n        "), !_vm.readOnly ? _c("widget-action-tools", {
+  }, [_c("span", {
+    class: _vm.icon
+  }), _vm._v(" "), _c("span", [_vm._v(_vm._s(_vm.label))]), _vm._v(" "), !_vm.readOnly ? _c("widget-action-tools", {
     attrs: {
       canEdit: _vm.canEdit,
       canMove: _vm.canMove,

@@ -1,7 +1,8 @@
 <template>
     <div class="cptm-widget-card-wrap cptm-widget-card-inline-wrap cptm-widget-badge-card-wrap">
         <div class="cptm-widget-card cptm-widget-badge cptm-has-widget-control cptm-widget-actions-tools-wrap">
-            {{ label }}
+            <span :class="icon"></span>
+            <span>{{ label }}</span>
             
             <widget-action-tools
                 :canEdit="canEdit"
@@ -29,6 +30,10 @@
 export default {
     name: 'category-card-widget',
     props: {
+        icon: {
+            type: String,
+        },
+        
         label: {
             type: String,
         },
