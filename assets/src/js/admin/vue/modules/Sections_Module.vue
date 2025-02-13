@@ -46,7 +46,7 @@
         </div>
         <div 
           class="directorist-form-doc-right"
-          v-if="section.fields[0] === 'submission_form_fields'"
+          v-if="['submission_form_fields', 'single_listings_contents'].includes(section.fields[0])"
         >
           <a
             href="#"
@@ -76,7 +76,7 @@
       <div
         class="cptm-title-area"
         :class="sectionTitleAreaClass(section)"
-        v-if="section.fields[0] !== 'submission_form_fields' && section.fields[0] !== 'search_form_fields' && section.fields[0] !== 'single_listing_header' && section.fields[0] !== 'single_listing_header' && section.fields[0] !== 'single_listings_contents' && section.fields[0] !== 'listings_card_grid_view' && section.fields[0] !== 'listings_card_list_view'"
+        v-if="!['submission_form_fields', 'search_form_fields', 'single_listing_header', 'single_listings_contents', 'listings_card_grid_view', 'listings_card_list_view'].includes(section.fields[0])"
       >
         <h3 v-if="section.title" class="cptm-title" v-html="section.title"></h3>
         <div
@@ -244,13 +244,10 @@ export default {
 
     modalContent() {
       const learnMoreContent = {
-        ...this.fields.single_listing_header.layout,
+        ...this.fields?.single_listing_header?.layout,
         type: "learn_more"
       };
-      console.log("@CHK modalContent", {
-        layout: this.fields.single_listing_header.layout,
-        learnMoreContent,
-      });
+      
       return this.learn_more?.type === "modal" ? learnMoreContent : this.video;
     },
 
@@ -319,7 +316,6 @@ export default {
 
     // Open the modal
     openModal() {
-      console.log("@CHK modalContent", { placeholders: this.$store.state.fields.single_listing_header.layout });
       this.showModal = true;
     },
 

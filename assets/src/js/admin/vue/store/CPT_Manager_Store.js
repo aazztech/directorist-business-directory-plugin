@@ -211,7 +211,6 @@ export default new Vuex.Store({
     },
 
     updateSingleListingLayout: ( state, value ) => {
-      console.log('@CHK updateSingleListingLayout', {state, value});
       state.fields.single_listing_header.layout = value;
     },
 

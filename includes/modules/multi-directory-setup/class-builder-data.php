@@ -2732,13 +2732,9 @@ class Builder_Data {
                             'title' => __( 'Contents Tutorial', 'directorist' ),
                             'description' => __( 'Watch the video to learn how to create a custom contents.', 'directorist' ),
                         ],
-                        'learn_more' => [
-                            'url' => 'https://directorist.com/solutions/',
-                            'title' => __( 'What is it?', 'directorist' ),
-                        ],
                         'sections'  => [
                             'contents' => [
-                                'title'       => __( 'Contents', 'directorist' ),
+                                'title'       => __( 'Listing Contents', 'directorist' ),
                                 'description' => '<a target="_blank" href="https://directorist.com/documentation/directorist/form-and-layout-builder/single-listings-layout/"> ' . __( 'Need help?', 'directorist' ) . ' </a>',
                                 'fields'      => [
                                     'single_listings_contents',

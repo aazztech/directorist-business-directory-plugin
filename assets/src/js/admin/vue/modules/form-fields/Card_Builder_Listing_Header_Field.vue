@@ -792,18 +792,6 @@ export default {
       
       this.placeholders = newPlaceholders;
       this.allPlaceholderItems = newAllPlaceholders;
-
-      console.log( '@CHK: importOldData', { 
-        v: JSON.parse(JSON.stringify(this.value)),
-        value,
-        newPlaceholders,
-        newAllPlaceholders,
-        active_widgets: this.active_widgets,
-        available_widgets: this.available_widgets,
-        widgets: this.widgets,
-        placeholders: this.placeholders,
-        allPlaceholderItems: this.allPlaceholderItems,
-      } );
     },
 
     importWidgets() {
@@ -953,12 +941,6 @@ export default {
       }
 
       this.placeholders = sanitizedPlaceholders;
-
-      console.log('@CHK Placeholders', { 
-        placeholders: this.placeholders, 
-        available_widgets: this.available_widgets,
-        allPlaceholderItems: this.allPlaceholderItems ,
-      });
     },
 
     // Handle widget toggle from UI
