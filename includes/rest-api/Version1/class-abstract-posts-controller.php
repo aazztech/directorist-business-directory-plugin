@@ -94,7 +94,7 @@ abstract class Posts_Controller extends Abstract_Controller {
 	 * prepare for WP_Query.
 	 *
 	 * @param array           $prepared_args Prepared arguments.
-	 * @param WP_REST_Request $request Request object.
+	 * @param \WP_REST_Request $request Request object.
 	 * @return array          $query_args
 	 */
 	protected function prepare_items_query( $prepared_args = array(), $request = null ) {

@@ -112,6 +112,7 @@ class Orders_Controller extends Posts_Controller {
 			return new WP_Error( 'invalid_listing', __( 'Invalid listing.', 'directorist' ), array( 'status' => 400 ) );
 		}
 
+		$listing_id = $request['listing'];
 		if ( function_exists( 'directorist_direct_purchase' ) && directorist_direct_purchase() ) {
 			$listing_id = 0;
 		}
@@ -128,33 +129,63 @@ class Orders_Controller extends Posts_Controller {
 			return new WP_Error( 'invalid_order', __( 'Unable to create order.', 'directorist' ), array( 'status' => 400 ) );
 		}
 
-		$amount = (float) get_directorist_option( 'featured_listing_price' );
+		$order_details = apply_filters( 'atbdp_order_details', array(), $order_id, $listing_id );
+
+		//If featured item is bought, attach it to the order.
+		if ( $request['featured'] ) {
+			update_post_meta( $order_id, '_featured', true );
+
+			$order_details[] = atbdp_get_featured_settings_array();
+		}
+
+		$amount = 0.00;
+		foreach ( $order_details as $order_detail ) {
+			if ( isset( $order_detail['price'] ) ) {
+				$amount = $order_detail['price'];
+			}
+		}
+
+		if ( $request['created_by'] === 'app' ) {
+			$playstore_price = get_post_meta( $plan_id, '_dpp_playstore_product_price', true );
+			$appstore_price  = get_post_meta( $plan_id, '_dpp_appstore_product_price', true );
+
+			if ( $playstore_price > 0 ) {
+				$amount = $playstore_price;
+			}
+
+			if ( $appstore_price > 0 ) {
+				$amount = $appstore_price;
+			}
+		}
 
 		/**
 		 * Filter the order amount before tax calculation
 		 *
 		 * @since v7.4.3
 		 */
-		$amount = round( (float) apply_filters( 'directorist_order_amount_before_tax_calculation', $amount, $order_id, $request->get_params() ), 2 );
+		$amount = apply_filters( 'directorist_order_amount_before_tax_calculation', $amount, $order_id, $request->get_params() );
+		$amount = round( (float) apply_filters( 'atbdp_order_amount', $amount, $order_id ), 2 );
 
 		$gateway = sanitize_key( $request['payment_gateway'] );
 		if ( empty( $amount ) ) {
 			$gateway = 'free';
 		}
-		update_post_meta( $order_id, '_payment_gateway', $gateway );
 
-		$amount = apply_filters( 'atbdp_order_amount', $amount, $order_id );
+		if ( $request['transaction_id'] ) {
+			update_post_meta($order_id, '_transaction_id', sanitize_text_field( $request['transaction_id'] ) );
+		}
+
 		update_post_meta( $order_id, '_amount', $amount );
+		update_post_meta( $order_id, '_payment_status', 'created' );
+		update_post_meta( $order_id, '_payment_gateway', $gateway );
+		update_post_meta( $order_id, '_fm_plan_ordered', $plan_id );
+		update_post_meta( $order_id, '_created_by', $request['created_by'] );
 
 		if ( $listing_id ) {
 			update_post_meta( $order_id, '_listing_id', $listing_id );
+			update_post_meta( $listing_id, '_plan_order_id', $order_id );
+			update_post_meta( $listing_id, '_listing_order_id', $order_id );
 		}
-
-		if ( $request['featured'] ) {
-			update_post_meta( $order_id, '_featured', true );
-		}
-
-		update_post_meta( $order_id, '_payment_status', 'created' );
 
 		do_action( 'atbdp_order_created', $order_id, $listing_id );
 
@@ -175,8 +206,8 @@ class Orders_Controller extends Posts_Controller {
 	/**
 	 * Get a collection of posts.
 	 *
-	 * @param WP_REST_Request $request Full details about the request.
-	 * @return WP_Error|WP_REST_Response
+	 * @param \WP_REST_Request $request Full details about the request.
+	 * @return \WP_Error|\WP_REST_Response
 	 */
 	public function get_items( $request ) {
 		$query_args = $this->prepare_objects_query( $request );
@@ -249,7 +280,7 @@ class Orders_Controller extends Posts_Controller {
 	/**
 	 * Prepare objects query.
 	 *
-	 * @param  WP_REST_Request $request Full details about the request.
+	 * @param  \WP_REST_Request $request Full details about the request.
 	 * @return array
 	 */
 	protected function prepare_objects_query( $request ) {
@@ -267,7 +298,7 @@ class Orders_Controller extends Posts_Controller {
 		 * collection request.
 		 *
 		 * @param array           $args    Key value array of query var to query value.
-		 * @param WP_REST_Request $request The request used.
+		 * @param \WP_REST_Request $request The request used.
 		 */
 		$args = apply_filters( "directorist_rest_{$this->post_type}_object_query", $args, $request );
 
@@ -280,9 +311,9 @@ class Orders_Controller extends Posts_Controller {
 	/**
 	 * Add post meta fields.
 	 *
-	 * @param WP_Post         $post Post Object.
-	 * @param WP_REST_Request $request WP_REST_Request Object.
-	 * @return bool|WP_Error
+	 * @param \WP_Post         $post Post Object.
+	 * @param \WP_REST_Request $request WP_REST_Request Object.
+	 * @return bool|\WP_Error
 	 */
 	protected function add_post_meta_fields( $post, $request ) {
 		return true;
@@ -291,8 +322,8 @@ class Orders_Controller extends Posts_Controller {
 	/**
 	 * Get a single item.
 	 *
-	 * @param WP_REST_Request $request Full details about the request.
-	 * @return WP_Error|WP_REST_Response
+	 * @param \WP_REST_Request $request Full details about the request.
+	 * @return \WP_Error|\WP_REST_Response
 	 */
 	public function get_item( $request ) {
 		$id = (int) $request['id'];
@@ -318,10 +349,10 @@ class Orders_Controller extends Posts_Controller {
 	/**
 	 * Prepare a single orders output for response.
 	 *
-	 * @param WP_Post         $object  Object data.
-	 * @param WP_REST_Request $request Request object.
+	 * @param \WP_Post         $object  Object data.
+	 * @param \WP_REST_Request $request Request object.
 	 *
-	 * @return WP_REST_Response
+	 * @return \WP_REST_Response
 	 */
 	public function prepare_item_for_response( $object, $request ) {
 		$context       = ! empty( $request['context'] ) ? $request['context'] : 'view';
@@ -340,9 +371,9 @@ class Orders_Controller extends Posts_Controller {
 		 * The dynamic portion of the hook name, $this->post_type,
 		 * refers to object type being prepared for the response.
 		 *
-		 * @param WP_REST_Response $response The response object.
-		 * @param WP_Post          $object   Object data.
-		 * @param WP_REST_Request  $request  Request object.
+		 * @param \WP_REST_Response $response The response object.
+		 * @param \WP_Post          $object   Object data.
+		 * @param \WP_REST_Request  $request  Request object.
 		 */
 		return apply_filters( "directorist_rest_prepare_{$this->post_type}_object", $response, $object, $request );
 	}
@@ -350,8 +381,8 @@ class Orders_Controller extends Posts_Controller {
 	/**
 	 * Get order data.
 	 *
-	 * @param WP_Post   $order WP_Post instance.
-	 * @param WP_REST_Request $request Request object.
+	 * @param \WP_Post   $order WP_Post instance.
+	 * @param \WP_REST_Request $request Request object.
 	 * @param string    $context Request context. Options: 'view' and 'edit'.
 	 *
 	 * @return array
@@ -399,7 +430,7 @@ class Orders_Controller extends Posts_Controller {
 					$data[ $field ] = $this->get_remaining_featured_listings_count( $order );
 					break;
 				case 'amount':
-					$data[ $field ] = (float) get_post_meta( $order->ID, '_amount', true );
+					$data[ $field ] = round( (float) get_post_meta( $order->ID, '_amount', true ), 2 );
 					break;
 				case 'payment_status':
 					$data[ $field ] = get_post_meta( $order->ID, '_payment_status', true );
@@ -458,6 +489,7 @@ class Orders_Controller extends Posts_Controller {
 					'description' => __( 'Order title.', 'directorist' ),
 					'type'        => 'string',
 					'context'     => array( 'view', 'edit' ),
+					'readonly'    => true,
 				),
 				'date_created'          => array(
 					'description' => __( "The date the order was created, in the site's timezone.", 'directorist' ),
@@ -520,6 +552,7 @@ class Orders_Controller extends Posts_Controller {
 					'description' => __( 'Amount.', 'directorist' ),
 					'type'        => 'float',
 					'context'     => array( 'view', 'edit' ),
+					'readonly'    => true,
 				),
 				'payment_status' => array(
 					'description' => __( 'Payment status.', 'directorist' ),
@@ -537,6 +570,13 @@ class Orders_Controller extends Posts_Controller {
 					'description' => __( 'Transaction id.', 'directorist' ),
 					'type'        => 'string',
 					'context'     => array( 'view', 'edit' ),
+				),
+				'created_by' => array(
+					'description' => __( 'Created by.', 'directorist' ),
+					'type'        => 'string',
+					'required'    => true,
+					'context'     => array( 'view', 'edit' ),
+					'enum'        => array( 'app', 'web' )
 				),
 			),
 		);
