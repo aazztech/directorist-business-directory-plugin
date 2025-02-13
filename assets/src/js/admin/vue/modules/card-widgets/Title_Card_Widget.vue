@@ -4,6 +4,13 @@
             <div class="cptm-widget-title-block">
                 {{ label }}
             </div>
+
+            <span 
+                class="cptm-widget-card-disabled-badge" 
+                v-if="disabled"
+            > 
+                Disable 
+            </span>
             
             <widget-action-tools
                 :canEdit="canEdit"
@@ -59,6 +66,11 @@ export default {
         canTrash: {
             type: Boolean,
             default: true,
+        },
+
+        disabled: {
+            type: Boolean,
+            default: false,
         },
 
         readOnly: {

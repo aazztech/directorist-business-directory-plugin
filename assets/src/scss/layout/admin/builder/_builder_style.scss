@@ -2282,6 +2282,39 @@ input[type="radio"].cptm-radio {
 
 .cptm-widget-card-wrap {
   visibility: visible;
+  &.cptm-widget-card-disabled {
+    opacity: 0.3;
+    pointer-events: none;
+    &.cptm-widget-title-card-wrap {
+      opacity: 1;
+      .cptm-widget-title-block {
+        opacity: 0.3;
+      }
+    }
+    &.cptm-widget-thumb-card-wrap {
+      opacity: 1;
+      .cptm-widget-label,
+      .cptm-widget-thumb-icon {
+        opacity: 0.3;
+      }
+      .cptm-widget-card-disabled-badge {
+        margin-top: 10px;
+      }
+    }
+  }
+  .cptm-widget-card-disabled-badge {
+    display: inline-flex;
+    gap: 4px;
+    align-items: center;
+    font-size: 12px;
+    line-height: 14px;
+    font-weight: 500;
+    padding: 0 6px;
+    height: 18px;
+    color: #853d0e;
+    background: #fdefce;
+    border-radius: 4px;
+  }
 }
 
 .cptm-widget-card-inline-wrap {
@@ -2365,25 +2398,24 @@ input[type="radio"].cptm-radio {
 .cptm-widget-thumb {
   .cptm-widget-thumb-icon {
     i {
-      font-size: 80px;
-      opacity: 0.1;
+      font-size: 40px;
+      color: #d2d6db;
     }
   }
   .cptm-widget-label {
-    font-size: 13px;
-    font-weight: 500;
-    color: #868eae;
+    font-size: 14px;
+    font-weight: 400;
+    color: #4d5761;
   }
 }
 
 .cptm-placeholder-block {
   padding: 2px;
   position: relative;
-  min-height: 54px;
-  border: 2px dashed rgba(255, 255, 255, 0.15);
+  border: 1px dashed rgba(255, 255, 255, 0.15);
   transition: all ease-in-out 300ms;
   box-sizing: border-box;
-  border-radius: 4px;
+  border-radius: 8px;
   z-index: 99;
 
   &:hover,
@@ -2640,6 +2672,8 @@ input[type="radio"].cptm-radio {
 }
 
 .cptm-widget-title-card {
+  display: flex;
+  gap: 8px;
   margin-bottom: 10px;
   padding: 10px;
   text-align: left;
@@ -2852,7 +2886,7 @@ input[type="radio"].cptm-radio {
 
 .cptm-card-light {
   &.cptm-placeholder-block {
-    border-color: #c6d0dc;
+    border-color: #d2d6db;
 
     &:hover,
     &.drag-enter {
@@ -3688,6 +3722,7 @@ input[type="radio"] {
         gap: 30px;
         justify-content: space-between;
         .cptm-preview-placeholder__card__box {
+          min-width: auto;
           &:first-child {
             flex: unset;
           }
@@ -3723,9 +3758,10 @@ input[type="radio"] {
           padding: 6px 19px 7px 20px;
           border-radius: 8px;
           font-size: 13px;
+          line-height: 14px;
           font-weight: 500;
-          color: #868eae;
-          background-color: #e3e6ef;
+          color: #383f47;
+          background-color: #e5e7eb;
         }
       }
     }

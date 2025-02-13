@@ -15043,7 +15043,9 @@ function _objectSpread(e) { for (var r = 1; r < arguments.length; r++) { var t =
     }
   },
   mounted: function mounted() {
-    // console.log('@Placeholder mounted', { selectedWidgets: this.selectedWidgets });
+    console.log("@Placeholder mounted", {
+      selectedWidgets: this.selectedWidgets
+    });
   },
   computed: {
     canAddMore: function canAddMore() {
@@ -15054,15 +15056,15 @@ function _objectSpread(e) { for (var r = 1; r < arguments.length; r++) { var t =
     },
     getContainerClass: function getContainerClass() {
       var classNames = {
-        'drag-enter': this.placeholderDragEnter
+        "drag-enter": this.placeholderDragEnter
       };
       if (this.placeholderKey) {
         classNames[this.placeholderKey] = true;
       }
-      if (typeof this.containerClass === 'string') {
+      if (typeof this.containerClass === "string") {
         classNames[this.containerClass] = true;
       }
-      if (this.containerClass && _babel_runtime_helpers_typeof__WEBPACK_IMPORTED_MODULE_1___default()(this.containerClass) === 'object' && !Array.isArray(this.containerClass)) {
+      if (this.containerClass && _babel_runtime_helpers_typeof__WEBPACK_IMPORTED_MODULE_1___default()(this.containerClass) === "object" && !Array.isArray(this.containerClass)) {
         classNames = _objectSpread(_objectSpread({}, classNames), this.containerClass);
       }
       return classNames;
@@ -15075,25 +15077,25 @@ function _objectSpread(e) { for (var r = 1; r < arguments.length; r++) { var t =
   },
   methods: {
     widgetHasOptions: function widgetHasOptions(active_widget) {
-      if (!active_widget.options && _babel_runtime_helpers_typeof__WEBPACK_IMPORTED_MODULE_1___default()(active_widget.options) !== 'object') {
+      if (!active_widget.options && _babel_runtime_helpers_typeof__WEBPACK_IMPORTED_MODULE_1___default()(active_widget.options) !== "object") {
         return false;
       }
-      if (!active_widget.options.fields && _babel_runtime_helpers_typeof__WEBPACK_IMPORTED_MODULE_1___default()(active_widget.options.fields) !== 'object') {
+      if (!active_widget.options.fields && _babel_runtime_helpers_typeof__WEBPACK_IMPORTED_MODULE_1___default()(active_widget.options.fields) !== "object") {
         return false;
       }
       return true;
     },
     placeholderOnDrop: function placeholderOnDrop() {
       this.placeholderDragEnter = false;
-      this.$emit('placeholder-on-drop');
+      this.$emit("placeholder-on-drop");
     },
     placeholderOnDragEnter: function placeholderOnDragEnter() {
       this.placeholderDragEnter = true;
-      this.$emit('placeholder-on-dragenter');
+      this.$emit("placeholder-on-dragenter");
     },
     placeholderOnDragLeave: function placeholderOnDragLeave() {
       this.placeholderDragEnter = false;
-      this.$emit('placeholder-on-dragleave');
+      this.$emit("placeholder-on-dragleave");
     },
     hasValidWidget: function hasValidWidget(widget_key) {
       if (!this.availableWidgets[widget_key] && _babel_runtime_helpers_typeof__WEBPACK_IMPORTED_MODULE_1___default()(this.availableWidgets[widget_key]) !== "object") {
@@ -17545,7 +17547,7 @@ __webpack_require__.r(__webpack_exports__);
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony default export */ __webpack_exports__["default"] = ({
-  name: 'thumbnail-card-widget',
+  name: "thumbnail-card-widget",
   props: {
     label: {
       type: String
@@ -17569,6 +17571,10 @@ __webpack_require__.r(__webpack_exports__);
       type: Boolean,
       default: true
     },
+    disabled: {
+      type: Boolean,
+      default: false
+    },
     readOnly: {
       type: Boolean,
       default: false
@@ -17577,8 +17583,8 @@ __webpack_require__.r(__webpack_exports__);
   computed: {
     dropAppendClass: function dropAppendClass() {
       return {
-        'dropable': !this.dragging && (this.drop_append_dropable || this.widgetDropable),
-        'drag-enter': this.drop_append_drag_enter
+        dropable: !this.dragging && (this.drop_append_dropable || this.widgetDropable),
+        "drag-enter": this.drop_append_drag_enter
       };
     }
   },
@@ -17592,22 +17598,22 @@ __webpack_require__.r(__webpack_exports__);
   methods: {
     dragStart: function dragStart() {
       this.dragging = true;
-      this.$emit('drag');
+      this.$emit("drag");
     },
     dragEnd: function dragEnd() {
       this.dragging = false;
-      this.$emit('dragend');
+      this.$emit("dragend");
     },
     handleDragEnter: function handleDragEnter() {
-      this.$emit('dragenter');
+      this.$emit("dragenter");
       this.drop_append_drag_enter = true;
     },
     handleDragLeave: function handleDragLeave() {
-      this.$emit('dragleave');
+      this.$emit("dragleave");
       this.drop_append_drag_enter = false;
     },
     handleDrop: function handleDrop() {
-      this.$emit('drop');
+      this.$emit("drop");
       this.dragging = false;
       this.drop_append_dropable = false;
       this.drop_append_drag_enter = false;
@@ -17650,6 +17656,10 @@ __webpack_require__.r(__webpack_exports__);
     canTrash: {
       type: Boolean,
       default: true
+    },
+    disabled: {
+      type: Boolean,
+      default: false
     },
     readOnly: {
       type: Boolean,
@@ -27283,7 +27293,7 @@ var render = function render() {
   }, [_c("p", {
     staticClass: "cptm-placeholder-label",
     class: {
-      hide: _vm.selectedWidgets && _vm.selectedWidgets.length
+      hide: _vm.acceptedWidgets && _vm.acceptedWidgets.length
     }
   }, [_vm._v("\n    " + _vm._s(_vm.label) + "\n  ")]), _vm._v(" "), !_vm.readOnly ? _c("div", {
     staticClass: "cptm-widget-insert-area"
@@ -27325,12 +27335,15 @@ var render = function render() {
     }
   }, [_c("span", {
     staticClass: "fa fa-plus"
-  })]) : _vm._e()])]) : _vm._e(), _vm._v(" "), _vm.selectedWidgets && _vm.selectedWidgets.length ? _c("div", {
-    staticClass: "cptm-widget-preview-area chk"
-  }, [_vm._l(_vm.selectedWidgets, function (widget, widget_index) {
+  })]) : _vm._e()])]) : _vm._e(), _vm._v(" "), _vm.acceptedWidgets && _vm.acceptedWidgets.length ? _c("div", {
+    staticClass: "cptm-widget-preview-area"
+  }, [_vm._l(_vm.acceptedWidgets, function (widget, widget_index) {
     return [_vm.hasValidWidget(widget) ? [_c(_vm.availableWidgets[widget].type + "-card-widget", {
       key: widget_index,
       tag: "component",
+      class: {
+        "cptm-widget-card-disabled": !_vm.selectedWidgets.includes(widget)
+      },
       attrs: {
         label: typeof _vm.availableWidgets[widget] !== "undefined" ? _vm.availableWidgets[widget].label : "Not Available",
         icon: typeof _vm.availableWidgets[widget].icon === "string" ? _vm.availableWidgets[widget].icon : "",
@@ -27338,6 +27351,7 @@ var render = function render() {
         widgetDropable: _vm.widgetDropable,
         canMove: _vm.activeWidgets[widget] && _babel_runtime_helpers_typeof__WEBPACK_IMPORTED_MODULE_0___default()(_vm.activeWidgets[widget].can_move) !== undefined ? _vm.activeWidgets[widget].can_move : true,
         canEdit: _vm.activeWidgets[widget] && _vm.widgetHasOptions(_vm.activeWidgets[widget]),
+        disabled: !_vm.selectedWidgets.includes(widget),
         readOnly: _vm.readOnly
       },
       on: {
@@ -29178,12 +29192,14 @@ var render = function render() {
   var _vm = this,
     _c = _vm._self._c;
   return _c("div", {
-    staticClass: "cptm-widget-card-wrap cptm-widget-card-inline-wrap cptm-widget-badge-card-wrap"
+    staticClass: "cptm-widget-card-wrap cptm-widget-card-inline-wrap cptm-widget-badge-card-wrap cptm-widget-thumb-card-wrap"
   }, [_c("div", {
     staticClass: "cptm-widget-card cptm-widget-thumb cptm-has-widget-control cptm-widget-actions-tools-wrap"
   }, [_vm._m(0), _vm._v(" "), _c("div", {
     staticClass: "cptm-widget-label"
-  }, [_vm._v("\n            " + _vm._s(_vm.label) + "\n        ")]), _vm._v(" "), !_vm.readOnly ? _c("widget-action-tools", {
+  }, [_vm._v("\n      " + _vm._s(_vm.label) + "\n    ")]), _vm._v(" "), _vm.disabled ? _c("span", {
+    staticClass: "cptm-widget-card-disabled-badge"
+  }, [_vm._v("\n      Disable\n    ")]) : _vm._e(), _vm._v(" "), !_vm.readOnly ? _c("widget-action-tools", {
     attrs: {
       canEdit: _vm.canEdit,
       canMove: _vm.canMove,
@@ -29256,7 +29272,9 @@ var render = function render() {
     staticClass: "cptm-widget-card cptm-widget-title-card cptm-has-widget-control cptm-widget-actions-tools-wrap"
   }, [_c("div", {
     staticClass: "cptm-widget-title-block"
-  }, [_vm._v("\n            " + _vm._s(_vm.label) + "\n        ")]), _vm._v(" "), !_vm.readOnly ? _c("widget-action-tools", {
+  }, [_vm._v("\n            " + _vm._s(_vm.label) + "\n        ")]), _vm._v(" "), _vm.disabled ? _c("span", {
+    staticClass: "cptm-widget-card-disabled-badge"
+  }, [_vm._v(" \n            Disable \n        ")]) : _vm._e(), _vm._v(" "), !_vm.readOnly ? _c("widget-action-tools", {
     attrs: {
       canEdit: _vm.canEdit,
       canMove: _vm.canMove,
