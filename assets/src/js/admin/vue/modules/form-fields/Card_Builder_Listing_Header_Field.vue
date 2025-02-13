@@ -132,7 +132,7 @@
           >
             <span 
               class="cptm-elements-settings__group__title"
-              v-if="placeholder.label"
+              v-if="placeholder.label && placeholder?.placeholderKey !== 'listing-title-placeholder' && placeholder?.placeholderKey !== 'slider-placeholder'"
             >
               {{ placeholder.label }}
             </span>

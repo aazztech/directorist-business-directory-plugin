@@ -15,23 +15,34 @@
           allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
           allowfullscreen
           :title="content.title"
+          class="cptm-modal-video"
         ></iframe>
-        <div
-          v-if="content.type === 'learn_more'"
-          class="cptm-modal-single-listing-header"
-        >
+        <div v-if="content.type === 'image'" class="cptm-modal-image">
+          <img
+            :src="content.url"
+            :alt="content.title"
+            class="cptm-modal-image__img"
+          />
+          <button
+            class="cptm-modal-content__close-btn"
+            @click.prevent="$emit('close-modal')"
+          >
+            <span class="la la-close"></span>
+          </button>
+        </div>
+        <div v-if="content.type === 'preview'" class="cptm-modal-preview">
           <!-- Render Placeholder Groups -->
           <div
             v-for="(placeholderItem, index) in placeholders"
             :key="index"
             v-if="placeholderItem.type === 'placeholder_group'"
-            class="cptm-modal-single-listing-header__group cptm-modal-single-listing-header__group--top"
+            class="cptm-modal-preview__group cptm-modal-preview__group--top"
           >
             <div
               v-for="(
                 subPlaceholderItem, index
               ) in placeholderItem.placeholders"
-              class="cptm-modal-single-listing-header__item"
+              class="cptm-modal-preview__item"
               :class="subPlaceholderItem.placeholder_key"
             >
               <div
@@ -39,7 +50,7 @@
                   selectedWidget, index
                 ) in subPlaceholderItem.selectedWidgets"
                 :key="`item_${index}`"
-                class="cptm-modal-single-listing-header__btn"
+                class="cptm-modal-preview__btn"
                 :class="selectedWidget.widget_key"
               >
                 <span
@@ -56,25 +67,25 @@
             v-for="(placeholderItem, index) in placeholders"
             :key="`standalone_${index}`"
             v-if="placeholderItem.type === 'placeholder_item'"
-            class="cptm-modal-single-listing-header__item"
+            class="cptm-modal-preview__item"
             :class="placeholderItem.placeholder_key"
           >
             <div
               v-for="(selectedWidget, index) in placeholderItem.selectedWidgets"
               :key="`group_${index}`"
-              class="cptm-modal-single-listing-header__btn"
+              class="cptm-modal-preview__btn"
               :class="selectedWidget.widget_key"
             >
               <span
                 v-if="selectedWidget.icon"
-                class="cptm-modal-single-listing-header__btn__icon"
+                class="cptm-modal-preview__btn__icon"
                 :class="selectedWidget.icon"
               ></span>
               {{ selectedWidget.label }}
             </div>
           </div>
           <button
-            class="cptm-modal-single-listing-header__close-btn"
+            class="cptm-modal-content__close-btn"
             @click.prevent="$emit('close-modal')"
           >
             <span class="la la-close"></span>
@@ -84,7 +95,7 @@
     </div>
     <button
       class="close-btn"
-      v-if="content.type !== 'learn_more'"
+      v-if="content.type === 'video'"
       @click.prevent="$emit('close-modal')"
     >
       <span class="la la-close"></span>

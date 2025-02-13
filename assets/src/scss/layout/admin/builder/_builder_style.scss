@@ -246,7 +246,7 @@ $light-gray: #f4f5f7;
       line-height: 25px;
     }
   }
-  &__watch-tutorial {
+  &__modal-btn {
     display: inline-flex;
     padding: 8px 12px;
     width: max-content;
@@ -963,7 +963,6 @@ $light-gray: #f4f5f7;
   position: relative;
   background: transparent;
   margin-top: 61px;
-  border-bottom: 1px solid #e5e7eb;
   @media only screen and (max-width: 600px) {
     margin-top: 0;
   }
@@ -990,7 +989,11 @@ $light-gray: #f4f5f7;
       margin: 0;
     }
   }
-  .directorist-form-doc__watch-tutorial {
+  .cptm-tab-content-header__action {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+
     position: absolute;
     right: 30px;
     top: 50%;
@@ -1001,7 +1004,7 @@ $light-gray: #f4f5f7;
       padding-right: 0;
       padding-top: 70px;
     }
-    .directorist-form-doc__watch-tutorial {
+    .cptm-tab-content-header__action {
       top: 20px;
       right: 50%;
       transform: translateX(50%);
@@ -1012,7 +1015,7 @@ $light-gray: #f4f5f7;
       padding-top: 50px;
       padding-bottom: 15px;
     }
-    .directorist-form-doc__watch-tutorial {
+    .cptm-tab-content-header__action {
       top: 0;
     }
   }
@@ -1025,7 +1028,7 @@ $light-gray: #f4f5f7;
 .cptm-tab-content {
   position: relative;
   margin: 0 auto;
-  padding: 20px 30px;
+  padding: 30px;
   min-height: 500px;
   box-sizing: border-box;
 
@@ -2282,6 +2285,39 @@ input[type="radio"].cptm-radio {
 
 .cptm-widget-card-wrap {
   visibility: visible;
+  &.cptm-widget-card-disabled {
+    opacity: 0.3;
+    pointer-events: none;
+    &.cptm-widget-title-card-wrap {
+      opacity: 1;
+      .cptm-widget-title-block {
+        opacity: 0.3;
+      }
+    }
+    &.cptm-widget-thumb-card-wrap {
+      opacity: 1;
+      .cptm-widget-label,
+      .cptm-widget-thumb-icon {
+        opacity: 0.3;
+      }
+      .cptm-widget-card-disabled-badge {
+        margin-top: 10px;
+      }
+    }
+  }
+  .cptm-widget-card-disabled-badge {
+    display: inline-flex;
+    gap: 4px;
+    align-items: center;
+    font-size: 12px;
+    line-height: 14px;
+    font-weight: 500;
+    padding: 0 6px;
+    height: 18px;
+    color: #853d0e;
+    background: #fdefce;
+    border-radius: 4px;
+  }
 }
 
 .cptm-widget-card-inline-wrap {
@@ -2365,25 +2401,24 @@ input[type="radio"].cptm-radio {
 .cptm-widget-thumb {
   .cptm-widget-thumb-icon {
     i {
-      font-size: 80px;
-      opacity: 0.1;
+      font-size: 40px;
+      color: #d2d6db;
     }
   }
   .cptm-widget-label {
-    font-size: 13px;
-    font-weight: 500;
-    color: #868eae;
+    font-size: 14px;
+    font-weight: 400;
+    color: #4d5761;
   }
 }
 
 .cptm-placeholder-block {
   padding: 2px;
   position: relative;
-  min-height: 54px;
-  border: 2px dashed rgba(255, 255, 255, 0.15);
+  border: 1px dashed rgba(255, 255, 255, 0.15);
   transition: all ease-in-out 300ms;
   box-sizing: border-box;
-  border-radius: 4px;
+  border-radius: 8px;
   z-index: 99;
 
   &:hover,
@@ -2640,6 +2675,8 @@ input[type="radio"].cptm-radio {
 }
 
 .cptm-widget-title-card {
+  display: flex;
+  gap: 8px;
   margin-bottom: 10px;
   padding: 10px;
   text-align: left;
@@ -2852,7 +2889,7 @@ input[type="radio"].cptm-radio {
 
 .cptm-card-light {
   &.cptm-placeholder-block {
-    border-color: #c6d0dc;
+    border-color: #d2d6db;
 
     &:hover,
     &.drag-enter {
@@ -3280,29 +3317,49 @@ input[type="radio"].cptm-radio {
     transform: translate(-50%, -50%);
     overflow: visible;
   }
-  .cptm-modal-single-listing-header {
+}
+
+.cptm-modal-content {
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  .cptm-modal-video {
+    video {
+      width: 100%;
+      max-width: 500px;
+    }
+  }
+
+  .cptm-modal-image {
+    .cptm-modal-image__img {
+      max-height: calc(100vh - 200px);
+    }
+  }
+
+  .cptm-modal-preview {
     display: flex;
     gap: 24px;
     flex-direction: column;
-    width: 724px;
     height: auto;
-    max-height: 680px;
+    width: 724px;
+    max-height: calc(100vh - 200px);
     background: #fff;
     padding: 30px 70px;
     border-radius: 16px;
-    .cptm-modal-single-listing-header__group {
+    .cptm-modal-preview__group {
       display: flex;
       gap: 30px;
       justify-content: space-between;
       align-items: center;
     }
-    .cptm-modal-single-listing-header__item {
+    .cptm-modal-preview__item {
       display: flex;
       gap: 10px;
       align-items: center;
       flex-wrap: wrap;
     }
-    .cptm-modal-single-listing-header__btn {
+    .cptm-modal-preview__btn {
       display: flex;
       justify-content: center;
       align-items: center;
@@ -3313,36 +3370,26 @@ input[type="radio"].cptm-radio {
       background: #ededed;
       border: 1px solid #ededed;
       border-radius: 8px;
-      .cptm-modal-single-listing-header__btn__icon {
+      .cptm-modal-preview__btn__icon {
         display: flex;
         justify-content: center;
         align-items: center;
       }
     }
-
-    .cptm-modal-single-listing-header__close-btn {
-      position: absolute;
-      top: 0;
-      right: -42px;
-      width: 36px;
-      height: 36px;
-      color: #000;
-      background: #fff;
-      font-size: 15px;
-      border-radius: 100%;
-      cursor: pointer;
-    }
   }
-}
 
-.cptm-modal-content {
-  position: relative;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  video {
-    width: 100%;
-    max-width: 500px;
+  .cptm-modal-content__close-btn {
+    position: absolute;
+    top: 0;
+    right: -42px;
+    width: 36px;
+    height: 36px;
+    color: #000;
+    background: #fff;
+    font-size: 15px;
+    border: none;
+    border-radius: 100%;
+    cursor: pointer;
   }
 }
 
@@ -3687,13 +3734,12 @@ input[type="radio"] {
         display: flex;
         gap: 30px;
         justify-content: space-between;
+        .cptm-preview-placeholder__card__content {
+          align-items: flex-start;
+        }
         .cptm-preview-placeholder__card__box {
-          &:first-child {
-            flex: unset;
-          }
-          &:not(:first-child) {
-            flex: 0 0 50%;
-          }
+          flex: unset;
+          min-width: auto;
         }
       }
       .cptm-widget-actions-tools-wrap {
@@ -3719,13 +3765,18 @@ input[type="radio"] {
         flex-wrap: wrap;
         display: inline-flex;
         .cptm-widget-badge {
+          display: flex;
+          gap: 6px;
+          align-items: center;
           margin: 0;
-          padding: 6px 19px 7px 20px;
+          height: 30px;
+          padding: 0 12px;
           border-radius: 8px;
           font-size: 13px;
+          line-height: 14px;
           font-weight: 500;
-          color: #868eae;
-          background-color: #e3e6ef;
+          color: #383f47;
+          background-color: #e5e7eb;
         }
       }
     }

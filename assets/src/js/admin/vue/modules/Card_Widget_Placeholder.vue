@@ -7,7 +7,10 @@
     @dragenter="placeholderOnDragEnter()"
     @dragleave="placeholderOnDragLeave()"
   >
-    <p class="cptm-placeholder-label" :class="{ hide: selectedWidgets && selectedWidgets.length }">
+    <p
+      class="cptm-placeholder-label"
+      :class="{ hide: acceptedWidgets && acceptedWidgets.length }"
+    >
       {{ label }}
     </p>
 
@@ -41,23 +44,45 @@
       </div>
     </div>
 
-    <div class="cptm-widget-preview-area chk" v-if="selectedWidgets && selectedWidgets.length">
-      <template v-for="(widget, widget_index) in selectedWidgets">
+    <div
+      class="cptm-widget-preview-area"
+      v-if="acceptedWidgets && acceptedWidgets.length"
+    >
+      <template v-for="(widget, widget_index) in acceptedWidgets">
         <template v-if="hasValidWidget(widget)">
           <component
             :is="availableWidgets[widget].type + '-card-widget'"
+            :class="{
+              'cptm-widget-card-disabled': !selectedWidgets.includes(widget),
+            }"
             :key="widget_index"
-            :label="( typeof availableWidgets[widget] !== 'undefined' ) ? availableWidgets[widget].label : 'Not Available'"
-            :icon="( typeof availableWidgets[widget].icon === 'string' ) ? availableWidgets[widget].icon : ''"
+            :label="
+              typeof availableWidgets[widget] !== 'undefined'
+                ? availableWidgets[widget].label
+                : 'Not Available'
+            "
+            :icon="
+              typeof availableWidgets[widget].icon === 'string'
+                ? availableWidgets[widget].icon
+                : ''
+            "
             :options="availableWidgets[widget].options"
             :widgetDropable="widgetDropable"
-            :canMove="activeWidgets[widget] && typeof activeWidgets[widget].can_move !== undefined ? activeWidgets[widget].can_move : true"
-            :canEdit="activeWidgets[widget] && widgetHasOptions( activeWidgets[widget] )"
+            :canMove="
+              activeWidgets[widget] &&
+              typeof activeWidgets[widget].can_move !== undefined
+                ? activeWidgets[widget].can_move
+                : true
+            "
+            :canEdit="
+              activeWidgets[widget] && widgetHasOptions(activeWidgets[widget])
+            "
             @drag="$emit('drag-widget', widget)"
             @drop="$emit('drop-widget', widget)"
             @dragend="$emit('dragend-widget', widget)"
             @edit="$emit('edit-widget', widget)"
             @trash="$emit('trash-widget', widget)"
+            :disabled="!selectedWidgets.includes(widget)"
             :readOnly="readOnly"
           >
           </component>
@@ -118,18 +143,14 @@ export default {
       default: "Up to __DATA__ item{s} can be added",
     },
     readOnly: {
-        type: Boolean,
-        default: false,
+      type: Boolean,
+      default: false,
     },
   },
 
-  mounted() {
-    // console.log('@Placeholder mounted', { selectedWidgets: this.selectedWidgets });
-  }, 
-
   computed: {
     canAddMore() {
-      if ( this.maxWidget < 1 ) {
+      if (this.maxWidget < 1) {
         return true;
       }
 
@@ -137,62 +158,67 @@ export default {
     },
     getContainerClass() {
       let classNames = {
-        'drag-enter': this.placeholderDragEnter,
+        "drag-enter": this.placeholderDragEnter,
       };
 
-      if ( this.placeholderKey ) {
-        classNames[ this.placeholderKey ] = true;
+      if (this.placeholderKey) {
+        classNames[this.placeholderKey] = true;
       }
 
-      if ( typeof this.containerClass === 'string' ) {
-        classNames[ this.containerClass ] = true;
+      if (typeof this.containerClass === "string") {
+        classNames[this.containerClass] = true;
       }
 
-      if ( 
-        this.containerClass 
-        && typeof this.containerClass === 'object' 
-        && ! Array.isArray( this.containerClass )
+      if (
+        this.containerClass &&
+        typeof this.containerClass === "object" &&
+        !Array.isArray(this.containerClass)
       ) {
         classNames = {
           ...classNames,
-          ...this.containerClass
+          ...this.containerClass,
         };
       }
 
       return classNames;
-      
-    }
+    },
   },
-  
+
   data() {
     return {
       placeholderDragEnter: false,
-    }
+    };
   },
   methods: {
-    widgetHasOptions( active_widget ) {
-      if ( ! active_widget.options && typeof active_widget.options !== 'object' ) { 
+    widgetHasOptions(active_widget) {
+      if (!active_widget.options && typeof active_widget.options !== "object") {
         return false;
       }
-      if ( ! active_widget.options.fields && typeof active_widget.options.fields !== 'object' ) {
+      if (
+        !active_widget.options.fields &&
+        typeof active_widget.options.fields !== "object"
+      ) {
         return false;
       }
       return true;
     },
     placeholderOnDrop() {
       this.placeholderDragEnter = false;
-      this.$emit('placeholder-on-drop')
+      this.$emit("placeholder-on-drop");
     },
     placeholderOnDragEnter() {
       this.placeholderDragEnter = true;
-      this.$emit('placeholder-on-dragenter');
+      this.$emit("placeholder-on-dragenter");
     },
     placeholderOnDragLeave() {
       this.placeholderDragEnter = false;
-      this.$emit('placeholder-on-dragleave');
+      this.$emit("placeholder-on-dragleave");
     },
     hasValidWidget(widget_key) {
-      if ( !this.availableWidgets[widget_key] && typeof this.availableWidgets[widget_key] !== "object" ) {
+      if (
+        !this.availableWidgets[widget_key] &&
+        typeof this.availableWidgets[widget_key] !== "object"
+      ) {
         return false;
       }
       if (typeof this.availableWidgets[widget_key].type !== "string") {

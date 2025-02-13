@@ -8,16 +8,25 @@
     >
       <div
         class="directorist-form-doc"
-        v-if="['submission_form_fields', 'search_form_fields', 'single_listing_header', 'single_listings_contents', 'listings_card_grid_view', 'listings_card_list_view'].includes(section.fields[0])"
+        v-if="
+          ['submission_form_fields', 'search_form_fields'].includes(
+            section.fields[0]
+          )
+        "
       >
-        <div 
-          class="directorist-form-doc-left"
-        >
+        <div class="directorist-form-doc-left">
           <div class="directorist-form-doc-title" v-html="section.title"></div>
           <a
             href="#"
-            class="directorist-form-doc__watch-tutorial"
-            v-if="video && ['submission_form_fields', 'search_form_fields'].includes(section.fields[0])"
+            class="directorist-row-tooltip directorist-form-doc__modal-btn"
+            v-if="
+              video &&
+              ['submission_form_fields', 'search_form_fields'].includes(
+                section.fields[0]
+              )
+            "
+            :data-tooltip="video?.description"
+            data-flow="bottom"
             @click.prevent="openModal()"
           >
             <svg
@@ -34,19 +43,23 @@
                 fill="currentColor"
               />
             </svg>
-            {{video.button_text}}
+            <!-- {{ video?.button_text }} -->
           </a>
           <a
             href="#"
-            class="directorist-form-doc__link"
+            class="directorist-row-tooltip directorist-form-doc__modal-btn"
             v-if="learn_more"
-            v-html="learn_more.title"
+            :data-tooltip="learn_more?.description"
+            data-flow="bottom"
             @click.prevent="openModal()"
-          ></a>
+          >
+            ?
+            <!-- {{ learn_more?.button_text }} -->
+          </a>
         </div>
-        <div 
+        <div
           class="directorist-form-doc-right"
-          v-if="['submission_form_fields', 'single_listings_contents'].includes(section.fields[0])"
+          v-if="['submission_form_fields'].includes(section.fields[0])"
         >
           <a
             href="#"
@@ -68,7 +81,7 @@
                 fill="currentColor"
               />
             </svg>
-            preview
+            Preview
           </a>
         </div>
       </div>
@@ -76,7 +89,16 @@
       <div
         class="cptm-title-area"
         :class="sectionTitleAreaClass(section)"
-        v-if="!['submission_form_fields', 'search_form_fields', 'single_listing_header', 'single_listings_contents', 'listings_card_grid_view', 'listings_card_list_view'].includes(section.fields[0])"
+        v-if="
+          ![
+            'submission_form_fields',
+            'search_form_fields',
+            'single_listing_header',
+            'single_listings_contents',
+            'listings_card_grid_view',
+            'listings_card_list_view',
+          ].includes(section.fields[0])
+        "
       >
         <h3 v-if="section.title" class="cptm-title" v-html="section.title"></h3>
         <div
@@ -166,14 +188,6 @@
       :type="modalContent.type"
       @close-modal="closeModal"
     />
-
-    <!-- Single Listing Header Modal -->
-    <!-- <form-builder-widget-single-listing-header-modal-component
-      v-if="learnMoreContent"
-      :modalOpened="showModal"
-      :content="learnMoreContent"
-      @close-modal="closeModal"
-    /> -->
   </div>
 </template>
 
@@ -218,7 +232,7 @@ export default {
   computed: {
     ...mapState(["metaKeys", "fields", "cached_fields"]),
     ...mapState({
-      layout: state => state.layouts 
+      layout: (state) => state.layouts,
     }),
 
     containerClass() {
@@ -245,12 +259,24 @@ export default {
     modalContent() {
       const learnMoreContent = {
         ...this.fields?.single_listing_header?.layout,
-        type: "learn_more"
+        type: "preview",
       };
-      
-      return this.learn_more?.type === "modal" ? learnMoreContent : this.video;
-    },
 
+      let content;
+
+      switch (this.learn_more?.type) {
+        case "preview":
+          content = learnMoreContent;
+          break;
+        case "image":
+          content = this.learn_more;
+          break;
+        default:
+          content = this.video;
+      }
+
+      return content;
+    },
   },
 
   methods: {
@@ -280,7 +306,7 @@ export default {
     },
 
     sectionClass(section) {
-      return section.fields[0]
+      return section.fields[0];
       // return {
       //   "cptm-short-wide": "short-width" === section.container ? true : false,
       // };
