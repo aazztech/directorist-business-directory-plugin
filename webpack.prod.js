@@ -44,7 +44,11 @@ const prodConfig = {
             ],
           },
           {
-            delete: ['./__build/directorist/directorist/assets/src'],
+            delete: [
+              './__build/directorist/directorist/assets/src',
+              './__build/directorist/directorist/blocks/src',
+              './__build/directorist/directorist/blocks/node_modules',
+            ],
           },
           {
             archive: [

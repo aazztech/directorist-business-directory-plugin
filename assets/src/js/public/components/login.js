@@ -55,6 +55,7 @@
 
         $('form#login .status').on('click', 'a', function(e) {
             e.preventDefault();
+
             if ( $(this).attr('href') === '#atbdp_recovery_pass' ) {
                 $("#recover-pass-modal").slideDown().show();
                 window.scrollTo({

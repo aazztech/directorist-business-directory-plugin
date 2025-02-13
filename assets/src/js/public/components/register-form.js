@@ -1,5 +1,5 @@
 jQuery(($) => {
-    
+
 	$('.directorist__authentication__signup').on( 'submit', function( e ) {
 		e.preventDefault();
 

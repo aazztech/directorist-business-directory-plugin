@@ -526,7 +526,7 @@ abstract class Abstract_Controller extends WP_REST_Controller {
 	 * Updated from WordPress 5.3, included into this class to support old versions.
 	 *
 	 * @since 3.5.0
-	 * @param WP_REST_Request $request Full details about the request.
+	 * @param \WP_REST_Request $request Full details about the request.
 	 * @return array Fields to be included in the response.
 	 */
 	public function get_fields_for_response( $request ) {

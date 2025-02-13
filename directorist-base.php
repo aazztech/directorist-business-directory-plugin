@@ -200,7 +200,6 @@ final class Directorist_Base
 			add_action('widgets_init', array(self::$instance, 'register_widgets'));
 			add_filter('widget_display_callback', array(self::$instance, 'custom_widget_body_wrapper'), 10, 3);
 			add_action('after_setup_theme', array(self::$instance, 'add_image_sizes'));
-
 			add_action( 'template_redirect', [ self::$instance, 'check_single_listing_page_restrictions' ] );
 			add_action( 'atbdp_show_flush_messages', [ self::$instance, 'show_flush_messages' ] );
 
@@ -286,10 +285,6 @@ final class Directorist_Base
 			add_filter('atbdp_settings_menus', array(self::$instance, 'add_uninstall_menu'));
 			add_filter( 'display_post_states', array(self::$instance, 'add_page_states'), 10, 2 );
 			self::init_hooks();
-
-			// Initialize appsero tracking
-			self::$instance->init_appsero();
-
 			// Register blocks
 			self::$instance->init_blocks();
 
@@ -491,6 +486,7 @@ final class Directorist_Base
 			ATBDP_INC_DIR . 'modules/multi-directory-setup/trait-multi-directory-helper',
 			ATBDP_INC_DIR . 'modules/multi-directory-setup/class-multi-directory-migration',
 			ATBDP_INC_DIR . 'modules/multi-directory-setup/class-multi-directory-manager',
+			__DIR__ . '/blocks/init',
 			ATBDP_INC_DIR . 'modules/multi-directory-setup/class-ai-builder',
 		]);
 
@@ -695,7 +691,6 @@ final class Directorist_Base
 	* @param WP_Post $post        The current post object.
 	*/
 	public function add_page_states( $post_states, $post ) {
-
 		if ( get_directorist_option( 'add_listing_page' ) === $post->ID ) {
 		   $post_states['directorist_add_listing'] = __( 'Directorist Add Listing', 'directorist' );
 	   	}

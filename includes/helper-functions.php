@@ -2449,6 +2449,7 @@ function atbdp_get_listing_attachment_ids( $listing_id ) {
 		return $attachment_ids;
 	}
 
+
     $attachment_ids = array_merge( $attachment_ids, $gallery_images );
 
     return $attachment_ids;
@@ -4348,7 +4349,7 @@ function directorist_delete_dir( $dir ) {
  */
 function directorist_delete_temporary_upload_dirs() {
 	$upload_dir = wp_get_upload_dir();
-	$temp_dir   = trailingslashit( $upload_dir['basedir'] ) . 'directorist_temp_uploads/';
+	$temp_dir   = trailingslashit( $upload_dir['basedir'] ) . trailingslashit( directorist_get_temp_upload_dir() );
 
 	$dirs = scandir( $temp_dir );
 	$date = date( 'nj' );
@@ -4365,6 +4366,10 @@ function directorist_delete_temporary_upload_dirs() {
 			}
 		}
 	}
+}
+
+function directorist_get_temp_upload_dir() {
+	return 'directorist_temp_uploads';
 }
 
 /**
@@ -4675,3 +4680,10 @@ function directorist_get_listing_gallery_images( $listing_id = 0 ) {
 
 	return $images;
 }
+
+function directorist_is_guest_user( $user_id = 0 ) {
+	$user_type = get_user_meta( $user_id, '_user_type', true );
+
+	return ( 'guest' === $user_type );
+}
+

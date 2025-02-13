@@ -469,7 +469,7 @@ $(function() {
         }
     }
 
-    let on_processing = false;
+    let FORM_ON_PROCESSING = false;
     let has_media = true;
     let quickLoginModalSuccessCallback = null;
     const $notification = $('#listing_notifier');
@@ -477,32 +477,35 @@ $(function() {
     // -----------------------------
     // Submit The Form
     // -----------------------------
+    const UPLOADED_IMAGES_CACHE = new WeakMap();
 
     $('body').on('submit', '#directorist-add-listing-form', function (e) {
         e.preventDefault();
 
-        const $form       = $(e.target);
-        let   error_count = 0;
-        const err_log     = {};
-        const $submitButton = $('.directorist-form-submit__btn');
-
-        if (on_processing) {
+        if ( FORM_ON_PROCESSING ) {
             return;
         }
 
+        const $form            = $(e.target);
+        const err_log          = {};
+        const $submitButton    = $form.find('.directorist-form-submit__btn');
+        let   error_count      = 0;
+        let   uploadableImages = [];
+        let   counter          = 0;
+
+        const $directory   = $form.find( "input[name='directory_type']" );
+        let   directory_id = $directory !== undefined ? $directory.val() : 0;
+              directory_id = qs.directory_type ? qs.directory_type : directory_id;
+
         function disableSubmitButton() {
-            on_processing = true;
+            FORM_ON_PROCESSING = true;
             $submitButton.addClass('atbd_loading').attr('disabled', true);
         }
 
         function enableSubmitButton() {
-            on_processing = false;
+            FORM_ON_PROCESSING = false;
             $submitButton.removeClass('atbd_loading').attr('disabled', false);
         }
-
-        // images
-        let selectedImages = [];
-        let uploadedImages = [];
 
         if (mediaUploaders.length) {
             for (var uploader of mediaUploaders) {
@@ -523,36 +526,50 @@ $(function() {
                 }
 
                 uploader.media_uploader.getTheFiles().forEach( function( file ) {
-                    selectedImages.push( {
-                        field: uploader.uploaders_data.meta_name,
-                        file: file
+                    if ( UPLOADED_IMAGES_CACHE.has( file ) ) {
+                        return;
+                    }
+
+                    uploadableImages.push( {
+                        field       : uploader.uploaders_data.meta_name,
+                        file        : file,
+                        uploadedFile: ''
                     } );
                 } );
             }
         }
 
-        if ( selectedImages.length ) {
-            let counter = 0;
-
+        if ( uploadableImages.length ) {
             function uploadImage() {
+                if ( UPLOADED_IMAGES_CACHE.has( uploadableImages[ counter ].file ) ) {
+                    return;
+                }
+
                 const formData = new FormData();
 
-                formData.append( 'action', 'directorist_upload_listing_image' );
-                formData.append( 'directorist_nonce', directorist.directorist_nonce );
-                formData.append( 'image', selectedImages[ counter ] );
-                formData.append( 'image', selectedImages[ counter ].file );
-                formData.append( 'field', selectedImages[ counter ].field );
+                // formData.append( 'action', 'directorist_upload_listing_image' );
+                // formData.append( 'directorist_nonce', directorist.directorist_nonce );
+                // formData.append( 'file', uploadableImages[ counter ] );
+                formData.append( 'file', uploadableImages[ counter ].file );
+                formData.append( 'field', uploadableImages[ counter ].field );
+                formData.append( 'directory', directory_id );
+                // formData.append( 'field', uploadableImages[ counter ].field );
+                // console.log(uploadableImages, counter);
 
                 $.ajax( {
                     method: 'POST',
                     processData: false,
                     contentType: false,
-                    url: localized_data.ajaxurl,
+                    mimeType: 'multipart/form-data',
+                    async: true,
+                    url: directorist.rest_url + 'directorist/v1/temp-media-upload',
                     data: formData,
-                    beforeSend() {
+                    beforeSend( xhr ) {
+                        xhr.setRequestHeader( 'X-WP-Nonce', directorist.rest_nonce );
+
                         disableSubmitButton();
 
-                        const totalImages = selectedImages.length;
+                        const totalImages = uploadableImages.length;
                         if ( totalImages === 1 ) {
                             $notification
                                 .show()
@@ -565,39 +582,34 @@ $(function() {
                         }
                     },
                     success( response ) {
-                        if ( ! response.success ) {
-                            enableSubmitButton()
+                        const data = JSON.parse( response );
 
-                            $notification.show().html(`<span class="atbdp_error">${response.data}</span>`);
+                        uploadableImages[ counter ].uploadedFile = data.file;
 
-                            return;
-                        }
+                        UPLOADED_IMAGES_CACHE.set( uploadableImages[ counter ].file, true );
 
-                        uploadedImages.push( {
-                            field: selectedImages[ counter ].field,
-                            file: response.data
-                        } );
+                        ++counter;
 
-                        counter++;
-
-                        if ( counter < selectedImages.length ) {
+                        if ( counter < uploadableImages.length ) {
                             uploadImage();
                         } else {
-                            submitForm( $form, uploadedImages );
+                            submitForm( $form, uploadableImages );
                         }
                     },
-                    error(response) {
+                    error( xhr ) {
+                        const data = JSON.parse( xhr.responseText );
+
                         enableSubmitButton();
 
-                        $notification.html(`<span class="atbdp_error">${response.responseJSON.data}</span>`);
+                        $notification.html(`<span class="atbdp_error">${data.message}</span>`);
                     }
                 } );
             }
 
-            if ( uploadedImages.length === selectedImages.length ) {
-                submitForm( $form, uploadedImages );
-            } else {
+            if ( counter < uploadableImages.length ) {
                 uploadImage();
+            } else {
+                submitForm( $form, uploadableImages );
             }
         } else {
             submitForm( $form );
@@ -650,7 +662,7 @@ $(function() {
             // Upload new image
             if ( uploadedImages.length ) {
                 uploadedImages.forEach( function( image ) {
-                    form_data.append(`${image.field}[]`, image.file);
+                    form_data.append(`${image.field}[]`, image.uploadedFile);
                 } );
             }
 
@@ -670,20 +682,16 @@ $(function() {
                 form_data.delete( 'admin_category_select[]' );
             }
 
-            if( form_data.has( 'directory_type') ) {
+            if ( form_data.has( 'directory_type') ) {
                 form_data.delete( 'directory_type' );
             }
 
-            var form_directory_type = $form.find( "input[name='directory_type']" );
-
-            var form_directory_type_value = form_directory_type !== undefined ? form_directory_type.val() : '';
-            var directory_type = qs.directory_type ? qs.directory_type : form_directory_type_value;
-
-            form_data.append('directory_type', directory_type);
+            form_data.append( 'directory_type', directory_id );
 
             if (qs.plan) {
                 form_data.append('plan_id', qs.plan);
             }
+
             if (qs.order) {
                 form_data.append('order_id', qs.order);
             }

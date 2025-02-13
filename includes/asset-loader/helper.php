@@ -178,7 +178,7 @@ class Helper {
 		if ( empty( $template ) ) {
 			return false;
 		}
-	
+
 		return str_starts_with( $template, 'widgets/' );
 	}
 
