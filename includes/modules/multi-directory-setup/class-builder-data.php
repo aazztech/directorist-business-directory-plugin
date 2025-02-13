@@ -2745,6 +2745,13 @@ class Builder_Data {
                     'similar_listings' => [
                         'label'    => __( 'Custom Single Listing Page', 'directorist' ),
                         'container' => 'short-wide',
+                        'video' => [
+                            'type' => 'video',
+                            'url' => 'https://www.youtube.com/embed/82CFngofqbM',
+                            'button_text' => __( 'Watch Tutorial', 'directorist' ),
+                            'title' => __( 'Contents Tutorial', 'directorist' ),
+                            'description' => __( 'Watch the video to learn how to create a custom contents.', 'directorist' ),
+                        ],
                         'sections' => [
                             'page_settings' => [
                                 'fields' => [
